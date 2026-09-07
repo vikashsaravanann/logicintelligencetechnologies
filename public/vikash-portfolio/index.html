@@ -115,6 +115,7 @@
     <!-- Advanced & AI Features CSS -->
     <link rel="stylesheet" href="/vikash-portfolio/advanced-features.css">
     <link rel="stylesheet" href="/vikash-portfolio/ai-features.css">
+    <link rel="stylesheet" href="/vikash-portfolio/portfolio-mobile.css">
 </head>
 
 <body>
@@ -134,7 +135,7 @@
                     <li><a href="#competencies">SKILLS</a></li>
                     
                     <li><a href="/vikash-portfolio/certifications.html">CERTIFICATES</a></li>
-                    <li><a href="/vikash-portfolio/automation-hub.html" class="btn-primary-sm" id="navAutomation">AUTOMATION</a></li>
+                    
                     <li><a href="#contact" class="btn-primary-sm">CONTACT</a></li>
                 </ul>
             </div>
@@ -1472,26 +1473,9 @@
             });
         });
     </script>
-    <script src="/vikash-portfolio/particles.js?v=20260526_1645"></script>
-    <script src="/vikash-portfolio/terminal.js"></script>
-
-    
-    <!-- Calendly Script -->
-    <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
-    
-    <!-- Advanced & AI Features JS -->
-    <script src="/vikash-portfolio/advanced-features.js"></script>
-    <script src="/vikash-portfolio/ai-features.js"></script>
-
-
     <!-- PWA Service Worker Registration -->
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
-            });
-        }
-    </script>
+        <!-- service worker disabled for faster, fresher loads -->
 </body>
 
 </html>

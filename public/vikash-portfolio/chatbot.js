@@ -15,8 +15,10 @@
      CONFIGURATION
      ═══════════════════════════════════════════ */
   const GROQ_MODEL = 'llama-3.3-70b-versatile';
+  // Prefer same-origin company APIs (Logic Intelligence site)
   const API_URL = '/api/chat';
-  const PRODUCTION_API_URL = 'https://startupwithvikash.vercel.app';
+  const AI_API_URL = '/api/ai';
+  const PRODUCTION_API_URL = 'https://www.logicintelligencetechnologies.in';
   const LOCAL_API_URL = 'http://localhost:3000/api/chat';
 
   const SYSTEM_PROMPT = `You are Vikash's intelligent AI portfolio assistant. Your primary goal is to provide accurate, helpful, and professional information about Vikash Saravanan.
@@ -647,19 +649,18 @@ AVAILABILITY:
     const body = { model: GROQ_MODEL, messages };
 
 
+    // Same-origin first (company site embeds this portfolio)
     let url = API_URL;
     let isLocal = false;
-
-    // Check protocol and hostname to choose the appropriate API endpoint
-    if (window.location.protocol === 'file:' ||
-        window.location.hostname === 'localhost' ||
-        window.location.hostname === '127.0.0.1') {
+    const host = window.location.hostname || '';
+    if (window.location.protocol === 'file:' || host === 'localhost' || host === '127.0.0.1') {
       url = LOCAL_API_URL;
       isLocal = true;
-    } else if (window.location.hostname.includes('github.io') ||
-               (window.location.hostname && window.location.hostname !== new URL(PRODUCTION_API_URL).hostname)) {
-      // Route to production API bridge for GitHub Pages and custom domains
+    } else if (host.includes('github.io')) {
       url = PRODUCTION_API_URL + API_URL;
+    } else {
+      // logicintelligencetechnologies.in or vercel preview — same origin
+      url = API_URL;
     }
 
     try {
@@ -670,28 +671,21 @@ AVAILABILITY:
       });
 
       if (!res.ok) {
-        // If local API call fails, fall back to the production API bridge
-        if (isLocal) {
-          console.warn('Local API unavailable, falling back to production API bridge...');
-          return await callProductionBridge(body);
-        }
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || `Server returned ${res.status}`);
+        console.warn('Primary chat endpoint failed', res.status, '— trying fallbacks');
+        return await callWithFallback(body);
       }
 
       const data = await res.json();
-      return extractContent(data);
+      const text = extractContent(data);
+      if (text) return text;
+      return await callWithFallback(body);
     } catch (err) {
-      // Catch network/connection errors (e.g. local server not running)
-      if (isLocal) {
-        console.warn('Local API connection failed, falling back to production API bridge...', err);
-        try {
-          return await callProductionBridge(body);
-        } catch (fallbackErr) {
-          throw fallbackErr;
-        }
+      console.warn('Chat request error, trying fallbacks', err);
+      try {
+        return await callWithFallback(body);
+      } catch (fallbackErr) {
+        throw fallbackErr;
       }
-      throw err;
     }
   }
 
@@ -710,14 +704,42 @@ AVAILABILITY:
   }
 
   function extractContent(data) {
-    // Robust extraction for OpenAI/Groq response format
-    const content = data.choices?.[0]?.message?.content || 
-                    data.message?.content ||
-                    data.choices?.[0]?.text ||
-                    data.response ||
-                    data.message;
-    
+    const content =
+      data.choices?.[0]?.message?.content ||
+      data.generated_text ||
+      data.reply ||
+      data.message?.content ||
+      data.choices?.[0]?.text ||
+      data.response ||
+      (typeof data.message === 'string' ? data.message : null);
+
     return content || "I'm not sure how to answer that right now. Please try again or contact Vikash directly!";
+  }
+
+  async function callWithFallback(body) {
+    // Try /api/chat then /api/ai on same origin
+    const endpoints = [API_URL, AI_API_URL, PRODUCTION_API_URL + API_URL, PRODUCTION_API_URL + AI_API_URL];
+    let lastErr;
+    for (const endpoint of endpoints) {
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(
+            endpoint.includes('/api/ai')
+              ? { message: body.messages?.filter(m => m.role === 'user').slice(-1)[0]?.content || '', history: body.messages || [] }
+              : body
+          ),
+        });
+        if (!res.ok) { lastErr = new Error('HTTP ' + res.status); continue; }
+        const data = await res.json();
+        const text = extractContent(data);
+        if (text) return text;
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    throw lastErr || new Error('All chat endpoints failed');
   }
 
 })();

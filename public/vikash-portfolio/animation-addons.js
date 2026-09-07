@@ -8,14 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ══════════════════════════════════════════
    1. PAGE INTRO LOADER
   ══════════════════════════════════════════ */
-  const introEl = document.createElement('div');
-  introEl.id = 'page-intro';
-  introEl.innerHTML = `
-    <div class="intro-logo">VIKASH <span>SARAVANAN</span></div>
-    <div class="intro-bar"><div class="intro-fill"></div></div>
-  `;
-  document.body.prepend(introEl);
-  setTimeout(() => introEl.remove(), 2700);
+  /* page-intro loader removed */
 
 
   /* ══════════════════════════════════════════
