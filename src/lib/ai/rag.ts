@@ -4,6 +4,7 @@ import { packagesData } from "@/data/packagesData";
 import { servicesData } from "@/data/servicesData";
 import { portfolioProjects } from "@/data/portfolioData";
 import { COMPANY } from "@/config/company";
+import { nomicEmbed } from "@/lib/ai/nomic-embed";
 
 export type KnowledgeChunk = {
   id?: string;
@@ -188,74 +189,11 @@ export function formatRetrievedContext(chunks: KnowledgeChunk[]): string {
 
 /**
  * Dense embedding for hybrid RAG.
- * Priority: xAI/Grok embeddings → Groq nomic-embed-text-v1_5 (768-d). OpenAI removed.
- * Schema is vector(768). FTS still works when all providers fail.
+ * Groq does not ship embedding models; xAI has none on this team.
+ * Production vectors are nomic-embed-text-v1.5 (768-d) via @xenova/transformers.
  */
-type EmbedProvider = {
-  name: string;
-  url: string;
-  key: string;
-  model: string;
-};
-
-function embedProviders(): EmbedProvider[] {
-  const list: EmbedProvider[] = [];
-  // Prefer xAI/Grok embeddings when configured
-  const xaiKey = process.env.XAI_API_KEY || process.env.GROK_API_KEY;
-  if (xaiKey) {
-    list.push({
-      name: "xai",
-      url: process.env.XAI_EMBEDDING_URL || "https://api.x.ai/v1/embeddings",
-      key: xaiKey,
-      model: process.env.XAI_EMBEDDING_MODEL || "grok-embedding-small",
-    });
-  }
-  if (process.env.GROQ_API_KEY) {
-    list.push({
-      name: "groq",
-      url: "https://api.groq.com/openai/v1/embeddings",
-      key: process.env.GROQ_API_KEY,
-      model: process.env.GROQ_EMBEDDING_MODEL || "nomic-embed-text-v1_5",
-    });
-  }
-  return list;
-}
-
 export async function embedQuery(text: string): Promise<number[] | null> {
-  const input = text.slice(0, 8000);
-  for (const p of embedProviders()) {
-    try {
-      const res = await fetch(p.url, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${p.key}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ model: p.model, input }),
-        signal: AbortSignal.timeout(10000),
-      });
-      if (!res.ok) {
-        console.warn(`[embed] ${p.name} HTTP ${res.status}`);
-        continue;
-      }
-      const json = (await res.json()) as {
-        data?: Array<{ embedding: number[] }>;
-      };
-      const emb = json.data?.[0]?.embedding;
-      if (emb?.length) {
-        // Accept 768; if provider returns other dims, skip to next
-        if (emb.length === 768 || process.env.EMBEDDING_FLEX_DIMS === "true") {
-          return emb;
-        }
-        console.warn(
-          `[embed] ${p.name} returned ${emb.length}-d vector; expected 768`
-        );
-      }
-    } catch (err) {
-      console.warn(`[embed] ${p.name} failed`, err);
-    }
-  }
-  return null;
+  return nomicEmbed(text, "query");
 }
 
 /** Upsert seed chunks (no embeddings). Safe to re-run. */

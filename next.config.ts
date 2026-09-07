@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  serverExternalPackages: ['pdf-parse'],
+  serverExternalPackages: ['pdf-parse', '@xenova/transformers'],
   turbopack: {
     root: path.resolve(process.cwd()),
   },
