@@ -112,10 +112,10 @@ export default function Navbar() {
       
       <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "bg-[rgba(10,15,30,0.85)] backdrop-blur-[20px] saturate-180 border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.3)] py-4" : "bg-transparent py-6"}`}>
         <div className="mx-auto w-full max-w-[1680px] px-4 lg:px-6 relative z-50">
-          <div className="flex items-center gap-4 w-full min-w-0">
+          <div className="site-header-bar grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 w-full">
             
             {/* Logo Animation */}
-            <Link href="/" className="flex items-center gap-2.5 group relative z-50 shrink-0">
+            <Link href="/" className="flex items-center gap-2.5 group relative z-50 min-w-0">
               <motion.div 
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
@@ -124,13 +124,13 @@ export default function Navbar() {
               >
                 <img src="/assets/logo.jpg" alt="Logo" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<span class="font-bold text-lg text-white">LIT</span>'; }} />
               </motion.div>
-              <span className="text-[11px] font-bold text-white tracking-wide leading-none whitespace-nowrap hidden xl:inline">
+              <span className="text-[11px] font-bold text-white tracking-wide leading-none whitespace-nowrap hidden md:inline truncate max-w-[9.5rem] xl:max-w-[14rem] 2xl:max-w-none">
                 {COMPANY.displayName.toUpperCase()}
               </span>
             </Link>
 
-            {/* Desktop Links */}
-            <div className="hidden lg:flex flex-1 items-center justify-center gap-2 xl:gap-3 min-w-0">
+            {/* Desktop Links — middle column minmax(0,1fr) so it cannot paint over CTAs */}
+            <div className="hidden lg:flex items-center justify-center gap-x-3 gap-y-1 min-w-0 flex-wrap">
               <NavLink href="/">HOME</NavLink>
               <NavLink href="/ai">AI</NavLink>
               <NavLink href="/#services">SERVICES</NavLink>
