@@ -118,6 +118,10 @@
       scroll-behavior: auto !important;
     }
     body::before { display: none; }
+    .lit-ticker {
+      animation: lit-marquee 5s linear infinite !important;
+      animation-iteration-count: infinite !important;
+    }
   }
 }
 
@@ -422,4 +426,12 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
   nav a {
     white-space: nowrap;
   }
+}
+
+
+/* AI hero ticker — never wrap, never freeze */
+.lit-ticker, .lit-ticker * {
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+  white-space: nowrap !important;
 }
