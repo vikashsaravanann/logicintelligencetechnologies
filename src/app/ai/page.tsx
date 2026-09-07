@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } fro
 import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, ArrowUp, Check, Copy, Download, Loader2, Menu, MessageSquarePlus, Mic, Paperclip, Quote, RefreshCw, Sparkles, Square, Trash2, WifiOff, X } from "lucide-react";
+import { ArrowRight, ArrowUp, Check, Copy, Download, Loader2, Menu, MessageSquarePlus, Mic, Paperclip, Quote, RefreshCw, Search, Share2, Sparkles, Square, Ticket, Trash2, Volume2, WifiOff, X } from "lucide-react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { COMPANY } from "@/config/company";
 import { MarkdownMessage } from "@/components/ai/markdown-message";
@@ -12,7 +12,7 @@ import { InChatPackageCards } from "@/components/ai/package-cards";
 
 type Role = "user" | "assistant";
 type Mode = "company" | "general";
-type ChatMessage = { id: string; role: Role; content: string; createdAt: number; provider?: string; error?: boolean };
+type ChatMessage = { id: string; role: Role; content: string; createdAt: number; provider?: string; error?: boolean; citations?: string[]; badge?: string };
 type ChatSession = { id: string; title: string; messages: ChatMessage[]; updatedAt: number; remote?: boolean };
 type AttachFile = { name: string; type: string; data: string };
 type SpeechRecCtor = new () => BrowserSpeechRec;
@@ -111,8 +111,16 @@ export default function AiChatPage() {
   const [leadOk, setLeadOk] = useState(false);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameVal, setRenameVal] = useState("");
+  const [railQuery, setRailQuery] = useState("");
+  const [copiedShare, setCopiedShare] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  const [ticketBusy, setTicketBusy] = useState(false);
+  const [ticketOk, setTicketOk] = useState(false);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const sessionsRef = useRef<ChatSession[]>([]);
+  const activeIdRef = useRef<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const recRef = useRef<BrowserSpeechRec | null>(null);
   const supabase = createClientComponentClient();
@@ -127,8 +135,22 @@ export default function AiChatPage() {
       const u = data.user;
       setUserEmail(u?.email ?? null);
       setUserId(u?.id ?? null);
-      const meta = u?.user_metadata as { avatar_url?: string; picture?: string } | undefined;
+      const meta = u?.user_metadata as { avatar_url?: string; picture?: string; full_name?: string } | undefined;
       setUserAvatar(meta?.avatar_url || meta?.picture || null);
+      if (u?.email) {
+        setLeadEmail((prev) => prev || u.email || "");
+        const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", u.id).maybeSingle();
+        const nm = (profile as { full_name?: string } | null)?.full_name || meta?.full_name || "";
+        if (nm) setLeadName((prev) => prev || nm);
+        const chk = await fetch("/api/ai/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ check: true, email: u.email }) });
+        const chkJson = await chk.json().catch(() => ({}));
+        if (chkJson.exists) { setLeadOk(true); setShowLead(false); }
+      }
+      if (typeof window !== "undefined" && localStorage.getItem("lit_ai_lead_done") === "1") {
+        setLeadOk(true); setShowLead(false);
+      }
+      const cid = new URLSearchParams(window.location.search).get("c");
+      if (cid && u?.id) setActiveId(cid);
       if (u?.id) {
         const { data: chats } = await supabase
           .from("ai_chats")
@@ -159,17 +181,32 @@ export default function AiChatPage() {
         }
       } catch { /* ignore */ }
     });
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      const typing = tag === "INPUT" || tag === "TEXTAREA";
+      if (e.key === "/" && !typing) { e.preventDefault(); inputRef.current?.focus(); }
+      if (e.key === "Escape") abortRef.current?.abort();
+      if (e.key === "ArrowUp" && !typing) {
+        const last = [...(sessionsRef.current.find((x) => x.id === activeIdRef.current)?.messages || [])].reverse().find((m) => m.role === "user");
+        if (last) setInput(last.content);
+      }
+    };
+    window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("online", on);
       window.removeEventListener("offline", off);
+      window.removeEventListener("keydown", onKey);
       abortRef.current?.abort();
       recRef.current?.stop();
+      window.speechSynthesis?.cancel();
     };
   }, [supabase]);
 
   useEffect(() => {
+    sessionsRef.current = sessions;
+    activeIdRef.current = activeId;
     if (!userId) localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions.slice(0, 24)));
-  }, [sessions, userId]);
+  }, [sessions, userId, activeId]);
 
   useEffect(() => {
     if (!landed) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -224,6 +261,7 @@ export default function AiChatPage() {
       if (data.ok) {
         setLeadOk(true);
         setShowLead(false);
+        localStorage.setItem("lit_ai_lead_done", "1");
       } else {
         setAttachError(data.error || "Could not save details.");
       }
@@ -232,6 +270,47 @@ export default function AiChatPage() {
     } finally {
       setLeadBusy(false);
     }
+  }
+
+  async function openTicket() {
+    if (ticketBusy || ticketOk) return;
+    const email = leadEmail || userEmail || "";
+    if (!email.includes("@")) { setAttachError("Add your email in the lead row first, then tap Talk to a human."); setShowLead(true); return; }
+    setTicketBusy(true);
+    try {
+      const transcript = (active?.messages || []).slice(-6).map((m) => `${m.role}: ${m.content}`).join("\n");
+      const res = await fetch("/api/ai/ticket", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: leadName || "Visitor", email, summary: transcript || "Talk to a human from Logic AI." }),
+      });
+      const data = await res.json();
+      if (data.ok) setTicketOk(true);
+      else setAttachError(data.error || "Could not open a ticket.");
+    } catch {
+      setAttachError("Could not open a ticket.");
+    } finally {
+      setTicketBusy(false);
+    }
+  }
+
+  function speak(text: string) {
+    if (!window.speechSynthesis) { setAttachError("Voice-out is not supported in this browser."); return; }
+    window.speechSynthesis.cancel();
+    if (speaking) { setSpeaking(false); return; }
+    const u = new SpeechSynthesisUtterance(text.slice(0, 1200));
+    u.rate = 1.02;
+    u.onend = () => setSpeaking(false);
+    setSpeaking(true);
+    window.speechSynthesis.speak(u);
+  }
+
+  async function copyShare() {
+    if (!activeId || !isUuid(activeId)) { setAttachError("Sign in and start a cloud chat to share a link."); return; }
+    const url = `${window.location.origin}/ai?c=${activeId}`;
+    await navigator.clipboard.writeText(url);
+    setCopiedShare(true);
+    setTimeout(() => setCopiedShare(false), 1500);
   }
 
   const newChat = useCallback(() => {
@@ -299,10 +378,14 @@ export default function AiChatPage() {
     const raw = (text ?? input).trim();
     if (!raw || sending) return;
     if (!navigator.onLine) { setOnline(false); return; }
-    if (raw.toLowerCase() === "talk on whatsapp") {
+    const lower = raw.toLowerCase();
+    if (lower === "talk on whatsapp" || lower === "/wa") {
       window.open(waTranscript(sessions.find((x) => x.id === activeId)?.messages || []), "_blank");
       return;
     }
+    if (lower === "/demo") { window.location.href = "/free-demo"; return; }
+    if (lower === "/price") { return void send("What packages do you offer and starting prices?"); }
+    if (lower === "/human") { void openTicket(); return; }
     const content = opts?.suffix ? `${raw}\n\n${opts.suffix}` : raw;
     if (DEMO_RE.test(raw)) setShowDemo(true);
     let sessionId = activeId;
@@ -364,6 +447,9 @@ export default function AiChatPage() {
             if (payload === "[DONE]") continue;
             try {
               const json = JSON.parse(payload);
+              if (json.type === "meta" && (json.citations || json.faithfulnessHint)) {
+                patchAssistant(sessionId, assistantId, { citations: json.citations, badge: json.faithfulnessHint });
+              }
               if (json.type === "token" && json.content) {
                 full += json.content;
                 patchAssistant(sessionId, assistantId, { content: full });
@@ -371,7 +457,7 @@ export default function AiChatPage() {
               if (json.type === "done") {
                 full = json.content || full;
                 setLastProvider(json.provider || null);
-                patchAssistant(sessionId, assistantId, { content: full, provider: json.provider });
+                patchAssistant(sessionId, assistantId, { content: full, provider: json.provider, citations: json.citations, badge: json.faithfulnessHint });
               }
             } catch { /* ignore */ }
           }
@@ -387,9 +473,10 @@ export default function AiChatPage() {
       }
       const sess = { id: sessionId, title: raw.slice(0, 48), messages: [], updatedAt: Date.now(), remote: Boolean(userId) };
       await persistTurn(sess, content, full);
-      if (!leadOk && (PRICE_RE.test(raw) || PRICE_RE.test(full))) setShowLead(true);
+      if (!leadOk && localStorage.getItem("lit_ai_lead_done") !== "1" && (PRICE_RE.test(raw) || PRICE_RE.test(full))) setShowLead(true);
     } catch (err) {
       const aborted = (err as Error)?.name === "AbortError";
+      void fetch("/api/ai/abort", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reason: aborted ? "retry" : "timeout", path: "/ai" }) });
       patchAssistant(sessionId, assistantId, {
         error: true,
         content: full.trim() || (aborted ? "Stopped — tap Retry to run that again." : "The assistant did not respond in time. Tap Retry."),
@@ -471,6 +558,8 @@ export default function AiChatPage() {
             <button type="button" onClick={() => { if (!active) return; const t = active.messages.map((m) => `${m.role}: ${m.content}`).join("\n\n"); const b = new Blob([t], { type: "text/plain" }); const u = URL.createObjectURL(b); const a = document.createElement("a"); a.href = u; a.download = "logic-ai.txt"; a.click(); URL.revokeObjectURL(u); }} className={`hidden sm:inline-flex ${hdrBtn}`} disabled={!active?.messages.length}><Download className="w-4 h-4" /> Export</button>
             <a href={waTranscript(active?.messages || [])} target="_blank" rel="noopener noreferrer" className={`hidden sm:inline-flex ${hdrBtn}`}>WhatsApp</a>
             <Link href="/" className={hdrBtn}>Home</Link>
+            <button type="button" onClick={() => void copyShare()} className={`hidden sm:inline-flex ${hdrBtn}`}>{copiedShare ? "Copied" : "Share"}</button>
+            <button type="button" onClick={() => void openTicket()} className={`hidden md:inline-flex ${hdrBtn}`}>{ticketOk ? "Sent" : "Human"}</button>
             <button type="button" onClick={newChat} className={hdrBtn}><MessageSquarePlus className="w-4 h-4" /> New</button>
           </div>
         </div>
@@ -479,8 +568,12 @@ export default function AiChatPage() {
       <div className="flex-1 w-full grid lg:grid-cols-[168px_minmax(0,1fr)] min-h-0">
         <aside className="hidden lg:flex flex-col border-r border-white/5 py-3 px-1.5 max-h-[calc(100dvh-3.5rem)]">
           <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 px-2 mb-1">History {userId ? "· cloud" : "· this device"}</p>
+          <div className="px-1 mb-2 relative">
+            <Search className="w-3 h-3 absolute left-2.5 top-2.5 text-zinc-500" />
+            <input value={railQuery} onChange={(e) => setRailQuery(e.target.value)} placeholder="Search" className="w-full bg-black/40 border border-white/10 rounded-md pl-7 pr-2 py-1.5 text-[11px] outline-none" />
+          </div>
           <div className="flex-1 overflow-y-auto space-y-0.5">
-            {sessions.map((s) => (
+            {sessions.filter((s) => !railQuery || s.title.toLowerCase().includes(railQuery.toLowerCase()) || s.messages.some((m) => m.content.toLowerCase().includes(railQuery.toLowerCase()))).map((s) => (
               <div key={s.id} className={`flex items-center gap-1 rounded-md px-1.5 py-1.5 text-[11px] cursor-pointer ${s.id === activeId ? "bg-orange-500/15 border border-orange-400/25" : "text-zinc-400 hover:bg-white/5"}`} onClick={() => setActiveId(s.id)}>
                 {renamingId === s.id ? (
                   <input
@@ -534,7 +627,15 @@ export default function AiChatPage() {
                 {m.role === "assistant" && <div className="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-400/30 flex items-center justify-center shrink-0"><Sparkles className={`w-3.5 h-3.5 text-orange-300 ${sending && !m.content ? "animate-pulse" : ""}`} /></div>}
                 <div className={`rounded-2xl px-4 py-3 text-sm ${m.role === "user" ? "bg-[#E8651C] text-white max-w-[80%]" : "bg-black/30 border border-white/10 flex-1 min-w-0"}`}>
                   {m.role === "assistant" ? (
-                    m.content ? <><MarkdownMessage content={m.content} /><InChatPackageCards text={m.content} /></> : sending ? (
+                    m.content ? <><MarkdownMessage content={m.content} /><InChatPackageCards text={m.content} />
+                      {(m.badge || (m.citations && m.citations.length > 0)) && (
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {m.badge === "catalog" && <span className="text-[10px] uppercase tracking-wider rounded-full border border-orange-400/30 px-2 py-0.5 text-orange-200">Prices from catalog</span>}
+                          {m.badge === "general" && <span className="text-[10px] uppercase tracking-wider rounded-full border border-white/15 px-2 py-0.5 text-zinc-400">General answer</span>}
+                          {(m.citations || []).map((c) => <span key={c} className="text-[10px] rounded-full border border-white/10 px-2 py-0.5 text-zinc-400">From {c}</span>)}
+                        </div>
+                      )}
+                    </> : sending ? (
                       <span className="inline-flex items-center gap-2 text-zinc-400 text-xs">
                         <Loader2 className="w-3.5 h-3.5 animate-spin" /> Thinking
                       </span>
@@ -544,6 +645,7 @@ export default function AiChatPage() {
                   {m.role === "assistant" && m.content && !m.error && (
                     <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-zinc-500">
                       <button type="button" className="inline-flex items-center gap-1" onClick={async () => { await navigator.clipboard.writeText(m.content); setCopiedId(m.id); }}>{copiedId === m.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Copy</button>
+                      <button type="button" className="inline-flex items-center gap-1" onClick={() => speak(m.content)}><Volume2 className="w-3 h-3" /> {speaking ? "Stop" : "Listen"}</button>
                       <button type="button" className="inline-flex items-center gap-1" onClick={() => setInput(`Regarding this:\n"""${m.content.slice(0, 600)}"""\n\n`)}><Quote className="w-3 h-3" /> Ask about this</button>
                       {i === (active.messages.length - 1) && (
                         <>
@@ -562,6 +664,7 @@ export default function AiChatPage() {
                 {followUps(lastAssistant.content).map((q) => (
                   <button key={q} type="button" onClick={() => void send(q)} className="text-[11px] rounded-full border border-white/15 px-3 py-1 hover:border-orange-400/50">{q}</button>
                 ))}
+                <button type="button" onClick={() => void openTicket()} className="text-[11px] rounded-full border border-white/15 px-3 py-1">{ticketOk ? "Ticket sent" : "Talk to a human"}</button>
               </div>
             )}
             <div ref={bottomRef} />
@@ -599,20 +702,23 @@ export default function AiChatPage() {
               </div>
             )}
             {attachError && <p className="max-w-3xl mx-auto text-[11px] text-red-300 mb-1">{attachError}</p>}
+            {attach && /pdf/i.test(attach.type || attach.name) && <p className="max-w-3xl mx-auto text-[11px] text-zinc-500 mb-1">PDF: first ~20 pages / 8,000 characters are sent as context.</p>}
             <div className="max-w-3xl mx-auto flex items-end gap-2 rounded-2xl border border-white/10 bg-black/40 px-3 py-2">
               <input ref={fileRef} type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf" className="hidden" onChange={(e) => void onPickFile(e.target.files?.[0])} />
               <button type="button" className="p-2 text-zinc-400" onClick={() => fileRef.current?.click()} aria-label="Attach"><Paperclip className="w-4 h-4" /></button>
               <button type="button" className={`p-2 ${listening ? "text-orange-400" : "text-zinc-400"}`} onClick={toggleMic} aria-label="Voice"><Mic className="w-4 h-4" /></button>
-              <textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} rows={1} placeholder={listening ? "Listening…" : "Enter prompt here…"} className="flex-1 bg-transparent resize-none text-sm py-2 outline-none max-h-32" />
+              <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} rows={1} placeholder={listening ? "Listening…" : "Enter prompt here…  /price  /demo  /wa"} className="flex-1 bg-transparent resize-none text-sm py-2 outline-none max-h-32" />
               {sending ? (
                 <button type="button" onClick={() => abortRef.current?.abort()} className="p-2 rounded-full border border-white/20" aria-label="Stop"><Square className="w-3 h-3" /></button>
               ) : (
                 <button type="submit" disabled={!input.trim() && !attach} className="p-2 rounded-full bg-[#E8651C] text-white disabled:opacity-40" aria-label="Send"><ArrowUp className="w-4 h-4" /></button>
               )}
             </div>
-            <div className="sm:hidden max-w-3xl mx-auto mt-2 flex justify-center gap-2 text-[10px] font-bold uppercase">
-              <button type="button" onClick={() => setMode("company")} className={mode === "company" ? "text-orange-300" : "text-zinc-500"}>Company</button>
-              <button type="button" onClick={() => setMode("general")} className={mode === "general" ? "text-orange-300" : "text-zinc-500"}>General</button>
+            <div className="sm:hidden max-w-3xl mx-auto mt-2 flex flex-wrap justify-center gap-2">
+              <button type="button" onClick={() => setMode("company")} className={`${hdrBtn} ${mode === "company" ? "bg-[#E8651C] text-white border-[#E8651C]" : ""}`}>Company</button>
+              <button type="button" onClick={() => setMode("general")} className={`${hdrBtn} ${mode === "general" ? "bg-[#E8651C] text-white border-[#E8651C]" : ""}`}>General</button>
+              <a href={waTranscript(active?.messages || [])} className={hdrBtn}>WhatsApp</a>
+              <button type="button" onClick={newChat} className={hdrBtn}>New</button>
             </div>
           </form>
         </section>
