@@ -16,8 +16,9 @@
      ═══════════════════════════════════════════ */
   const GROQ_MODEL = 'llama-3.3-70b-versatile';
   // Prefer same-origin company APIs (Logic Intelligence site)
-  const API_URL = '/api/chat';
+  const API_URL = '/api/serverless-ai';
   const AI_API_URL = '/api/ai';
+  const CHAT_API_URL = '/api/chat';
   const PRODUCTION_API_URL = 'https://www.logicintelligencetechnologies.in';
   const LOCAL_API_URL = 'http://localhost:3000/api/chat';
 
@@ -729,7 +730,7 @@ AVAILABILITY:
 
   async function callWithFallback(body) {
     // Try /api/chat then /api/ai on same origin
-    const endpoints = [API_URL, AI_API_URL, PRODUCTION_API_URL + API_URL, PRODUCTION_API_URL + AI_API_URL];
+    const endpoints = [API_URL, CHAT_API_URL || '/api/chat', AI_API_URL, PRODUCTION_API_URL + '/api/serverless-ai', PRODUCTION_API_URL + '/api/chat'];
     let lastErr;
     for (const endpoint of endpoints) {
       try {
