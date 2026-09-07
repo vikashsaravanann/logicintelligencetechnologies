@@ -56,6 +56,14 @@ function uid() {
 function isUuid(id: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
 }
+function timeAgo(ts: number) {
+  const m = Math.max(0, Math.round((Date.now() - ts) / 60000));
+  if (m < 1) return "now";
+  if (m < 60) return `${m}m`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h`;
+  return `${Math.round(h / 24)}d`;
+}
 function initials(email: string | null) {
   return email ? email.slice(0, 1).toUpperCase() : "U";
 }
@@ -558,191 +566,212 @@ export default function AiChatPage() {
     );
   }
 
-  const hdrBtn = "inline-flex items-center justify-center gap-1.5 h-10 min-w-0 sm:min-w-[7rem] px-3 sm:px-4 rounded-full border border-white/15 bg-black/30 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.16em] hover:bg-white/10 hover:border-white/30 transition-colors disabled:opacity-40 whitespace-nowrap";
+  const iconBtn = "h-9 w-9 grid place-items-center rounded-full border border-white/12 bg-white/[0.04] hover:bg-white/[0.09] text-zinc-300 disabled:opacity-40 shrink-0";
+  const pillBtn = "inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full border border-white/12 bg-white/[0.04] text-[10px] font-bold uppercase tracking-[0.16em] hover:bg-white/[0.09] disabled:opacity-40 whitespace-nowrap";
+  const railSessions = sessions.filter((s) => !railQuery || s.title.toLowerCase().includes(railQuery.toLowerCase()) || s.messages.some((m) => m.content.toLowerCase().includes(railQuery.toLowerCase())));
+
+  const renderHistory = (onPick?: () => void) => (
+      <>
+        <div className="flex items-center justify-between px-1 mb-3">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">History</p>
+            <p className="text-[9px] uppercase tracking-[0.18em] text-zinc-600">{userId ? "Cloud · synced" : "This device"}</p>
+          </div>
+          <button type="button" onClick={newChat} className="h-8 px-3 rounded-full bg-[#E8651C] text-[10px] font-bold uppercase tracking-wider text-white">New</button>
+        </div>
+        <div className="relative mb-3">
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+          <input value={railQuery} onChange={(e) => setRailQuery(e.target.value)} placeholder="Search threads" className="w-full h-9 bg-black/40 border border-white/10 rounded-full pl-9 pr-3 text-xs outline-none focus:border-orange-400/40" />
+        </div>
+        <div className="flex-1 overflow-y-auto space-y-1 pr-1">
+          {railSessions.length === 0 && <p className="text-[11px] text-zinc-600 px-2 py-6 text-center">No conversations yet.</p>}
+          {railSessions.map((s) => (
+            <div
+              key={s.id}
+              className={`group flex items-start gap-2 rounded-xl px-2.5 py-2.5 cursor-pointer ${s.id === activeId ? "bg-orange-500/15 border border-orange-400/25" : "border border-transparent hover:bg-white/[0.04]"}`}
+              onClick={() => { setActiveId(s.id); onPick?.(); }}
+            >
+              {renamingId === s.id ? (
+                <input
+                  autoFocus
+                  value={renameVal}
+                  onChange={(e) => setRenameVal(e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
+                  onBlur={() => void commitRename(s.id, renameVal)}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void commitRename(s.id, renameVal); } if (e.key === "Escape") setRenamingId(null); }}
+                  className="flex-1 min-w-0 bg-black/40 border border-white/20 rounded px-1.5 py-1 text-xs outline-none"
+                />
+              ) : (
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] text-[#F3EDE4] leading-snug line-clamp-2" onDoubleClick={(e) => { e.stopPropagation(); setRenamingId(s.id); setRenameVal(s.title); }} title="Double-click to rename">{s.title}</p>
+                  <p className="text-[10px] text-zinc-500 mt-1 uppercase tracking-wider">{timeAgo(s.updatedAt)}</p>
+                </div>
+              )}
+              <button type="button" className="opacity-0 group-hover:opacity-100 p-1 text-red-400" onClick={(e) => { e.stopPropagation(); void deleteChat(s.id); }} aria-label="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
+            </div>
+          ))}
+        </div>
+      </>
+    );
 
   return (
     <div className="min-h-[100dvh] text-[#F3EDE4] flex flex-col" style={{ background: glow }}>
-      <header className="sticky top-0 z-30 border-b border-white/5 bg-black/40 backdrop-blur-xl">
-        <div className="w-full px-3 sm:px-6 py-3 grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center gap-3">
-          <div className="justify-self-start flex items-center gap-2.5 min-w-0">
-            <button type="button" className="lg:hidden h-10 w-10 rounded-full border border-white/15 bg-black/30 grid place-items-center" onClick={() => setSidebarOpen(true)} aria-label="Open chats"><Menu className="w-4 h-4" /></button>
-            <Image src={COMPANY.logoIconPath} alt="" width={36} height={36} className="rounded-full object-cover hidden sm:block border border-white/20" />
+      <header className="sticky top-0 z-30 border-b border-white/8 bg-black/55 backdrop-blur-xl">
+        <div className="h-16 px-3 sm:px-5 grid grid-cols-[minmax(0,1fr)_auto] xl:grid-cols-[minmax(220px,1fr)_auto_minmax(220px,1fr)] items-center gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <button type="button" className="lg:hidden h-9 w-9 rounded-full border border-white/12 grid place-items-center" onClick={() => setSidebarOpen(true)} aria-label="Open history"><Menu className="w-4 h-4" /></button>
+            <Image src={COMPANY.logoIconPath} alt="" width={32} height={32} className="rounded-full object-cover border border-white/20 shrink-0" />
             <button type="button" onClick={() => setLanded(true)} className="text-left min-w-0">
-              <h1 className="text-sm font-black tracking-[0.14em] uppercase">Logic AI</h1>
-              <p className="text-[10px] text-zinc-500 truncate uppercase tracking-wider">{sending ? "thinking" : lastProvider ? `via ${lastProvider}` : "ready"}{userEmail ? ` · ${userEmail}` : " · guest"}</p>
+              <h1 className="text-[13px] font-black tracking-[0.16em] uppercase leading-none">LOGIC AI</h1>
+              <p className="mt-1 text-[10px] text-zinc-500 truncate uppercase tracking-[0.12em]">{sending ? "Thinking" : lastProvider ? `Ready · ${lastProvider}` : "Ready"}{userEmail ? ` · ${userEmail}` : " · guest"}</p>
             </button>
           </div>
-          <div className="hidden lg:flex justify-self-center items-center gap-2">
-            <button type="button" onClick={() => setMode("company")} className={`${hdrBtn} ${mode === "company" ? "bg-[#E8651C] text-white border-[#E8651C]" : ""}`}>Company</button>
-            <button type="button" onClick={() => setMode("general")} className={`${hdrBtn} ${mode === "general" ? "bg-[#E8651C] text-white border-[#E8651C]" : ""}`}>General</button>
+          <div className="hidden md:flex justify-self-center items-center rounded-full border border-white/12 bg-black/35 p-0.5">
+            <button type="button" onClick={() => setMode("company")} className={`h-8 px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "company" ? "bg-[#E8651C] text-white" : "text-zinc-400"}`}>Company</button>
+            <button type="button" onClick={() => setMode("general")} className={`h-8 px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "general" ? "bg-[#E8651C] text-white" : "text-zinc-400"}`}>General</button>
           </div>
-          <div className="justify-self-end flex items-center gap-2">
-            <button type="button" onClick={() => { if (!active) return; const t = active.messages.map((m) => `${m.role}: ${m.content}`).join("\n\n"); const b = new Blob([t], { type: "text/plain" }); const u = URL.createObjectURL(b); const a = document.createElement("a"); a.href = u; a.download = "logic-ai.txt"; a.click(); URL.revokeObjectURL(u); }} className={`hidden sm:inline-flex ${hdrBtn}`} disabled={!active?.messages.length}><Download className="w-4 h-4" /> Export</button>
-            <a href={waTranscript(active?.messages || [])} target="_blank" rel="noopener noreferrer" className={`hidden sm:inline-flex ${hdrBtn}`}>WhatsApp</a>
-            <Link href="/" className={hdrBtn}>Home</Link>
-            <button type="button" onClick={() => void copyShare()} className={`hidden sm:inline-flex ${hdrBtn}`}>{copiedShare ? "Copied" : "Share"}</button>
-            <button type="button" onClick={() => void openTicket()} className={`hidden md:inline-flex ${hdrBtn}`}>{ticketOk ? "Sent" : "Human"}</button>
-            <button type="button" onClick={newChat} className={hdrBtn}><MessageSquarePlus className="w-4 h-4" /> New</button>
+          <div className="justify-self-end flex items-center gap-1.5">
+            <button type="button" title="Export" className={`hidden sm:grid ${iconBtn}`} disabled={!active?.messages.length} onClick={() => { if (!active) return; const t = active.messages.map((m) => `${m.role}: ${m.content}`).join("\n\n"); const b = new Blob([t], { type: "text/plain" }); const u = URL.createObjectURL(b); const a = document.createElement("a"); a.href = u; a.download = "logic-ai.txt"; a.click(); URL.revokeObjectURL(u); }}><Download className="w-4 h-4" /></button>
+            <a href={waTranscript(active?.messages || [])} target="_blank" rel="noopener noreferrer" title="WhatsApp" className={`hidden sm:grid ${iconBtn}`}>WA</a>
+            <button type="button" title="Share" className={`hidden sm:grid ${iconBtn}`} onClick={() => void copyShare()}>{copiedShare ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}</button>
+            <button type="button" title="Talk to a human" className={`hidden md:grid ${iconBtn}`} onClick={() => void openTicket()}><Ticket className="w-4 h-4" /></button>
+            <Link href="/" className={pillBtn}>Home</Link>
+            <button type="button" onClick={newChat} className={`${pillBtn} bg-[#E8651C] border-[#E8651C] text-white`}><MessageSquarePlus className="w-4 h-4" /> New</button>
           </div>
         </div>
         {!online && <div className="bg-amber-500/15 text-amber-200 text-xs px-4 py-2 flex items-center justify-center gap-2 uppercase tracking-wider"><WifiOff className="w-3.5 h-3.5" /> Offline</div>}
       </header>
-      <div className="flex-1 w-full grid lg:grid-cols-[168px_minmax(0,1fr)] min-h-0">
-        <aside className="hidden lg:flex flex-col border-r border-white/5 py-3 px-1.5 max-h-[calc(100dvh-3.5rem)]">
-          <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 px-2 mb-1">History {userId ? "· cloud" : "· this device"}</p>
-          <div className="px-1 mb-2 relative">
-            <Search className="w-3 h-3 absolute left-2.5 top-2.5 text-zinc-500" />
-            <input value={railQuery} onChange={(e) => setRailQuery(e.target.value)} placeholder="Search" className="w-full bg-black/40 border border-white/10 rounded-md pl-7 pr-2 py-1.5 text-[11px] outline-none" />
-          </div>
-          <div className="flex-1 overflow-y-auto space-y-0.5">
-            {sessions.filter((s) => !railQuery || s.title.toLowerCase().includes(railQuery.toLowerCase()) || s.messages.some((m) => m.content.toLowerCase().includes(railQuery.toLowerCase()))).map((s) => (
-              <div key={s.id} className={`flex items-center gap-1 rounded-md px-1.5 py-1.5 text-[11px] cursor-pointer ${s.id === activeId ? "bg-orange-500/15 border border-orange-400/25" : "text-zinc-400 hover:bg-white/5"}`} onClick={() => setActiveId(s.id)}>
-                {renamingId === s.id ? (
-                  <input
-                    autoFocus
-                    value={renameVal}
-                    onChange={(e) => setRenameVal(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                    onBlur={() => void commitRename(s.id, renameVal)}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void commitRename(s.id, renameVal); } if (e.key === "Escape") setRenamingId(null); }}
-                    className="flex-1 min-w-0 bg-black/40 border border-white/20 rounded px-1 py-0.5 text-[11px] outline-none"
-                  />
-                ) : (
-                  <span
-                    className="flex-1 truncate"
-                    onDoubleClick={(e) => { e.stopPropagation(); setRenamingId(s.id); setRenameVal(s.title); }}
-                    title="Double-click to rename"
-                  >{s.title}</span>
-                )}
-                <button type="button" className="p-0.5 text-red-400" onClick={(e) => { e.stopPropagation(); void deleteChat(s.id); }}><Trash2 className="w-3 h-3" /></button>
-              </div>
-            ))}
-          </div>
+
+      <div className="flex-1 w-full grid lg:grid-cols-[260px_minmax(0,1fr)] min-h-0">
+        <aside className="hidden lg:flex flex-col border-r border-white/8 bg-black/25 py-4 px-3 max-h-[calc(100dvh-4rem)]">
+          {renderHistory()}
         </aside>
+
         <AnimatePresence>
           {sidebarOpen && (
             <>
-              <motion.button type="button" className="fixed inset-0 z-40 bg-black/60 lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSidebarOpen(false)} />
-              <motion.aside className="fixed left-0 top-0 bottom-0 z-50 w-56 bg-[#120a08] p-3 lg:hidden" initial={{ x: -240 }} animate={{ x: 0 }} exit={{ x: -240 }}>
-                <div className="flex justify-between mb-3"><span className="text-xs font-bold">History</span><button type="button" onClick={() => setSidebarOpen(false)}><X className="w-4 h-4" /></button></div>
-                {sessions.map((s) => (
-                  <button key={s.id} type="button" className="block w-full text-left text-[11px] py-1.5 truncate" onClick={() => { setActiveId(s.id); setSidebarOpen(false); }}>{s.title}</button>
-                ))}
+              <motion.button type="button" className="fixed inset-0 z-40 bg-black/70 lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSidebarOpen(false)} />
+              <motion.aside className="fixed left-0 top-0 bottom-0 z-50 w-[min(86vw,300px)] bg-[#120a08] border-r border-white/10 p-4 flex flex-col lg:hidden" initial={{ x: -300 }} animate={{ x: 0 }} exit={{ x: -300 }}>
+                <div className="flex justify-end mb-2"><button type="button" onClick={() => setSidebarOpen(false)} className={iconBtn} aria-label="Close"><X className="w-4 h-4" /></button></div>
+                {renderHistory(() => setSidebarOpen(false))}
               </motion.aside>
             </>
           )}
         </AnimatePresence>
-        <section className="flex flex-col min-h-0 min-w-0 max-h-[calc(100dvh-3.5rem)]">
-          <div className="flex-1 overflow-y-auto px-3 sm:px-8 py-6 space-y-5">
-            {(!active || active.messages.length === 0) && (
-              <div className="max-w-2xl mx-auto text-center pt-10">
-                <p className="text-lg font-semibold mb-4">Ask anything about LIT or your stack.</p>
-                <div className="grid sm:grid-cols-2 gap-2">
-                  {STARTERS.map((q) => (
-                    <button key={q} type="button" onClick={() => void send(q)} className="text-left text-sm rounded-xl border border-white/10 bg-black/20 px-4 py-3 hover:border-orange-400/40">{q}</button>
-                  ))}
+
+        <section className="flex flex-col min-h-0 min-w-0 max-h-[calc(100dvh-4rem)]">
+          <div className="flex-1 overflow-y-auto">
+            <div className="w-full max-w-[48rem] mx-auto px-4 sm:px-6 py-8 space-y-6">
+              {(!active || active.messages.length === 0) && (
+                <div className="text-center pt-8">
+                  <p className="text-xl font-semibold tracking-tight mb-2">How can Logic AI help?</p>
+                  <p className="text-sm text-zinc-500 mb-6">Packages, scoping, or general engineering questions.</p>
+                  <div className="grid sm:grid-cols-2 gap-2">
+                    {STARTERS.map((q) => (
+                      <button key={q} type="button" onClick={() => void send(q)} className="text-left text-sm rounded-2xl border border-white/10 bg-black/25 px-4 py-3 hover:border-orange-400/40">{q}</button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-            {active?.messages.map((m, i) => (
-              <div key={m.id} className={`max-w-3xl mx-auto flex gap-2 items-end group ${m.role === "user" ? "justify-end" : ""}`}>
-                {m.role === "assistant" && <div className="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-400/30 flex items-center justify-center shrink-0"><Sparkles className={`w-3.5 h-3.5 text-orange-300 ${sending && !m.content ? "animate-pulse" : ""}`} /></div>}
-                <div className={`rounded-2xl px-4 py-3 text-sm ${m.role === "user" ? "bg-[#E8651C] text-white max-w-[80%]" : "bg-black/30 border border-white/10 flex-1 min-w-0"}`}>
-                  {m.role === "assistant" ? (
-                    m.content ? <><MarkdownMessage content={m.content} /><InChatPackageCards text={m.content} />
-                      {(m.badge || (m.citations && m.citations.length > 0)) && (
-                        <div className="mt-2 flex flex-wrap gap-1.5">
-                          {m.badge === "catalog" && <span className="text-[10px] uppercase tracking-wider rounded-full border border-orange-400/30 px-2 py-0.5 text-orange-200">Prices from catalog</span>}
-                          {m.badge === "general" && <span className="text-[10px] uppercase tracking-wider rounded-full border border-white/15 px-2 py-0.5 text-zinc-400">General answer</span>}
-                          {(m.citations || []).map((c) => <span key={c} className="text-[10px] rounded-full border border-white/10 px-2 py-0.5 text-zinc-400">From {c}</span>)}
-                        </div>
-                      )}
-                    </> : sending ? (
-                      <span className="inline-flex items-center gap-2 text-zinc-400 text-xs">
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> Thinking
-                      </span>
-                    ) : null
-                  ) : m.content}
-                  {m.error && <button type="button" className="mt-2 text-xs inline-flex items-center gap-1" onClick={() => void send(lastUser?.content)}><RefreshCw className="w-3 h-3" /> Retry</button>}
-                  {m.role === "assistant" && m.content && !m.error && (
-                    <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-zinc-500">
-                      <button type="button" className="inline-flex items-center gap-1" onClick={async () => { await navigator.clipboard.writeText(m.content); setCopiedId(m.id); }}>{copiedId === m.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Copy</button>
-                      <button type="button" className="inline-flex items-center gap-1" onClick={() => speak(m.content)}><Volume2 className="w-3 h-3" /> {speaking ? "Stop" : "Listen"}</button>
-                      <button type="button" className="inline-flex items-center gap-1" onClick={() => setInput(`Regarding this:\n"""${m.content.slice(0, 600)}"""\n\n`)}><Quote className="w-3 h-3" /> Ask about this</button>
-                      {i === (active.messages.length - 1) && (
-                        <>
-                          <button type="button" onClick={() => void send(lastUser?.content || m.content, { suffix: "Rewrite shorter. Keep facts." })}>Shorter</button>
-                          <button type="button" onClick={() => void send(lastUser?.content || m.content, { suffix: "Rewrite more technical. Keep facts." })}>More technical</button>
-                        </>
-                      )}
+              )}
+              {active?.messages.map((m, i) => (
+                <div key={m.id} className={`flex gap-3 items-end ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                  {m.role === "assistant" && (
+                    <div className="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-400/30 flex items-center justify-center shrink-0 mb-1">
+                      <Sparkles className={`w-3.5 h-3.5 text-orange-300 ${sending && !m.content ? "animate-pulse" : ""}`} />
                     </div>
                   )}
+                  <div className={`rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${m.role === "user" ? "bg-[#E8651C] text-white max-w-[min(100%,34rem)]" : "bg-black/35 border border-white/10 w-full min-w-0"}`}>
+                    {m.role === "assistant" ? (
+                      m.content ? (
+                        <>
+                          <MarkdownMessage content={m.content} />
+                          <InChatPackageCards text={m.content} />
+                          {(m.badge || (m.citations && m.citations.length > 0)) && (
+                            <div className="mt-3 flex flex-wrap gap-1.5">
+                              {m.badge === "catalog" && <span className="text-[10px] uppercase tracking-wider rounded-full border border-orange-400/30 px-2 py-0.5 text-orange-200">Prices from catalog</span>}
+                              {m.badge === "general" && <span className="text-[10px] uppercase tracking-wider rounded-full border border-white/15 px-2 py-0.5 text-zinc-400">General answer</span>}
+                              {(m.citations || []).map((c) => <span key={c} className="text-[10px] rounded-full border border-white/10 px-2 py-0.5 text-zinc-400">From {c}</span>)}
+                            </div>
+                          )}
+                        </>
+                      ) : sending ? (
+                        <span className="inline-flex items-center gap-2 text-zinc-400 text-xs"><Loader2 className="w-3.5 h-3.5 animate-spin" /> Thinking</span>
+                      ) : null
+                    ) : (
+                      <span className="whitespace-pre-wrap">{m.content}</span>
+                    )}
+                    {m.error && <button type="button" className="mt-2 text-xs inline-flex items-center gap-1" onClick={() => void send(lastUser?.content)}><RefreshCw className="w-3 h-3" /> Retry</button>}
+                    {m.role === "assistant" && m.content && !m.error && (
+                      <div className="mt-3 flex flex-wrap gap-3 text-[11px] text-zinc-500">
+                        <button type="button" className="inline-flex items-center gap-1 hover:text-zinc-200" onClick={async () => { await navigator.clipboard.writeText(m.content); setCopiedId(m.id); }}>{copiedId === m.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Copy</button>
+                        <button type="button" className="inline-flex items-center gap-1 hover:text-zinc-200" onClick={() => speak(m.content)}><Volume2 className="w-3 h-3" /> {speaking ? "Stop" : "Listen"}</button>
+                        <button type="button" className="inline-flex items-center gap-1 hover:text-zinc-200" onClick={() => setInput(`Regarding this:\n"""${m.content.slice(0, 600)}"""\n\n`)}><Quote className="w-3 h-3" /> Ask about this</button>
+                        {i === (active.messages.length - 1) && (
+                          <>
+                            <button type="button" onClick={() => void send(lastUser?.content || m.content, { suffix: "Rewrite shorter. Keep facts." })}>Shorter</button>
+                            <button type="button" onClick={() => void send(lastUser?.content || m.content, { suffix: "Rewrite more technical. Keep facts." })}>More technical</button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {m.role === "user" && <SenderFace />}
                 </div>
-                {m.role === "user" && <SenderFace />}
-              </div>
-            ))}
-            {!sending && lastAssistant && (
-              <div className="max-w-3xl mx-auto flex flex-wrap gap-2 pl-10">
-                {followUps(lastAssistant.content).map((q) => (
-                  <button key={q} type="button" onClick={() => void send(q)} className="text-[11px] rounded-full border border-white/15 px-3 py-1 hover:border-orange-400/50">{q}</button>
-                ))}
-                <button type="button" onClick={() => void openTicket()} className="text-[11px] rounded-full border border-white/15 px-3 py-1">{ticketOk ? "Ticket sent" : "Talk to a human"}</button>
-              </div>
-            )}
-            <div ref={bottomRef} />
-          </div>
-          {showLead && !leadOk && (
-            <div className="px-3 sm:px-8">
-              <form
-                onSubmit={(e) => { e.preventDefault(); void submitLead(); }}
-                className="max-w-3xl mx-auto mb-2 flex flex-col sm:flex-row gap-2 rounded-xl border border-white/10 bg-black/40 px-3 py-2"
-              >
-                <p className="sm:sr-only text-[11px] text-zinc-400">The team can follow up — optional.</p>
-                <input value={leadName} onChange={(e) => setLeadName(e.target.value)} placeholder="Name" className="flex-1 bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm outline-none" />
-                <input value={leadEmail} onChange={(e) => setLeadEmail(e.target.value)} placeholder="Email" type="email" className="flex-1 bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm outline-none" />
-                <button type="submit" disabled={leadBusy} className="h-10 px-4 rounded-full bg-[#E8651C] text-[11px] font-bold uppercase tracking-wider text-white disabled:opacity-50">{leadBusy ? "Saving" : "Send"}</button>
-                <button type="button" onClick={() => setShowLead(false)} className="h-10 px-3 text-[11px] uppercase tracking-wider text-zinc-400">Not now</button>
-              </form>
-            </div>
-          )}
-          {leadOk && (
-            <p className="max-w-3xl mx-auto px-3 sm:px-8 mb-2 text-[11px] text-zinc-400">Thanks — the team will follow up within 24 hours.</p>
-          )}
-          {showDemo && (
-            <div className="px-3 sm:px-8">
-              <div className="max-w-3xl mx-auto mb-2 flex items-center justify-between gap-3 rounded-xl border border-orange-400/30 bg-orange-500/10 px-3 py-2 text-xs">
-                <span>Ready to see a scoped demo? We do not invent prices on a call.</span>
-                <Link href="/free-demo" className="shrink-0 rounded-full bg-[#E8651C] px-3 py-1 font-bold text-white">Book free demo</Link>
-              </div>
-            </div>
-          )}
-          <form onSubmit={onSubmit} className="px-3 sm:px-8 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2">
-            {attach && (
-              <div className="max-w-3xl mx-auto mb-1 flex items-center justify-between text-[11px] text-zinc-400 px-1">
-                <span>Attached: {attach.name}</span>
-                <button type="button" onClick={() => setAttach(null)}>Remove</button>
-              </div>
-            )}
-            {attachError && <p className="max-w-3xl mx-auto text-[11px] text-red-300 mb-1">{attachError}</p>}
-            {attach && /pdf/i.test(attach.type || attach.name) && <p className="max-w-3xl mx-auto text-[11px] text-zinc-500 mb-1">PDF: first ~20 pages / 8,000 characters are sent as context.</p>}
-            <div className="max-w-3xl mx-auto flex items-end gap-2 rounded-2xl border border-white/10 bg-black/40 px-3 py-2">
-              <input ref={fileRef} type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf" className="hidden" onChange={(e) => void onPickFile(e.target.files?.[0])} />
-              <button type="button" className="p-2 text-zinc-400" onClick={() => fileRef.current?.click()} aria-label="Attach"><Paperclip className="w-4 h-4" /></button>
-              <button type="button" className={`p-2 ${listening ? "text-orange-400" : "text-zinc-400"}`} onClick={toggleMic} aria-label="Voice"><Mic className="w-4 h-4" /></button>
-              <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} rows={1} placeholder={listening ? "Listening…" : "Enter prompt here…  /price  /demo  /wa"} className="flex-1 bg-transparent resize-none text-sm py-2 outline-none max-h-32" />
-              {sending ? (
-                <button type="button" onClick={() => abortRef.current?.abort()} className="p-2 rounded-full border border-white/20" aria-label="Stop"><Square className="w-3 h-3" /></button>
-              ) : (
-                <button type="submit" disabled={!input.trim() && !attach} className="p-2 rounded-full bg-[#E8651C] text-white disabled:opacity-40" aria-label="Send"><ArrowUp className="w-4 h-4" /></button>
+              ))}
+              {!sending && lastAssistant && (
+                <div className="flex flex-wrap gap-2 pl-11">
+                  {followUps(lastAssistant.content).map((q) => (
+                    <button key={q} type="button" onClick={() => void send(q)} className="text-[11px] rounded-full border border-white/12 px-3 py-1.5 hover:border-orange-400/50">{q}</button>
+                  ))}
+                  <button type="button" onClick={() => void openTicket()} className="text-[11px] rounded-full border border-white/12 px-3 py-1.5">{ticketOk ? "Ticket sent" : "Talk to a human"}</button>
+                </div>
               )}
+              <div ref={bottomRef} />
             </div>
-            <div className="sm:hidden max-w-3xl mx-auto mt-2 flex flex-wrap justify-center gap-2">
-              <button type="button" onClick={() => setMode("company")} className={`${hdrBtn} ${mode === "company" ? "bg-[#E8651C] text-white border-[#E8651C]" : ""}`}>Company</button>
-              <button type="button" onClick={() => setMode("general")} className={`${hdrBtn} ${mode === "general" ? "bg-[#E8651C] text-white border-[#E8651C]" : ""}`}>General</button>
-              <a href={waTranscript(active?.messages || [])} className={hdrBtn}>WhatsApp</a>
-              <button type="button" onClick={newChat} className={hdrBtn}>New</button>
+          </div>
+
+          <div className="border-t border-white/8 bg-black/35 backdrop-blur-xl">
+            <div className="w-full max-w-[48rem] mx-auto px-4 sm:px-6 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+              {showLead && !leadOk && (
+                <form onSubmit={(e) => { e.preventDefault(); void submitLead(); }} className="mb-3 flex flex-col sm:flex-row gap-2 rounded-2xl border border-white/10 bg-black/40 px-3 py-2">
+                  <p className="sm:sr-only text-[11px] text-zinc-400">Optional follow-up.</p>
+                  <input value={leadName} onChange={(e) => setLeadName(e.target.value)} placeholder="Name" className="flex-1 bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm outline-none" />
+                  <input value={leadEmail} onChange={(e) => setLeadEmail(e.target.value)} placeholder="Email" type="email" className="flex-1 bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm outline-none" />
+                  <button type="submit" disabled={leadBusy} className="h-10 px-4 rounded-full bg-[#E8651C] text-[11px] font-bold uppercase tracking-wider text-white disabled:opacity-50">{leadBusy ? "Saving" : "Send"}</button>
+                  <button type="button" onClick={() => setShowLead(false)} className="h-10 px-3 text-[11px] uppercase tracking-wider text-zinc-400">Not now</button>
+                </form>
+              )}
+              {leadOk && <p className="mb-2 text-[11px] text-zinc-500">Details received. We follow up within 24 hours.</p>}
+              {showDemo && (
+                <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-orange-400/30 bg-orange-500/10 px-3 py-2 text-xs">
+                  <span>Ready for a scoped demo? We do not invent prices on a call.</span>
+                  <Link href="/free-demo" className="shrink-0 rounded-full bg-[#E8651C] px-3 py-1.5 font-bold text-white uppercase tracking-wider text-[10px]">Book demo</Link>
+                </div>
+              )}
+              {attach && (
+                <div className="mb-2 flex items-center justify-between text-[11px] text-zinc-400">
+                  <span>Attached: {attach.name}{ /pdf/i.test(attach.type || attach.name) ? " · first ~20 pages" : ""}</span>
+                  <button type="button" onClick={() => setAttach(null)}>Remove</button>
+                </div>
+              )}
+              {attachError && <p className="mb-2 text-[11px] text-red-300">{attachError}</p>}
+              <form onSubmit={onSubmit} className="flex items-end gap-2 rounded-2xl border border-white/12 bg-black/50 px-2 py-2 focus-within:border-orange-400/35">
+                <input ref={fileRef} type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf" className="hidden" onChange={(e) => void onPickFile(e.target.files?.[0])} />
+                <button type="button" className="p-2.5 text-zinc-400 hover:text-white" onClick={() => fileRef.current?.click()} aria-label="Attach"><Paperclip className="w-4 h-4" /></button>
+                <button type="button" className={`p-2.5 ${listening ? "text-orange-400" : "text-zinc-400 hover:text-white"}`} onClick={toggleMic} aria-label="Voice"><Mic className="w-4 h-4" /></button>
+                <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} rows={1} placeholder={listening ? "Listening…" : "Message Logic AI"} className="flex-1 bg-transparent resize-none text-[15px] py-2.5 outline-none max-h-32" />
+                {sending ? (
+                  <button type="button" onClick={() => abortRef.current?.abort()} className="h-10 w-10 rounded-full border border-white/20 grid place-items-center" aria-label="Stop"><Square className="w-3 h-3" /></button>
+                ) : (
+                  <button type="submit" disabled={!input.trim() && !attach} className="h-10 w-10 rounded-full bg-[#E8651C] text-white grid place-items-center disabled:opacity-40" aria-label="Send"><ArrowUp className="w-4 h-4" /></button>
+                )}
+              </form>
+              <div className="md:hidden mt-2 flex justify-center gap-2">
+                <button type="button" onClick={() => setMode("company")} className={`${pillBtn} ${mode === "company" ? "bg-[#E8651C] text-white border-[#E8651C]" : ""}`}>Company</button>
+                <button type="button" onClick={() => setMode("general")} className={`${pillBtn} ${mode === "general" ? "bg-[#E8651C] text-white border-[#E8651C]" : ""}`}>General</button>
+              </div>
             </div>
-          </form>
+          </div>
         </section>
       </div>
     </div>
