@@ -91,7 +91,7 @@ function AuthContent() {
     };
   }, [router, supabase.auth]);
 
-  const handleOAuthLogin = async (provider: "google" | "github" | "twitter") => {
+  const handleOAuthLogin = async (provider: "google" | "github" | "twitter" | "x") => {
     try {
       setOauthBusy(provider);
       setServerError(null);
@@ -284,7 +284,7 @@ function AuthContent() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleOAuthLogin("twitter")}
+                  onClick={() => handleOAuthLogin("x")}
                   disabled={busy}
                   className="flex items-center justify-center gap-2 min-h-11 rounded-xl text-[13px] font-semibold bg-black hover:bg-[#141414] text-white border border-white/10 disabled:opacity-50"
                 >
