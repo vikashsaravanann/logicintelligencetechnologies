@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import { UploadCloud, File, Trash2, Loader2 } from "lucide-react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { saveClientFileMetadata } from "../actions/portal";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
+import { env } from "@/config/env";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -25,11 +26,18 @@ const itemVariants = {
 
 export function VaultTab({ files, user }: { files: any[], user: any }) {
   const [isUploading, setIsUploading] = useState(false);
-  const supabase = createClientComponentClient();
+  const supabase = createClientComponentClient({
+    supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
+    supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  });
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!user?.id) {
+      toast.error("Please sign in again.");
+      return;
+    }
 
     try {
       setIsUploading(true);

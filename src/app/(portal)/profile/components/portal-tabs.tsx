@@ -11,7 +11,14 @@ import { SupportTab } from "./support-tab";
 import { OnboardingTab } from "./onboarding-tab";
 
 interface PortalTabsProps {
-  portalData: any;
+  portalData: {
+    projects: unknown[];
+    invoices: unknown[];
+    supportTickets: unknown[];
+    clientFiles: unknown[];
+    onboarding: unknown[];
+    user: unknown;
+  } | null;
   profileDetails: {
     fullName: string;
     email: string;
@@ -22,12 +29,20 @@ interface PortalTabsProps {
 
 export function PortalTabs({ portalData, profileDetails }: PortalTabsProps) {
   const [activeTab, setActiveTab] = useState("profile");
+  const data = {
+    projects: portalData?.projects ?? [],
+    invoices: portalData?.invoices ?? [],
+    supportTickets: portalData?.supportTickets ?? [],
+    clientFiles: portalData?.clientFiles ?? [],
+    onboarding: portalData?.onboarding ?? [],
+    user: portalData?.user ?? null,
+  };
 
   const tabs = [
-    { id: "profile", label: "My Details", icon: User },
+    { id: "profile", label: "Details", icon: User },
     { id: "projects", label: "Projects", icon: Briefcase },
     { id: "billing", label: "Billing", icon: Receipt },
-    { id: "vault", label: "Document Vault", icon: Shield },
+    { id: "vault", label: "Vault", icon: Shield },
     { id: "support", label: "Support", icon: MessageSquare },
     { id: "onboarding", label: "Onboarding", icon: ClipboardList },
   ];
@@ -36,7 +51,7 @@ export function PortalTabs({ portalData, profileDetails }: PortalTabsProps) {
     switch (activeTab) {
       case "profile":
         return (
-          <ProfileForm 
+          <ProfileForm
             initialFullName={profileDetails.fullName}
             email={profileDetails.email}
             initialCompanyName={profileDetails.companyName}
@@ -44,57 +59,52 @@ export function PortalTabs({ portalData, profileDetails }: PortalTabsProps) {
           />
         );
       case "projects":
-        return <ProjectsTab projects={portalData.projects} />;
+        return <ProjectsTab projects={data.projects} />;
       case "billing":
-        return <BillingTab invoices={portalData.invoices} />;
+        return <BillingTab invoices={data.invoices} />;
       case "vault":
-        return <VaultTab files={portalData.clientFiles} user={portalData.user} />;
+        return <VaultTab files={data.clientFiles} user={data.user} />;
       case "support":
-        return <SupportTab tickets={portalData.supportTickets} />;
+        return <SupportTab tickets={data.supportTickets} />;
       case "onboarding":
-        return <OnboardingTab onboarding={portalData.onboarding} />;
+        return <OnboardingTab onboarding={data.onboarding} />;
       default:
         return null;
     }
   };
 
   return (
-    <div className="flex flex-col items-center gap-6 md:p-10 w-full max-w-4xl mx-auto mt-6">
-      {/* Horizontal Navigation */}
-      <div className="w-full">
-        <div className="bg-[rgba(10,15,30,0.6)] border border-white/[0.08] rounded-2xl p-2 backdrop-blur-2xl shadow-xl">
-          <nav className="flex flex-wrap gap-2 justify-center">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center justify-center gap-2 px-5 py-4 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${
-                    isActive 
-                      ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-[0_0_15px_rgba(0,191,255,0.4)]" 
-                      : "text-zinc-400 hover:bg-white/5 hover:text-white border border-transparent"
-                  }`}
-                >
-                  <Icon className="w-4 h-4 shrink-0" />
-                  <span className="inline">{tab.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-      </div>
+    <div className="flex flex-col gap-4 w-full">
+      <nav className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 p-2 rounded-2xl border border-white/12 bg-white/[0.04] backdrop-blur-xl">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center justify-center gap-2 min-h-11 px-2 rounded-xl text-[12px] font-semibold transition-all ${
+                isActive
+                  ? "bg-gradient-to-r from-cyan-300 to-sky-400 text-[#041018]"
+                  : "text-zinc-400 hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              <Icon className="w-4 h-4 shrink-0" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </nav>
 
-      {/* Centered Main Content Area */}
-      <div className="w-full min-w-0">
+      <div className="w-full min-w-0 min-h-[360px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 15, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -15, scale: 0.98 }}
-            transition={{ duration: 0.3, type: "spring", stiffness: 200, damping: 20 }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18 }}
           >
             {renderTabContent()}
           </motion.div>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { MessageSquare, Send, Loader2 } from "lucide-react";
 import { createSupportTicket } from "../actions/portal";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -23,6 +23,7 @@ const itemVariants = {
 };
 
 export function SupportTab({ tickets }: { tickets: any[] }) {
+  const list = tickets ?? [];
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (formData: FormData) => {
@@ -31,7 +32,7 @@ export function SupportTab({ tickets }: { tickets: any[] }) {
     setIsLoading(false);
 
     if (result.success) {
-      toast.success("Support ticket created!");
+      toast.success("Support ticket created.");
       (document.getElementById("ticket-form") as HTMLFormElement)?.reset();
     } else {
       toast.error(result.error || "Failed to create ticket");
@@ -39,11 +40,11 @@ export function SupportTab({ tickets }: { tickets: any[] }) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
       {/* Create Ticket Form */}
       <motion.div 
         initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, ease: "easeOut" }}
-        className="p-8 rounded-3xl border border-white/[0.08] bg-[rgba(10,15,30,0.6)] backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5),inset_0_0_80px_rgba(255,255,255,0.02)]"
+        className="h-full min-h-[360px] p-6 rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-xl"
       >
         <h3 className="text-2xl font-bold text-white mb-6 tracking-tight">Create a Ticket</h3>
         <form id="ticket-form" action={handleSubmit} className="space-y-5">
@@ -80,10 +81,10 @@ export function SupportTab({ tickets }: { tickets: any[] }) {
       {/* Ticket History */}
       <motion.div 
         initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-        className="p-8 rounded-3xl border border-white/[0.08] bg-[rgba(10,15,30,0.6)] backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5),inset_0_0_80px_rgba(255,255,255,0.02)] flex flex-col"
+        className="h-full min-h-[360px] p-6 rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-xl flex flex-col"
       >
         <h3 className="text-2xl font-bold text-white mb-6 tracking-tight">Previous Tickets</h3>
-        {tickets.length === 0 ? (
+        {list.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center p-8 border border-white/5 bg-white/[0.02] rounded-2xl text-center">
             <MessageSquare className="w-10 h-10 text-white/10 mx-auto mb-4" />
             <p className="text-zinc-500 text-sm">No support tickets found.</p>
@@ -95,7 +96,7 @@ export function SupportTab({ tickets }: { tickets: any[] }) {
             animate="visible"
             className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar flex-1"
           >
-            {tickets.map((ticket) => (
+            {list.map((ticket) => (
               <motion.div key={ticket.id} variants={itemVariants} className="p-5 rounded-2xl border border-white/[0.05] bg-black/20 hover:bg-black/40 transition-colors">
                 <div className="flex justify-between items-start mb-3 gap-4">
                   <h4 className="text-white font-bold tracking-tight">{ticket.subject}</h4>

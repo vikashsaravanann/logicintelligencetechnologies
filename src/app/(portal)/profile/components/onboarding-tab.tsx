@@ -4,12 +4,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { ClipboardList, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { submitOnboardingForm } from "../actions/portal";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 export function OnboardingTab({ onboarding }: { onboarding: any[] }) {
   const [isLoading, setIsLoading] = useState(false);
   
-  const hasSubmitted = onboarding.length > 0;
+  const hasSubmitted = Array.isArray(onboarding) && onboarding.length > 0;
 
   const handleSubmit = async (formData: FormData) => {
     setIsLoading(true);
@@ -55,7 +55,7 @@ export function OnboardingTab({ onboarding }: { onboarding: any[] }) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: "easeOut" }}
-      className="p-8 md:p-6 md:p-10 rounded-3xl border border-white/[0.08] bg-[rgba(10,15,30,0.6)] backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5),inset_0_0_80px_rgba(255,255,255,0.02)] max-w-3xl mx-auto"
+      className="p-6 sm:p-8 rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-xl w-full"
     >
       <div className="mb-8 flex items-start gap-4 border-b border-white/5 pb-6">
         <div className="p-3 bg-blue-500/10 text-cyan-400 rounded-xl shadow-inner">

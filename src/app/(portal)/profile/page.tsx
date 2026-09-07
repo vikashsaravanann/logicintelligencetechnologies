@@ -6,6 +6,7 @@ import { env } from "@/config/env";
 import { getUserPortalData } from "./actions/portal";
 import { PortalTabs } from "./components/portal-tabs";
 import { Building2, Mail, Phone } from "lucide-react";
+import { COMPANY } from "@/config/company";
 
 export const dynamic = "force-dynamic";
 
@@ -33,12 +34,18 @@ export default async function ProfilePage() {
     .eq("id", session.user.id)
     .maybeSingle();
 
-  const portalData = await getUserPortalData();
+  const portalData = (await getUserPortalData()) ?? {
+    projects: [],
+    invoices: [],
+    supportTickets: [],
+    clientFiles: [],
+    onboarding: [],
+    user: session.user,
+  };
 
   const user = session.user;
   const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
-  const fullName =
-    profile?.full_name || user.user_metadata?.full_name || "";
+  const fullName = profile?.full_name || user.user_metadata?.full_name || "";
 
   const profileDetails = {
     fullName,
@@ -47,22 +54,34 @@ export default async function ProfilePage() {
     phoneNumber: profile?.phone_number || "",
   };
 
-  const initial = (
-    fullName?.charAt(0) ||
-    user.email?.charAt(0) ||
-    "U"
-  ).toUpperCase();
+  const initial = (fullName?.charAt(0) || user.email?.charAt(0) || "U").toUpperCase();
+
+  const stats = [
+    { k: "Projects", v: String(portalData.projects.length) },
+    { k: "Invoices", v: String(portalData.invoices.length) },
+    { k: "Tickets", v: String(portalData.supportTickets.length) },
+    { k: "Files", v: String(portalData.clientFiles.length) },
+  ];
 
   return (
-    <div className="min-h-screen bg-[#0A0F1E] text-white relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(0,191,255,0.08),_transparent_55%)]" />
+    <div className="min-h-screen bg-[#050814] text-white relative overflow-x-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-32 left-1/4 w-[420px] h-[420px] rounded-full bg-cyan-500/10 blur-[120px]" />
+        <div
+          className="absolute inset-0 opacity-[0.16]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(14,165,233,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(14,165,233,0.08) 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
+          }}
+        />
+      </div>
       <BackToHome />
 
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-4">
-        {/* Profile header card */}
-        <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 sm:p-8 mb-8 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-2 border-primary/40 bg-primary/10 flex items-center justify-center text-3xl font-black text-primary shrink-0 shadow-[0_0_30px_rgba(0,191,255,0.2)]">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pb-16 pt-2">
+        <div className="rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-[24px] p-5 sm:p-7 mb-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_20px_60px_rgba(0,0,0,0.35)]">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-white/20 bg-white shrink-0 mx-auto sm:mx-0">
               {avatarUrl ? (
                 <img
                   src={avatarUrl}
@@ -70,40 +89,50 @@ export default async function ProfilePage() {
                   className="w-full h-full object-cover object-center"
                 />
               ) : (
-                initial
+                <span className="w-full h-full flex items-center justify-center text-2xl font-black text-[#041018] bg-gradient-to-br from-cyan-300 to-sky-400">
+                  {initial}
+                </span>
               )}
             </div>
 
             <div className="flex-1 text-center sm:text-left min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-2">
-                Client portal
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 mb-1">
+                {COMPANY.displayName.toUpperCase()} · CLIENT PORTAL
               </p>
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight truncate">
+              <h1 className="text-2xl sm:text-[1.85rem] font-semibold tracking-tight truncate">
                 {fullName || "Your profile"}
               </h1>
-              <div className="mt-3 flex flex-col sm:flex-row sm:flex-wrap items-center sm:items-start gap-2 sm:gap-4 text-sm text-zinc-400">
+              <div className="mt-2 flex flex-col sm:flex-row sm:flex-wrap items-center sm:items-center gap-2 sm:gap-4 text-[13px] text-zinc-400">
                 <span className="inline-flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-primary/80" />
+                  <Mail className="w-3.5 h-3.5 text-cyan-400/80" />
                   {user.email}
                 </span>
                 {profileDetails.companyName ? (
                   <span className="inline-flex items-center gap-1.5">
-                    <Building2 className="w-3.5 h-3.5 text-primary/80" />
+                    <Building2 className="w-3.5 h-3.5 text-cyan-400/80" />
                     {profileDetails.companyName}
                   </span>
                 ) : null}
                 {profileDetails.phoneNumber ? (
                   <span className="inline-flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5 text-primary/80" />
+                    <Phone className="w-3.5 h-3.5 text-cyan-400/80" />
                     {profileDetails.phoneNumber}
                   </span>
                 ) : null}
               </div>
-              <p className="text-zinc-500 mt-3 text-xs sm:text-sm max-w-xl">
-                Manage account details, projects, billing, and support for Logic
-                Intelligence Technologies.
-              </p>
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-6">
+            {stats.map((s) => (
+              <div
+                key={s.k}
+                className="rounded-2xl border border-white/12 bg-white/[0.04] px-3 py-3 text-center min-h-[72px] flex flex-col items-center justify-center"
+              >
+                <p className="text-xl font-black tracking-tight">{s.v}</p>
+                <p className="text-[10px] uppercase tracking-widest text-zinc-500 mt-1">{s.k}</p>
+              </div>
+            ))}
           </div>
         </div>
 

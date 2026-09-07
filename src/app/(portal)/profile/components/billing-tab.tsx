@@ -24,7 +24,7 @@ export function BillingTab({ invoices }: { invoices: any[] }) {
     return (
       <motion.div 
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col items-center justify-center p-16 text-center border rounded-3xl bg-[rgba(10,15,30,0.6)] border-white/[0.08] backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5),inset_0_0_80px_rgba(255,255,255,0.02)]"
+        className="flex flex-col items-center justify-center min-h-[320px] p-10 text-center border rounded-3xl bg-white/[0.05] border-white/15 backdrop-blur-xl"
       >
         <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(0,191,255,0.2)]">
           <Receipt className="w-10 h-10 text-cyan-400" />
