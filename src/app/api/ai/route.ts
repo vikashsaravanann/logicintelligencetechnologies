@@ -46,22 +46,12 @@ function getLocalFallbackReply(userText: string): string {
   return `I'm LOGIC AI from ${COMPANY.displayName}. Ask about packages, services, or scoping — or WhatsApp **${COMPANY.phone}**.`;
 }
 
-function buildSystemPrompt(knowledge: string, memoryContext?: string): string {
-  return `You are LOGIC AI for ${COMPANY.displayName} (${COMPANY.tagline}). You are both a company expert and a capable general-purpose assistant: answer any visitor question accurately and professionally, including topics unrelated to the company.
-
-You can write production code when asked (Next.js, React, Tailwind, Python) using Markdown code blocks.
-You answer company questions strictly from verified facts below — never contradict PRICE-CONSTRAINED facts.
-
-${knowledge}
-
-${memoryContext || ""}
-
-GUIDELINES:
-1. Helpful, confident, professional.
-2. Never invent prices, rankings, or impossible timelines.
-3. Use tools: capture_lead (name+email), lookup_lead_status, save_memory (logged-in only).
-4. For custom enterprise work, offer WhatsApp (${COMPANY.phone}) or email (${COMPANY.email}).
-`;
+function buildSystemPrompt(knowledge: string, memoryContext?: string, mode: "company" | "general" = "company"): string {
+  const modeBlock =
+    mode === "general"
+      ? "MODE: GENERAL. Answer like a capable general-purpose assistant. Use company facts and PRICE-CONSTRAINED numbers only when the visitor asks about LIT, packages, or services."
+      : "MODE: COMPANY. Prefer verified company facts and PRICE-CONSTRAINED numbers. Still answer general questions accurately if asked.";
+  return `You are LOGIC AI for ${COMPANY.displayName} (${COMPANY.tagline}). You are both a company expert and a capable general-purpose assistant: answer any visitor question accurately and professionally, including topics unrelated to the company.\n\n${modeBlock}\n\nYou can write production code when asked (Next.js, React, Tailwind, Python) using Markdown code blocks.\nYou answer company questions strictly from verified facts below — never contradict PRICE-CONSTRAINED facts.\n\n${knowledge}\n\n${memoryContext || ""}\n\nGUIDELINES:\n1. Helpful, confident, professional.\n2. Never invent prices, rankings, or impossible timelines.\n3. Use tools: capture_lead (name+email), lookup_lead_status, save_memory (logged-in only).\n4. For custom enterprise work, offer WhatsApp (${COMPANY.phone}) or email (${COMPANY.email}).\n`;
 }
 
 function cleanedContent(rawText: string): string {
@@ -108,7 +98,8 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { text, message, file, max_tokens, chat_id, history, stream } = body;
+    const { text, message, file, max_tokens, chat_id, history, stream, mode: rawMode } = body;
+    const mode: "company" | "general" = rawMode === "general" ? "general" : "company";
     userText =
       (typeof text === "string" && text) ||
       (typeof message === "string" && message) ||
@@ -148,7 +139,10 @@ export async function POST(request: Request) {
       injectedContext = `\n\nUploaded File (${file.name || "file"}):\n"""\n${(file.data as string).slice(0, 8000)}\n"""`;
     }
 
-    const { block: knowledgeBlock } = await buildQueryGroundedKnowledge(userText);
+    const { block: knowledgeBlock } =
+      mode === "general" && !/lit|logic intelligence|package|price|₹|demo/i.test(userText)
+        ? { block: "(General mode — skip catalog unless asked.)" }
+        : await buildQueryGroundedKnowledge(userText);
 
     const historyMsgs = Array.isArray(history)
       ? history
@@ -166,13 +160,12 @@ export async function POST(request: Request) {
     const conversation: Array<Record<string, unknown>> = [
       {
         role: "system",
-        content: `${buildSystemPrompt(knowledgeBlock, memoryContext)}\n${injectedContext}`,
+        content: `${buildSystemPrompt(knowledgeBlock, memoryContext, mode)}\n${injectedContext}`,
       },
       ...historyMsgs,
       { role: "user", content: userText },
     ];
 
-    // Streaming path (no tools — fastest UX for /ai page)
     if (wantStream && hasAnyProvider()) {
       const encoder = new TextEncoder();
       let full = "";
@@ -229,7 +222,6 @@ export async function POST(request: Request) {
       });
     }
 
-    // Parallel Groq + xAI when configured
     if (hasAnyProvider()) {
       try {
         const dual = await completeWithProviders(conversation as any, {
@@ -258,7 +250,7 @@ export async function POST(request: Request) {
               faithfulness: estimateFaithfulness(userText, reply),
               used_fallback: false,
               model: modelName,
-              meta: { provider: dual.provider },
+              meta: { provider: dual.provider, mode },
             });
             return NextResponse.json({
               success: true,
@@ -460,7 +452,7 @@ export async function POST(request: Request) {
       faithfulness,
       used_fallback: usedFallback,
       model: modelName,
-      meta: { has_file: Boolean(file), tool_calls: toolCalls },
+      meta: { has_file: Boolean(file), tool_calls: toolCalls, mode },
     });
 
     return NextResponse.json({
