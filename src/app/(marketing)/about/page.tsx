@@ -128,7 +128,9 @@ export default function AboutPage() {
               key={item.label}
               className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-5 text-center"
             >
-              <p className="text-lg sm:text-xl font-black text-white">{item.value}</p>
+              <p className="text-lg sm:text-xl font-black text-white uppercase tracking-wide">
+                {item.value}
+              </p>
               <p className="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-widest mt-1 font-semibold">
                 {item.label}
               </p>
@@ -140,29 +142,28 @@ export default function AboutPage() {
       {/* Founder */}
       <section className="py-12 sm:py-16 px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 p-6 sm:p-10 md:p-12">
-          <div className="grid md:grid-cols-3 gap-8 md:gap-10 items-center">
-            <div className="flex flex-col items-center md:items-start gap-4">
-              <div className="w-36 h-36 rounded-2xl overflow-hidden border-2 border-primary/30 bg-zinc-800 shrink-0 shadow-[0_0_30px_rgba(0,191,255,0.15)]">
+          <div className="grid lg:grid-cols-[minmax(220px,340px)_1fr] gap-10 lg:gap-14 items-start">
+            <div className="flex flex-col items-center lg:items-stretch gap-5">
+              <div className="w-full max-w-[340px] rounded-3xl overflow-hidden border-2 border-primary/30 bg-[#070b16] shadow-[0_0_40px_rgba(0,191,255,0.12)]">
                 <img
                   src={COMPANY.founder.photoPath}
                   alt={`${COMPANY.founder.name} — ${COMPANY.founder.title}`}
-                  className="w-full h-full object-contain bg-[#0A0F1E]"
-                  style={{ objectPosition: "center center" }}
+                  className="w-full h-auto object-contain object-top block"
                 />
               </div>
-              <div className="text-center md:text-left">
-                <h2 className="text-2xl font-black text-white">
+              <div className="text-center lg:text-left">
+                <h2 className="text-2xl sm:text-3xl font-black text-white">
                   {COMPANY.founder.name}
                 </h2>
                 <p className="text-primary font-bold text-sm uppercase tracking-widest mt-1">
-                  {COMPANY.founder.title}
+                  {COMPANY.founder.title} · {COMPANY.entityLabel}
                 </p>
-                <p className="text-zinc-500 text-xs mt-2 flex items-center justify-center md:justify-start gap-1.5">
+                <p className="text-zinc-500 text-xs mt-2 flex items-center justify-center lg:justify-start gap-1.5">
                   <MapPin className="w-3.5 h-3.5" />
                   {COMPANY.address}
                 </p>
               </div>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2">
                 <a
                   href={COMPANY.linkedinUrl}
                   target="_blank"
@@ -188,18 +189,57 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="md:col-span-2 space-y-5">
+            <div className="space-y-6">
               <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-primary bg-primary/10 border border-primary/20">
-                Founder&apos;s note
+                Founder's note
               </span>
-              <blockquote className="text-base sm:text-lg text-zinc-300 leading-relaxed border-l-2 border-primary/40 pl-4">
-                {COMPANY.founder.bio}
+              <blockquote className="text-base sm:text-lg text-zinc-200 leading-relaxed border-l-2 border-primary/40 pl-4">
+                I started Logic Intelligence Technologies to close the gap between
+                classroom AI and software that businesses can actually run —
+                priced in the open, demoed before payment, and built to last after
+                launch.
               </blockquote>
-              <p className="text-sm text-zinc-500 leading-relaxed">
-                The studio exists for founders and operators who need dependable
-                engineering — not slide decks. Every engagement starts with clear
-                scope, honest timelines, and a path to a working product.
-              </p>
+              <div className="space-y-4 text-sm sm:text-[15px] text-zinc-400 leading-relaxed">
+                <p>
+                  I am a B.Tech student in Artificial Intelligence and Data Science
+                  at Rathinam Technical Campus, Coimbatore, and a Microsoft Student
+                  Campus Ambassador. Day to day I lead LIT as a technology startup:
+                  full-stack product work (React, Next.js, FastAPI, Python) and
+                  production AI — LoRA / QLoRA fine-tuning, local RAG pipelines,
+                  and assistants that sit on real company data instead of generic
+                  chat.
+                </p>
+                <p>
+                  The studio exists for founders and operators who need dependable
+                  engineering, not slide decks. Every engagement starts with a
+                  written scope, an honest timeline, and a path to a working
+                  product. Clients see direction in a free demo before they pay.
+                </p>
+                <p>
+                  We ship Digital Launch, Business Pro, and Enterprise packs from
+                  Coimbatore to teams across India — websites, commerce, internal
+                  tools, and AI systems — with source-code ownership on full
+                  payment and support that continues after go-live.
+                </p>
+              </div>
+              <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                {[
+                  ["Education", "B.Tech AI & Data Science, Rathinam Technical Campus"],
+                  ["Role", "Founder, Logic Intelligence Technologies"],
+                  ["Campus", "Microsoft Student Campus Ambassador"],
+                  ["Focus", "Full-stack products · RAG · LLM fine-tuning"],
+                ].map(([k, v]) => (
+                  <div
+                    key={k}
+                    className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3"
+                  >
+                    <dt className="text-[10px] font-bold uppercase tracking-widest text-primary mb-1">
+                      {k}
+                    </dt>
+                    <dd className="text-sm text-zinc-200">{v}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
           </div>
         </div>
