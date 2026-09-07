@@ -20,6 +20,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             <Link href="/admin" className="text-neutral-300 hover:text-white transition-colors">
               Dashboard
             </Link>
+            <Link href="/admin/ai-leads" className="text-neutral-300 hover:text-white transition-colors">
+              AI leads
+            </Link>
             <Link href="/" className="text-neutral-400 hover:text-white transition-colors">
               Exit to Site
             </Link>
