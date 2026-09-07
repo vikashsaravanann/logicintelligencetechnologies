@@ -130,7 +130,7 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Links */}
-            <div className="hidden lg:flex flex-1 items-center justify-center gap-3 min-w-0">
+            <div className="hidden lg:flex flex-1 items-center justify-center gap-2 xl:gap-3 min-w-0">
               <NavLink href="/">HOME</NavLink>
               <NavLink href="/ai">AI</NavLink>
               <NavLink href="/#services">SERVICES</NavLink>
@@ -159,6 +159,7 @@ export default function Navbar() {
               <NavLink href="/blog">BLOG</NavLink>
               <NavLink href="/jobs">JOBS</NavLink>
               <NavLink href="/checklist">CHECKLIST</NavLink>
+              <NavLink href="/discovery">DISCOVERY</NavLink>
             </div>
 
             {/* CTA & Mobile Toggle */}
