@@ -19,16 +19,16 @@ export function InChatPackageCards({ text }: { text: string }) {
   return (
     <div className="mt-3 grid gap-2 sm:grid-cols-2">
       {packs.map((p) => (
-        <Link
-          key={p.id}
-          href={`/packages/${p.slug}`}
-          className="block rounded-xl border border-orange-400/25 bg-black/40 px-3 py-3 hover:border-orange-400/60"
-        >
+        <div key={p.id} className="rounded-xl border border-orange-400/25 bg-black/40 px-3 py-3">
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-orange-300">Package</p>
           <p className="mt-1 text-sm font-semibold text-white">{p.title}</p>
           <p className="mt-0.5 text-xs text-[#E8651C] font-bold">{p.price}</p>
           <p className="mt-1 text-[11px] text-zinc-400 line-clamp-2">{p.subtitle}</p>
-        </Link>
+          <div className="mt-3 flex gap-2">
+            <Link href={`/packages/${p.slug}`} className="text-[10px] font-bold uppercase tracking-wider rounded-full border border-white/15 px-3 py-1.5 hover:bg-white/10">Details</Link>
+            <Link href={`/free-demo?pack=${p.slug}`} className="text-[10px] font-bold uppercase tracking-wider rounded-full bg-[#E8651C] px-3 py-1.5 text-white">Book demo</Link>
+          </div>
+        </div>
       ))}
     </div>
   );
