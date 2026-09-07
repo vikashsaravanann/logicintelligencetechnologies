@@ -5,9 +5,15 @@ import { sendLoginNotification } from "@/lib/email/send-login-notification";
 import { ensureWelcomeEmail } from "@/lib/email/send-welcome";
 import { env } from "@/config/env";
 
+function safeNext(raw: string | null): string {
+  if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
+  return "/dashboard";
+}
+
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
+  const next = safeNext(requestUrl.searchParams.get("next"));
 
   if (code) {
     const cookieStore = await cookies();
@@ -20,9 +26,8 @@ export async function GET(request: Request) {
     );
     try {
       const { data: { session } } = await supabase.auth.exchangeCodeForSession(code);
-      
+
       if (session?.user?.email) {
-        // First login (OAuth or confirmed email) -> ensure Welcome email (idempotent)
         try {
           await ensureWelcomeEmail({
             userId: session.user.id,
@@ -40,12 +45,17 @@ export async function GET(request: Request) {
           console.error("[Email Error] Welcome email failed:", welcomeErr);
         }
 
-        // Send Login Notification on successful OAuth login
         const emailResult = await sendLoginNotification(session.user.email, request.headers);
-        
         if (!emailResult.success) {
           console.error("[Email Error] Login notification failed:", emailResult.message);
         }
+
+        const email = session.user.email;
+        const dest =
+          next === "/dashboard" && !email.endsWith("@logicintelligencetechnologies.in")
+            ? "/profile"
+            : next;
+        return NextResponse.redirect(new URL(dest, request.url));
       }
     } catch (error: any) {
       console.error('Auth callback error:', error);
@@ -53,5 +63,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(new URL('/dashboard', request.url));
+  return NextResponse.redirect(new URL(next, request.url));
 }
