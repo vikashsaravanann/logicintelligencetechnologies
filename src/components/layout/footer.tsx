@@ -227,6 +227,16 @@ export default function Footer() {
           </a>
         </div>
 
+        {/* Founder portfolio — last nav item */}
+        <div className="flex justify-center mb-10">
+          <Link
+            href="/vikashs-portfolio"
+            className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-primary transition-colors"
+          >
+            Vikash&apos;s Portfolio
+          </Link>
+        </div>
+
         {/* Bottom Banner */}
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">

@@ -188,7 +188,7 @@ export function formatRetrievedContext(chunks: KnowledgeChunk[]): string {
 
 /**
  * Dense embedding for hybrid RAG.
- * Priority: Groq nomic-embed-text-v1_5 (768-d) → xAI embedding models → OpenAI (if 768-d compatible only skipped).
+ * Priority: xAI/Grok embeddings → Groq nomic-embed-text-v1_5 (768-d). OpenAI removed.
  * Schema is vector(768). FTS still works when all providers fail.
  */
 type EmbedProvider = {
@@ -200,14 +200,7 @@ type EmbedProvider = {
 
 function embedProviders(): EmbedProvider[] {
   const list: EmbedProvider[] = [];
-  if (process.env.GROQ_API_KEY) {
-    list.push({
-      name: "groq",
-      url: "https://api.groq.com/openai/v1/embeddings",
-      key: process.env.GROQ_API_KEY,
-      model: process.env.GROQ_EMBEDDING_MODEL || "nomic-embed-text-v1_5",
-    });
-  }
+  // Prefer xAI/Grok embeddings when configured
   const xaiKey = process.env.XAI_API_KEY || process.env.GROK_API_KEY;
   if (xaiKey) {
     list.push({
@@ -217,13 +210,12 @@ function embedProviders(): EmbedProvider[] {
       model: process.env.XAI_EMBEDDING_MODEL || "grok-embedding-small",
     });
   }
-  // OpenAI text-embedding-3-small is 1536-d — incompatible with vector(768). Skip unless forced.
-  if (process.env.OPENAI_API_KEY && process.env.EMBEDDING_ALLOW_OPENAI_768 === "true") {
+  if (process.env.GROQ_API_KEY) {
     list.push({
-      name: "openai",
-      url: "https://api.openai.com/v1/embeddings",
-      key: process.env.OPENAI_API_KEY,
-      model: process.env.OPENAI_EMBEDDING_MODEL || "text-embedding-3-small",
+      name: "groq",
+      url: "https://api.groq.com/openai/v1/embeddings",
+      key: process.env.GROQ_API_KEY,
+      model: process.env.GROQ_EMBEDDING_MODEL || "nomic-embed-text-v1_5",
     });
   }
   return list;

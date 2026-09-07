@@ -93,6 +93,8 @@ function buildProviders(): ProviderConfig[] {
     });
   }
 
+  // Prefer xAI first when both present
+  list.sort((a, b) => (a.id === "xai" ? -1 : b.id === "xai" ? 1 : 0));
   return list.filter((p) => Boolean(p.apiKey));
 }
 

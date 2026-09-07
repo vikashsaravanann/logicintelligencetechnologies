@@ -147,7 +147,7 @@ export default function AboutPage() {
                   src={COMPANY.founder.photoPath}
                   alt={`${COMPANY.founder.name} — ${COMPANY.founder.title}`}
                   className="w-full h-full object-cover"
-                  style={{ objectPosition: "center bottom" }}
+                  style={{ objectPosition: "center 35%" }}
                 />
               </div>
               <div className="text-center md:text-left">
