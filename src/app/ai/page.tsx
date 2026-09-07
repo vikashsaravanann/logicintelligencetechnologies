@@ -9,6 +9,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { COMPANY } from "@/config/company";
 import { MarkdownMessage } from "@/components/ai/markdown-message";
 import { InChatPackageCards } from "@/components/ai/package-cards";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 type Role = "user" | "assistant";
 type Mode = "company" | "general";
@@ -47,7 +48,7 @@ const LAND_NAV: Array<[string, string]> = [
   ["BLOG", "/blog"],
   ["CONTACT US", "/contact"],
 ];
-const glow = "radial-gradient(ellipse 70% 45% at 50% 115%, rgba(255,110,40,0.55), transparent 60%), radial-gradient(ellipse 40% 30% at 20% 100%, rgba(180,40,10,0.25), transparent), #0a0604";
+const glow = "var(--ai-glow)";
 const WA = `https://wa.me/${COMPANY.whatsappNumber}?text=${encodeURIComponent("Hi LIT — chatting on Logic AI.")}`;
 
 function uid() {
@@ -518,7 +519,7 @@ export default function AiChatPage() {
 
   if (landed) {
     return (
-      <div className="min-h-[100dvh] text-[#F3EDE4] relative overflow-hidden" style={{ background: glow }}>
+      <div className="min-h-[100dvh] text-[color:var(--ai-ink)] relative overflow-hidden" style={{ background: glow }}>
         <style>{`@keyframes lit-marquee{from{transform:translate3d(-50%,0,0)}to{transform:translate3d(0,0,0)}}.lit-ticker{animation:lit-marquee 5s linear infinite;will-change:transform}@media (prefers-reduced-motion:reduce){.lit-ticker{animation:lit-marquee 5s linear infinite!important;animation-iteration-count:infinite!important}}`}</style>
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42vh] bg-gradient-to-t from-orange-600/40 via-orange-500/10 to-transparent blur-2xl" />
         <header className="relative z-30 grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-3 px-4 sm:px-8 py-5">
@@ -532,6 +533,7 @@ export default function AiChatPage() {
             ))}
           </nav>
           <div className="justify-self-end flex items-center gap-2 max-w-[62vw] sm:max-w-none overflow-x-auto no-scrollbar">
+            <ThemeToggle />
             <Link href="/contact" className="hidden md:inline-flex rounded-full border border-white/15 bg-black/30 px-4 py-2 text-[11px] font-semibold tracking-[0.14em] uppercase whitespace-nowrap">CONTACT US</Link>
             <button type="button" onClick={() => setLandMenu((v) => !v)} className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-full border border-white/15 bg-black/30" aria-expanded={landMenu} aria-label={landMenu ? "Close menu" : "Open menu"}>
               {landMenu ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -549,8 +551,8 @@ export default function AiChatPage() {
         )}
         <main className="relative z-10 flex flex-col items-center text-center px-6 pt-16 sm:pt-24 pb-28">
           <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/35 px-3 py-1 text-xs mb-8"><Sparkles className="w-3.5 h-3.5 text-orange-300" /> Logic AI</p>
-          <h1 className="max-w-5xl font-serif text-[2.4rem] sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-[#F6EFE6]">The fastest way<br /> to Build and Grow<br /> your Website.</h1>
-          <p className="mt-6 max-w-xl text-sm sm:text-base text-[#C9BDB0] leading-relaxed">Logic Intelligence Technologies helps businesses build stunning websites and scale their online presence with AI-powered tools for design, automation, and growth.</p>
+          <h1 className="max-w-5xl font-serif text-[2.4rem] sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-[color:var(--ai-ink)]">The fastest way<br /> to Build and Grow<br /> your Website.</h1>
+          <p className="mt-6 max-w-xl text-sm sm:text-base text-[color:var(--ai-muted)] leading-relaxed">Logic Intelligence Technologies helps businesses build stunning websites and scale their online presence with AI-powered tools for design, automation, and growth.</p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <button type="button" onClick={() => setLanded(false)} className="inline-flex items-center gap-2 rounded-full bg-[#E8651C] px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(232,101,28,0.35)] hover:brightness-110">Get Started <ArrowRight className="w-4 h-4" /></button>
             <Link href="/ai-assistant" className="rounded-full border border-white/15 bg-black/25 px-6 py-3 text-sm">Learn More</Link>
@@ -615,8 +617,8 @@ export default function AiChatPage() {
     );
 
   return (
-    <div className="min-h-[100dvh] text-[#F3EDE4] flex flex-col" style={{ background: glow }}>
-      <header className="sticky top-0 z-30 border-b border-white/8 bg-black/55 backdrop-blur-xl">
+    <div className="min-h-[100dvh] text-[color:var(--ai-ink)] flex flex-col" style={{ background: glow }}>
+      <header className="sticky top-0 z-30 border-b border-[color:var(--ai-border)] bg-[color:var(--ai-header)] backdrop-blur-xl">
         <div className="h-16 px-3 sm:px-5 grid grid-cols-[minmax(0,1fr)_auto] xl:grid-cols-[minmax(220px,1fr)_auto_minmax(220px,1fr)] items-center gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
             <button type="button" className="lg:hidden h-9 w-9 rounded-full border border-white/12 grid place-items-center" onClick={() => setSidebarOpen(true)} aria-label="Open history"><Menu className="w-4 h-4" /></button>
@@ -637,6 +639,7 @@ export default function AiChatPage() {
             <button type="button" title="Talk to a human" className={`hidden md:grid ${iconBtn}`} onClick={() => void openTicket()}><Ticket className="w-4 h-4" /></button>
             <Link href="/" className={pillBtn}>Home</Link>
             <button type="button" onClick={newChat} className={`${pillBtn} bg-[#E8651C] border-[#E8651C] text-white`}><MessageSquarePlus className="w-4 h-4" /> New</button>
+            <ThemeToggle />
           </div>
         </div>
         {!online && <div className="bg-amber-500/15 text-amber-200 text-xs px-4 py-2 flex items-center justify-center gap-2 uppercase tracking-wider"><WifiOff className="w-3.5 h-3.5" /> Offline</div>}
