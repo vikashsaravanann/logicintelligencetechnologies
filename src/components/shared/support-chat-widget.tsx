@@ -25,6 +25,10 @@ export default function SupportChatWidget() {
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [leadName, setLeadName] = useState("");
+  const [leadEmail, setLeadEmail] = useState("");
+  const [showLead, setShowLead] = useState(false);
+  const [leadOk, setLeadOk] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -65,6 +69,7 @@ export default function SupportChatWidget() {
           })),
           stream: true,
           max_tokens: 700,
+          mode: "company",
         }),
         signal: AbortSignal.timeout(28000),
       });
@@ -120,6 +125,9 @@ export default function SupportChatWidget() {
 
         if (!full.trim()) {
           throw new Error("empty stream");
+        }
+        if (!leadOk && /price|₹|pack|8,999|18,999/i.test(text + full) && localStorage.getItem("lit_ai_lead_done") !== "1") {
+          setShowLead(true);
         }
         return;
       }
@@ -271,6 +279,25 @@ export default function SupportChatWidget() {
             </div>
 
             <div className="p-3 bg-[#0A0F1E] border-t border-white/5">
+              {showLead && !leadOk && (
+                <form
+                  className="mb-2 flex gap-1"
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const res = await fetch("/api/ai/lead", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ name: leadName, email: leadEmail, source: "chat_widget", interest: "Widget pricing chat" }),
+                    });
+                    const data = await res.json();
+                    if (data.ok) { setLeadOk(true); setShowLead(false); localStorage.setItem("lit_ai_lead_done", "1"); }
+                  }}
+                >
+                  <input value={leadName} onChange={(e) => setLeadName(e.target.value)} placeholder="Name" className="flex-1 bg-white/5 rounded-lg px-2 py-1 text-xs outline-none" />
+                  <input value={leadEmail} onChange={(e) => setLeadEmail(e.target.value)} placeholder="Email" className="flex-1 bg-white/5 rounded-lg px-2 py-1 text-xs outline-none" />
+                  <button type="submit" className="text-[10px] font-bold uppercase px-2 rounded-lg bg-primary text-black">Send</button>
+                </form>
+              )}
               <div className="flex items-end gap-2 bg-white/5 border border-white/10 rounded-xl p-1.5 focus-within:border-primary/50 transition-colors">
                 <textarea
                   value={input}
@@ -300,6 +327,20 @@ export default function SupportChatWidget() {
                   <MessageCircle className="w-3 h-3" />
                   Prefer WhatsApp?
                 </a>
+                <button
+                  type="button"
+                  className="ml-3 text-[10px] font-semibold text-zinc-400 hover:text-white"
+                  onClick={async () => {
+                    if (!leadEmail.includes("@")) { setShowLead(true); return; }
+                    await fetch("/api/ai/ticket", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ name: leadName || "Visitor", email: leadEmail, summary: messages.slice(-6).map((m) => `${m.role}: ${m.content}`).join("\n") }),
+                    });
+                  }}
+                >
+                  Talk to a human
+                </button>
               </div>
             </div>
           </motion.div>
