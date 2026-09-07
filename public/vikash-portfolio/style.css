@@ -161,6 +161,8 @@ ul {
 
 .container {
     max-width: var(--container-max);
+    width: 100%;
+    min-width: 0;
     margin: 0 auto;
     padding: 0 24px;
 }
@@ -304,7 +306,14 @@ ul {
 .hero-section {
     min-height: 100vh;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
     padding-top: 104px;
 }
 
@@ -318,9 +327,13 @@ ul {
 .hero-content-stacked {
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
     text-align: center;
     gap: 40px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .hero-content-stacked .hero-text {
@@ -334,6 +347,17 @@ ul {
 
 .hero-content-stacked .social-links-hero {
     justify-content: center;
+}
+
+.hero-section > * {
+    min-width: 0;
+    max-width: 100%;
+}
+.hero-images-wrapper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    flex-wrap: wrap;
 }
 
 .hero-graphics-stacked {

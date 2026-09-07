@@ -342,6 +342,8 @@
 .aurora-blob {
   position:absolute;border-radius:50%;pointer-events:none;
   opacity:.12; will-change: transform;
+  max-width: min(70vw, 500px);
+  max-height: min(70vw, 500px);
 }
 .aurora-blob-1 {
   width:500px;height:500px;
