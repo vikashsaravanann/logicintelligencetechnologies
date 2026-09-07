@@ -3,6 +3,7 @@ import * as React from "react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email/send-email";
 import NewLeadNotificationEmail from "@/emails/new-lead-notification-email";
+import LeadConfirmationEmail from "@/emails/lead-confirmation-email";
 
 export type AiLeadSource = "chat_widget" | "ai_page";
 
@@ -133,6 +134,19 @@ export async function lookupLeadStatus(email: string) {
   }
 }
 
+export async function emailAlreadyCaptured(email: string): Promise<boolean> {
+  try {
+    const { data } = await supabaseAdmin
+      .from("ai_captured_leads")
+      .select("id")
+      .ilike("email", email.trim().toLowerCase())
+      .limit(1);
+    return Boolean(data?.length);
+  } catch {
+    return false;
+  }
+}
+
 export async function captureLead(args: {
   name: string;
   email: string;
@@ -147,6 +161,10 @@ export async function captureLead(args: {
   const email = String(args.email || "").trim().toLowerCase();
   if (!name || !email.includes("@")) {
     return { ok: false, error: "name and valid email are required" };
+  }
+
+  if (await emailAlreadyCaptured(email)) {
+    return { ok: true, duplicate: true, message: "Lead already on file." };
   }
 
   try {
@@ -192,6 +210,20 @@ export async function captureLead(args: {
       });
     } catch (emailErr) {
       console.error("[captureLead email]", emailErr);
+    }
+
+    try {
+      await sendEmail({
+        to: email,
+        from: "noReply",
+        subject: "We received your request — Logic Intelligence Technologies",
+        react: React.createElement(LeadConfirmationEmail, {
+          fullName: name,
+          service: args.interest || "your Logic AI enquiry",
+        }),
+      });
+    } catch (visitorErr) {
+      console.error("[captureLead visitor email]", visitorErr);
     }
 
     return {
