@@ -15,6 +15,7 @@ import {
   loadUserMemory,
 } from "@/lib/ai/tools";
 import { env } from "@/config/env";
+import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
 
 const DEFAULT_GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const DEFAULT_MODEL = "openai/gpt-oss-120b";
@@ -97,6 +98,9 @@ export async function POST(request: Request) {
   let steps = 1;
 
   try {
+    if (!rateLimit(`ai:${clientIp(request)}`, 20, 60_000)) {
+      return NextResponse.json({ success: false, error: "Too many requests. Please wait a moment." }, { status: 429 });
+    }
     const body = await request.json();
     const { text, message, file, max_tokens, chat_id, history, stream, mode: rawMode } = body;
     const mode: "company" | "general" = rawMode === "general" ? "general" : "company";
@@ -139,10 +143,17 @@ export async function POST(request: Request) {
       injectedContext = `\n\nUploaded File (${file.name || "file"}):\n"""\n${(file.data as string).slice(0, 8000)}\n"""`;
     }
 
-    const { block: knowledgeBlock } =
-      mode === "general" && !/lit|logic intelligence|package|price|₹|demo/i.test(userText)
-        ? { block: "(General mode — skip catalog unless asked.)" }
-        : await buildQueryGroundedKnowledge(userText);
+    const grounded = await buildQueryGroundedKnowledge(userText);
+    const skipCatalog =
+      mode === "general" && !/lit|logic intelligence|package|price|₹|demo/i.test(userText);
+    const knowledgeBlock = skipCatalog
+      ? "(General mode — skip catalog unless asked.)"
+      : grounded.block;
+    const citations = (grounded.chunks || [])
+      .slice(0, 4)
+      .map((c) => c.title)
+      .filter(Boolean);
+    const faithfulnessHint = skipCatalog ? "general" : "catalog";
 
     const historyMsgs = Array.isArray(history)
       ? history
@@ -178,7 +189,37 @@ export async function POST(request: Request) {
             controller.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
           };
           try {
-            send({ type: "meta", provider: "starting" });
+            send({ type: "meta", provider: "starting", citations, mode, faithfulnessHint });
+            const needsTools = /@|my name|i am |i'm |talk to a human|ticket|call me/i.test(userText);
+            if (needsTools) {
+              try {
+                const dual = await completeWithProviders(conversation as any, {
+                  tools: AI_TOOLS as any,
+                  temperature: 0.2,
+                  max_tokens: 500,
+                });
+                const msg = (dual.raw as { choices?: Array<{ message?: { tool_calls?: Array<{ id: string; function: { name: string; arguments: string } }> } }> })?.choices?.[0]?.message;
+                if (msg?.tool_calls?.length) {
+                  const toolMessages: Array<Record<string, unknown>> = [];
+                  for (const toolCall of msg.tool_calls) {
+                    let args: Record<string, unknown> = {};
+                    try { args = JSON.parse(toolCall.function.arguments || "{}"); } catch { args = {}; }
+                    const toolResult = await dispatchToolCall(toolCall.function.name, args, toolCtx);
+                    toolCalls += 1;
+                    send({ type: "tool", name: toolCall.function.name, ok: Boolean((toolResult as { ok?: boolean }).ok) });
+                    toolMessages.push({
+                      role: "tool",
+                      tool_call_id: toolCall.id,
+                      name: toolCall.function.name,
+                      content: JSON.stringify(toolResult),
+                    });
+                  }
+                  conversation.push(msg as Record<string, unknown>, ...toolMessages);
+                }
+              } catch (toolErr) {
+                console.warn("[api/ai stream tools]", toolErr);
+              }
+            }
             const gen = streamWithProviders(conversation as any, {
               temperature: 0.35,
               max_tokens: typeof max_tokens === "number" ? max_tokens : 900,
@@ -200,6 +241,24 @@ export async function POST(request: Request) {
               content: full,
               provider: providerName,
               model: streamModel,
+              citations,
+              faithfulnessHint,
+              run_id: runId,
+            });
+            await logAgentRun({
+              run_id: runId,
+              agent_role: "logic-ai",
+              success: Boolean(full.trim()),
+              steps: 1 + toolCalls,
+              tool_calls: toolCalls,
+              tokens_in: 0,
+              tokens_out: 0,
+              latency_ms: Date.now() - started,
+              cost_usd: 0,
+              failure_class: usedFallback ? "model" : "none",
+              used_fallback: usedFallback,
+              model: streamModel,
+              meta: { stream: true, mode, citations },
             });
             controller.enqueue(encoder.encode("data: [DONE]\n\n"));
             controller.close();
