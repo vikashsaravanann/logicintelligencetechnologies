@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import HeroSection from '@/features/home/components/hero-section';
 import CredentialsStripSection from '@/features/home/components/credentials-strip-section';
 import ServicesSection from '@/features/home/components/services-section';
+import BriefingButtonsSection from '@/features/home/components/briefing-buttons-section';
 import WhyUsSection from '@/features/home/components/why-us-section';
 import HowItWorksSection from '@/features/home/components/how-it-works-section';
 import AboutSection from '@/features/home/components/about-section';
@@ -31,6 +32,7 @@ export default function HomePage() {
       <HeroSection />
       <CredentialsStripSection />
       <ServicesSection />
+      <BriefingButtonsSection />
       <WhyUsSection />
       <HowItWorksSection />
       <TestimonialsSection />
