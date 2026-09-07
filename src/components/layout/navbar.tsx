@@ -159,28 +159,27 @@ export default function Navbar() {
 
               <NavLink href="/about">ABOUT</NavLink>
               <NavLink href="/blog">BLOG</NavLink>
-              <NavLink href="/jobs">JOBS</NavLink>
-              <span className="hidden xl:inline-flex"><NavLink href="/checklist">CHECKLIST</NavLink></span>
-              <span className="hidden xl:inline-flex"><NavLink href="/discovery">DISCOVERY</NavLink></span>
+              <span className="hidden xl:inline-flex"><NavLink href="/jobs">JOBS</NavLink></span>
+              <span className="hidden 2xl:inline-flex"><NavLink href="/checklist">CHECKLIST</NavLink></span>
             </div>
 
             {/* CTA & Mobile Toggle */}
-            <div className="flex items-center gap-4 xl:gap-6 ml-2">
+            <div className="flex items-center justify-end gap-2 xl:gap-3 shrink-0">
               
               {session ? (
                 <div className="hidden lg:flex relative group" onMouseEnter={() => handleMouseEnter('user')} onMouseLeave={handleMouseLeave}>
-                  <button type="button" className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/20 hover:bg-white/10 transition-colors" aria-label="Account menu">
+                  <button type="button" className="flex items-center gap-2 h-10 px-2.5 rounded-full border border-white/20 hover:bg-white/10 transition-colors shrink-0" aria-label="Account menu">
                     {session.user?.user_metadata?.avatar_url ? (
-                      <img src={session.user.user_metadata.avatar_url} alt="Profile" className="w-6 h-6 rounded-full" />
+                      <img src={session.user.user_metadata.avatar_url} alt="Profile" className="w-6 h-6 rounded-full shrink-0" />
                     ) : (
-                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold shrink-0">
                         {session.user?.email?.[0]?.toUpperCase() || 'U'}
                       </div>
                     )}
-                    <span className="text-xs font-bold text-white max-w-[100px] truncate">
+                    <span className="hidden 2xl:inline text-xs font-bold text-white max-w-[120px] truncate">
                       {session.user?.user_metadata?.full_name || session.user?.email}
                     </span>
-                    <ChevronDown className="w-3 h-3 text-white" />
+                    <ChevronDown className="w-3 h-3 text-white hidden 2xl:block" />
                   </button>
                   <AnimatePresence>
                     {activeDropdown === 'user' && (
@@ -206,11 +205,11 @@ export default function Navbar() {
                   </AnimatePresence>
                 </div>
               ) : (
-                <Link href="/login" className="hidden lg:flex px-6 py-2 rounded-full text-[11px] font-black text-black uppercase tracking-[0.2em] bg-white hover:bg-gray-200 transition-all shadow-lg hover:shadow-xl whitespace-nowrap">
+                <Link href="/login" className="hidden lg:inline-flex items-center justify-center h-10 px-5 rounded-full text-[11px] font-black text-black uppercase tracking-[0.2em] bg-white hover:bg-gray-200 transition-all shadow-lg whitespace-nowrap shrink-0">
                   Sign In
                 </Link>
               )}
-              <Link href="/contact" className="hidden lg:flex shrink-0 relative group px-6 py-2 rounded-full overflow-hidden items-center justify-center shadow-[0_0_20px_rgba(0,191,255,0.3)] transition-transform hover:scale-105 active:scale-95">
+              <Link href="/contact" className="hidden lg:inline-flex shrink-0 relative group h-10 px-5 rounded-full overflow-hidden items-center justify-center shadow-[0_0_20px_rgba(0,191,255,0.3)]">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
                 <span className="relative z-10 text-[11px] font-bold text-white tracking-widest uppercase whitespace-nowrap">
@@ -218,7 +217,7 @@ export default function Navbar() {
                 </span>
               </Link>
               
-              <span className="hidden lg:inline-flex"><ThemeToggle variant="pill" /></span>
+              <ThemeToggle className="hidden lg:grid" />
               <button type="button" className="lg:hidden text-white relative z-50 p-2 min-h-[44px] min-w-[44px]" onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? "Close menu" : "Open menu"}>
                 {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
@@ -284,7 +283,7 @@ export default function Navbar() {
                       Sign In
                     </Link>
                   )}
-                  <ThemeToggle variant="pill" className="w-full justify-center" />
+                  <ThemeToggle variant="pill" className="w-full justify-center whitespace-nowrap" />
                   <Link href="/contact" onClick={() => setIsOpen(false)} className="relative group px-6 py-4 text-center rounded-xl overflow-hidden w-full flex items-center justify-center shadow-[0_0_20px_rgba(0,191,255,0.3)]">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 opacity-90 transition-opacity duration-300"></div>
                     <span className="relative z-10 text-base font-bold text-white tracking-widest uppercase">
