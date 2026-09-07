@@ -7,6 +7,23 @@ import { usePathname } from "next/navigation";
 import { COMPANY } from "@/config/company";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { env } from "@/config/env";
+const PRIMARY_NAV: Array<{ href: string; label: string }> = [
+  { href: "/", label: "HOME" },
+  { href: "/ai", label: "AI" },
+  { href: "/#services", label: "SERVICES" },
+  { href: "/work", label: "WORK" },
+  { href: "/packages", label: "PACKAGES" },
+  { href: "/about", label: "ABOUT" },
+  { href: "/blog", label: "BLOG" },
+  { href: "/jobs", label: "JOBS" },
+];
+
+const MORE_NAV: Array<{ href: string; label: string }> = [
+  { href: "/checklist", label: "CHECKLIST" },
+  { href: "/discovery", label: "DISCOVERY" },
+  { href: "/free-demo", label: "FREE DEMO" },
+];
+
 const NavLink = ({ href, children, onHover }: { href: string; children: React.ReactNode; onHover?: () => void }) => {
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path || (path !== "/" && pathname.startsWith(path));
@@ -60,6 +77,24 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    setIsOpen(false);
+    setActiveDropdown(null);
+  }, [pathname]);
+
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = isOpen ? "hidden" : prev || "";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [isOpen]);
+
   const handleMouseEnter = (menu: string) => {
     if (window.innerWidth > 1024) setActiveDropdown(menu);
   };
@@ -98,6 +133,7 @@ export default function Navbar() {
             {/* Desktop Links */}
             <div className="hidden lg:flex items-center gap-2 xl:gap-4 2xl:gap-6 shrink min-w-0">
               <NavLink href="/">HOME</NavLink>
+              <NavLink href="/ai">AI</NavLink>
               <NavLink href="/#services">SERVICES</NavLink>
               <NavLink href="/work">WORK</NavLink>
               
@@ -122,8 +158,9 @@ export default function Navbar() {
 
               <NavLink href="/about">ABOUT</NavLink>
               <NavLink href="/blog">BLOG</NavLink>
-              <NavLink href="/checklist">CHECKLIST</NavLink>
-              <NavLink href="/discovery">DISCOVERY</NavLink>
+              <NavLink href="/jobs">JOBS</NavLink>
+              <span className="hidden xl:inline-flex"><NavLink href="/checklist">CHECKLIST</NavLink></span>
+              <span className="hidden xl:inline-flex"><NavLink href="/discovery">DISCOVERY</NavLink></span>
             </div>
 
             {/* CTA & Mobile Toggle */}
@@ -217,16 +254,13 @@ export default function Navbar() {
         {/* Mobile Menu */}
         <AnimatePresence>
           {isOpen && (
-            <motion.div initial={{ opacity: 0, x: "100%" }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: "100%" }} transition={{ type: "tween", duration: 0.22, ease: [0.25, 0.1, 0.25, 1] }} className="fixed top-0 right-0 w-[85vw] h-[100vh] bg-[rgba(10,15,30,0.98)] backdrop-blur-2xl border-l border-white/10 lg:hidden shadow-2xl z-40 overflow-y-auto">
+            <motion.div initial={{ opacity: 0, x: "100%" }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: "100%" }} transition={{ type: "tween", duration: 0.22, ease: [0.25, 0.1, 0.25, 1] }} className="fixed top-0 right-0 w-[min(85vw,360px)] h-[100dvh] bg-[rgba(10,15,30,0.98)] backdrop-blur-2xl border-l border-white/10 lg:hidden shadow-2xl z-40 overflow-y-auto pb-safe">
               <div className="flex flex-col px-6 py-16 md:py-24 space-y-3">
-                <Link href="/" onClick={() => setIsOpen(false)} className="py-3 text-lg font-bold text-zinc-300">HOME</Link>
-                <Link href="/#services" onClick={() => setIsOpen(false)} className="py-3 text-lg font-bold text-zinc-300">SERVICES</Link>
-                <Link href="/work" onClick={() => setIsOpen(false)} className="py-3 text-lg font-bold text-zinc-300">WORK</Link>
-                <Link href="/packages" onClick={() => setIsOpen(false)} className="py-3 text-lg font-bold text-zinc-300">PACKAGES</Link>
-                <Link href="/about" onClick={() => setIsOpen(false)} className="py-3 text-lg font-bold text-zinc-300">ABOUT</Link>
-                <Link href="/blog" onClick={() => setIsOpen(false)} className="py-3 text-lg font-bold text-zinc-300">BLOG</Link>
-                <Link href="/checklist" onClick={() => setIsOpen(false)} className="py-3 text-lg font-bold text-zinc-300">CHECKLIST</Link>
-                <Link href="/discovery" onClick={() => setIsOpen(false)} className="py-3 text-lg font-bold text-zinc-300">DISCOVERY</Link>
+                {[...PRIMARY_NAV, ...MORE_NAV].map((item) => (
+                  <Link key={item.href} href={item.href} onClick={() => setIsOpen(false)} className="py-3 text-base font-bold tracking-[0.16em] uppercase text-zinc-300 hover:text-white min-h-[44px] flex items-center">
+                    {item.label}
+                  </Link>
+                ))}
                 
                 <div className="mt-auto pt-8 flex flex-col space-y-4">
                   {session ? (
