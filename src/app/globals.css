@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --color-background: var(--bg-primary);
@@ -53,6 +54,37 @@
   --transition-fast: 0.2s cubic-bezier(0.4,0,0.2,1);
   --transition-smooth: 0.4s cubic-bezier(0.4,0,0.2,1);
   --transition-slow: 0.8s cubic-bezier(0.4,0,0.2,1);
+
+  /* Logic AI canvas (dark default) */
+  --ai-ink: #F3EDE4;
+  --ai-muted: #9a9086;
+  --ai-panel: rgba(0, 0, 0, 0.38);
+  --ai-border: rgba(255, 255, 255, 0.12);
+  --ai-header: rgba(0, 0, 0, 0.55);
+  --ai-user: #E8651C;
+  --ai-glow: radial-gradient(ellipse 70% 45% at 50% 115%, rgba(255,110,40,0.55), transparent 60%), radial-gradient(ellipse 40% 30% at 20% 100%, rgba(180,40,10,0.25), transparent), #0a0604;
+}
+
+html.light {
+  --bg-primary: #F4EFE8;
+  --bg-secondary: #FFFDF9;
+  --bg-card: rgba(28, 20, 14, 0.04);
+  --bg-card-hover: rgba(28, 20, 14, 0.08);
+  --bg-glass: rgba(255, 253, 249, 0.86);
+  --ai-ink: #1C140E;
+  --ai-muted: #6B625A;
+  --ai-panel: rgba(255, 255, 255, 0.78);
+  --ai-border: rgba(28, 20, 14, 0.12);
+  --ai-header: rgba(255, 253, 249, 0.86);
+  --ai-user: #E8651C;
+  --ai-glow: radial-gradient(ellipse 70% 45% at 50% 115%, rgba(232,101,28,0.18), transparent 60%), #F4EFE8;
+}
+
+html.light body {
+  color: #1C140E;
+}
+html.light body::before {
+  opacity: 0.04;
 }
 
 @layer base {
