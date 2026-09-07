@@ -8,7 +8,7 @@ import { estimateCostUsd } from "@/lib/agent-eval/cost";
 import { estimateFaithfulness } from "@/lib/agent-eval/faithfulness";
 import type { FailureClass } from "@/lib/agent-eval/types";
 import { buildQueryGroundedKnowledge } from "@/lib/ai/knowledge";
-import { completeWithProviders, hasAnyProvider } from "@/lib/ai/providers";
+import { completeWithProviders, hasAnyProvider, streamWithProviders } from "@/lib/ai/providers";
 import {
   AI_TOOLS,
   dispatchToolCall,
@@ -108,8 +108,12 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { text, file, max_tokens, chat_id } = body;
-    userText = typeof text === "string" ? text : "";
+    const { text, message, file, max_tokens, chat_id, history, stream } = body;
+    userText =
+      (typeof text === "string" && text) ||
+      (typeof message === "string" && message) ||
+      "";
+    const wantStream = stream === true || stream === "true";
     const { apiKey, apiUrl, model } = getAiConfig();
     modelName = model;
 
@@ -146,13 +150,84 @@ export async function POST(request: Request) {
 
     const { block: knowledgeBlock } = await buildQueryGroundedKnowledge(userText);
 
+    const historyMsgs = Array.isArray(history)
+      ? history
+          .filter(
+            (m: { role?: string; content?: string }) =>
+              (m.role === "user" || m.role === "assistant") && m.content
+          )
+          .slice(-12)
+          .map((m: { role: string; content: string }) => ({
+            role: m.role,
+            content: String(m.content).slice(0, 4000),
+          }))
+      : [];
+
     const conversation: Array<Record<string, unknown>> = [
       {
         role: "system",
         content: `${buildSystemPrompt(knowledgeBlock, memoryContext)}\n${injectedContext}`,
       },
-      { role: "user", content: text },
+      ...historyMsgs,
+      { role: "user", content: userText },
     ];
+
+    // Streaming path (no tools — fastest UX for /ai page)
+    if (wantStream && hasAnyProvider()) {
+      const encoder = new TextEncoder();
+      let full = "";
+      let providerName = "none";
+      let streamModel = modelName || "unknown";
+
+      const readable = new ReadableStream({
+        async start(controller) {
+          const send = (obj: Record<string, unknown>) => {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
+          };
+          try {
+            send({ type: "meta", provider: "starting" });
+            const gen = streamWithProviders(conversation as any, {
+              temperature: 0.35,
+              max_tokens: typeof max_tokens === "number" ? max_tokens : 900,
+            });
+            for await (const part of gen) {
+              if (part.chunk) {
+                full += part.chunk;
+                providerName = part.provider;
+                streamModel = part.model;
+                send({ type: "token", content: part.chunk });
+              }
+            }
+            if (!full.trim()) {
+              full = getLocalFallbackReply(userText);
+              usedFallback = true;
+            }
+            send({
+              type: "done",
+              content: full,
+              provider: providerName,
+              model: streamModel,
+            });
+            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+            controller.close();
+          } catch (err) {
+            console.error("[api/ai stream]", err);
+            full = getLocalFallbackReply(userText);
+            send({ type: "done", content: full, provider: "fallback", model: "local" });
+            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+            controller.close();
+          }
+        },
+      });
+
+      return new Response(readable, {
+        headers: {
+          "Content-Type": "text/event-stream; charset=utf-8",
+          "Cache-Control": "no-cache, no-transform",
+          Connection: "keep-alive",
+        },
+      });
+    }
 
     // Parallel Groq + xAI when configured
     if (hasAnyProvider()) {

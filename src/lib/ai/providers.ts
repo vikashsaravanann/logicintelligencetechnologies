@@ -250,3 +250,87 @@ export async function completeWithProviders(
 export function hasAnyProvider(): boolean {
   return buildProviders().length > 0;
 }
+
+
+/**
+ * Stream from the first available provider (xAI preferred, then Groq).
+ * Yields plain text chunks via async generator.
+ */
+export async function* streamWithProviders(
+  messages: ChatMessage[],
+  options?: { temperature?: number; max_tokens?: number }
+): AsyncGenerator<{ chunk: string; provider: string; model: string }, ProviderResult, void> {
+  const providers = buildProviders();
+  if (!providers.length) {
+    yield { chunk: "", provider: "none", model: "none" };
+    return { provider: "none", model: "none", content: "" };
+  }
+
+  let lastError: unknown = null;
+  for (const provider of providers) {
+    for (const model of provider.models) {
+      try {
+        const res = await fetch(provider.apiUrl, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${provider.apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            messages,
+            temperature: options?.temperature ?? 0.35,
+            max_tokens: options?.max_tokens ?? 900,
+            stream: true,
+          }),
+        });
+        if (!res.ok || !res.body) {
+          lastError = new Error(`${provider.id} ${model} HTTP ${res.status}`);
+          continue;
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let full = "";
+        let buffer = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith("data:")) continue;
+            const payload = trimmed.slice(5).trim();
+            if (payload === "[DONE]") continue;
+            try {
+              const json = JSON.parse(payload);
+              const delta =
+                json.choices?.[0]?.delta?.content ||
+                json.choices?.[0]?.text ||
+                "";
+              if (delta) {
+                full += delta;
+                yield { chunk: delta, provider: provider.id, model };
+              }
+            } catch {
+              /* ignore partial JSON */
+            }
+          }
+        }
+
+        if (full.trim()) {
+          return { provider: provider.id, model, content: full };
+        }
+      } catch (err) {
+        lastError = err;
+        console.warn(`[stream ${provider.id}]`, err);
+      }
+    }
+  }
+
+  console.warn("[streamWithProviders] all failed", lastError);
+  return { provider: "none", model: "none", content: "" };
+}
