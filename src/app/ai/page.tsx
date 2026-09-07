@@ -8,6 +8,7 @@ import { ArrowRight, ArrowUp, Check, Copy, Download, Loader2, Menu, MessageSquar
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { COMPANY } from "@/config/company";
 import { MarkdownMessage } from "@/components/ai/markdown-message";
+import { InChatPackageCards } from "@/components/ai/package-cards";
 
 type Role = "user" | "assistant";
 type Mode = "company" | "general";
@@ -27,6 +28,7 @@ const STARTERS = [
   "Compare Next.js and plain React for a business site",
 ];
 const DEMO_RE = /\b(demo|quote|book|hire|i want a (web)?site|pricing|free consult|start a project)\b/i;
+const PRICE_RE = /₹|price|pack|cost|launch|18,999|8,999|50,000|enterprise|how much/i;
 const glow = "radial-gradient(ellipse 70% 45% at 50% 115%, rgba(255,110,40,0.55), transparent 60%), radial-gradient(ellipse 40% 30% at 20% 100%, rgba(180,40,10,0.25), transparent), #0a0604";
 const WA = `https://wa.me/${COMPANY.whatsappNumber}?text=${encodeURIComponent("Hi LIT — chatting on Logic AI.")}`;
 
@@ -44,6 +46,15 @@ function followUps(reply: string) {
   if (/price|₹|pack|cost/.test(r)) return ["What is in Digital Launch?", "Can I get a free demo?", "Talk on WhatsApp"];
   if (/rag|ai|assistant/.test(r)) return ["How do you stop invented prices?", "How long is a demo?", "Talk on WhatsApp"];
   return ["Show packages and floors", "How does a free demo work?", "Talk on WhatsApp"];
+}
+function waTranscript(messages: ChatMessage[]) {
+  const slice = messages.filter((m) => m.content).slice(-6);
+  const body =
+    "Hi LIT — from Logic AI.\n\n" +
+    slice
+      .map((m) => `${m.role === "user" ? "Visitor" : "LOGIC AI"}: ${m.content.replace(/\s+/g, " ").slice(0, 280)}`)
+      .join("\n\n");
+  return `https://wa.me/${COMPANY.whatsappNumber}?text=${encodeURIComponent(body.slice(0, 1800))}`;
 }
 function readFile(file: File): Promise<AttachFile> {
   return new Promise((resolve, reject) => {
@@ -82,6 +93,13 @@ export default function AiChatPage() {
   const [attach, setAttach] = useState<AttachFile | null>(null);
   const [attachError, setAttachError] = useState<string | null>(null);
   const [showDemo, setShowDemo] = useState(false);
+  const [showLead, setShowLead] = useState(false);
+  const [leadName, setLeadName] = useState("");
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadBusy, setLeadBusy] = useState(false);
+  const [leadOk, setLeadOk] = useState(false);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameVal, setRenameVal] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -164,6 +182,47 @@ export default function AiChatPage() {
     ]);
   }
 
+  async function commitRename(id: string, title: string) {
+    const next = title.trim().slice(0, 80) || "Untitled";
+    setSessions((prev) => prev.map((s) => (s.id === id ? { ...s, title: next } : s)));
+    setRenamingId(null);
+    if (userId && isUuid(id)) await supabase.from("ai_chats").update({ title: next }).eq("id", id);
+  }
+
+  async function submitLead() {
+    if (leadBusy || leadOk) return;
+    const name = leadName.trim();
+    const email = leadEmail.trim();
+    if (!name || !email.includes("@")) {
+      setAttachError("Add your name and a valid email.");
+      return;
+    }
+    setLeadBusy(true);
+    try {
+      const res = await fetch("/api/ai/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          interest: lastUser?.content || "Pricing on /ai",
+          chat_id: activeId,
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setLeadOk(true);
+        setShowLead(false);
+      } else {
+        setAttachError(data.error || "Could not save details.");
+      }
+    } catch {
+      setAttachError("Could not save details.");
+    } finally {
+      setLeadBusy(false);
+    }
+  }
+
   const newChat = useCallback(() => {
     abortRef.current?.abort();
     const id = userId ? crypto.randomUUID() : uid();
@@ -230,7 +289,7 @@ export default function AiChatPage() {
     if (!raw || sending) return;
     if (!navigator.onLine) { setOnline(false); return; }
     if (raw.toLowerCase() === "talk on whatsapp") {
-      window.open(WA, "_blank");
+      window.open(waTranscript(sessions.find((x) => x.id === activeId)?.messages || []), "_blank");
       return;
     }
     const content = opts?.suffix ? `${raw}\n\n${opts.suffix}` : raw;
@@ -317,6 +376,7 @@ export default function AiChatPage() {
       }
       const sess = { id: sessionId, title: raw.slice(0, 48), messages: [], updatedAt: Date.now(), remote: Boolean(userId) };
       await persistTurn(sess, content, full);
+      if (!leadOk && (PRICE_RE.test(raw) || PRICE_RE.test(full))) setShowLead(true);
     } catch (err) {
       const aborted = (err as Error)?.name === "AbortError";
       patchAssistant(sessionId, assistantId, {
@@ -398,7 +458,7 @@ export default function AiChatPage() {
           </div>
           <div className="justify-self-end flex items-center gap-2">
             <button type="button" onClick={() => { if (!active) return; const t = active.messages.map((m) => `${m.role}: ${m.content}`).join("\n\n"); const b = new Blob([t], { type: "text/plain" }); const u = URL.createObjectURL(b); const a = document.createElement("a"); a.href = u; a.download = "logic-ai.txt"; a.click(); URL.revokeObjectURL(u); }} className={`hidden sm:inline-flex ${hdrBtn}`} disabled={!active?.messages.length}><Download className="w-4 h-4" /> Export</button>
-            <a href={WA} className={`hidden sm:inline-flex ${hdrBtn}`}>WhatsApp</a>
+            <a href={waTranscript(active?.messages || [])} target="_blank" rel="noopener noreferrer" className={`hidden sm:inline-flex ${hdrBtn}`}>WhatsApp</a>
             <Link href="/" className={hdrBtn}>Home</Link>
             <button type="button" onClick={newChat} className={hdrBtn}><MessageSquarePlus className="w-4 h-4" /> New</button>
           </div>
@@ -411,7 +471,23 @@ export default function AiChatPage() {
           <div className="flex-1 overflow-y-auto space-y-0.5">
             {sessions.map((s) => (
               <div key={s.id} className={`flex items-center gap-1 rounded-md px-1.5 py-1.5 text-[11px] cursor-pointer ${s.id === activeId ? "bg-orange-500/15 border border-orange-400/25" : "text-zinc-400 hover:bg-white/5"}`} onClick={() => setActiveId(s.id)}>
-                <span className="flex-1 truncate">{s.title}</span>
+                {renamingId === s.id ? (
+                  <input
+                    autoFocus
+                    value={renameVal}
+                    onChange={(e) => setRenameVal(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    onBlur={() => void commitRename(s.id, renameVal)}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void commitRename(s.id, renameVal); } if (e.key === "Escape") setRenamingId(null); }}
+                    className="flex-1 min-w-0 bg-black/40 border border-white/20 rounded px-1 py-0.5 text-[11px] outline-none"
+                  />
+                ) : (
+                  <span
+                    className="flex-1 truncate"
+                    onDoubleClick={(e) => { e.stopPropagation(); setRenamingId(s.id); setRenameVal(s.title); }}
+                    title="Double-click to rename"
+                  >{s.title}</span>
+                )}
                 <button type="button" className="p-0.5 text-red-400" onClick={(e) => { e.stopPropagation(); void deleteChat(s.id); }}><Trash2 className="w-3 h-3" /></button>
               </div>
             ))}
@@ -447,7 +523,7 @@ export default function AiChatPage() {
                 {m.role === "assistant" && <div className="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-400/30 flex items-center justify-center shrink-0"><Sparkles className={`w-3.5 h-3.5 text-orange-300 ${sending && !m.content ? "animate-pulse" : ""}`} /></div>}
                 <div className={`rounded-2xl px-4 py-3 text-sm ${m.role === "user" ? "bg-[#E8651C] text-white max-w-[80%]" : "bg-black/30 border border-white/10 flex-1 min-w-0"}`}>
                   {m.role === "assistant" ? (
-                    m.content ? <MarkdownMessage content={m.content} /> : sending ? (
+                    m.content ? <><MarkdownMessage content={m.content} /><InChatPackageCards text={m.content} /></> : sending ? (
                       <span className="inline-flex items-center gap-2 text-zinc-400 text-xs">
                         <Loader2 className="w-3.5 h-3.5 animate-spin" /> Thinking
                       </span>
@@ -479,6 +555,23 @@ export default function AiChatPage() {
             )}
             <div ref={bottomRef} />
           </div>
+          {showLead && !leadOk && (
+            <div className="px-3 sm:px-8">
+              <form
+                onSubmit={(e) => { e.preventDefault(); void submitLead(); }}
+                className="max-w-3xl mx-auto mb-2 flex flex-col sm:flex-row gap-2 rounded-xl border border-white/10 bg-black/40 px-3 py-2"
+              >
+                <p className="sm:sr-only text-[11px] text-zinc-400">The team can follow up — optional.</p>
+                <input value={leadName} onChange={(e) => setLeadName(e.target.value)} placeholder="Name" className="flex-1 bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm outline-none" />
+                <input value={leadEmail} onChange={(e) => setLeadEmail(e.target.value)} placeholder="Email" type="email" className="flex-1 bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm outline-none" />
+                <button type="submit" disabled={leadBusy} className="h-10 px-4 rounded-full bg-[#E8651C] text-[11px] font-bold uppercase tracking-wider text-white disabled:opacity-50">{leadBusy ? "Saving" : "Send"}</button>
+                <button type="button" onClick={() => setShowLead(false)} className="h-10 px-3 text-[11px] uppercase tracking-wider text-zinc-400">Not now</button>
+              </form>
+            </div>
+          )}
+          {leadOk && (
+            <p className="max-w-3xl mx-auto px-3 sm:px-8 mb-2 text-[11px] text-zinc-400">Thanks — the team will follow up within 24 hours.</p>
+          )}
           {showDemo && (
             <div className="px-3 sm:px-8">
               <div className="max-w-3xl mx-auto mb-2 flex items-center justify-between gap-3 rounded-xl border border-orange-400/30 bg-orange-500/10 px-3 py-2 text-xs">
