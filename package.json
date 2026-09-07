@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "eval:rag": "node scripts/eval-rag-golden.mjs",
+    "seed:knowledge": "node scripts/seed-knowledge.mjs",
+    "backfill:embeddings": "node scripts/backfill-embeddings.mjs"
   },
   "dependencies": {
     "@gradio/client": "^2.5.1",

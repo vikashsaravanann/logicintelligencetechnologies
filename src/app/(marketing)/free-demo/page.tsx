@@ -121,10 +121,16 @@ export default function FreeDemoPage() {
                  <CheckCircle2 className="h-12 w-12 text-primary" />
                </div>
                <h3 className="text-4xl font-black text-white mb-4">Request Received!</h3>
-               <p className="text-lg text-zinc-400 mb-8">Thanks — we've received your request and will follow up on the channel(s) you selected.</p>
-               <a href="https://wa.me/919342877474" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#25D366]/10 text-[#25D366] font-bold text-sm border border-[#25D366]/20 hover:bg-[#25D366] hover:text-black transition-all">
-                 <MessageSquare className="w-4 h-4" /> Message on WhatsApp
+               <p className="text-lg text-zinc-400 mb-4">Thanks — we received your free demo request. Our team typically replies within 48–72 hours with next steps.</p>
+               <p className="text-sm text-zinc-500 mb-8">For a faster response, message us on WhatsApp with your business name and goals.</p>
+               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+               <a href={`https://wa.me/919342877474?text=${encodeURIComponent("Hi Logic Intelligence — I just submitted a free demo request on the website. Looking forward to next steps.")}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#25D366]/10 text-[#25D366] font-bold text-sm border border-[#25D366]/20 hover:bg-[#25D366] hover:text-black transition-all">
+                 <MessageSquare className="w-4 h-4" /> Continue on WhatsApp
                </a>
+               <a href="/" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 text-white font-bold text-sm border border-white/10 hover:bg-white/10 transition-all">
+                 Back to Home
+               </a>
+               </div>
              </motion.div>
           ) : (
             <>

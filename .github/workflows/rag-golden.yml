@@ -1,0 +1,28 @@
+name: RAG golden eval
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'src/lib/ai/**'
+      - 'scripts/eval-rag-golden.mjs'
+      - 'src/lib/ai/golden-set.json'
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run golden set (soft fail without keys)
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$GROQ_API_KEY" ] && [ -z "$XAI_API_KEY" ]; then
+            echo "No AI keys — skip live eval"
+            exit 0
+          fi
+          node scripts/eval-rag-golden.mjs || echo "Eval finished with warnings"

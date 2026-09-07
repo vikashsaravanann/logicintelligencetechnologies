@@ -201,6 +201,7 @@ export async function POST(req: Request) {
           return NextResponse.json({
             success: true,
             reply: cleaned,
+            generated_text: cleaned,
             provider: dual.provider,
             model: dual.model,
           });
