@@ -523,7 +523,7 @@ export default function AiChatPage() {
               <Link key={href} href={href} className="px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] uppercase whitespace-nowrap text-[#E8DFD4]/80 hover:text-white">{label}</Link>
             ))}
           </nav>
-          <div className="justify-self-end flex items-center gap-2">
+          <div className="justify-self-end flex items-center gap-2 max-w-[62vw] sm:max-w-none overflow-x-auto no-scrollbar">
             <Link href="/contact" className="hidden md:inline-flex rounded-full border border-white/15 bg-black/30 px-4 py-2 text-[11px] font-semibold tracking-[0.14em] uppercase whitespace-nowrap">CONTACT US</Link>
             <button type="button" onClick={() => setLandMenu((v) => !v)} className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-full border border-white/15 bg-black/30" aria-expanded={landMenu} aria-label={landMenu ? "Close menu" : "Open menu"}>
               {landMenu ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -558,7 +558,7 @@ export default function AiChatPage() {
     );
   }
 
-  const hdrBtn = "inline-flex items-center justify-center gap-1.5 h-10 min-w-[7rem] px-4 rounded-full border border-white/15 bg-black/30 text-[11px] font-bold uppercase tracking-[0.16em] hover:bg-white/10 hover:border-white/30 transition-colors disabled:opacity-40 whitespace-nowrap";
+  const hdrBtn = "inline-flex items-center justify-center gap-1.5 h-10 min-w-0 sm:min-w-[7rem] px-3 sm:px-4 rounded-full border border-white/15 bg-black/30 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.16em] hover:bg-white/10 hover:border-white/30 transition-colors disabled:opacity-40 whitespace-nowrap";
 
   return (
     <div className="min-h-[100dvh] text-[#F3EDE4] flex flex-col" style={{ background: glow }}>
