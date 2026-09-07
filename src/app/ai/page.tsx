@@ -10,6 +10,7 @@ import { COMPANY } from "@/config/company";
 import { MarkdownMessage } from "@/components/ai/markdown-message";
 import { InChatPackageCards } from "@/components/ai/package-cards";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { Button } from "@/components/ui/button";
 
 type Role = "user" | "assistant";
 type Mode = "company" | "general";
@@ -628,13 +629,13 @@ export default function AiChatPage() {
               <p className="mt-1 text-[10px] text-zinc-500 truncate uppercase tracking-[0.12em]">{sending ? "Thinking" : lastProvider ? `Ready · ${lastProvider}` : "Ready"}{userEmail ? ` · ${userEmail}` : " · guest"}</p>
             </button>
           </div>
-          <div className="hidden md:flex justify-self-center items-center rounded-full border border-white/12 bg-black/35 p-0.5">
-            <button type="button" onClick={() => setMode("company")} className={`h-8 px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "company" ? "bg-[#E8651C] text-white" : "text-zinc-400"}`}>Company</button>
-            <button type="button" onClick={() => setMode("general")} className={`h-8 px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "general" ? "bg-[#E8651C] text-white" : "text-zinc-400"}`}>General</button>
+          <div className="hidden md:flex justify-self-center items-center rounded-full border border-[color:var(--ai-border)] bg-[color:var(--ai-panel)] p-0.5">
+            <button type="button" onClick={() => setMode("company")} className={`inline-flex items-center justify-center h-8 min-w-[7.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "company" ? "bg-[#E8651C] text-white" : "text-[color:var(--ai-muted)]"}`}>COMPANY</button>
+            <button type="button" onClick={() => setMode("general")} className={`inline-flex items-center justify-center h-8 min-w-[7.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "general" ? "bg-[#E8651C] text-white" : "text-[color:var(--ai-muted)]"}`}>GENERAL</button>
           </div>
-          <div className="justify-self-end flex items-center gap-2">
-            <Link href="/" className={`${pillBtn} min-w-[6.75rem]`}>HOME</Link>
-            <button type="button" onClick={newChat} className={`${pillBtn} min-w-[6.75rem] bg-[#E8651C] border-[#E8651C] text-white`}>NEW</button>
+          <div className="justify-self-end flex flex-nowrap items-center justify-end gap-2">
+            <Button asChild variant="pill" size="pill"><Link href="/">HOME</Link></Button>
+            <Button type="button" variant="accent" size="pill" onClick={newChat}>NEW</Button>
             <ThemeToggle />
           </div>
         </div>
@@ -765,9 +766,9 @@ export default function AiChatPage() {
                   <button type="submit" disabled={!input.trim() && !attach} className="h-10 w-10 rounded-full bg-[#E8651C] text-white grid place-items-center disabled:opacity-40" aria-label="Send"><ArrowUp className="w-4 h-4" /></button>
                 )}
               </form>
-              <div className="md:hidden mt-2 flex justify-center gap-2">
-                <button type="button" onClick={() => setMode("company")} className={`${pillBtn} ${mode === "company" ? "bg-[#E8651C] text-white border-[#E8651C]" : ""}`}>Company</button>
-                <button type="button" onClick={() => setMode("general")} className={`${pillBtn} ${mode === "general" ? "bg-[#E8651C] text-white border-[#E8651C]" : ""}`}>General</button>
+              <div className="md:hidden mt-2 flex flex-nowrap items-center justify-center gap-2">
+                <Button type="button" variant={mode === "company" ? "accent" : "pill"} size="pill" onClick={() => setMode("company")}>COMPANY</Button>
+                <Button type="button" variant={mode === "general" ? "accent" : "pill"} size="pill" onClick={() => setMode("general")}>GENERAL</Button>
               </div>
             </div>
           </div>
