@@ -2,14 +2,12 @@ import type { NextConfig } from 'next';
 import path from 'path';
 
 const nextConfig: NextConfig = {
-  async headers() {
+  async redirects() {
     return [
-      {
-        source: '/vikash-portfolio/:path*',
-        headers: [
-          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
-        ],
-      },
+      { source: '/vikashs-portfolio', destination: '/about', permanent: true },
+      { source: '/vikashs-portfolio/:path*', destination: '/about', permanent: true },
+      { source: '/vikash-portfolio', destination: '/about', permanent: true },
+      { source: '/vikash-portfolio/:path*', destination: '/about', permanent: true },
     ];
   },
   serverExternalPackages: ['pdf-parse'],
