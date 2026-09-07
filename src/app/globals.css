@@ -430,6 +430,18 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
   overflow-wrap: anywhere;
   word-break: break-word;
 }
+
+/* Header overflow: grid columns + never break labels (overrides the global a wrap) */
+.site-header-bar {
+  min-width: 0;
+}
+.site-header-bar a,
+.site-header-bar button,
+.site-header-bar span {
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+  white-space: nowrap;
+}
 /* Containers should not exceed viewport on small screens */
 .container, .max-w-7xl, .max-w-6xl, .max-w-5xl {
   max-width: min(100%, var(--container-max, 80rem));
