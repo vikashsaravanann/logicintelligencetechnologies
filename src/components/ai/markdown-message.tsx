@@ -53,7 +53,7 @@ export function MarkdownMessage({ content }: { content: string }) {
   );
 
   return (
-    <div className="prose prose-invert prose-sm max-w-none prose-p:my-1.5 prose-pre:p-0 prose-pre:bg-transparent">
+    <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1.5 prose-pre:p-0 prose-pre:bg-transparent prose-headings:text-inherit prose-p:text-inherit">
       <ReactMarkdown components={components as never}>{content}</ReactMarkdown>
     </div>
   );
