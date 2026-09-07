@@ -88,6 +88,7 @@ function readFile(file: File): Promise<AttachFile> {
 
 export default function AiChatPage() {
   const [landed, setLanded] = useState(true);
+  const [landMenu, setLandMenu] = useState(false);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [input, setInput] = useState("");
@@ -505,18 +506,32 @@ export default function AiChatPage() {
       <div className="min-h-[100dvh] text-[#F3EDE4] relative overflow-hidden" style={{ background: glow }}>
         <style>{`@keyframes lit-marquee{from{transform:translate3d(-50%,0,0)}to{transform:translate3d(0,0,0)}}.lit-ticker{animation:lit-marquee 5s linear infinite;will-change:transform}@media (prefers-reduced-motion:reduce){.lit-ticker{animation:lit-marquee 5s linear infinite!important;animation-iteration-count:infinite!important}}`}</style>
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42vh] bg-gradient-to-t from-orange-600/40 via-orange-500/10 to-transparent blur-2xl" />
-        <header className="relative z-20 grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-8 py-5">
-          <Link href="/" className="justify-self-start flex items-center gap-2 min-w-0 max-w-full">
+        <header className="relative z-30 grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-3 px-4 sm:px-8 py-5">
+          <Link href="/" className="justify-self-start flex items-center gap-2 min-w-0 max-w-[58vw] sm:max-w-full">
             <Image src={COMPANY.logoIconPath} alt="" width={28} height={28} className="rounded-full object-cover border border-white/20 shrink-0" />
-            <span className="text-[11px] sm:text-[13px] font-semibold tracking-[0.08em] uppercase truncate">LOGIC INTELLIGENCE TECHNOLOGIES</span>
+            <span className="hidden xs:inline sm:inline text-[10px] sm:text-[13px] font-semibold tracking-[0.08em] uppercase truncate">LOGIC INTELLIGENCE TECHNOLOGIES</span>
           </Link>
           <nav className="hidden md:flex justify-self-center items-center gap-1 rounded-full border border-white/10 bg-black/30 px-2 py-1.5 backdrop-blur-md">
-            {[["HOME", "/"], ["ABOUT US", "/about"], ["PACKAGE", "/packages"], ["BLOG", "/blog"]].map(([label, href]) => (
+            {LAND_NAV.filter(([, href]) => href !== "/contact").map(([label, href]) => (
               <Link key={href} href={href} className="px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] uppercase whitespace-nowrap text-[#E8DFD4]/80 hover:text-white">{label}</Link>
             ))}
           </nav>
-          <Link href="/contact" className="justify-self-end rounded-full border border-white/15 bg-black/30 px-4 py-2 text-[11px] font-semibold tracking-[0.14em] uppercase whitespace-nowrap">CONTACT US</Link>
+          <div className="justify-self-end flex items-center gap-2">
+            <Link href="/contact" className="hidden md:inline-flex rounded-full border border-white/15 bg-black/30 px-4 py-2 text-[11px] font-semibold tracking-[0.14em] uppercase whitespace-nowrap">CONTACT US</Link>
+            <button type="button" onClick={() => setLandMenu((v) => !v)} className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-full border border-white/15 bg-black/30" aria-expanded={landMenu} aria-label={landMenu ? "Close menu" : "Open menu"}>
+              {landMenu ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
+          </div>
         </header>
+        {landMenu && (
+          <div className="md:hidden fixed inset-0 z-40 bg-black/70 backdrop-blur-sm" onClick={() => setLandMenu(false)}>
+            <div className="absolute top-20 left-4 right-4 rounded-2xl border border-white/10 bg-[#120c08]/95 p-3 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+              {LAND_NAV.map(([label, href]) => (
+                <Link key={href} href={href} onClick={() => setLandMenu(false)} className="block rounded-xl px-4 py-3 text-[12px] font-semibold tracking-[0.16em] uppercase text-[#E8DFD4] hover:bg-white/5">{label}</Link>
+              ))}
+            </div>
+          </div>
+        )}
         <main className="relative z-10 flex flex-col items-center text-center px-6 pt-16 sm:pt-24 pb-28">
           <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/35 px-3 py-1 text-xs mb-8"><Sparkles className="w-3.5 h-3.5 text-orange-300" /> Logic AI</p>
           <h1 className="max-w-5xl font-serif text-[2.4rem] sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-[#F6EFE6]">The fastest way<br /> to Build and Grow<br /> your Website.</h1>
