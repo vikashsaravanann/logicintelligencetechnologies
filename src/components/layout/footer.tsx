@@ -142,6 +142,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-5">
               {[
                 { label: 'ABOUT US', href: '/about' },
+                { label: 'AI ASSISTANT', href: '/ai-assistant' },
                 { label: 'OUR WORK', href: '/work' },
                 { label: 'TERMS OF SERVICE', href: '/terms' },
                 { label: 'PRIVACY POLICY', href: '/privacy' },
