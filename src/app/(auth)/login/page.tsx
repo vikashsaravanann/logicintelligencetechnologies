@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { Lock, Mail, Eye, EyeOff, ArrowRight, Shield, User, CheckCircle2 } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff, ArrowRight, Shield, User, CheckCircle2, Zap, Cpu, Globe, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -231,7 +231,7 @@ function AuthContent() {
         : "Access the Logic Intelligence Technologies client portal.";
 
   const swapped = mode === "signup";
-  const swapSpring = { type: "spring" as const, stiffness: 62, damping: 18, mass: 0.75 };
+  const swapSpring = { duration: 0.32, ease: [0.22, 1, 0.36, 1] as const };
   const [wide, setWide] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
@@ -534,48 +534,87 @@ function AuthContent() {
           initial={false}
           animate={{ x: wide && swapped ? "-100%" : 0 }}
           transition={swapSpring}
-          className={`hidden lg:flex relative w-1/2 h-full min-w-0 overflow-hidden items-center justify-center p-10 xl:p-14 ${swapped ? "border-r border-white/5" : "border-l border-white/5"}`}
+          className={`hidden lg:flex relative w-1/2 h-full min-w-0 overflow-hidden ${swapped ? "border-r border-white/5" : "border-l border-white/5"}`}
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-indigo-600/10" />
-          <div className="relative max-w-lg">
-            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-cyan-400 mb-5">
-              {COMPANY.entityLabel.toUpperCase()} · COIMBATORE
-            </p>
-            <h2 className="text-3xl xl:text-[2.7rem] font-semibold leading-[1.05] tracking-[-0.04em] mb-6">
-              Production software.
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-sky-200 mt-2">
-                Practical AI.
-              </span>
-            </h2>
-            <p className="text-zinc-400 leading-relaxed mb-6 text-[14px]">
-              LOGIC INTELLIGENCE TECHNOLOGIES builds websites, custom systems, and private
-              knowledge assistants for Indian SMBs. Demo first. Transparent packs from ₹8,999.
-              Source on full payment.
-            </p>
-            <div className="grid grid-cols-3 gap-3 mb-6">
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-indigo-600/15" />
+          <div className="relative h-full w-full flex flex-col justify-between px-8 xl:px-12 py-8">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-cyan-400">
+                {COMPANY.entityLabel.toUpperCase()} · COIMBATORE
+              </p>
+              <h2 className="mt-3 text-[2.1rem] xl:text-[2.55rem] font-semibold leading-[1.05] tracking-[-0.04em]">
+                Production software.
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-sky-200 mt-1">
+                  Practical AI.
+                </span>
+              </h2>
+              <p className="mt-3 text-zinc-300 text-[13.5px] leading-relaxed">
+                LOGIC INTELLIGENCE TECHNOLOGIES — websites, custom systems, and private
+                knowledge assistants for Indian SMBs. Demo first. 31-point scoping. Source on
+                full payment.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2.5 my-5">
               {[
+                { k: "Launch from", v: "₹8,999" },
+                { k: "Pro from", v: "₹18,999" },
+                { k: "Custom from", v: "₹50,000" },
                 { k: "HQ", v: "CBE" },
                 { k: "Demo", v: "Free" },
-                { k: "From", v: "₹8,999" },
+                { k: "Source", v: "Yours" },
               ].map((s) => (
-                <div key={s.k} className="rounded-2xl border border-white/15 bg-white/[0.07] backdrop-blur-md px-3 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]">
-                  <p className="text-lg font-black tracking-tight">{s.v}</p>
-                  <p className="text-[10px] uppercase tracking-widest text-zinc-500 mt-1">{s.k}</p>
+                <div
+                  key={s.k}
+                  className="rounded-2xl border border-white/15 bg-white/[0.07] backdrop-blur-md px-3 py-3.5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
+                >
+                  <p className="text-base xl:text-lg font-black tracking-tight">{s.v}</p>
+                  <p className="text-[9px] uppercase tracking-widest text-zinc-500 mt-1">{s.k}</p>
                 </div>
               ))}
             </div>
-            <ul className="space-y-3 text-sm text-zinc-300">
+
+            <div className="grid grid-cols-2 gap-2.5 mb-5">
               {[
-                "Projects, files, and support in one portal",
-                "Google or GitHub — official brand buttons",
-                "Staff dashboard · client profile after sign-in",
+                { icon: Cpu, t: "Stack", d: "Next.js · FastAPI · Grok · pgvector" },
+                { icon: Zap, t: "Process", d: "31-point scope · demo before pay" },
+                { icon: Globe, t: "Live", d: "Portal · /ai · Knowledge Assistant" },
+                { icon: MessageCircle, t: "Handoff", d: "WhatsApp +91 93428 77474" },
+              ].map((b) => (
+                <div
+                  key={b.t}
+                  className="rounded-2xl border border-white/12 bg-white/[0.05] p-3.5 flex gap-3"
+                >
+                  <b.icon className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-white">{b.t}</p>
+                    <p className="text-[12px] text-zinc-400 mt-0.5 leading-snug">{b.d}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-[13px] text-zinc-300 mb-5">
+              {[
+                "Projects, files, support in one portal",
+                "Google or GitHub — official buttons",
+                "Staff dashboard · client profile",
+                "RAG answers from your documents",
               ].map((line) => (
-                <li key={line} className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
+                <li key={line} className="flex items-start gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 mt-0.5 shrink-0" />
                   {line}
                 </li>
               ))}
             </ul>
+
+            <div className="rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-400">
+              <a href={COMPANY.websiteUrl} className="hover:text-cyan-300">Website</a>
+              <a href={COMPANY.linkedinUrl} className="hover:text-cyan-300">LinkedIn</a>
+              <a href={COMPANY.telegramBotUrl} className="hover:text-cyan-300">Telegram</a>
+              <a href={COMPANY.instagramUrl} className="hover:text-cyan-300">Instagram</a>
+              <a href={`https://wa.me/${COMPANY.whatsappNumber}`} className="hover:text-cyan-300">WhatsApp</a>
+            </div>
           </div>
         </motion.aside>
       </div>
