@@ -32,13 +32,15 @@ const NavLink = ({ href, children, onHover }: { href: string; children: React.Re
   return (
     <Link 
       href={href} 
-      className={`text-[10px] xl:text-[11px] 2xl:text-[12px] font-semibold tracking-[0.12em] transition-colors relative py-2 flex items-center gap-1 whitespace-nowrap shrink-0 px-1 ${isActive(href) ? "text-primary" : "text-zinc-300 hover:text-primary"}`}
+      className={`inline-flex flex-col items-center justify-center gap-1.5 py-1 px-1 text-[10px] xl:text-[11px] 2xl:text-[12px] font-semibold tracking-[0.12em] transition-colors whitespace-nowrap shrink-0 ${isActive(href) ? "text-primary" : "text-zinc-300 hover:text-primary"}`}
       onMouseEnter={onHover}
     >
-      {children}
-      {isActive(href) && (
-        <motion.div layoutId="activeNav" className="absolute bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary" />
-      )}
+      <span className="inline-flex items-center gap-1 leading-none">{children}</span>
+      <span className="relative h-1.5 w-1.5 shrink-0">
+        {isActive(href) && (
+          <motion.div layoutId="activeNav" className="absolute inset-0 rounded-full bg-primary" />
+        )}
+      </span>
     </Link>
   );
 };
