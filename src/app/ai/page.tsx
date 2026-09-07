@@ -15,6 +15,17 @@ type Mode = "company" | "general";
 type ChatMessage = { id: string; role: Role; content: string; createdAt: number; provider?: string; error?: boolean };
 type ChatSession = { id: string; title: string; messages: ChatMessage[]; updatedAt: number; remote?: boolean };
 type AttachFile = { name: string; type: string; data: string };
+type SpeechRecCtor = new () => BrowserSpeechRec;
+type BrowserSpeechRec = {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  onresult: ((ev: { results: ArrayLike<{ 0: { transcript: string }; isFinal?: boolean }> }) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+};
 
 const STORAGE_KEY = "lit_ai_sessions_v3";
 const STREAM_MS = 45_000;
@@ -103,7 +114,7 @@ export default function AiChatPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const recRef = useRef<SpeechRecognition | null>(null);
+  const recRef = useRef<BrowserSpeechRec | null>(null);
   const supabase = createClientComponentClient();
 
   useEffect(() => {
@@ -245,8 +256,8 @@ export default function AiChatPage() {
   }
 
   function toggleMic() {
-    const SR = (window as unknown as { SpeechRecognition?: typeof SpeechRecognition; webkitSpeechRecognition?: typeof SpeechRecognition }).SpeechRecognition
-      || (window as unknown as { webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition;
+    const w = window as unknown as { SpeechRecognition?: SpeechRecCtor; webkitSpeechRecognition?: SpeechRecCtor };
+    const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
     if (!SR) {
       setAttachError("Voice works in Chrome or Edge.");
       return;
@@ -260,8 +271,8 @@ export default function AiChatPage() {
     rec.lang = "en-IN";
     rec.interimResults = true;
     rec.continuous = false;
-    rec.onresult = (e: SpeechRecognitionEvent) => {
-      const t = Array.from(e.results).map((r) => r[0].transcript).join(" ");
+    rec.onresult = (e) => {
+      const t = Array.from(e.results as ArrayLike<{ 0: { transcript: string }; isFinal?: boolean }>).map((r) => r[0].transcript).join(" ");
       setInput(t);
       if (e.results[e.results.length - 1].isFinal) {
         setListening(false);
