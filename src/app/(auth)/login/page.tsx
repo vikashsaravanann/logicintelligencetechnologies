@@ -91,7 +91,7 @@ function AuthContent() {
     };
   }, [router, supabase.auth]);
 
-  const handleOAuthLogin = async (provider: "google" | "github" | "twitter" | "x") => {
+  const handleOAuthLogin = async (provider: "google" | "github") => {
     try {
       setOauthBusy(provider);
       setServerError(null);
@@ -214,19 +214,21 @@ function AuthContent() {
           }}
         />
         <div className="relative w-full max-w-[440px] mx-auto">
-          <Link href="/" className="inline-flex items-center gap-3 mb-10 group">
-            <span className="w-11 h-11 rounded-xl overflow-hidden border border-white/10 bg-white shrink-0">
+          <Link href="/" className="flex items-center gap-3.5 mb-10 group min-w-0">
+            <span className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-white/15 bg-white shrink-0 shadow-[0_0_24px_rgba(14,165,233,0.18)]">
               <img
                 src={COMPANY.logoIconPath}
-                alt=""
-                className="w-full h-full object-cover"
+                alt={`${COMPANY.displayName} logo`}
+                className="w-full h-full object-cover rounded-full"
               />
             </span>
-            <span className="text-left">
-              <span className="block text-[11px] font-bold tracking-[0.18em] uppercase text-zinc-400 group-hover:text-white transition-colors">
-                Logic Intelligence
+            <span className="min-w-0 text-left">
+              <span className="block whitespace-nowrap text-[13px] sm:text-[15px] font-black tracking-tight text-white group-hover:text-primary transition-colors">
+                {COMPANY.displayName}
               </span>
-              <span className="block text-sm font-semibold text-zinc-300">Client portal</span>
+              <span className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500 mt-0.5">
+                Client portal
+              </span>
             </span>
           </Link>
 
@@ -256,12 +258,12 @@ function AuthContent() {
 
           {mode !== "forgot" && (
             <>
-              <div className="grid grid-cols-3 gap-2.5 mb-6">
+              <div className="grid grid-cols-2 gap-3 mb-6">
                 <button
                   type="button"
                   onClick={() => handleOAuthLogin("google")}
                   disabled={busy}
-                  className="flex items-center justify-center gap-2 min-h-11 rounded-xl text-[13px] font-semibold bg-white hover:bg-[#f8f9fa] text-[#3c4043] border border-[#dadce0] disabled:opacity-50"
+                  className="flex items-center justify-center gap-2.5 min-h-12 rounded-xl text-[13px] font-semibold bg-white hover:bg-[#f8f9fa] text-[#3c4043] border border-[#dadce0] disabled:opacity-50"
                 >
                   <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" aria-hidden>
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -269,29 +271,18 @@ function AuthContent() {
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                   </svg>
-                  <span className="hidden xs:inline sm:inline">{oauthBusy === "google" ? "…" : "Google"}</span>
+                  {oauthBusy === "google" ? "Connecting…" : "Google"}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleOAuthLogin("github")}
                   disabled={busy}
-                  className="flex items-center justify-center gap-2 min-h-11 rounded-xl text-[13px] font-semibold bg-[#24292f] hover:bg-[#1b1f23] text-white disabled:opacity-50"
+                  className="flex items-center justify-center gap-2.5 min-h-12 rounded-xl text-[13px] font-semibold bg-[#24292f] hover:bg-[#1b1f23] text-white disabled:opacity-50"
                 >
                   <svg className="w-[18px] h-[18px]" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
                     <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
                   </svg>
-                  GitHub
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleOAuthLogin("x")}
-                  disabled={busy}
-                  className="flex items-center justify-center gap-2 min-h-11 rounded-xl text-[13px] font-semibold bg-black hover:bg-[#141414] text-white border border-white/10 disabled:opacity-50"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.727-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                  X
+                  {oauthBusy === "github" ? "Connecting…" : "GitHub"}
                 </button>
               </div>
               <div className="flex items-center gap-3 mb-6">
