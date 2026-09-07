@@ -18,7 +18,8 @@ type AttachFile = { name: string; type: string; data: string };
 const STORAGE_KEY = "lit_ai_sessions_v3";
 const STREAM_MS = 45_000;
 const MAX_FILE = 2 * 1024 * 1024;
-const TICKER = "LOGIC INTELLIGENCE TECHNOLOGIES  ·  WHERE LOGIC MEETS INNOVATION  ·  ";
+const TICKER_UNIT = "LOGIC INTELLIGENCE TECHNOLOGIES  ·  WHERE LOGIC MEETS INNOVATION  ·  ";
+const TICKER = Array.from({ length: 8 }, () => TICKER_UNIT).join("");
 const STARTERS = [
   "What packages do you offer and starting prices?",
   "How does a production RAG pipeline work?",
@@ -344,7 +345,7 @@ export default function AiChatPage() {
   if (landed) {
     return (
       <div className="min-h-[100dvh] text-[#F3EDE4] relative overflow-hidden" style={{ background: glow }}>
-        <style>{`@keyframes lit-marquee { from { transform: translateX(-50%); } to { transform: translateX(0); } }`}</style>
+        <style>{`@keyframes lit-marquee{from{transform:translate3d(-50%,0,0)}to{transform:translate3d(0,0,0)}}.lit-ticker{animation:lit-marquee 5s linear infinite;will-change:transform}@media (prefers-reduced-motion:reduce){.lit-ticker{animation:lit-marquee 5s linear infinite!important;animation-iteration-count:infinite!important}}`}</style>
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42vh] bg-gradient-to-t from-orange-600/40 via-orange-500/10 to-transparent blur-2xl" />
         <header className="relative z-20 grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-8 py-5">
           <Link href="/" className="justify-self-start flex items-center gap-2 min-w-0 max-w-full">
@@ -368,9 +369,9 @@ export default function AiChatPage() {
           </div>
         </main>
         <div className="absolute bottom-5 inset-x-0 overflow-hidden pointer-events-none">
-          <div className="flex w-max will-change-transform" style={{ animation: "lit-marquee 18s linear infinite" }}>
-            <p className="whitespace-nowrap text-[11px] tracking-[0.35em] uppercase text-white/40 pr-12">{TICKER}</p>
-            <p className="whitespace-nowrap text-[11px] tracking-[0.35em] uppercase text-white/40 pr-12" aria-hidden>{TICKER}</p>
+          <div className="lit-ticker flex w-max">
+            <p className="lit-ticker-text whitespace-nowrap text-[12px] tracking-[0.28em] uppercase text-white/45 pr-16">{TICKER}</p>
+            <p className="lit-ticker-text whitespace-nowrap text-[12px] tracking-[0.28em] uppercase text-white/45 pr-16" aria-hidden>{TICKER}</p>
           </div>
         </div>
       </div>
