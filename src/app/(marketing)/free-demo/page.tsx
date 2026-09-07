@@ -127,7 +127,7 @@ export default function FreeDemoPage() {
                </a>
              </motion.div>
           ) : (
-            
+            <>
             <div className="bg-[#12172b] p-6 md:p-8 rounded-[2rem] border border-white/10 mb-8">
               <h2 className="text-lg font-bold text-white mb-2">Website readiness checklist — items 31–50</h2>
               <p className="text-sm text-zinc-400 mb-6">
@@ -144,7 +144,7 @@ export default function FreeDemoPage() {
               </ul>
             </div>
 
-<form onSubmit={handleSubmit} className="space-y-12">
+            <form onSubmit={handleSubmit} className="space-y-12">
               <div className="bg-[#12172b] p-8 md:p-6 md:p-10 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
                 
@@ -372,6 +372,7 @@ export default function FreeDemoPage() {
                 </div>
               </div>
             </form>
+            </>
           )}
         </div>
       </section>

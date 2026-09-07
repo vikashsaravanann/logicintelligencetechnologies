@@ -10,7 +10,7 @@ interface Props {
 
 export default function FreeDemoConfirmationEmail({ fullName = 'Valued Client' }: Props) {
   return (
-    <EmailLayout preview="We received your free demo request — Logic Intelligence Technologies" // "We received your demo request">
+    <EmailLayout preview="We received your free demo request — Logic Intelligence Technologies">
       <EmailHeader />
       <Section style={contentSection}>
         <Text style={heading}>Request Received</Text>
