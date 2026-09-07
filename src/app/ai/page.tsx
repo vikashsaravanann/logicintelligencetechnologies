@@ -14,6 +14,7 @@ type ChatMessage = { id: string; role: Role; content: string; createdAt: number;
 type ChatSession = { id: string; title: string; messages: ChatMessage[]; updatedAt: number };
 
 const STORAGE_KEY = "lit_ai_sessions_v3";
+const STREAM_MS = 45_000;
 const STARTERS = [
   "What packages do you offer and starting prices?",
   "How does a production RAG pipeline work?",
@@ -26,10 +27,14 @@ const WA = `https://wa.me/${COMPANY.whatsappNumber}?text=${encodeURIComponent("H
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
-
 function initials(email: string | null) {
-  if (!email) return "U";
-  return email.slice(0, 1).toUpperCase();
+  return email ? email.slice(0, 1).toUpperCase() : "U";
+}
+function followUps(reply: string) {
+  const r = reply.toLowerCase();
+  if (/price|₹|pack|cost/.test(r)) return ["What is in Digital Launch?", "Can I get a free demo?", "Talk on WhatsApp"];
+  if (/rag|ai|assistant/.test(r)) return ["How do you stop invented prices?", "How long is a demo?", "Talk on WhatsApp"];
+  return ["Show packages and floors", "How does a free demo work?", "Talk on WhatsApp"];
 }
 
 export default function AiChatPage() {
@@ -71,6 +76,7 @@ export default function AiChatPage() {
     return () => {
       window.removeEventListener("online", on);
       window.removeEventListener("offline", off);
+      abortRef.current?.abort();
     };
   }, [supabase.auth]);
 
@@ -83,30 +89,29 @@ export default function AiChatPage() {
   }, [sessions, activeId, sending, landed]);
 
   const active = useMemo(() => sessions.find((s) => s.id === activeId) || null, [sessions, activeId]);
+  const lastAssistant = [...(active?.messages || [])].reverse().find((m) => m.role === "assistant" && m.content && !m.error);
 
   const newChat = useCallback(() => {
+    abortRef.current?.abort();
     const id = uid();
     setSessions((prev) => [{ id, title: "New chat", messages: [], updatedAt: Date.now() }, ...prev]);
     setActiveId(id);
     setSidebarOpen(false);
+    setSending(false);
   }, []);
 
-  function exportChat() {
-    if (!active) return;
-    const text = active.messages.map((m) => `${m.role.toUpperCase()}: ${m.content}`).join("\n\n");
-    const blob = new Blob([text], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${active.title.replace(/\s+/g, "-").slice(0, 40) || "logic-ai"}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+  function patchAssistant(sessionId: string, assistantId: string, patch: Partial<ChatMessage>) {
+    setSessions((prev) => prev.map((s) => s.id === sessionId ? { ...s, messages: s.messages.map((m) => m.id === assistantId ? { ...m, ...patch } : m) } : s));
   }
 
   async function send(text?: string) {
     const content = (text ?? input).trim();
     if (!content || sending) return;
     if (!navigator.onLine) { setOnline(false); return; }
+    if (content.toLowerCase() === "talk on whatsapp") {
+      window.open(WA, "_blank");
+      return;
+    }
     let sessionId = activeId;
     if (!sessionId) {
       sessionId = uid();
@@ -127,6 +132,8 @@ export default function AiChatPage() {
     abortRef.current?.abort();
     const ac = new AbortController();
     abortRef.current = ac;
+    const timer = window.setTimeout(() => ac.abort(), STREAM_MS);
+    let full = "";
     try {
       const res = await fetch("/api/ai", {
         method: "POST",
@@ -140,7 +147,6 @@ export default function AiChatPage() {
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
-        let full = "";
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
@@ -156,12 +162,12 @@ export default function AiChatPage() {
               const json = JSON.parse(payload);
               if (json.type === "token" && json.content) {
                 full += json.content;
-                setSessions((prev) => prev.map((s) => s.id === sessionId ? { ...s, messages: s.messages.map((m) => m.id === assistantId ? { ...m, content: full } : m) } : s));
+                patchAssistant(sessionId, assistantId, { content: full });
               }
               if (json.type === "done") {
                 full = json.content || full;
                 setLastProvider(json.provider || null);
-                setSessions((prev) => prev.map((s) => s.id === sessionId ? { ...s, messages: s.messages.map((m) => m.id === assistantId ? { ...m, content: full, provider: json.provider } : m) } : s));
+                patchAssistant(sessionId, assistantId, { content: full, provider: json.provider });
               }
             } catch { /* ignore */ }
           }
@@ -171,13 +177,18 @@ export default function AiChatPage() {
         const data = await res.json();
         const reply = data.generated_text || data.reply || data.message || "";
         if (!reply) throw new Error("Empty response");
+        full = reply;
         setLastProvider(data.provider || null);
-        setSessions((prev) => prev.map((s) => s.id === sessionId ? { ...s, messages: s.messages.map((m) => m.id === assistantId ? { ...m, content: reply, provider: data.provider } : m) } : s));
+        patchAssistant(sessionId, assistantId, { content: reply, provider: data.provider });
       }
     } catch (err) {
-      if ((err as Error)?.name === "AbortError") return;
-      setSessions((prev) => prev.map((s) => s.id === sessionId ? { ...s, messages: s.messages.map((m) => m.id === assistantId ? { ...m, error: true, content: "Could not reach the AI service. Retry." } : m) } : s));
+      const aborted = (err as Error)?.name === "AbortError";
+      patchAssistant(sessionId, assistantId, {
+        error: true,
+        content: full.trim() || (aborted ? "Stopped — tap Retry to run that again." : "The assistant did not respond in time. Tap Retry."),
+      });
     } finally {
+      window.clearTimeout(timer);
       setSending(false);
     }
   }
@@ -192,9 +203,7 @@ export default function AiChatPage() {
       // eslint-disable-next-line @next/next/no-img-element
       <img src={userAvatar} alt="" className="w-8 h-8 rounded-full object-cover border border-white/20 shrink-0" />
     ) : (
-      <div className="w-8 h-8 rounded-full bg-[#E8651C] text-white text-xs font-bold grid place-items-center shrink-0" title={userEmail || "Guest"}>
-        {initials(userEmail)}
-      </div>
+      <div className="w-8 h-8 rounded-full bg-[#E8651C] text-white text-xs font-bold grid place-items-center shrink-0" title={userEmail || "Guest"}>{initials(userEmail)}</div>
     );
 
   if (landed) {
@@ -224,9 +233,7 @@ export default function AiChatPage() {
           </div>
         </main>
         <div className="absolute bottom-6 inset-x-0 overflow-hidden pointer-events-none">
-          <p className="whitespace-nowrap text-[11px] tracking-[0.35em] uppercase text-white/35" style={{ animation: "lit-marquee 14s linear infinite" }}>
-            LOGIC INTELLIGENCE TECHNOLOGIES · WHERE LOGIC MEETS INNOVATION · LOGIC INTELLIGENCE TECHNOLOGIES · WHERE LOGIC MEETS INNOVATION ·
-          </p>
+          <p className="whitespace-nowrap text-[11px] tracking-[0.35em] uppercase text-white/35" style={{ animation: "lit-marquee 14s linear infinite" }}>LOGIC INTELLIGENCE TECHNOLOGIES · WHERE LOGIC MEETS INNOVATION · LOGIC INTELLIGENCE TECHNOLOGIES · WHERE LOGIC MEETS INNOVATION ·</p>
         </div>
       </div>
     );
@@ -241,11 +248,11 @@ export default function AiChatPage() {
             <Image src={COMPANY.logoIconPath} alt="" width={22} height={22} className="rounded-full object-cover hidden sm:block" />
             <button type="button" onClick={() => setLanded(true)} className="text-left min-w-0">
               <h1 className="text-sm font-bold tracking-wide">LOGIC AI</h1>
-              <p className="text-[11px] text-zinc-500 truncate">{lastProvider ? `via ${lastProvider}` : "streaming"}{userEmail ? ` · ${userEmail}` : " · guest"}</p>
+              <p className="text-[11px] text-zinc-500 truncate">{sending ? "thinking…" : lastProvider ? `via ${lastProvider}` : "ready"}{userEmail ? ` · ${userEmail}` : " · guest"}</p>
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <button type="button" onClick={exportChat} className="hidden sm:inline-flex items-center gap-1 px-2 py-1.5 text-[11px] border border-white/10 rounded-lg" disabled={!active?.messages.length}><Download className="w-3 h-3" /> Export</button>
+            <button type="button" onClick={() => { if (!active) return; const t = active.messages.map((m) => `${m.role}: ${m.content}`).join("\n\n"); const b = new Blob([t], { type: "text/plain" }); const u = URL.createObjectURL(b); const a = document.createElement("a"); a.href = u; a.download = "logic-ai.txt"; a.click(); URL.revokeObjectURL(u); }} className="hidden sm:inline-flex items-center gap-1 px-2 py-1.5 text-[11px] border border-white/10 rounded-lg" disabled={!active?.messages.length}><Download className="w-3 h-3" /> Export</button>
             <a href={WA} className="hidden sm:inline-flex text-[11px] px-2 py-1.5 border border-white/10 rounded-lg">WhatsApp</a>
             <Link href="/" className="text-xs text-zinc-400">Home</Link>
             <button type="button" onClick={newChat} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs border border-white/10"><MessageSquarePlus className="w-3.5 h-3.5" /> New</button>
@@ -292,15 +299,33 @@ export default function AiChatPage() {
             )}
             {active?.messages.map((m) => (
               <div key={m.id} className={`max-w-3xl mx-auto flex gap-2 items-end ${m.role === "user" ? "justify-end" : ""}`}>
-                {m.role === "assistant" && <div className="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-400/30 flex items-center justify-center shrink-0"><Sparkles className="w-3.5 h-3.5 text-orange-300" /></div>}
+                {m.role === "assistant" && <div className="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-400/30 flex items-center justify-center shrink-0"><Sparkles className={`w-3.5 h-3.5 text-orange-300 ${sending && !m.content ? "animate-pulse" : ""}`} /></div>}
                 <div className={`rounded-2xl px-4 py-3 text-sm ${m.role === "user" ? "bg-[#E8651C] text-white max-w-[80%]" : "bg-black/30 border border-white/10 flex-1 min-w-0"}`}>
-                  {m.role === "assistant" ? (m.content ? <MarkdownMessage content={m.content} /> : sending && <Loader2 className="w-4 h-4 animate-spin" />) : m.content}
-                  {m.error && <button type="button" className="mt-2 text-xs inline-flex items-center gap-1" onClick={() => void send(active.messages.find((x) => x.role === "user")?.content)}><RefreshCw className="w-3 h-3" /> Retry</button>}
-                  {m.role === "assistant" && m.content && <button type="button" className="mt-2 text-[11px] text-zinc-500 inline-flex items-center gap-1" onClick={async () => { await navigator.clipboard.writeText(m.content); setCopiedId(m.id); }}>{copiedId === m.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Copy</button>}
+                  {m.role === "assistant" ? (
+                    m.content ? <MarkdownMessage content={m.content} /> : sending ? (
+                      <span className="inline-flex items-center gap-2 text-zinc-400 text-xs">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> Thinking
+                        <span className="flex gap-1">
+                          <span className="w-1 h-1 rounded-full bg-orange-300 animate-bounce [animation-delay:-0.2s]" />
+                          <span className="w-1 h-1 rounded-full bg-orange-300 animate-bounce [animation-delay:-0.1s]" />
+                          <span className="w-1 h-1 rounded-full bg-orange-300 animate-bounce" />
+                        </span>
+                      </span>
+                    ) : null
+                  ) : m.content}
+                  {m.error && <button type="button" className="mt-2 text-xs inline-flex items-center gap-1" onClick={() => void send(active.messages.filter((x) => x.role === "user").at(-1)?.content)}><RefreshCw className="w-3 h-3" /> Retry</button>}
+                  {m.role === "assistant" && m.content && !m.error && <button type="button" className="mt-2 text-[11px] text-zinc-500 inline-flex items-center gap-1" onClick={async () => { await navigator.clipboard.writeText(m.content); setCopiedId(m.id); }}>{copiedId === m.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Copy</button>}
                 </div>
                 {m.role === "user" && <SenderFace />}
               </div>
             ))}
+            {!sending && lastAssistant && (
+              <div className="max-w-3xl mx-auto flex flex-wrap gap-2 pl-10">
+                {followUps(lastAssistant.content).map((q) => (
+                  <button key={q} type="button" onClick={() => void send(q)} className="text-[11px] rounded-full border border-white/15 px-3 py-1 hover:border-orange-400/50">{q}</button>
+                ))}
+              </div>
+            )}
             <div ref={bottomRef} />
           </div>
           <form onSubmit={onSubmit} className="px-3 sm:px-8 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2">
