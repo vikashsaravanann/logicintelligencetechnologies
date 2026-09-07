@@ -76,7 +76,17 @@ AVAILABILITY:
      STATE MANAGEMENT & LOCAL STORAGE
      ═══════════════════════════════════════════ */
   let conversationHistory = [];
-  const CHAT_VERSION = '1.3.3'; // Updated version
+  const CHAT_VERSION = '1.3.4';
+  const IS_MOBILE = () =>
+    (typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(max-width: 768px)').matches);
+
+  function maybeSpeak(utterance) {
+    if (IS_MOBILE()) return; // skip TTS on mobile — saves CPU/battery
+    try { window.maybeSpeak(utterance); } catch (_) {}
+  }
+
 
   try {
     const storedVer = localStorage.getItem('vikash_chat_version');
@@ -231,14 +241,15 @@ AVAILABILITY:
      PROACTIVE AUTO-OPEN TIMER (8 seconds)
      ═══════════════════════════════════════════ */
   const autoOpenKey = 'vikash_chat_auto_opened';
-  if (!sessionStorage.getItem(autoOpenKey) && conversationHistory.length === 0) {
+  // No auto-open on mobile — saves CPU, avoids covering content
+  if (!IS_MOBILE() && !sessionStorage.getItem(autoOpenKey) && conversationHistory.length === 0) {
     setTimeout(() => {
       if (!panel.classList.contains('open')) {
         panel.classList.add('open');
         sessionStorage.setItem(autoOpenKey, 'true');
         setTimeout(() => inputEl.focus(), 300);
       }
-    }, 8000);
+    }, 12000);
   }
 
   /* ═══════════════════════════════════════════
@@ -446,7 +457,7 @@ AVAILABILITY:
       if (waveformEl) waveformEl.classList.remove('active');
     };
 
-    window.speechSynthesis.speak(utterance);
+    window.maybeSpeak(utterance);
   }
 
   /* ═══════════════════════════════════════════
