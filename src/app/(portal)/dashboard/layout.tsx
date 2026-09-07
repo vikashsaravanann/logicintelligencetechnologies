@@ -3,11 +3,11 @@
 import { motion } from 'framer-motion';
 import {
   LogOut, Home, Users, Briefcase, FileText,
-  Search, Bell, Activity, Globe, Share2
+  Search, Bell, Activity, Globe, Share2, Menu
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { COMPANY } from '@/config/company';
 
@@ -17,16 +17,26 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileNav, setMobileNav] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const pathname = usePathname();
 
+  useEffect(() => { setMobileNav(false); }, [pathname]);
+  useEffect(() => {
+    document.body.style.overflow = mobileNav ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileNav]);
+
   return (
-    <div className="min-h-screen bg-[#030712] text-zinc-100 font-sans flex overflow-hidden">
+    <div className="min-h-screen bg-[#030712] text-zinc-100 font-sans flex overflow-x-hidden">
       {/* Animated Sidebar */}
+      {mobileNav && (
+        <button type="button" aria-label="Close navigation" className="lg:hidden fixed inset-0 z-30 bg-black/60" onClick={() => setMobileNav(false)} />
+      )}
       <motion.aside
-        initial={{ width: 280 }}
+        initial={false}
         animate={{ width: isSidebarOpen ? 280 : 80 }}
-        className="bg-[#0a0f1c]/80 backdrop-blur-xl border-r border-white/5 flex flex-col h-screen relative transition-all duration-300 z-20 shadow-2xl"
+        className={`bg-[#0a0f1c]/95 backdrop-blur-xl border-r border-white/5 flex flex-col h-screen transition-transform duration-300 z-40 shadow-2xl fixed lg:static inset-y-0 left-0 w-[280px] ${mobileNav ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
         <div className="p-6 flex items-center justify-between cursor-pointer" onClick={() => setSidebarOpen(!isSidebarOpen)}>
           {isSidebarOpen ? (
@@ -107,9 +117,12 @@ export default function DashboardLayout({
       {/* Main Content Area */}
       <main className="flex-1 h-screen overflow-y-auto bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/10 via-[#030712] to-[#030712]">
         {/* Sleek Header */}
-        <header className="h-20 border-b border-white/5 flex items-center justify-between px-6 md:px-10 bg-[#030712]/50 backdrop-blur-md sticky top-0 z-10">
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-black tracking-tight text-white">
+        <header className="h-16 sm:h-20 border-b border-white/5 flex items-center justify-between px-3 sm:px-6 md:px-10 bg-[#030712]/50 backdrop-blur-md sticky top-0 z-10">
+          <div className="flex items-center gap-3 min-w-0">
+            <button type="button" className="lg:hidden h-10 w-10 rounded-xl border border-white/10 grid place-items-center shrink-0" onClick={() => setMobileNav(true)} aria-label="Open menu">
+              <Menu className="w-5 h-5" />
+            </button>
+            <h1 className="text-lg sm:text-2xl font-black tracking-tight text-white truncate">
               Command <span className="text-indigo-500">Center</span>
             </h1>
             <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20">
@@ -124,7 +137,7 @@ export default function DashboardLayout({
               <input 
                 type="text" 
                 placeholder="Search anything (Cmd+K)..." 
-                className="bg-white/[0.02] border border-white/10 rounded-full pl-11 pr-4 py-2 text-base md:text-sm focus:outline-none focus:border-indigo-500/50 focus:bg-indigo-500/5 w-72 transition-all placeholder:text-zinc-600 text-zinc-300 shadow-inner" 
+                className="bg-white/[0.02] border border-white/10 rounded-full pl-11 pr-4 py-2 text-base md:text-sm focus:outline-none focus:border-indigo-500/50 focus:bg-indigo-500/5 w-36 sm:w-56 md:w-72 transition-all placeholder:text-zinc-600 text-zinc-300 shadow-inner hidden sm:block" 
               />
             </div>
             <div className="relative">
