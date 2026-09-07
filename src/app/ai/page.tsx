@@ -40,6 +40,13 @@ const STARTERS = [
 ];
 const DEMO_RE = /\b(demo|quote|book|hire|i want a (web)?site|pricing|free consult|start a project)\b/i;
 const PRICE_RE = /₹|price|pack|cost|launch|18,999|8,999|50,000|enterprise|how much/i;
+const LAND_NAV: Array<[string, string]> = [
+  ["HOME", "/"],
+  ["ABOUT US", "/about"],
+  ["PACKAGE", "/packages"],
+  ["BLOG", "/blog"],
+  ["CONTACT US", "/contact"],
+];
 const glow = "radial-gradient(ellipse 70% 45% at 50% 115%, rgba(255,110,40,0.55), transparent 60%), radial-gradient(ellipse 40% 30% at 20% 100%, rgba(180,40,10,0.25), transparent), #0a0604";
 const WA = `https://wa.me/${COMPANY.whatsappNumber}?text=${encodeURIComponent("Hi LIT — chatting on Logic AI.")}`;
 
