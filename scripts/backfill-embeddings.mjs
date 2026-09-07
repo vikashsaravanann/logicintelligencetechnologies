@@ -119,3 +119,7 @@ for (const row of rows) {
 }
 
 console.log(`Done. updated=${updated} skipped=${skipped} total=${rows.length}`);
+
+// Note: When GROQ is blocked (CDN 1010) from CI sandboxes, run from your laptop:
+//   export $(grep -v '^#' .env.local | xargs) && npm run backfill:embeddings
+// Prefer Groq nomic-embed-text-v1_5 (768-d) for production quality.
