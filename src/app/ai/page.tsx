@@ -632,13 +632,9 @@ export default function AiChatPage() {
             <button type="button" onClick={() => setMode("company")} className={`h-8 px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "company" ? "bg-[#E8651C] text-white" : "text-zinc-400"}`}>Company</button>
             <button type="button" onClick={() => setMode("general")} className={`h-8 px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "general" ? "bg-[#E8651C] text-white" : "text-zinc-400"}`}>General</button>
           </div>
-          <div className="justify-self-end flex items-center gap-1.5">
-            <button type="button" title="Export" className={`hidden sm:grid ${iconBtn}`} disabled={!active?.messages.length} onClick={() => { if (!active) return; const t = active.messages.map((m) => `${m.role}: ${m.content}`).join("\n\n"); const b = new Blob([t], { type: "text/plain" }); const u = URL.createObjectURL(b); const a = document.createElement("a"); a.href = u; a.download = "logic-ai.txt"; a.click(); URL.revokeObjectURL(u); }}><Download className="w-4 h-4" /></button>
-            <a href={waTranscript(active?.messages || [])} target="_blank" rel="noopener noreferrer" title="WhatsApp" className={`hidden sm:grid ${iconBtn}`}>WA</a>
-            <button type="button" title="Share" className={`hidden sm:grid ${iconBtn}`} onClick={() => void copyShare()}>{copiedShare ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}</button>
-            <button type="button" title="Talk to a human" className={`hidden md:grid ${iconBtn}`} onClick={() => void openTicket()}><Ticket className="w-4 h-4" /></button>
-            <Link href="/" className={pillBtn}>Home</Link>
-            <button type="button" onClick={newChat} className={`${pillBtn} bg-[#E8651C] border-[#E8651C] text-white`}><MessageSquarePlus className="w-4 h-4" /> New</button>
+          <div className="justify-self-end flex items-center gap-2">
+            <Link href="/" className={`${pillBtn} min-w-[6.75rem]`}>HOME</Link>
+            <button type="button" onClick={newChat} className={`${pillBtn} min-w-[6.75rem] bg-[#E8651C] border-[#E8651C] text-white`}>NEW</button>
             <ThemeToggle />
           </div>
         </div>
