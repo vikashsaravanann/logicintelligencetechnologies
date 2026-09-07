@@ -67,8 +67,8 @@ function buildProviders(): ProviderConfig[] {
         process.env.XAI_API_URL || "https://api.x.ai/v1/chat/completions",
       models: [
         process.env.XAI_MODEL || process.env.GROK_MODEL || "",
-        "grok-2-latest",
-        "grok-beta",
+        "grok-3",
+        "grok-3-mini",
       ].filter(Boolean),
     });
   } else if (process.env.GROK_API_KEY && (process.env.GROQ_API_URL || "").includes("x.ai")) {
@@ -76,7 +76,7 @@ function buildProviders(): ProviderConfig[] {
       id: "xai",
       apiKey: process.env.GROK_API_KEY,
       apiUrl: process.env.GROQ_API_URL || "https://api.x.ai/v1/chat/completions",
-      models: ["grok-beta"],
+      models: ["grok-3-mini"],
     });
   }
 
