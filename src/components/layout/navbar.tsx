@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { COMPANY } from "@/config/company";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { env } from "@/config/env";
 const PRIMARY_NAV: Array<{ href: string; label: string }> = [
@@ -217,6 +218,7 @@ export default function Navbar() {
                 </span>
               </Link>
               
+              <span className="hidden lg:inline-flex"><ThemeToggle variant="pill" /></span>
               <button type="button" className="lg:hidden text-white relative z-50 p-2 min-h-[44px] min-w-[44px]" onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? "Close menu" : "Open menu"}>
                 {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
@@ -282,6 +284,7 @@ export default function Navbar() {
                       Sign In
                     </Link>
                   )}
+                  <ThemeToggle variant="pill" className="w-full justify-center" />
                   <Link href="/contact" onClick={() => setIsOpen(false)} className="relative group px-6 py-4 text-center rounded-xl overflow-hidden w-full flex items-center justify-center shadow-[0_0_20px_rgba(0,191,255,0.3)]">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 opacity-90 transition-opacity duration-300"></div>
                     <span className="relative z-10 text-base font-bold text-white tracking-widest uppercase">
