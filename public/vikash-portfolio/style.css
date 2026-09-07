@@ -3793,3 +3793,33 @@ section {
 .certs-cta-card h2 { margin: 0 0 8px; }
 .certs-cta-card p { margin: 0; color: var(--text-secondary); max-width: 52ch; }
 .certifications-cta { padding: 40px 0 20px; }
+
+.nav-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.theme-toggle {
+    width: 40px; height: 40px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06); color: #fff;
+    cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+}
+.theme-toggle [data-theme-icon="sun"] { display: none; }
+html[data-theme="light"] .theme-toggle [data-theme-icon="sun"] { display: inline; }
+html[data-theme="light"] .theme-toggle [data-theme-icon="moon"] { display: none; }
+html[data-theme="light"] {
+    --bg-light: #f4f7fb;
+    --bg-card: rgba(15, 23, 42, 0.04);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+}
+html[data-theme="light"] body,
+html[data-theme="light"] #app-frame { background: #f4f7fb; color: #0f172a; }
+html[data-theme="light"] .navbar { background: rgba(255,255,255,0.92); }
+html[data-theme="light"] .logo,
+html[data-theme="light"] .nav-links a { color: #0f172a; }
+html[data-theme="light"] .nav-toggle span { background: #0f172a; }
+html[data-theme="light"] .theme-toggle { color: #0f172a; border-color: rgba(15,23,42,0.12); background: #fff; }
+html[data-theme="light"] .bento-card,
+html[data-theme="light"] .hero-stat-box,
+html[data-theme="light"] .certs-cta-card,
+html[data-theme="light"] .linkedin-banner { background: #fff; border-color: rgba(15,23,42,0.08); }
+html[data-theme="light"] #vikash-intro { background: #f4f7fb; }
+html[data-theme="light"] .vikash-intro-name { color: #0f172a; }

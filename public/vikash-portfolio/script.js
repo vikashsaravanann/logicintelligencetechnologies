@@ -31,6 +31,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            if (next === 'light') document.documentElement.setAttribute('data-theme', 'light');
+            else document.documentElement.removeAttribute('data-theme');
+            try { localStorage.setItem('vikash-theme', next); } catch (e) {}
+        });
+    }
+
 
 
     // Project Filtering

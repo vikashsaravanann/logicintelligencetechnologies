@@ -114,3 +114,20 @@ body { overflow-x: hidden; }
   }
   #ai-chat-panel.open { animation: none !important; }
 }
+
+@media (max-width: 768px) {
+  .hero-images-wrapper { gap: 12px !important; margin: 20px 0 !important; }
+  .hero-images-wrapper .profile-image-container,
+  .hero-images-wrapper .side-profile {
+    width: min(42vw, 160px) !important;
+    height: min(56vw, 210px) !important;
+  }
+  .hero-images-wrapper .floating { width: min(58vw, 220px) !important; height: auto !important; }
+  .hero-bento-dashboard { grid-template-columns: 1fr !important; min-width: 0 !important; }
+  .bento-card { padding: 22px 18px !important; }
+  .linkedin-banner { flex-direction: column !important; align-items: flex-start !important; padding: 20px !important; min-width: 0 !important; }
+  .linkedin-banner > div { min-width: 0 !important; }
+  .bento-actions a { min-width: 0 !important; font-size: 0.92rem !important; padding: 12px !important; }
+  .certs-cta-card { flex-direction: column; align-items: flex-start; }
+  .typewriter { min-width: 12ch; }
+}

@@ -86,15 +86,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://api.github.com">
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <link rel="preload" href="/vikash-portfolio/style.css?v=20260907d" as="style">
-    <link rel="preload" href="/vikash-portfolio/script.js?v=20260907d" as="script">
+    <link rel="preload" href="/vikash-portfolio/style.css?v=20260907e" as="style">
+    <link rel="preload" href="/vikash-portfolio/script.js?v=20260907e" as="script">
     <!-- Google Fonts -->
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;600;700;800&display=swap"
         rel="stylesheet">
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="/vikash-portfolio/style.css?v=20260907d">
-    <link rel="stylesheet" href="/vikash-portfolio/animations.css?v=20260907d">
+    <link rel="stylesheet" href="/vikash-portfolio/style.css?v=20260907e">
+    <link rel="stylesheet" href="/vikash-portfolio/animations.css?v=20260907e">
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- EmailJS SDK for Client-Side Email Delivery -->
@@ -115,7 +115,16 @@
     <!-- Advanced & AI Features CSS -->
     <link rel="stylesheet" href="/vikash-portfolio/advanced-features.css">
     <link rel="stylesheet" href="/vikash-portfolio/ai-features.css">
-    <link rel="stylesheet" href="/vikash-portfolio/portfolio-mobile.css?v=20260907d">
+    <link rel="stylesheet" href="/vikash-portfolio/portfolio-mobile.css?v=20260907e">
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem("vikash-theme") === "light") {
+            document.documentElement.setAttribute("data-theme", "light");
+          }
+        } catch (e) {}
+      })();
+    </script>
 </head>
 
 <body>
@@ -133,17 +142,21 @@
         <nav class="navbar">
             <div class="nav-content container">
                 <a href="#" class="logo">VIKASH'S <span>PORTFOLIO !!</span></a>
-                <div class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-                    <span></span><span></span><span></span>
-                </div>
                 <ul class="nav-links" id="navLinks">
                     <li><a href="#summary">ABOUT</a></li>
                     <li><a href="#competencies">SKILLS</a></li>
-                    
                     <li><a href="/vikash-portfolio/certifications.html">CERTIFICATES</a></li>
-                    
                     <li><a href="#contact" class="btn-primary-sm">CONTACT</a></li>
                 </ul>
+                <div class="nav-actions">
+                    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark theme">
+                        <i class="fas fa-sun" data-theme-icon="sun"></i>
+                        <i class="fas fa-moon" data-theme-icon="moon"></i>
+                    </button>
+                    <div class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
             </div>
         </nav>
 
@@ -169,13 +182,13 @@
                     <!-- Left Image (profile1.webp) -->
                     <div class="profile-image-container side-profile floating-left"
                         style="width: 240px; height: 320px; opacity: 1; z-index: 1;">
-                        <img src="/vikash-portfolio/assets/profile/profile1.webp" alt="Vikash" class="profile-img" style="filter: none;">
+                        <img src="/vikash-portfolio/assets/profile/profile1.webp" alt="Vikash" class="profile-img" width="240" height="320" fetchpriority="high" decoding="async" style="filter: none;">
                     </div>
 
                     <!-- Main Hero Image (profile2.webp) -->
                     <div class="profile-image-container floating"
                         style="margin: 0; z-index: 10; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
-                        <img src="/vikash-portfolio/assets/profile/profile2.webp" alt="Vikash Saravanan Profile" class="profile-img"
+                        <img src="/vikash-portfolio/assets/profile/profile2.webp" alt="Vikash Saravanan Profile" class="profile-img" width="360" height="460" fetchpriority="high" decoding="async"
                             onerror="this.src='https://via.placeholder.com/400x450/1a1a24/87CEEB?text=Profile+Image'">
                         <div class="profile-glow"></div>
                     </div>
@@ -183,7 +196,7 @@
                     <!-- Right Image (profile.webp) -->
                     <div class="profile-image-container side-profile floating-right"
                         style="width: 240px; height: 320px; opacity: 1; z-index: 1; animation-delay: 1s;">
-                        <img src="/vikash-portfolio/assets/profile/profile.webp" alt="Vikash" class="profile-img" style="filter: none;">
+                        <img src="/vikash-portfolio/assets/profile/profile.webp" alt="Vikash" class="profile-img" width="240" height="320" fetchpriority="high" decoding="async" style="filter: none;">
                     </div>
 
                 </div>
@@ -191,7 +204,7 @@
 
                 <!-- Bento Dashboard Grid -->
                 <div class="hero-bento-dashboard fade-up"
-                    style="width: 100%; max-width: 1100px; display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; align-items: stretch; margin-top: 20px;">
+                    style="width: 100%; max-width: 1100px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 24px; align-items: stretch; margin-top: 20px;">
 
                     <!-- Left: About Details -->
                     <div class="bento-card"
@@ -1259,9 +1272,9 @@
     </div>
 
     <!-- Script -->
-    <script src="/vikash-portfolio/script.js?v=20260907d"></script>
-    <script src="/vikash-portfolio/animations.js?v=20260907d"></script>
-    <script src="/vikash-portfolio/chatbot.js?v=20260907d"></script>
+    <script src="/vikash-portfolio/script.js?v=20260907e"></script>
+    <script src="/vikash-portfolio/animations.js?v=20260907e"></script>
+    <script src="/vikash-portfolio/chatbot.js?v=20260907e"></script>
 
     <!-- Professional Certificate Viewer Routing (mirrors certifications.html behaviour) -->
     <script>
