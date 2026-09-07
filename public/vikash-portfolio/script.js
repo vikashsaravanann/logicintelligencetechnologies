@@ -185,6 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let typeSpeed = 100;
 
     function typeEffect() {
+        if (!typewriterElement) return;
         const currentWord = words[wordIndex];
         
         if (isDeleting) {
@@ -210,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Start typewriter effect
-    setTimeout(typeEffect, 1000);
+    if (typewriterElement) setTimeout(typeEffect, 1000);
 
     // Smooth scrolling for anchor links (fallback for browsers without CSS smooth scroll)
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

@@ -5,6 +5,13 @@ html, body {
     overflow-x: clip;
     max-width: 100%;
 }
+html {
+    scroll-padding-top: 96px;
+    scroll-behavior: smooth;
+}
+#summary, #competencies, #contact, #hero, #certificates {
+    scroll-margin-top: 96px;
+}
 #vikash-intro {
     position: fixed;
     inset: 0;
@@ -241,9 +248,9 @@ ul {
     top: 0;
     width: 100%;
     z-index: 1000;
-    background: rgba(10, 10, 15, 0.8);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    background: rgba(10, 10, 15, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-bottom: var(--glass-border);
     transition: var(--transition);
 }
@@ -298,7 +305,7 @@ ul {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    padding-top: 80px;
+    padding-top: 104px;
 }
 
 .hero-content {
@@ -3758,3 +3765,31 @@ section {
     font-weight: 600;
     letter-spacing: 0.5px;
 }
+
+.typewriter {
+    display: inline-block;
+    min-width: 16ch;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+.certs-cta-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 32px 36px;
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+}
+.certs-cta-kicker {
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+}
+.certs-cta-card h2 { margin: 0 0 8px; }
+.certs-cta-card p { margin: 0; color: var(--text-secondary); max-width: 52ch; }
+.certifications-cta { padding: 40px 0 20px; }
