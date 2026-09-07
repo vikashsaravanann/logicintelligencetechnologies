@@ -307,6 +307,7 @@ export type Database = {
           phone_number: string | null
           role: string | null
           welcome_email_sent_at: string | null
+          updated_at: string | null
         }
         Insert: {
           company_name?: string | null
@@ -316,6 +317,7 @@ export type Database = {
           phone_number?: string | null
           role?: string | null
           welcome_email_sent_at?: string | null
+          updated_at?: string | null
         }
         Update: {
           company_name?: string | null
@@ -325,6 +327,7 @@ export type Database = {
           phone_number?: string | null
           role?: string | null
           welcome_email_sent_at?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }

@@ -50,6 +50,7 @@ export async function updateProfile(formData: FormData): Promise<{
           full_name: fullName,
           company_name: companyName || null,
           phone_number: phoneNumber || null,
+          updated_at: new Date().toISOString(),
         })
         .eq("id", user.id);
       error = res.error;
