@@ -9,7 +9,6 @@ import {
   type FormEvent,
 } from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   ArrowUp,
@@ -30,8 +29,7 @@ import {
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import BackToHome from "@/components/ui/back-to-home";
 import { COMPANY } from "@/config/company";
-
-const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
+import { MarkdownMessage } from "@/components/ai/markdown-message";
 
 type Role = "user" | "assistant";
 
@@ -656,8 +654,8 @@ export default function AiChatPage() {
                     >
                       {m.role === "assistant" ? (
                         m.content ? (
-                          <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-code:text-primary">
-                            <ReactMarkdown>{m.content}</ReactMarkdown>
+                          <div className="ai-md">
+                            <MarkdownMessage content={m.content} />
                           </div>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-zinc-500">

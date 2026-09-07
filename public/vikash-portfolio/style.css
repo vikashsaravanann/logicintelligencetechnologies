@@ -1,6 +1,51 @@
 /* ===============
    CSS Variables
    =============== */
+html, body {
+    overflow-x: clip;
+    max-width: 100%;
+}
+#vikash-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: grid;
+    place-items: center;
+    background: #05070d;
+    transition: opacity 0.55s ease, visibility 0.55s ease;
+}
+#vikash-intro.is-done {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+body.intro-locked { overflow: hidden; }
+.vikash-intro-inner { text-align: center; padding: 16px; }
+.vikash-intro-kicker {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: #00bfff;
+    margin-bottom: 12px;
+    animation: vikashIntroIn 0.7s ease both;
+}
+.vikash-intro-name {
+    margin: 0;
+    font-family: Outfit, Inter, sans-serif;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    font-size: clamp(1.15rem, 5.5vw, 2.1rem);
+    color: #fff;
+    animation: vikashIntroIn 0.85s 0.12s ease both;
+}
+@keyframes vikashIntroIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .vikash-intro-kicker, .vikash-intro-name { animation: none; }
+}
 :root {
     /* Colors */
     --bg-light: #000000;

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { COMPANY } from "@/config/company";
+import { MarkdownMessage } from "@/components/ai/markdown-message";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -248,21 +249,22 @@ export default function SupportChatWidget() {
                   className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap shadow-sm ${
+                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${
                       m.role === "user"
-                        ? "bg-primary text-black rounded-br-sm"
+                        ? "bg-primary text-black rounded-br-sm whitespace-pre-wrap"
                         : "bg-white/5 text-zinc-200 border border-white/5 rounded-bl-sm"
                     }`}
                   >
-                    {m.content ||
-                      (loading && i === messages.length - 1 ? (
-                        <span className="inline-flex items-center gap-1.5 text-zinc-400">
-                          <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
-                          Thinking…
-                        </span>
-                      ) : (
-                        ""
-                      ))}
+                    {!m.content && loading && i === messages.length - 1 ? (
+                      <span className="inline-flex items-center gap-1.5 text-zinc-400">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                        Thinking…
+                      </span>
+                    ) : m.role === "assistant" && m.content ? (
+                      <MarkdownMessage content={m.content} />
+                    ) : (
+                      <span className="whitespace-pre-wrap">{m.content}</span>
+                    )}
                   </div>
                 </div>
               ))}

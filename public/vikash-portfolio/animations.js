@@ -8,7 +8,23 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ══════════════════════════════════════════
    1. PAGE INTRO LOADER
   ══════════════════════════════════════════ */
-  /* page-intro loader removed for faster first paint */
+  /* ══════════════════════════════════════════
+   1. PAGE INTRO LOADER (one-shot, no blink)
+  ══════════════════════════════════════════ */
+  const intro = document.getElementById('vikash-intro');
+  const hideIntro = () => {
+    if (!intro || intro.classList.contains('is-done')) return;
+    intro.classList.add('is-done');
+    intro.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('intro-locked');
+  };
+  if (intro) {
+    document.body.classList.add('intro-locked');
+    const finish = () => setTimeout(hideIntro, 1500);
+    if (document.readyState === 'complete') finish();
+    else window.addEventListener('load', finish, { once: true });
+    setTimeout(hideIntro, 2800);
+  }
 
 
   /* Grain Overlay Removed for performance */
@@ -360,8 +376,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.counter-card').forEach(c => cntObs.observe(c));
     document.querySelectorAll('.stagger-children').forEach(c => staggerObs.observe(c));
     document.querySelectorAll('.fade-up').forEach(c => {
-      new IntersectionObserver(e => {
-        if (e[0].isIntersecting) { e[0].target.classList.add('visible'); }
+      new IntersectionObserver((e, obs) => {
+        if (e[0].isIntersecting) {
+          e[0].target.classList.add('visible');
+          obs.unobserve(e[0].target);
+        }
       }, { threshold: .1 }).observe(c);
     });
   }
