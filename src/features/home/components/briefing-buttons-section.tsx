@@ -13,14 +13,14 @@ const ITEMS = [
     body: "Private RAG over your documents. Demo on /ai first.",
   },
   {
-    href: "/free-demo",
+    href: "/investors",
     image: "/portfolio/luxe.jpg",
     kicker: "Briefing",
     title: "Investor briefing",
     body: "Operating update. Not a priced round. Walk the live stack.",
   },
   {
-    href: "/about",
+    href: "/jobs",
     image: "/assets/founder.jpg",
     kicker: "Leadership",
     title: "Jobs — CEO / Directors",
