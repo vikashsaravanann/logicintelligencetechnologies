@@ -511,11 +511,11 @@ export default function AiChatPage() {
             <span className="text-[11px] sm:text-[13px] font-semibold tracking-[0.08em] uppercase truncate">LOGIC INTELLIGENCE TECHNOLOGIES</span>
           </Link>
           <nav className="hidden md:flex justify-self-center items-center gap-1 rounded-full border border-white/10 bg-black/30 px-2 py-1.5 backdrop-blur-md">
-            {[["Home", "/"], ["About us", "/about"], ["Package", "/packages"], ["Blog", "/blog"]].map(([label, href]) => (
-              <Link key={href} href={href} className="px-3 py-1.5 text-sm whitespace-nowrap text-[#E8DFD4]/80 hover:text-white">{label}</Link>
+            {[["HOME", "/"], ["ABOUT US", "/about"], ["PACKAGE", "/packages"], ["BLOG", "/blog"]].map(([label, href]) => (
+              <Link key={href} href={href} className="px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] uppercase whitespace-nowrap text-[#E8DFD4]/80 hover:text-white">{label}</Link>
             ))}
           </nav>
-          <Link href="/contact" className="justify-self-end rounded-full border border-white/15 bg-black/30 px-4 py-2 text-sm whitespace-nowrap">Contact Us</Link>
+          <Link href="/contact" className="justify-self-end rounded-full border border-white/15 bg-black/30 px-4 py-2 text-[11px] font-semibold tracking-[0.14em] uppercase whitespace-nowrap">CONTACT US</Link>
         </header>
         <main className="relative z-10 flex flex-col items-center text-center px-6 pt-16 sm:pt-24 pb-28">
           <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/35 px-3 py-1 text-xs mb-8"><Sparkles className="w-3.5 h-3.5 text-orange-300" /> Logic AI</p>
