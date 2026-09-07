@@ -1,32 +1,28 @@
 "use server";
 
-import { cookies } from "next/headers";
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
-import { env } from "@/config/env";
 import { revalidatePath } from "next/cache";
+import { createServerClient } from "@/lib/supabase/server";
 
 /**
- * Persist profile fields that exist on public.profiles:
- * id, full_name, company_name, phone_number, role, …
- * (email lives on auth.users — do not write email here)
+ * Persist profile fields that exist on public.profiles.
+ * Email lives on auth.users — never write email here.
  */
-export async function updateProfile(formData: FormData) {
+export async function updateProfile(formData: FormData): Promise<{
+  success: boolean;
+  error?: string;
+}> {
   try {
-    const cookieStore = await cookies();
-    const supabase = createServerActionClient(
-      { cookies: () => cookieStore as any },
-      {
-        supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
-        supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      }
-    );
-
+    const supabase = await createServerClient();
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
-    if (!session) {
-      return { success: false, error: "Not authenticated. Please sign in again." };
+    if (authError || !user) {
+      return {
+        success: false,
+        error: "Not authenticated. Please sign in again.",
+      };
     }
 
     const fullName = String(formData.get("fullName") || "").trim();
@@ -38,18 +34,37 @@ export async function updateProfile(formData: FormData) {
     }
 
     const { supabaseAdmin } = await import("@/lib/supabase/admin");
-    const { error } = await supabaseAdmin.from("profiles").upsert(
-      {
-        id: session.user.id,
+
+    // Prefer update; insert if row missing
+    const { data: existing } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    let error;
+    if (existing?.id) {
+      const res = await supabaseAdmin
+        .from("profiles")
+        .update({
+          full_name: fullName,
+          company_name: companyName || null,
+          phone_number: phoneNumber || null,
+        })
+        .eq("id", user.id);
+      error = res.error;
+    } else {
+      const res = await supabaseAdmin.from("profiles").insert({
+        id: user.id,
         full_name: fullName,
         company_name: companyName || null,
         phone_number: phoneNumber || null,
-      },
-      { onConflict: "id" }
-    );
+      });
+      error = res.error;
+    }
 
     if (error) {
-      console.error("Failed to update profile:", error);
+      console.error("[profile] save failed:", error);
       return { success: false, error: error.message };
     }
 
@@ -58,15 +73,16 @@ export async function updateProfile(formData: FormData) {
         data: { full_name: fullName },
       });
     } catch (metaErr) {
-      console.warn("Profile DB saved; auth metadata update skipped:", metaErr);
+      console.warn("[profile] auth metadata update skipped:", metaErr);
     }
 
     revalidatePath("/profile");
     return { success: true };
   } catch (err: unknown) {
-    console.error("Error updating profile:", err);
-    const message =
-      err instanceof Error ? err.message : "An unexpected error occurred";
-    return { success: false, error: message };
+    console.error("[profile] unexpected:", err);
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "An unexpected error occurred",
+    };
   }
 }

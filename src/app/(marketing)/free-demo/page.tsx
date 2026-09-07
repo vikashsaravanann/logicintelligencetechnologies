@@ -4,6 +4,7 @@ import BackToHome from "@/components/ui/back-to-home";
 import { useState } from "react";
 import { Send, CheckCircle2, MessageSquare, ShieldCheck, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { CHECKLIST_ITEMS_31_50 } from "@/data/websiteChecklist";
 
 export default function FreeDemoPage() {
   const [sent, setSent] = useState(false);
@@ -97,14 +98,14 @@ export default function FreeDemoPage() {
           <div className="flex flex-wrap justify-center gap-6 text-sm">
             <div className="flex flex-col items-center p-4 bg-white/5 rounded-2xl border border-white/10 min-w-[140px]">
               <span className="text-2xl font-bold text-white mb-1">48-72 hrs</span>
-              <span className="text-zinc-400">Typical turnaround</span>
+              <span className="text-zinc-400">Reply window</span>
             </div>
             <div className="flex flex-col items-center p-4 bg-white/5 rounded-2xl border border-white/10 min-w-[140px]">
               <span className="text-2xl font-bold text-white mb-1">₹0</span>
               <span className="text-zinc-400">Cost until approved</span>
             </div>
             <div className="flex flex-col items-center p-4 bg-white/5 rounded-2xl border border-white/10 min-w-[140px]">
-              <span className="text-2xl font-bold text-white mb-1">31 Points</span>
+              <span className="text-2xl font-bold text-white mb-1">50 Points</span>
               <span className="text-zinc-400">Scoping framework</span>
             </div>
           </div>
@@ -126,7 +127,24 @@ export default function FreeDemoPage() {
                </a>
              </motion.div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-12">
+            
+            <div className="bg-[#12172b] p-6 md:p-8 rounded-[2rem] border border-white/10 mb-8">
+              <h2 className="text-lg font-bold text-white mb-2">Website readiness checklist — items 31–50</h2>
+              <p className="text-sm text-zinc-400 mb-6">
+                Current 2026 delivery standards we use when scoping demos and production builds.
+                Full 50-point list is available on the checklist page.
+              </p>
+              <ul className="grid sm:grid-cols-2 gap-2">
+                {CHECKLIST_ITEMS_31_50.map((item) => (
+                  <li key={item.id} className="flex gap-2 text-xs sm:text-sm text-zinc-300 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/5">
+                    <span className="text-primary font-bold shrink-0 w-6">{item.id}</span>
+                    <span><span className="text-zinc-500 text-[10px] uppercase tracking-wide">{item.category}</span><br/>{item.title}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+<form onSubmit={handleSubmit} className="space-y-12">
               <div className="bg-[#12172b] p-8 md:p-6 md:p-10 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
                 

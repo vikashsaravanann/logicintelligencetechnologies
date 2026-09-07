@@ -21,13 +21,15 @@ export const WelcomeEmail = ({ email }: WelcomeEmailProps) => {
         </Text>
 
         <Text style={paragraph}>
-          Thank you for joining Logic Intelligence Technologies. We help businesses
-          design, build, and ship production web products and practical AI systems
-          — with clear scope, transparent pricing, and measurable outcomes.
+          Thank you for creating your account with Logic Intelligence Technologies.
+          We design and ship production websites, custom software, and practical AI
+          systems for businesses — with clear scope, transparent pricing, and a free
+          demo when the fit is right.
         </Text>
 
         <Text style={paragraph}>
-          Your account is now <strong>fully active</strong>.
+          Your account is active. You can update your profile, explore packages, or
+          request a free demo at any time.
         </Text>
 
         <Hr style={divider} />
@@ -36,13 +38,13 @@ export const WelcomeEmail = ({ email }: WelcomeEmailProps) => {
 
         <Section style={bulletSection}>
           <Text style={bulletItem}>
-            → Access your personal dashboard and manage your account
+            → Complete your profile so we can respond with relevant recommendations
           </Text>
           <Text style={bulletItem}>
-            → Explore our latest digital solutions and services
+            → Review packages (Launch from ₹8,999 · Pro · Enterprise)
           </Text>
           <Text style={bulletItem}>
-            → Connect with our team for any questions or ideas
+            → Book a free demo or message us on WhatsApp +91 93428 77474
           </Text>
         </Section>
 
@@ -55,9 +57,8 @@ export const WelcomeEmail = ({ email }: WelcomeEmailProps) => {
         <Hr style={divider} />
 
         <Text style={paragraph}>
-          If you have any questions, ideas, or just want to say hi, simply reply
-          to this email or reach out to our 24/7 support team. We are here to
-          help you build something amazing.
+          Questions? Reply to this email or write to support@logicintelligencetechnologies.in.
+          We typically respond within one business day.
         </Text>
 
         <Text style={closingText}>

@@ -40,21 +40,26 @@ export default function ProfileForm({
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setIsLoading(true);
     setMessage(null);
 
-    const result = await updateProfile(formData);
+    try {
+      const formData = new FormData(e.currentTarget);
+      const result = await updateProfile(formData);
 
-    if (result.success) {
-      setMessage({ type: 'success', text: 'Profile saved. Your details are up to date.' });
-      // Clear success banner after a few seconds
-      setTimeout(() => setMessage(null), 5000);
-    } else {
-      setMessage({ type: 'error', text: result.error || 'Failed to update profile' });
+      if (result.success) {
+        setMessage({ type: 'success', text: 'Profile saved successfully. Your details are up to date.' });
+        setTimeout(() => setMessage(null), 6000);
+      } else {
+        setMessage({ type: 'error', text: result.error || 'Failed to update profile. Please try again.' });
+      }
+    } catch {
+      setMessage({ type: 'error', text: 'Network error. Please check your connection and try again.' });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   }
 
   return (
@@ -67,7 +72,7 @@ export default function ProfileForm({
       <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none" />
 
-      <form action={handleSubmit} className="relative z-10 space-y-8">
+      <form onSubmit={handleSubmit} className="relative z-10 space-y-8">
         
         <motion.div variants={itemVariants} className="pb-4 border-b border-white/5">
           <h2 className="text-xl font-black text-white tracking-tight mb-2">Personal Details</h2>
