@@ -2,6 +2,16 @@ import type { NextConfig } from 'next';
 import path from 'path';
 
 const nextConfig: NextConfig = {
+  async headers() {
+    return [
+      {
+        source: '/vikash-portfolio/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+        ],
+      },
+    ];
+  },
   serverExternalPackages: ['pdf-parse'],
   turbopack: {
     root: path.resolve(process.cwd()),

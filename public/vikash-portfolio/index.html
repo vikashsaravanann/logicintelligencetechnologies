@@ -86,15 +86,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://api.github.com">
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <link rel="preload" href="/vikash-portfolio/style.css?v=20260526" as="style">
-    <link rel="preload" href="/vikash-portfolio/script.js?v=20260526" as="script">
+    <link rel="preload" href="/vikash-portfolio/style.css?v=20260907b" as="style">
+    <link rel="preload" href="/vikash-portfolio/script.js?v=20260907b" as="script">
     <!-- Google Fonts -->
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;600;700;800&display=swap"
         rel="stylesheet">
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="/vikash-portfolio/style.css?v=20260526">
-    <link rel="stylesheet" href="/vikash-portfolio/animations.css?v=20260526">
+    <link rel="stylesheet" href="/vikash-portfolio/style.css?v=20260907b">
+    <link rel="stylesheet" href="/vikash-portfolio/animations.css?v=20260907b">
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- EmailJS SDK for Client-Side Email Delivery -->
@@ -115,7 +115,7 @@
     <!-- Advanced & AI Features CSS -->
     <link rel="stylesheet" href="/vikash-portfolio/advanced-features.css">
     <link rel="stylesheet" href="/vikash-portfolio/ai-features.css">
-    <link rel="stylesheet" href="/vikash-portfolio/portfolio-mobile.css">
+    <link rel="stylesheet" href="/vikash-portfolio/portfolio-mobile.css?v=20260907b">
 </head>
 
 <body>
@@ -1446,9 +1446,9 @@
     </div>
 
     <!-- Script -->
-    <script src="/vikash-portfolio/script.js?v=20260526"></script>
-    <script src="/vikash-portfolio/animations.js"></script>
-    <script src="/vikash-portfolio/chatbot.js"></script>
+    <script src="/vikash-portfolio/script.js?v=20260907b"></script>
+    <script src="/vikash-portfolio/animations.js?v=20260907b"></script>
+    <script src="/vikash-portfolio/chatbot.js?v=20260907b"></script>
 
     <!-- Professional Certificate Viewer Routing (mirrors certifications.html behaviour) -->
     <script>
@@ -1476,6 +1476,20 @@
     <!-- PWA Service Worker Registration -->
     <script>
         <!-- service worker disabled for faster, fresher loads -->
+
+<script>
+(function(){
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(rs){
+      rs.forEach(function(r){ r.unregister(); });
+    });
+    if (window.caches && caches.keys) {
+      caches.keys().then(function(keys){ keys.forEach(function(k){ caches.delete(k); }); });
+    }
+  }
+})();
+</script>
+
 </body>
 
 </html>

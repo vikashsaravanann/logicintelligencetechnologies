@@ -84,8 +84,10 @@ AVAILABILITY:
       window.matchMedia('(max-width: 768px)').matches);
 
   function maybeSpeak(utterance) {
-    if (IS_MOBILE()) return; // skip TTS on mobile — saves CPU/battery
-    try { window.maybeSpeak(utterance); } catch (_) {}
+    if (typeof IS_MOBILE === 'function' && IS_MOBILE()) return;
+    try {
+      if (window.speechSynthesis && utterance) window.speechSynthesis.speak(utterance);
+    } catch (_) {}
   }
 
 
@@ -652,106 +654,67 @@ AVAILABILITY:
      ═══════════════════════════════════════════ */
   async function callBridge() {
     const relevantHistory = conversationHistory.slice(-10);
-
     const messages = [
       { role: 'system', content: SYSTEM_PROMPT },
       ...relevantHistory
     ];
-
     const body = { model: GROQ_MODEL, messages };
 
-
-    // Same-origin first (company site embeds this portfolio)
-    let url = API_URL;
-    let isLocal = false;
-    const host = window.location.hostname || '';
-    if (window.location.protocol === 'file:' || host === 'localhost' || host === '127.0.0.1') {
-      url = LOCAL_API_URL;
-      isLocal = true;
-    } else if (host.includes('github.io')) {
-      url = PRODUCTION_API_URL + API_URL;
-    } else {
-      // logicintelligencetechnologies.in or vercel preview — same origin
-      url = API_URL;
+    function extractContent(data) {
+      if (!data) return null;
+      if (typeof data === 'string') return data;
+      const content =
+        data.reply ||
+        data.generated_text ||
+        data.choices?.[0]?.message?.content ||
+        (typeof data.message === 'string' ? data.message : data.message?.content) ||
+        data.response ||
+        data.choices?.[0]?.text ||
+        null;
+      return content ? String(content).trim() : null;
     }
 
-    try {
+    async function postJSON(url, payload) {
       const res = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'same-origin',
       });
-
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        console.warn('Primary chat endpoint failed', res.status, '— trying fallbacks');
-        return await callWithFallback(body);
+        throw new Error(data.error || data.message || ('HTTP ' + res.status));
       }
-
-      const data = await res.json();
-      const text = extractContent(data);
-      if (text) return text;
-      return await callWithFallback(body);
-    } catch (err) {
-      console.warn('Chat request error, trying fallbacks', err);
-      try {
-        return await callWithFallback(body);
-      } catch (fallbackErr) {
-        throw fallbackErr;
-      }
+      return data;
     }
-  }
 
-  async function callProductionBridge(body) {
-    const res = await fetch(PRODUCTION_API_URL + API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || 'Production API bridge error');
-    }
-    const data = await res.json();
-    return extractContent(data);
-  }
+    const userText =
+      [...messages].reverse().find((m) => m.role === 'user')?.content || '';
 
-  function extractContent(data) {
-    const content =
-      data.choices?.[0]?.message?.content ||
-      data.generated_text ||
-      data.reply ||
-      data.message?.content ||
-      data.choices?.[0]?.text ||
-      data.response ||
-      (typeof data.message === 'string' ? data.message : null);
+    const attempts = [
+      { url: '/api/serverless-ai', payload: { message: userText, messages } },
+      { url: '/api/serverless-ai', payload: { message: userText } },
+      { url: '/api/chat', payload: { messages } },
+      { url: '/api/ai', payload: { message: userText } },
+      {
+        url: PRODUCTION_API_URL + '/api/serverless-ai',
+        payload: { message: userText, messages },
+      },
+    ];
 
-    return content || "I'm not sure how to answer that right now. Please try again or contact Vikash directly!";
-  }
-
-  async function callWithFallback(body) {
-    // Try /api/chat then /api/ai on same origin
-    const endpoints = [API_URL, CHAT_API_URL || '/api/chat', AI_API_URL, PRODUCTION_API_URL + '/api/serverless-ai', PRODUCTION_API_URL + '/api/chat'];
     let lastErr;
-    for (const endpoint of endpoints) {
+    for (const attempt of attempts) {
       try {
-        const res = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(
-            endpoint.includes('/api/ai')
-              ? { message: body.messages?.filter(m => m.role === 'user').slice(-1)[0]?.content || '', history: body.messages || [] }
-              : body
-          ),
-        });
-        if (!res.ok) { lastErr = new Error('HTTP ' + res.status); continue; }
-        const data = await res.json();
+        const data = await postJSON(attempt.url, attempt.payload);
         const text = extractContent(data);
         if (text) return text;
+        lastErr = new Error('Empty reply from ' + attempt.url);
       } catch (e) {
         lastErr = e;
+        console.warn('[vikash-chatbot]', attempt.url, e && e.message);
       }
     }
-    throw lastErr || new Error('All chat endpoints failed');
+    throw lastErr || new Error('All AI endpoints failed');
   }
 
 })();

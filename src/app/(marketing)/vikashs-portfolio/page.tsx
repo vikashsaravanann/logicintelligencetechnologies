@@ -1,19 +1,6 @@
-import { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Vikash's Portfolio | Logic Intelligence Technologies",
-  description:
-    "Personal portfolio of Vikash Saravanan — AI & Data Science, full-stack engineering, certifications, and founder of Logic Intelligence Technologies.",
-};
-
-/** Full startupwithvikash experience via static assets; projects.html excluded. */
+/** Permanent entry: serve static portfolio (no iframe cache isolation). */
 export default function VikashPortfolioPage() {
-  return (
-    <iframe
-      src="/vikash-portfolio/index.html"
-      title="Vikash's Portfolio"
-      className="fixed inset-0 w-full h-full border-0 z-[100] bg-black"
-      allow="clipboard-write"
-    />
-  );
+  redirect("/vikash-portfolio/index.html?v=20260907b");
 }
