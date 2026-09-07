@@ -15,6 +15,7 @@ type ChatSession = { id: string; title: string; messages: ChatMessage[]; updated
 
 const STORAGE_KEY = "lit_ai_sessions_v3";
 const STREAM_MS = 45_000;
+const TICKER = "LOGIC INTELLIGENCE TECHNOLOGIES  ·  WHERE LOGIC MEETS INNOVATION  ·  ";
 const STARTERS = [
   "What packages do you offer and starting prices?",
   "How does a production RAG pipeline work?",
@@ -209,7 +210,7 @@ export default function AiChatPage() {
   if (landed) {
     return (
       <div className="min-h-[100dvh] text-[#F3EDE4] relative overflow-hidden" style={{ background: glow }}>
-        <style>{`@keyframes lit-marquee { from { transform: translateX(-40%); } to { transform: translateX(40%); } }`}</style>
+        <style>{`@keyframes lit-marquee { from { transform: translateX(-50%); } to { transform: translateX(0); } }`}</style>
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42vh] bg-gradient-to-t from-orange-600/40 via-orange-500/10 to-transparent blur-2xl" />
         <header className="relative z-20 flex items-center justify-between px-4 sm:px-8 py-5">
           <Link href="/" className="flex items-center gap-2 min-w-0">
@@ -232,8 +233,11 @@ export default function AiChatPage() {
             <Link href="/ai-assistant" className="rounded-full border border-white/15 bg-black/25 px-6 py-3 text-sm">Learn More</Link>
           </div>
         </main>
-        <div className="absolute bottom-6 inset-x-0 overflow-hidden pointer-events-none">
-          <p className="whitespace-nowrap text-[11px] tracking-[0.35em] uppercase text-white/35" style={{ animation: "lit-marquee 14s linear infinite" }}>LOGIC INTELLIGENCE TECHNOLOGIES · WHERE LOGIC MEETS INNOVATION · LOGIC INTELLIGENCE TECHNOLOGIES · WHERE LOGIC MEETS INNOVATION ·</p>
+        <div className="absolute bottom-5 inset-x-0 overflow-hidden pointer-events-none">
+          <div className="flex w-max will-change-transform" style={{ animation: "lit-marquee 18s linear infinite" }}>
+            <p className="whitespace-nowrap text-[11px] tracking-[0.35em] uppercase text-white/40 pr-12">{TICKER}</p>
+            <p className="whitespace-nowrap text-[11px] tracking-[0.35em] uppercase text-white/40 pr-12" aria-hidden>{TICKER}</p>
+          </div>
         </div>
       </div>
     );
