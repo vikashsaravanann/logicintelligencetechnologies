@@ -1,0 +1,17 @@
+name: RAG live-model golden
+on:
+  schedule:
+    - cron: "30 20 * * *"
+  workflow_dispatch:
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Hit production /api/ai with 10 price questions
+        env:
+          SITE_URL: https://www.logicintelligencetechnologies.in
+        run: node scripts/eval-rag-live.mjs
