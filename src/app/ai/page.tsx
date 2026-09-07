@@ -378,29 +378,32 @@ export default function AiChatPage() {
     );
   }
 
+  const hdrBtn = "inline-flex items-center justify-center gap-1.5 h-10 min-w-[7rem] px-4 rounded-full border border-white/15 bg-black/30 text-[11px] font-bold uppercase tracking-[0.16em] hover:bg-white/10 hover:border-white/30 transition-colors disabled:opacity-40 whitespace-nowrap";
+
   return (
     <div className="min-h-[100dvh] text-[#F3EDE4] flex flex-col" style={{ background: glow }}>
       <header className="sticky top-0 z-30 border-b border-white/5 bg-black/40 backdrop-blur-xl">
-        <div className="w-full px-3 sm:px-5 py-2.5 flex items-center justify-between">
-          <div className="flex items-center gap-2 min-w-0">
-            <button type="button" className="lg:hidden p-2 rounded-lg border border-white/10" onClick={() => setSidebarOpen(true)} aria-label="Open chats"><Menu className="w-4 h-4" /></button>
-            <Image src={COMPANY.logoIconPath} alt="" width={22} height={22} className="rounded-full object-cover hidden sm:block" />
+        <div className="w-full px-3 sm:px-6 py-3 grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center gap-3">
+          <div className="justify-self-start flex items-center gap-2.5 min-w-0">
+            <button type="button" className="lg:hidden h-10 w-10 rounded-full border border-white/15 bg-black/30 grid place-items-center" onClick={() => setSidebarOpen(true)} aria-label="Open chats"><Menu className="w-4 h-4" /></button>
+            <Image src={COMPANY.logoIconPath} alt="" width={36} height={36} className="rounded-full object-cover hidden sm:block border border-white/20" />
             <button type="button" onClick={() => setLanded(true)} className="text-left min-w-0">
-              <h1 className="text-sm font-bold tracking-wide">LOGIC AI</h1>
-              <p className="text-[11px] text-zinc-500 truncate">{sending ? "thinking…" : lastProvider ? `via ${lastProvider}` : "ready"}{userEmail ? ` · ${userEmail}` : " · guest"}</p>
+              <h1 className="text-sm font-black tracking-[0.14em] uppercase">Logic AI</h1>
+              <p className="text-[10px] text-zinc-500 truncate uppercase tracking-wider">{sending ? "thinking" : lastProvider ? `via ${lastProvider}` : "ready"}{userEmail ? ` · ${userEmail}` : " · guest"}</p>
             </button>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:flex rounded-full border border-white/10 p-0.5 text-[10px] font-bold uppercase tracking-wider">
-              <button type="button" onClick={() => setMode("company")} className={`px-2.5 py-1 rounded-full ${mode === "company" ? "bg-[#E8651C] text-white" : "text-zinc-400"}`}>Company</button>
-              <button type="button" onClick={() => setMode("general")} className={`px-2.5 py-1 rounded-full ${mode === "general" ? "bg-[#E8651C] text-white" : "text-zinc-400"}`}>General</button>
-            </div>
-            <button type="button" onClick={() => { if (!active) return; const t = active.messages.map((m) => `${m.role}: ${m.content}`).join("\n\n"); const b = new Blob([t], { type: "text/plain" }); const u = URL.createObjectURL(b); const a = document.createElement("a"); a.href = u; a.download = "logic-ai.txt"; a.click(); URL.revokeObjectURL(u); }} className="hidden sm:inline-flex items-center gap-1 px-2 py-1.5 text-[11px] border border-white/10 rounded-lg" disabled={!active?.messages.length}><Download className="w-3 h-3" /> Export</button>
-            <Link href="/" className="text-xs text-zinc-400">Home</Link>
-            <button type="button" onClick={newChat} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs border border-white/10"><MessageSquarePlus className="w-3.5 h-3.5" /> New</button>
+          <div className="hidden lg:flex justify-self-center items-center gap-2">
+            <button type="button" onClick={() => setMode("company")} className={`${hdrBtn} ${mode === "company" ? "bg-[#E8651C] text-white border-[#E8651C]" : ""}`}>Company</button>
+            <button type="button" onClick={() => setMode("general")} className={`${hdrBtn} ${mode === "general" ? "bg-[#E8651C] text-white border-[#E8651C]" : ""}`}>General</button>
+          </div>
+          <div className="justify-self-end flex items-center gap-2">
+            <button type="button" onClick={() => { if (!active) return; const t = active.messages.map((m) => `${m.role}: ${m.content}`).join("\n\n"); const b = new Blob([t], { type: "text/plain" }); const u = URL.createObjectURL(b); const a = document.createElement("a"); a.href = u; a.download = "logic-ai.txt"; a.click(); URL.revokeObjectURL(u); }} className={`hidden sm:inline-flex ${hdrBtn}`} disabled={!active?.messages.length}><Download className="w-4 h-4" /> Export</button>
+            <a href={WA} className={`hidden sm:inline-flex ${hdrBtn}`}>WhatsApp</a>
+            <Link href="/" className={hdrBtn}>Home</Link>
+            <button type="button" onClick={newChat} className={hdrBtn}><MessageSquarePlus className="w-4 h-4" /> New</button>
           </div>
         </div>
-        {!online && <div className="bg-amber-500/15 text-amber-200 text-xs px-4 py-2 flex items-center justify-center gap-2"><WifiOff className="w-3.5 h-3.5" /> Offline</div>}
+        {!online && <div className="bg-amber-500/15 text-amber-200 text-xs px-4 py-2 flex items-center justify-center gap-2 uppercase tracking-wider"><WifiOff className="w-3.5 h-3.5" /> Offline</div>}
       </header>
       <div className="flex-1 w-full grid lg:grid-cols-[168px_minmax(0,1fr)] min-h-0">
         <aside className="hidden lg:flex flex-col border-r border-white/5 py-3 px-1.5 max-h-[calc(100dvh-3.5rem)]">
