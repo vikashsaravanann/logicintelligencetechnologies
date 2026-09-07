@@ -1,7 +1,7 @@
 "use client";
 import FloatingElements from "@/components/motion/floating-elements";
 import BackToHome from "@/components/ui/back-to-home";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Send, CheckCircle2, MessageSquare, ShieldCheck, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { CHECKLIST_ITEMS_31_50 } from "@/data/websiteChecklist";
@@ -32,6 +32,17 @@ export default function FreeDemoPage() {
     consent_whatsapp: false,
     consent_sms: false
   });
+
+  useEffect(() => {
+    const pack = new URLSearchParams(window.location.search).get("pack");
+    if (!pack) return;
+    const map: Record<string, string> = {
+      "digital-launch-pack": "Digital Launch Pack (from ₹8,999)",
+      "business-pro-pack": "Business Pro Pack (from ₹18,999)",
+      "enterprise-pack": "Enterprise Pack (custom, from ₹50,000)",
+    };
+    if (map[pack]) setForm((f) => ({ ...f, budget: map[pack] }));
+  }, []);
 
   const handleFeatureToggle = (feature: string) => {
     setForm(prev => ({
