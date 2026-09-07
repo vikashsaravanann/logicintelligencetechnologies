@@ -4,9 +4,15 @@ import { useState, useEffect, Suspense } from "react";
 import { Lock, Mail, Eye, EyeOff, ArrowRight, Shield, User, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Outfit } from "next/font/google";
 import { COMPANY } from "@/config/company";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { env } from "@/config/env";
+
+const display = Outfit({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
 
 type Mode = "signin" | "signup" | "forgot";
 
@@ -199,7 +205,7 @@ function AuthContent() {
   };
 
   const inputBase =
-    "w-full pl-11 pr-4 py-3.5 bg-[#070b16] border border-white/10 rounded-2xl text-[14px] text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 focus:border-cyan-400/70 transition-all";
+    "w-full pl-11 pr-4 py-3.5 bg-white/[0.06] backdrop-blur-md border border-white/15 rounded-2xl text-[15px] text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-cyan-300/35 focus:border-cyan-300/60 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]";
 
   const busy = isLoading || Boolean(oauthBusy);
 
@@ -213,7 +219,7 @@ function AuthContent() {
         : "Access the Logic Intelligence Technologies client portal.";
 
   return (
-    <main className="min-h-[100dvh] bg-[#050814] text-white relative overflow-hidden">
+    <main className={`${display.className} min-h-[100dvh] bg-[#050814] text-white relative overflow-hidden`}>
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 left-1/4 w-[520px] h-[520px] rounded-full bg-cyan-500/12 blur-[140px]" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[480px] h-[480px] rounded-full bg-blue-700/20 blur-[130px]" />
@@ -242,23 +248,25 @@ function AuthContent() {
                 </span>
               </span>
               <span className="min-w-0">
-                <span className="block whitespace-nowrap uppercase text-[11px] sm:text-[13px] font-black tracking-[0.12em] text-white group-hover:text-cyan-300 transition-colors">
+                <span className="block whitespace-nowrap uppercase text-[11px] sm:text-[12.5px] font-semibold tracking-[0.16em] text-white group-hover:text-cyan-300 transition-colors">
                   {COMPANY.displayName}
                 </span>
-                <span className="block whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-400/80 mt-1">
+                <span className="block whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.28em] text-cyan-400/85 mt-1">
                   {COMPANY.tagline}
                 </span>
               </span>
             </Link>
 
-            <div className="rounded-[28px] border border-white/10 bg-white/[0.035] backdrop-blur-xl p-6 sm:p-8 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-400 mb-3">
+            <div className="relative rounded-[28px] border border-white/20 bg-white/[0.07] backdrop-blur-[28px] backdrop-saturate-150 p-6 sm:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_24px_80px_rgba(0,0,0,0.45)]">
+              <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-br from-white/10 via-transparent to-cyan-400/5" />
+              <div className="relative">
+              <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.26em] text-cyan-200 mb-4 px-3 py-1.5 rounded-full border border-white/15 bg-white/10 backdrop-blur-md">
                 Secure client portal
               </p>
-              <h1 className="text-[1.85rem] sm:text-[2.15rem] font-black tracking-tight leading-none mb-2">
+              <h1 className="text-[2rem] sm:text-[2.4rem] font-semibold tracking-[-0.045em] leading-[1.05] mb-3">
                 {heading}
               </h1>
-              <p className="text-zinc-400 text-sm leading-relaxed mb-7">{sub}</p>
+              <p className="text-zinc-300/85 text-[15px] leading-[1.65] mb-7">{sub}</p>
 
               {serverError && (
                 <div className="mb-5 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-200 text-sm flex gap-3">
@@ -477,6 +485,7 @@ function AuthContent() {
                   </button>
                 )}
               </p>
+              </div>
             </div>
 
             <p className="mt-6 text-[11px] text-zinc-600 text-center leading-relaxed">
@@ -499,7 +508,7 @@ function AuthContent() {
             <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-cyan-400 mb-5">
               {COMPANY.entityLabel.toUpperCase()} · COIMBATORE
             </p>
-            <h2 className="text-4xl xl:text-5xl font-black leading-[1.08] tracking-tight mb-6 uppercase">
+            <h2 className="text-4xl xl:text-[3.15rem] font-semibold leading-[1.05] tracking-[-0.04em] mb-6">
               Production software.
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-sky-200 mt-2">
                 Practical AI.
@@ -516,7 +525,7 @@ function AuthContent() {
                 { k: "Demo", v: "Free" },
                 { k: "From", v: "₹8,999" },
               ].map((s) => (
-                <div key={s.k} className="rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-4 text-center">
+                <div key={s.k} className="rounded-2xl border border-white/15 bg-white/[0.07] backdrop-blur-md px-3 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]">
                   <p className="text-lg font-black tracking-tight">{s.v}</p>
                   <p className="text-[10px] uppercase tracking-widest text-zinc-500 mt-1">{s.k}</p>
                 </div>
