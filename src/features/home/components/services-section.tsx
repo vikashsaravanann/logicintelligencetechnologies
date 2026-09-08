@@ -116,7 +116,7 @@ export default function ServicesSection() {
                   {service.description}
                 </p>
 
-                <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">What's Included</h4>
+                <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4">What's Included</h4>
                 <ul className="space-y-3 mb-8">
                   {service.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start gap-3 text-sm font-medium text-zinc-300">
