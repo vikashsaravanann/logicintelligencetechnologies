@@ -525,7 +525,7 @@ export default function AiChatPage() {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42vh] bg-gradient-to-t from-orange-600/40 via-orange-500/10 to-transparent blur-2xl" />
         <header className="relative z-30 grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:px-8 py-3 sm:py-5">
           <Link href="/" className="justify-self-start flex items-center gap-2 min-w-0 max-w-[70vw] sm:max-w-full">
-            <Image src={COMPANY.logoIconPath} alt="" width={24} height={24} className="rounded-full object-cover border border-white/20 shrink-0 sm:w-7 sm:h-7" />
+            <Image src={COMPANY.logoIconPath} alt="Logic Intelligence Technologies" width={24} height={24} className="rounded-full object-cover border border-white/20 shrink-0 sm:w-7 sm:h-7" />
             <span className="hidden sm:inline text-[10px] sm:text-[13px] font-semibold tracking-[0.08em] uppercase truncate">LOGIC INTELLIGENCE TECHNOLOGIES</span>
           </Link>
           <nav className="hidden md:flex justify-self-center items-center gap-1 rounded-full border border-white/10 bg-black/30 px-2 py-1.5 backdrop-blur-md">
@@ -619,24 +619,24 @@ export default function AiChatPage() {
 
   return (
     <div className="min-h-[100dvh] text-[color:var(--ai-ink)] flex flex-col" style={{ background: glow }}>
-      <header className="sticky top-0 z-30 border-b border-[color:var(--ai-border)] bg-[color:var(--ai-header)] backdrop-blur-xl">
-        <div className="h-14 sm:h-16 px-2 sm:px-5 grid grid-cols-[minmax(0,1fr)_auto] xl:grid-cols-[minmax(220px,1fr)_auto_minmax(220px,1fr)] items-center gap-1.5 sm:gap-3">
-          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
-            <button type="button" className="lg:hidden h-9 w-9 rounded-full border border-white/12 grid place-items-center shrink-0" onClick={() => setSidebarOpen(true)} aria-label="Open history"><Menu className="w-4 h-4" /></button>
-            <Image src={COMPANY.logoIconPath} alt="" width={28} height={28} className="rounded-full object-cover border border-white/20 shrink-0 hidden sm:block" />
-            <button type="button" onClick={() => setLanded(true)} className="text-left min-w-0">
-              <h1 className="text-[12px] sm:text-[13px] font-black tracking-[0.14em] uppercase leading-none">LOGIC AI</h1>
-              <p className="mt-1 text-[10px] text-zinc-500 truncate uppercase tracking-[0.12em]">{sending ? "Thinking" : lastProvider ? `Ready · ${lastProvider}` : "Ready"}<span className="hidden sm:inline">{userEmail ? ` · ${userEmail}` : " · guest"}</span></p>
+      <header className="ai-chrome sticky top-0 z-30 border-b border-[color:var(--ai-border)] bg-[color:var(--ai-header)] backdrop-blur-xl">
+        <div className="h-12 sm:h-16 px-2 sm:px-5 flex items-center gap-2 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] xl:grid-cols-[minmax(220px,1fr)_auto_minmax(220px,1fr)] sm:gap-3">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <button type="button" className="lg:hidden h-8 w-8 rounded-full border border-white/15 grid place-items-center shrink-0 text-white" onClick={() => setSidebarOpen(true)} aria-label="Open history"><Menu className="w-4 h-4" /></button>
+            <Image src={COMPANY.logoIconPath} alt="Logic Intelligence Technologies" width={28} height={28} className="rounded-full object-cover border border-white/20 shrink-0 hidden sm:block" />
+            <button type="button" onClick={() => setLanded(true)} className="text-left min-w-0 flex-1">
+              <div className="text-[11px] sm:text-[13px] font-bold tracking-[0.12em] uppercase leading-none truncate">LOGIC AI</div>
+              <div className="mt-1 text-[9px] sm:text-[10px] text-zinc-500 truncate uppercase tracking-[0.1em]">{sending ? "Thinking" : lastProvider ? `Ready · ${lastProvider}` : "Ready"}<span className="hidden sm:inline">{userEmail ? ` · ${userEmail}` : " · guest"}</span></div>
             </button>
           </div>
           <div className="hidden md:flex justify-self-center items-center rounded-full border border-[color:var(--ai-border)] bg-[color:var(--ai-panel)] p-0.5">
             <button type="button" onClick={() => setMode("company")} className={`inline-flex items-center justify-center h-8 min-w-[7.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "company" ? "bg-[#E8651C] text-white" : "text-[color:var(--ai-muted)]"}`}>COMPANY</button>
             <button type="button" onClick={() => setMode("general")} className={`inline-flex items-center justify-center h-8 min-w-[7.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "general" ? "bg-[#E8651C] text-white" : "text-[color:var(--ai-muted)]"}`}>GENERAL</button>
           </div>
-          <div className="justify-self-end flex flex-nowrap items-center justify-end gap-1.5 sm:gap-2">
+          <div className="flex items-center justify-end gap-1.5 shrink-0">
             <Button asChild variant="pill" size="pill" className="hidden sm:inline-flex"><Link href="/">HOME</Link></Button>
-            <Button type="button" variant="accent" size="pill" onClick={newChat}>NEW</Button>
-            <ThemeToggle />
+            <button type="button" onClick={newChat} className="h-8 px-3.5 rounded-full bg-[#E8651C] text-[10px] font-bold uppercase tracking-wider text-white shrink-0">NEW</button>
+            <span className="hidden sm:inline-flex"><ThemeToggle /></span>
           </div>
         </div>
         {!online && <div className="bg-amber-500/15 text-amber-200 text-xs px-4 py-2 flex items-center justify-center gap-2 uppercase tracking-wider"><WifiOff className="w-3.5 h-3.5" /> Offline</div>}
@@ -664,11 +664,11 @@ export default function AiChatPage() {
             <div className="w-full max-w-[48rem] mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-6">
               {(!active || active.messages.length === 0) && (
                 <div className="text-center pt-8">
-                  <p className="text-xl font-semibold tracking-tight mb-2">How can Logic AI help?</p>
-                  <p className="text-sm text-zinc-500 mb-6">Packages, scoping, or general engineering questions.</p>
+                  <p className="text-base sm:text-xl font-semibold tracking-tight mb-1.5 sm:mb-2">How can Logic AI help?</p>
+                  <p className="text-[12px] sm:text-sm text-zinc-500 mb-4 sm:mb-6">Packages, scoping, or general engineering questions.</p>
                   <div className="grid sm:grid-cols-2 gap-2">
                     {STARTERS.map((q) => (
-                      <button key={q} type="button" onClick={() => void send(q)} className="text-left text-sm rounded-2xl border border-white/10 bg-black/25 px-4 py-3 hover:border-orange-400/40">{q}</button>
+                      <button key={q} type="button" onClick={() => void send(q)} className="text-left text-[12px] sm:text-sm rounded-xl sm:rounded-2xl border border-white/10 bg-black/25 px-3 py-2.5 sm:px-4 sm:py-3 hover:border-orange-400/40">{q}</button>
                     ))}
                   </div>
                 </div>
@@ -741,7 +741,9 @@ export default function AiChatPage() {
                   <button type="button" onClick={() => setShowLead(false)} className="h-10 px-3 text-[11px] uppercase tracking-wider text-zinc-400">Not now</button>
                 </form>
               )}
-              {leadOk && <p className="mb-2 text-[11px] text-zinc-500">Details received. We follow up within 24 hours.</p>}
+              {leadOk && showLead === false && (active?.messages.length ?? 0) > 0 && (
+                <p className="mb-2 text-[11px] text-zinc-500">Details received. We follow up within 24 hours.</p>
+              )}
               {showDemo && (
                 <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-orange-400/30 bg-orange-500/10 px-3 py-2 text-xs">
                   <span>Ready for a scoped demo? We do not invent prices on a call.</span>
