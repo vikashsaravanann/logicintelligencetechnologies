@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { Lock, Mail, Eye, EyeOff, ArrowRight, Shield, User, CheckCircle2, Zap, Cpu, Globe, MessageCircle } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff, ArrowRight, Shield, User, CheckCircle2, Zap, Cpu, FolderOpen, Bot } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Outfit } from "next/font/google";
@@ -536,70 +537,95 @@ function AuthContent() {
           transition={swapSpring}
           className={`hidden lg:flex relative w-1/2 h-full min-w-0 overflow-hidden ${swapped ? "border-r border-white/5" : "border-l border-white/5"}`}
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-indigo-600/15" />
-          <div className="relative h-full w-full flex flex-col justify-between px-8 xl:px-12 py-8">
+          <Image
+            src="/assets/jobs/studio-hero.jpg"
+            alt=""
+            fill
+            sizes="50vw"
+            quality={60}
+            className="object-cover object-center"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#050814]/92 via-[#050814]/78 to-[#050814]/95" />
+          <div className="relative h-full w-full flex flex-col justify-between px-8 xl:px-11 py-7 overflow-hidden">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-cyan-400">
                 {COMPANY.entityLabel.toUpperCase()} · COIMBATORE
               </p>
-              <h2 className="mt-3 text-[2.1rem] xl:text-[2.55rem] font-semibold leading-[1.05] tracking-[-0.04em]">
+              <h2 className="mt-2.5 text-[2rem] xl:text-[2.4rem] font-semibold leading-[1.08] tracking-[-0.04em]">
                 Production software.
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-sky-200 mt-1">
                   Practical AI.
                 </span>
               </h2>
-              <p className="mt-3 text-zinc-300 text-[13.5px] leading-relaxed">
-                LOGIC INTELLIGENCE TECHNOLOGIES — websites, custom systems, and private
-                knowledge assistants for Indian SMBs. Demo first. 31-point scoping. Source on
-                full payment.
+              <p className="mt-3 text-zinc-200 text-[13.5px] leading-relaxed">
+                LOGIC INTELLIGENCE TECHNOLOGIES builds websites, custom systems, and private
+                knowledge assistants for Indian SMBs. Sign in to the client portal — the same
+                desk that runs your project, invoices, files, and Logic AI.
+              </p>
+              <p className="mt-2 text-zinc-400 text-[12.5px] leading-relaxed">
+                Demo first. 31-point scoping so the brief does not drift. Source code is yours
+                on full payment. No visiting-card titles. No unpaid “partnerships.”
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-2.5 my-5">
+            <div className="grid grid-cols-3 gap-2 my-4">
+              {[
+                { src: "/assets/jobs/ceo-desk.jpg", cap: "Studio" },
+                { src: "/assets/jobs/apply-pane.jpg", cap: "Delivery" },
+                { src: "/assets/briefings/knowledge-assistant.jpg", cap: "Logic AI" },
+              ].map((p) => (
+                <div key={p.cap} className="relative h-[88px] rounded-2xl overflow-hidden border border-white/15">
+                  <Image src={p.src} alt={p.cap} fill sizes="16vw" quality={55} className="object-cover" />
+                  <span className="absolute bottom-1.5 left-2 text-[9px] font-bold uppercase tracking-[0.16em] text-white drop-shadow">
+                    {p.cap}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
               {[
                 { k: "Launch from", v: "₹8,999" },
                 { k: "Pro from", v: "₹18,999" },
                 { k: "Custom from", v: "₹50,000" },
-                { k: "HQ", v: "CBE" },
+                { k: "HQ", v: "Coimbatore" },
                 { k: "Demo", v: "Free" },
                 { k: "Source", v: "Yours" },
               ].map((s) => (
                 <div
                   key={s.k}
-                  className="rounded-2xl border border-white/15 bg-white/[0.07] backdrop-blur-md px-3 py-3.5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
+                  className="rounded-2xl border border-white/15 bg-black/35 backdrop-blur-md px-2.5 py-3 text-center"
                 >
-                  <p className="text-base xl:text-lg font-black tracking-tight">{s.v}</p>
-                  <p className="text-[9px] uppercase tracking-widest text-zinc-500 mt-1">{s.k}</p>
+                  <p className="text-[15px] xl:text-base font-black tracking-tight">{s.v}</p>
+                  <p className="text-[9px] uppercase tracking-widest text-zinc-400 mt-1">{s.k}</p>
                 </div>
               ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5 mb-5">
+            <div className="grid grid-cols-2 gap-2 my-4">
               {[
-                { icon: Cpu, t: "Stack", d: "Next.js · FastAPI · Grok · pgvector" },
-                { icon: Zap, t: "Process", d: "31-point scope · demo before pay" },
-                { icon: Globe, t: "Live", d: "Portal · /ai · Knowledge Assistant" },
-                { icon: MessageCircle, t: "Handoff", d: "WhatsApp +91 93428 77474" },
+                { icon: FolderOpen, t: "After you sign in", d: "Projects, invoices, files, and tickets in one profile — not a shared inbox." },
+                { icon: Bot, t: "Logic AI on your work", d: "Ask prices, RAG over our catalog, or hand off to WhatsApp with context." },
+                { icon: Cpu, t: "Stack we ship on", d: "Next.js · FastAPI · Grok · pgvector. Production, not a student demo." },
+                { icon: Zap, t: "How we take work", d: "31-point scope. Free demo. Pay after you see the build. Source on close." },
               ].map((b) => (
-                <div
-                  key={b.t}
-                  className="rounded-2xl border border-white/12 bg-white/[0.05] p-3.5 flex gap-3"
-                >
+                <div key={b.t} className="rounded-2xl border border-white/12 bg-black/35 p-3 flex gap-2.5">
                   <b.icon className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-widest text-white">{b.t}</p>
-                    <p className="text-[12px] text-zinc-400 mt-0.5 leading-snug">{b.d}</p>
+                    <p className="text-[11.5px] text-zinc-300 mt-0.5 leading-snug">{b.d}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-[13px] text-zinc-300 mb-5">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[12.5px] text-zinc-300 mb-4">
               {[
-                "Projects, files, support in one portal",
-                "Google or GitHub — official buttons",
-                "Staff dashboard · client profile",
-                "RAG answers from your documents",
+                "Google or GitHub — official OAuth",
+                "Staff dashboard for LIT email",
+                "Encrypted session, Coimbatore HQ",
+                "WhatsApp +91 93428 77474",
               ].map((line) => (
                 <li key={line} className="flex items-start gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 mt-0.5 shrink-0" />
@@ -608,7 +634,7 @@ function AuthContent() {
               ))}
             </ul>
 
-            <div className="rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-400">
+            <div className="rounded-2xl border border-white/12 bg-black/40 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-400">
               <a href={COMPANY.websiteUrl} className="hover:text-cyan-300">Website</a>
               <a href={COMPANY.linkedinUrl} className="hover:text-cyan-300">LinkedIn</a>
               <a href={COMPANY.telegramBotUrl} className="hover:text-cyan-300">Telegram</a>
