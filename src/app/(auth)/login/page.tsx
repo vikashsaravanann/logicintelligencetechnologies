@@ -244,30 +244,12 @@ function AuthContent() {
   }, []);
 
   return (
-    <main className={`${display.className} h-[100dvh] max-h-[100dvh] w-full max-w-[100vw] bg-[#050814] text-white relative overflow-hidden`}>
-      <Image
-        src="/assets/jobs/studio-hero.jpg"
-        alt=""
-        fill
-        sizes="100vw"
-        quality={70}
-        priority
-        className="object-cover object-center"
-      />
-      <div className="absolute inset-0 bg-[#050814]/62" />
+    <main
+      className={`${display.className} h-[100dvh] max-h-[100dvh] w-full max-w-[100vw] text-white relative overflow-hidden`}
+      style={{ background: "var(--ai-glow)" }}
+    >
       <WebGLParticles className="z-[1]" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[46vh] bg-gradient-to-t from-orange-600/45 via-orange-500/12 to-transparent blur-2xl z-[1]" />
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 left-1/4 w-[520px] h-[520px] rounded-full bg-cyan-500/10 blur-[140px]" />
-        <div
-          className="absolute inset-0 opacity-[0.12]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(14,165,233,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(14,165,233,0.08) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-      </div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42vh] bg-gradient-to-t from-orange-600/40 via-orange-500/10 to-transparent blur-2xl z-[1]" />
 
       <div className="relative z-10 h-[100dvh] max-h-[100dvh] overflow-hidden flex">
         <motion.section

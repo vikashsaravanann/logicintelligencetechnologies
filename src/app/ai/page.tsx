@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ArrowUp, Check, Copy, Download, Loader2, Menu, MessageSquarePlus, Mic, Paperclip, Quote, RefreshCw, Search, Share2, Sparkles, Square, Ticket, Trash2, Volume2, WifiOff, X } from "lucide-react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { COMPANY } from "@/config/company";
+import { env } from "@/config/env";
 import { MarkdownMessage } from "@/components/ai/markdown-message";
 import { InChatPackageCards } from "@/components/ai/package-cards";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -144,7 +145,10 @@ export default function AiChatPage() {
   const activeIdRef = useRef<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const recRef = useRef<BrowserSpeechRec | null>(null);
-  const supabase = createClientComponentClient();
+  const supabase = createClientComponentClient({
+    supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
+    supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  });
 
   useEffect(() => {
     const on = () => setOnline(true);
@@ -160,7 +164,8 @@ export default function AiChatPage() {
     applyKb();
     vv?.addEventListener("resize", applyKb);
     vv?.addEventListener("scroll", applyKb);
-    supabase.auth.getUser().then(async ({ data }) => {
+    supabase.auth.getUser().then(async ({ data, error }) => {
+      if (error) return;
       const u = data.user;
       setUserEmail(u?.email ?? null);
       setUserId(u?.id ?? null);
@@ -209,6 +214,8 @@ export default function AiChatPage() {
           if (parsed[0]) setActiveId(parsed[0].id);
         }
       } catch { /* ignore */ }
+    }).catch(() => {
+      /* guest / missing env — landing still renders */
     });
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
