@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Code2, Globe2, Sparkles, CheckCircle2, Send, ChevronDown } from "lucide-react";
+import { ArrowRight, Send, ChevronDown } from "lucide-react";
 import { COMPANY } from "@/config/company";
 
 const InstagramIcon = ({ className }: { className?: string }) => (
@@ -100,29 +100,29 @@ export default function HeroSection() {
             <a href={COMPANY.telegramBotUrl} target="_blank" rel="noopener noreferrer" aria-label="Telegram" className="text-zinc-400 hover:text-[#2aabee] transition-colors"><Send className="w-5 h-5" /></a>
           </div>
 
-          <div className="w-full glass-card rounded-3xl p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-white/10">
-            {[
-              { icon: Code2, title: "Full Stack Studio", body: "End-to-end custom software & app development." },
-              { icon: Globe2, title: "Coimbatore-Based", body: "Local team, clear communication, on-site when needed." },
-              { icon: Sparkles, title: "Custom-Built", body: "No generic templates. 100% tailored solutions." },
-              { icon: CheckCircle2, title: "Free Demo", body: "Experience your prototype before you pay." },
-            ].map((w) => (
-              <div key={w.title} className="flex items-start text-left gap-4 group pt-4 sm:pt-0 sm:px-4 first:pt-0 first:pl-0">
-                <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0 border border-white/10 group-hover:bg-white/10 transition-colors">
-                  <w.icon className="w-5 h-5 text-white" />
+          <div className="w-full max-w-5xl">
+            <dl className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-left">
+              {[
+                { kicker: "Scope", stat: "31 points", body: "Every paid project is written down before a rupee moves." },
+                { kicker: "Floor", stat: "₹8,999", body: "Digital Launch pack. Published price. Never invented on a call." },
+                { kicker: "Proof", stat: "Free demo", body: "You see a working prototype before you pay anything." },
+                { kicker: "Studio", stat: "Coimbatore", body: "Local team. Clear English. On-site when the work needs it." },
+              ].map((item) => (
+                <div
+                  key={item.kicker}
+                  className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 sm:px-5 py-5 sm:py-6 hover:border-cyan-400/35 hover:bg-white/[0.06] transition-colors"
+                >
+                  <dt className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-300 mb-2">{item.kicker}</dt>
+                  <dd className="text-xl sm:text-2xl font-black tracking-tight text-white mb-1.5 whitespace-nowrap">{item.stat}</dd>
+                  <p className="text-[12px] sm:text-sm text-zinc-400 leading-snug">{item.body}</p>
                 </div>
-                <div>
-                  <h3 className="text-sm font-bold text-white mb-1">{w.title}</h3>
-                  <p className="text-[11px] text-white/70 leading-tight">{w.body}</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </dl>
+            <a href="#services" className="mt-10 inline-flex flex-col items-center gap-1 text-zinc-500 hover:text-zinc-300 transition-colors">
+              <span className="text-[9px] font-bold tracking-[0.2em] uppercase">Scroll</span>
+              <ChevronDown className="w-4 h-4" />
+            </a>
           </div>
-        </div>
-
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-zinc-500 pointer-events-none">
-          <span className="text-[9px] font-bold tracking-widest uppercase text-zinc-400">Scroll</span>
-          <ChevronDown className="w-4 h-4 text-zinc-500" />
         </div>
       </div>
     </section>
