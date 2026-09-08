@@ -26,6 +26,17 @@ const schema = z.object({
   heard: z.string().optional(),
   cvName: z.string().optional(),
   cvBase64: z.string().optional(),
+}).superRefine((val, ctx) => {
+  if (!val.cvBase64 && !val.cvName) return;
+  const name = (val.cvName || "").toLowerCase();
+  if (!name.endsWith(".pdf")) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Résumé must be a PDF under 2 MB.", path: ["cvName"] });
+  }
+  const b64 = (val.cvBase64 || "").split(",").pop() || "";
+  const bytes = Math.floor((b64.length * 3) / 4);
+  if (bytes > 2 * 1024 * 1024) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Résumé must be 2 MB or smaller.", path: ["cvBase64"] });
+  }
 });
 
 export async function POST(req: Request) {

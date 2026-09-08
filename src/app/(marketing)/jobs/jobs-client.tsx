@@ -127,6 +127,7 @@ export default function JobsClient() {
   const [cash, setCash] = useState("");
   const [heard, setHeard] = useState("");
   const [cv, setCv] = useState<{ name: string; data: string } | null>(null);
+  const [cvNote, setCvNote] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [ok, setOk] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -178,10 +179,43 @@ export default function JobsClient() {
   }
 
   function onCv(f: File | undefined) {
+    setCvNote(null);
     if (!f) return;
-    if (f.size > 2 * 1024 * 1024) { setErr("CV must be under 2 MB."); return; }
+    const isPdf =
+      f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf");
+    if (!isPdf) {
+      setCv(null);
+      setCvNote("PDF only. Word, images, and ZIP files are not accepted.");
+      return;
+    }
+    if (f.size > 2 * 1024 * 1024) {
+      setCv(null);
+      setCvNote("This file is over 2 MB. Compress the PDF and upload again.");
+      return;
+    }
     const reader = new FileReader();
-    reader.onload = () => setCv({ name: f.name, data: String(reader.result || "") });
+    reader.onload = () => {
+      const data = String(reader.result || "");
+      const raw = data.split(",")[1] || "";
+      try {
+        const head = atob(raw.slice(0, 16));
+        if (!head.startsWith("%PDF")) {
+          setCv(null);
+          setCvNote("That file is not a valid PDF. Export from Word or Pages as PDF.");
+          return;
+        }
+      } catch {
+        setCv(null);
+        setCvNote("The résumé could not be read. Try another PDF under 2 MB.");
+        return;
+      }
+      setCv({ name: f.name, data });
+      setCvNote(null);
+    };
+    reader.onerror = () => {
+      setCv(null);
+      setCvNote("The résumé could not be read. Try another PDF under 2 MB.");
+    };
     reader.readAsDataURL(f);
   }
 
@@ -345,8 +379,8 @@ export default function JobsClient() {
         </div>
 
         <div className="relative rounded-[32px] border border-white/20 bg-white/[0.08] backdrop-blur-2xl shadow-[0_40px_100px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.18)] overflow-hidden">
-          <div className="grid lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.2fr)] items-stretch">
-            <aside className="relative hidden lg:block overflow-hidden min-h-full border-r border-white/10">
+          <div className="flex flex-col lg:flex-row lg:items-stretch">
+            <aside className="relative hidden lg:flex lg:w-[38%] lg:shrink-0 overflow-hidden border-r border-white/10 min-h-full">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/assets/jobs/ceo-desk.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-center" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/75 to-[#0A0F1E]/35" />
@@ -373,7 +407,7 @@ export default function JobsClient() {
               </div>
             </aside>
 
-            <div className="p-5 sm:p-8 bg-[#0A0F1E]/40">
+            <div className="flex-1 min-w-0 p-5 sm:p-8 bg-[#0A0F1E]/40">
               <div className="lg:hidden mb-6">
                 <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 mb-2">Confidential application</p>
                 <h2 className="text-2xl font-black uppercase tracking-tight">Join the leadership table</h2>
@@ -476,26 +510,39 @@ export default function JobsClient() {
                   </div>
 
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">4 · Attachments</p>
-                    <div className="grid gap-4">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">4 · Résumé</p>
+                    <div className="flex flex-col gap-4">
                       <div>
                         <label className={label} htmlFor="heard">How you found this page</label>
                         <input id="heard" value={heard} onChange={(e) => setHeard(e.target.value)} className={field} placeholder="LinkedIn, referral, Logic AI, Instagram…" />
                       </div>
-                      <label className="flex flex-col sm:flex-row items-center sm:items-start gap-4 rounded-2xl border border-white/15 bg-white/[0.05] px-5 py-5 cursor-pointer hover:border-cyan-400/40 hover:bg-white/[0.07] transition">
-                        <span className="h-12 w-12 rounded-xl border border-cyan-400/30 bg-cyan-400/10 grid place-items-center shrink-0">
-                          <Upload className="w-5 h-5 text-cyan-300" />
-                        </span>
-                        <span className="text-center sm:text-left">
-                          <span className="block text-sm font-bold text-white tracking-wide">
-                            {cv ? cv.name : "Upload résumé — PDF only, 2 MB maximum"}
-                          </span>
-                          <span className="block text-[12px] text-zinc-400 mt-1 leading-relaxed">
-                            A single PDF. Word, ZIP, and files over 2 MB are not accepted. A one-page artefact of work is preferred to a long résumé.
-                          </span>
-                        </span>
-                        <input type="file" accept=".pdf,application/pdf" className="hidden" onChange={(e) => onCv(e.target.files?.[0])} />
-                      </label>
+                      <div>
+                        <p className={label}>Curriculum vitae</p>
+                        {cv ? (
+                          <div className="flex items-center gap-4 rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-5 py-4">
+                            <span className="h-12 w-12 rounded-xl border border-cyan-400/30 bg-black/30 grid place-items-center shrink-0 text-cyan-200 text-[10px] font-black">PDF</span>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-semibold text-white truncate">{cv.name}</p>
+                              <p className="text-[12px] text-zinc-400 mt-0.5">Attached. Optional — you may replace or remove it.</p>
+                            </div>
+                            <button type="button" onClick={() => { setCv(null); setCvNote(null); }} className="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-300 hover:text-white shrink-0">Remove</button>
+                          </div>
+                        ) : (
+                          <label className="flex items-center gap-4 rounded-2xl border border-white/15 bg-white/[0.05] px-5 py-4 cursor-pointer hover:border-cyan-400/40 hover:bg-white/[0.07] transition">
+                            <span className="h-12 w-12 rounded-xl border border-cyan-400/30 bg-cyan-400/10 grid place-items-center shrink-0">
+                              <Upload className="w-5 h-5 text-cyan-300" />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block text-sm font-semibold text-white">Attach a PDF résumé</span>
+                              <span className="block text-[12px] text-zinc-400 mt-1 leading-relaxed">
+                                Optional. One PDF, 2 MB or smaller. Microsoft Word, images, and compressed folders are not accepted.
+                              </span>
+                            </span>
+                            <input type="file" accept=".pdf,application/pdf" className="hidden" onChange={(e) => { onCv(e.target.files?.[0]); e.target.value = ""; }} />
+                          </label>
+                        )}
+                        {cvNote && <p className="mt-2 text-[13px] text-amber-200">{cvNote}</p>}
+                      </div>
                     </div>
                   </div>
 
