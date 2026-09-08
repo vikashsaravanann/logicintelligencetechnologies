@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense, type PointerEvent } from "react";
 import { Lock, Mail, Eye, EyeOff, ArrowRight, Shield, User, CheckCircle2, Zap, Cpu, FolderOpen, Bot } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -80,6 +80,18 @@ function AuthContent() {
   }>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [serverSuccess, setServerSuccess] = useState<string | null>(null);
+  const liquidRef = useRef<HTMLDivElement>(null);
+
+  const onLiquidMove = (e: PointerEvent<HTMLDivElement>) => {
+    const el = liquidRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const r = el.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / Math.max(1, r.width)) * 100;
+    const y = ((e.clientY - r.top) / Math.max(1, r.height)) * 100;
+    el.style.setProperty("--spot-x", `${x}%`);
+    el.style.setProperty("--spot-y", `${y}%`);
+  };
 
   useEffect(() => {
     const errorDescription = searchParams.get("error_description");
@@ -288,8 +300,11 @@ function AuthContent() {
               </span>
             </Link>
 
-            <div className="relative rounded-[24px] border border-white/40 bg-white/15 backdrop-blur-[28px] backdrop-saturate-150 p-4 sm:p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.5),0_24px_80px_rgba(3,105,161,0.25)]">
-              <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-br from-white/25 via-transparent to-sky-200/10" />
+            <div
+              ref={liquidRef}
+              onPointerMove={onLiquidMove}
+              className="login-liquid relative rounded-[24px] p-4 sm:p-6"
+            >
               <div className="relative">
               <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.26em] text-amber-100 mb-2.5 px-3 py-1 rounded-full border border-amber-200/25 bg-sky-400/10 backdrop-blur-md">
                 Secure client portal
