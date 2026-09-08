@@ -181,22 +181,22 @@ export default function Navbar() {
             </div>
 
             {/* CTA & Mobile Toggle */}
-            <div className="ml-auto flex items-center justify-end gap-2 xl:gap-3 shrink-0 relative z-20 h-11">
+            <div className="ml-auto flex items-center justify-end gap-2 shrink-0 relative z-20 h-9">
               
               {session ? (
                 <div className="hidden lg:flex relative group" onMouseEnter={() => handleMouseEnter('user')} onMouseLeave={handleMouseLeave}>
-                  <button type="button" className="flex items-center gap-2 h-11 px-3 rounded-full border border-white/20 hover:bg-white/10 transition-colors shrink-0" aria-label="Account menu">
+                  <button type="button" className="flex items-center gap-1.5 h-8 px-2.5 rounded-full border border-white/20 hover:bg-white/10 transition-colors shrink-0" aria-label="Account menu">
                     {session.user?.user_metadata?.avatar_url ? (
-                      <img src={session.user.user_metadata.avatar_url} alt="Profile" className="w-6 h-6 rounded-full shrink-0 object-cover" />
+                      <img src={session.user.user_metadata.avatar_url} alt="Profile" className="w-5 h-5 rounded-full shrink-0 object-cover" />
                     ) : (
-                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold shrink-0">
+                      <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] font-bold shrink-0">
                         {session.user?.email?.[0]?.toUpperCase() || 'U'}
                       </div>
                     )}
-                    <span className="hidden xl:inline text-xs font-semibold tracking-[0.08em] text-white uppercase max-w-[11rem] truncate">
+                    <span className="hidden xl:inline text-[10px] font-semibold tracking-[0.08em] text-white uppercase max-w-[10rem] truncate">
                       {session.user?.user_metadata?.full_name || session.user?.email}
                     </span>
-                    <ChevronDown className="w-3.5 h-3.5 text-white hidden xl:block" />
+                    <ChevronDown className="w-3 h-3 text-white hidden xl:block" />
                   </button>
                   <AnimatePresence>
                     {activeDropdown === 'user' && (
@@ -222,14 +222,14 @@ export default function Navbar() {
                   </AnimatePresence>
                 </div>
               ) : (
-                <Link href="/login" className="hidden lg:inline-flex items-center justify-center h-11 px-5 rounded-full text-xs font-bold text-black uppercase tracking-[0.14em] bg-white hover:bg-gray-200 transition-all shadow-lg whitespace-nowrap shrink-0">
+                <Link href="/login" className="hidden lg:inline-flex items-center justify-center h-8 px-4 rounded-full text-[10px] font-bold text-black uppercase tracking-[0.14em] bg-white hover:bg-gray-200 transition-all shadow-lg whitespace-nowrap shrink-0">
                   Sign In
                 </Link>
               )}
-              <Link href="/contact" className="hidden lg:inline-flex shrink-0 relative group h-11 px-5 rounded-full overflow-hidden items-center justify-center shadow-[0_0_20px_rgba(0,191,255,0.3)]">
+              <Link href="/contact" className="hidden lg:inline-flex shrink-0 relative group h-8 px-4 rounded-full overflow-hidden items-center justify-center shadow-[0_0_16px_rgba(0,191,255,0.28)]">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
-                <span className="relative z-10 text-xs font-bold text-white tracking-[0.14em] uppercase whitespace-nowrap">
+                <span className="relative z-10 text-[10px] font-bold text-white tracking-[0.14em] uppercase whitespace-nowrap">
                   Start Project
                 </span>
               </Link>

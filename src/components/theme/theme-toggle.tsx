@@ -45,12 +45,12 @@ export function ThemeToggle({ className = "", variant = "icon" }: ThemeTogglePro
       onClick={toggle}
       aria-label={label}
       title={label}
-      className={`h-11 w-11 shrink-0 grid place-items-center rounded-full border border-white/15 bg-white/[0.06] text-white hover:bg-white/10 ${className}`}
+      className={`h-8 w-8 shrink-0 grid place-items-center rounded-full border border-white/15 bg-white/[0.06] text-white hover:bg-white/10 ${className}`}
     >
       {mounted ? (
-        dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />
+        dark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />
       ) : (
-        <Sun className="w-4 h-4 opacity-40" />
+        <Sun className="w-3.5 h-3.5 opacity-40" />
       )}
     </button>
   );
