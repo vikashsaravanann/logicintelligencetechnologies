@@ -66,7 +66,7 @@ export default async function ProfilePage() {
   return (
     <div className="min-h-screen bg-[#050814] text-white relative overflow-x-hidden">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-32 left-1/4 w-[420px] h-[420px] rounded-full bg-cyan-500/10 blur-[120px]" />
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[520px] h-[520px] rounded-full bg-cyan-500/10 blur-[120px]" />
         <div
           className="absolute inset-0 opacity-[0.16]"
           style={{
@@ -76,12 +76,15 @@ export default async function ProfilePage() {
           }}
         />
       </div>
-      <BackToHome />
 
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pb-16 pt-2">
-        <div className="rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-[24px] p-5 sm:p-7 mb-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_20px_60px_rgba(0,0,0,0.35)]">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-white/20 bg-white shrink-0 mx-auto sm:mx-0">
+      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 pt-24 sm:pt-28 pb-20 flex flex-col items-stretch">
+        <div className="mb-4">
+          <BackToHome inline />
+        </div>
+
+        <div className="rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-[24px] p-5 sm:p-8 mb-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_20px_60px_rgba(0,0,0,0.35)]">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7">
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-white/20 bg-white shrink-0 mx-auto sm:mx-0">
               {avatarUrl ? (
                 <img
                   src={avatarUrl}
@@ -99,10 +102,10 @@ export default async function ProfilePage() {
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 mb-1">
                 {COMPANY.displayName.toUpperCase()} · CLIENT PORTAL
               </p>
-              <h1 className="text-2xl sm:text-[1.85rem] font-semibold tracking-tight truncate">
+              <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight break-words">
                 {fullName || "Your profile"}
               </h1>
-              <div className="mt-2 flex flex-col sm:flex-row sm:flex-wrap items-center sm:items-center gap-2 sm:gap-4 text-[13px] text-zinc-400">
+              <div className="mt-2 flex flex-col sm:flex-row sm:flex-wrap items-center sm:items-center justify-center sm:justify-start gap-2 sm:gap-4 text-[13px] text-zinc-400">
                 <span className="inline-flex items-center gap-1.5">
                   <Mail className="w-3.5 h-3.5 text-cyan-400/80" />
                   {user.email}
