@@ -14,9 +14,9 @@ import { Button } from "@/components/ui/button";
 
 type Role = "user" | "assistant";
 type Mode = "company" | "general";
-type ChatMessage = { id: string; role: Role; content: string; createdAt: number; provider?: string; error?: boolean; citations?: string[]; badge?: string };
+type ChatMessage = { id: string; role: Role; content: string; createdAt: number; provider?: string; error?: boolean; citations?: string[]; badge?: string; image?: string };
 type ChatSession = { id: string; title: string; messages: ChatMessage[]; updatedAt: number; remote?: boolean };
-type AttachFile = { name: string; type: string; data: string };
+type AttachFile = { name: string; type: string; data: string; kind?: "file" | "image" };
 type SpeechRecCtor = new () => BrowserSpeechRec;
 type BrowserSpeechRec = {
   lang: string;
@@ -90,15 +90,16 @@ function readFile(file: File): Promise<AttachFile> {
       reject(new Error("File must be under 2 MB."));
       return;
     }
-    const ok = /^(text\/|application\/pdf|application\/json)/.test(file.type) || /\.(txt|md|pdf|json)$/i.test(file.name);
+    const isImg = /^image\//.test(file.type) || /\.(png|jpe?g|gif|webp)$/i.test(file.name);
+    const ok = isImg || /^(text\/|application\/pdf|application\/json)/.test(file.type) || /\.(txt|md|pdf|json)$/i.test(file.name);
     if (!ok) {
-      reject(new Error("Use .txt, .md, or .pdf."));
+      reject(new Error("Use .txt, .md, .pdf, or an image."));
       return;
     }
     const reader = new FileReader();
     reader.onerror = () => reject(new Error("Could not read file."));
-    reader.onload = () => resolve({ name: file.name, type: file.type || "text/plain", data: String(reader.result || "") });
-    if (file.type === "application/pdf" || /\.pdf$/i.test(file.name)) reader.readAsDataURL(file);
+    reader.onload = () => resolve({ name: file.name, type: file.type || "text/plain", data: String(reader.result || ""), kind: isImg ? "image" : "file" });
+    if (isImg || file.type === "application/pdf" || /\.pdf$/i.test(file.name)) reader.readAsDataURL(file);
     else reader.readAsText(file);
   });
 }
@@ -134,6 +135,8 @@ export default function AiChatPage() {
   const [speaking, setSpeaking] = useState(false);
   const [ticketBusy, setTicketBusy] = useState(false);
   const [ticketOk, setTicketOk] = useState(false);
+  const [kbPad, setKbPad] = useState(0);
+  const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -149,6 +152,14 @@ export default function AiChatPage() {
     setOnline(navigator.onLine);
     window.addEventListener("online", on);
     window.addEventListener("offline", off);
+    const vv = window.visualViewport;
+    const applyKb = () => {
+      if (!vv) return setKbPad(0);
+      setKbPad(Math.max(0, window.innerHeight - vv.height - vv.offsetTop));
+    };
+    applyKb();
+    vv?.addEventListener("resize", applyKb);
+    vv?.addEventListener("scroll", applyKb);
     supabase.auth.getUser().then(async ({ data }) => {
       const u = data.user;
       setUserEmail(u?.email ?? null);
@@ -214,6 +225,8 @@ export default function AiChatPage() {
       window.removeEventListener("online", on);
       window.removeEventListener("offline", off);
       window.removeEventListener("keydown", onKey);
+      vv?.removeEventListener("resize", applyKb);
+      vv?.removeEventListener("scroll", applyKb);
       abortRef.current?.abort();
       recRef.current?.stop();
       window.speechSynthesis?.cancel();
@@ -394,7 +407,7 @@ export default function AiChatPage() {
 
   async function send(text?: string, opts?: { suffix?: string }) {
     const raw = (text ?? input).trim();
-    if (!raw || sending) return;
+    if ((!raw && !attach) || sending) return;
     if (!navigator.onLine) { setOnline(false); return; }
     const lower = raw.toLowerCase();
     if (lower === "talk on whatsapp" || lower === "/wa") {
@@ -404,24 +417,24 @@ export default function AiChatPage() {
     if (lower === "/demo") { window.location.href = "/free-demo"; return; }
     if (lower === "/price") { return void send("What packages do you offer and starting prices?"); }
     if (lower === "/human") { void openTicket(); return; }
-    const content = opts?.suffix ? `${raw}\n\n${opts.suffix}` : raw;
+    const filePayload = attach;
+    const content = opts?.suffix ? `${raw}\n\n${opts.suffix}` : (raw || (filePayload?.kind === "image" ? "Sent an image." : `Please review ${filePayload?.name || "this file"}.`));
     if (DEMO_RE.test(raw)) setShowDemo(true);
     let sessionId = activeId;
     if (!sessionId) {
       sessionId = userId ? crypto.randomUUID() : uid();
-      setSessions((prev) => [{ id: sessionId!, title: raw.slice(0, 48), messages: [], updatedAt: Date.now(), remote: Boolean(userId) }, ...prev]);
+      setSessions((prev) => [{ id: sessionId!, title: (raw || filePayload?.name || "New chat").slice(0, 48), messages: [], updatedAt: Date.now(), remote: Boolean(userId) }, ...prev]);
       setActiveId(sessionId);
     }
     const assistantId = uid();
-    const filePayload = attach;
     setInput("");
     setAttach(null);
     setSending(true);
     setLanded(false);
     setSessions((prev) => prev.map((s) => s.id === sessionId ? {
       ...s,
-      title: s.messages.length === 0 ? raw.slice(0, 48) : s.title,
-      messages: [...s.messages, { id: uid(), role: "user", content: filePayload ? `${content}\n\n[Attached: ${filePayload.name}]` : content, createdAt: Date.now() }, { id: assistantId, role: "assistant", content: "", createdAt: Date.now() }],
+      title: s.messages.length === 0 ? (raw || filePayload?.name || s.title).slice(0, 48) : s.title,
+      messages: [...s.messages, { id: uid(), role: "user", content: filePayload && filePayload.kind !== "image" ? `${content}\n\n[Attached: ${filePayload.name}]` : content, createdAt: Date.now(), image: filePayload?.kind === "image" ? filePayload.data : undefined }, { id: assistantId, role: "assistant", content: "", createdAt: Date.now() }],
       updatedAt: Date.now(),
     } : s));
     const history = sessions.find((s) => s.id === sessionId)?.messages.map((m) => ({ role: m.role, content: m.content })) || [];
@@ -443,7 +456,7 @@ export default function AiChatPage() {
           max_tokens: 900,
           mode,
           chat_id: sessionId,
-          file: filePayload,
+          file: filePayload?.kind === "image" ? null : filePayload,
         }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -663,12 +676,16 @@ export default function AiChatPage() {
           <div className="flex-1 overflow-y-auto">
             <div className="w-full max-w-[48rem] mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-6">
               {(!active || active.messages.length === 0) && (
-                <div className="text-center pt-8">
-                  <p className="text-base sm:text-xl font-semibold tracking-tight mb-1.5 sm:mb-2">How can Logic AI help?</p>
-                  <p className="text-[12px] sm:text-sm text-zinc-500 mb-4 sm:mb-6">Packages, scoping, or general engineering questions.</p>
-                  <div className="grid sm:grid-cols-2 gap-2">
-                    {STARTERS.map((q) => (
-                      <button key={q} type="button" onClick={() => void send(q)} className="text-left text-[12px] sm:text-sm rounded-xl sm:rounded-2xl border border-white/10 bg-black/25 px-3 py-2.5 sm:px-4 sm:py-3 hover:border-orange-400/40">{q}</button>
+                <div className="text-center pt-6 sm:pt-8">
+                  <img src={COMPANY.logoIconPath} alt="" width={72} height={72} className="mx-auto mb-4 h-[72px] w-[72px] rounded-full object-cover border border-white/15 outline outline-1 -outline-offset-1 outline-white/10" />
+                  <p className="text-base sm:text-xl font-semibold tracking-tight mb-1.5">How can Logic AI help?</p>
+                  <p className="text-[12px] sm:text-sm text-zinc-400 mb-5">Packages, scoping, or general engineering questions.</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {STARTERS.map((q, i) => (
+                      <button key={q} type="button" onClick={() => void send(q)} className="text-left rounded-2xl border border-white/10 bg-white/[0.04] p-3 hover:border-orange-400/40 min-h-[72px]">
+                        <span className="mb-2 grid h-9 w-9 place-items-center rounded-xl bg-orange-500/15 text-[11px] font-black text-orange-200">{String(i + 1).padStart(2, "0")}</span>
+                        <span className="block text-[12px] sm:text-sm leading-snug text-zinc-200">{q}</span>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -676,9 +693,7 @@ export default function AiChatPage() {
               {active?.messages.map((m, i) => (
                 <div key={m.id} className={`flex gap-2 sm:gap-3 items-end ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                   {m.role === "assistant" && (
-                    <div className="hidden sm:flex w-8 h-8 rounded-full bg-orange-500/20 border border-orange-400/30 items-center justify-center shrink-0 mb-1">
-                      <Sparkles className={`w-3.5 h-3.5 text-orange-300 ${sending && !m.content ? "animate-pulse" : ""}`} />
-                    </div>
+                    <img src={COMPANY.logoIconPath} alt="" width={32} height={32} className="w-8 h-8 rounded-full object-cover border border-orange-400/30 shrink-0 mb-1 outline outline-1 -outline-offset-1 outline-white/10" />
                   )}
                   <div className={`rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-[14px] sm:text-[15px] leading-relaxed min-w-0 ${m.role === "user" ? "bg-[#E8651C] text-white max-w-[min(100%,34rem)]" : "bg-black/35 border border-white/10 w-full"}`}>
                     {m.role === "assistant" ? (
@@ -699,6 +714,14 @@ export default function AiChatPage() {
                       ) : null
                     ) : (
                       <span className="whitespace-pre-wrap">{m.content}</span>
+                    )}
+                    {m.role === "user" && m.image && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={m.image} alt="" className="mt-2 max-h-48 w-auto rounded-xl outline outline-1 -outline-offset-1 outline-white/10" />
+                    )}
+                    {m.role === "user" && !m.image && /https?:\/\/\S+\.(png|jpe?g|gif|webp)/i.test(m.content) && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={m.content.match(/https?:\/\/\S+\.(png|jpe?g|gif|webp)/i)?.[0]} alt="" className="mt-2 max-h-48 w-auto rounded-xl" />
                     )}
                     {m.error && <button type="button" className="mt-2 text-xs inline-flex items-center gap-1" onClick={() => void send(lastUser?.content)}><RefreshCw className="w-3 h-3" /> Retry</button>}
                     {m.role === "assistant" && m.content && !m.error && (
@@ -731,14 +754,14 @@ export default function AiChatPage() {
           </div>
 
           <div className="border-t border-white/8 bg-black/35 backdrop-blur-xl">
-            <div className="w-full max-w-[48rem] mx-auto px-3 sm:px-6 pt-2 sm:pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="w-full max-w-[48rem] mx-auto px-3 sm:px-6 pt-2 sm:pt-3" style={{ paddingBottom: `max(0.75rem, calc(env(safe-area-inset-bottom) + ${kbPad}px))` }}>
               {showLead && !leadOk && (
                 <form onSubmit={(e) => { e.preventDefault(); void submitLead(); }} className="mb-3 flex flex-col sm:flex-row gap-2 rounded-2xl border border-white/10 bg-black/40 px-3 py-2">
                   <p className="sm:sr-only text-[11px] text-zinc-400">Optional follow-up.</p>
                   <input value={leadName} onChange={(e) => setLeadName(e.target.value)} placeholder="Name" className="flex-1 bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm outline-none" />
                   <input value={leadEmail} onChange={(e) => setLeadEmail(e.target.value)} placeholder="Email" type="email" className="flex-1 bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm outline-none" />
-                  <button type="submit" disabled={leadBusy} className="h-10 px-4 rounded-full bg-[#E8651C] text-[11px] font-bold uppercase tracking-wider text-white disabled:opacity-50">{leadBusy ? "Saving" : "Send"}</button>
-                  <button type="button" onClick={() => setShowLead(false)} className="h-10 px-3 text-[11px] uppercase tracking-wider text-zinc-400">Not now</button>
+                  <button type="submit" disabled={leadBusy} className="h-11 px-4 rounded-full bg-[#E8651C] text-[11px] font-bold uppercase tracking-wider text-white disabled:opacity-50">{leadBusy ? "Saving" : "Send"}</button>
+                  <button type="button" onClick={() => setShowLead(false)} className="h-11 px-3 text-[11px] uppercase tracking-wider text-zinc-400">Not now</button>
                 </form>
               )}
               {leadOk && showLead === false && (active?.messages.length ?? 0) > 0 && (
@@ -750,25 +773,48 @@ export default function AiChatPage() {
                   <Link href="/free-demo" className="shrink-0 rounded-full bg-[#E8651C] px-3 py-1.5 font-bold text-white uppercase tracking-wider text-[10px]">Book demo</Link>
                 </div>
               )}
-              {attach && (
-                <div className="mb-2 flex items-center justify-between text-[11px] text-zinc-400">
-                  <span>Attached: {attach.name}{ /pdf/i.test(attach.type || attach.name) ? " · first ~20 pages" : ""}</span>
-                  <button type="button" onClick={() => setAttach(null)}>Remove</button>
-                </div>
-              )}
               {attachError && <p className="mb-2 text-[11px] text-red-300">{attachError}</p>}
-              <form onSubmit={onSubmit} className="flex items-center gap-1.5 rounded-2xl border border-white/12 bg-black/50 px-1.5 py-1.5 focus-within:border-orange-400/35 min-w-0">
-                <input ref={fileRef} type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf" className="hidden" onChange={(e) => void onPickFile(e.target.files?.[0])} />
-                <button type="button" className="h-11 w-11 shrink-0 grid place-items-center text-zinc-300 hover:text-white" onClick={() => fileRef.current?.click()} aria-label="Attach"><Paperclip className="w-5 h-5" /></button>
-                <button type="button" className={`h-11 w-11 shrink-0 grid place-items-center ${listening ? "text-orange-400" : "text-zinc-300 hover:text-white"}`} onClick={toggleMic} aria-label="Voice"><Mic className="w-5 h-5" /></button>
-                <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} rows={1} placeholder={listening ? "Listening…" : "Message Logic AI"} className="flex-1 bg-transparent resize-none text-base sm:text-[15px] py-2.5 outline-none max-h-32 min-w-0" />
-                {sending ? (
-                  <button type="button" onClick={() => abortRef.current?.abort()} className="h-11 w-11 shrink-0 rounded-full border border-white/25 grid place-items-center text-white" aria-label="Stop"><Square className="w-3.5 h-3.5" /></button>
-                ) : (
-                  <button type="submit" disabled={!input.trim() && !attach} className="h-11 w-11 shrink-0 rounded-full bg-[#E8651C] text-white grid place-items-center disabled:opacity-70" aria-label="Send"><ArrowUp className="w-5 h-5" /></button>
+              <form
+                onSubmit={onSubmit}
+                onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={(e) => { e.preventDefault(); setDragging(false); void onPickFile(e.dataTransfer.files?.[0]); }}
+                className={`glass-bar ${dragging ? "ring-1 ring-orange-400/60" : ""}`}
+              >
+                <input ref={fileRef} type="file" accept=".txt,.md,.pdf,image/png,image/jpeg,image/webp,image/gif,text/plain,text/markdown,application/pdf" className="hidden" onChange={(e) => void onPickFile(e.target.files?.[0])} />
+                {dragging && <p className="text-center text-[11px] uppercase tracking-wider text-orange-200 pb-2">Drop a PDF or image here</p>}
+                {attach && (
+                  <div className="glass-bar-inner mb-2 flex items-center gap-2 border border-white/10 bg-black/30 px-2 py-1.5">
+                    {attach.kind === "image" ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={attach.data} alt="" className="h-10 w-10 rounded-lg object-cover" />
+                    ) : (
+                      <span className="grid h-10 w-10 place-items-center rounded-lg bg-white/10 text-[10px] font-bold">PDF</span>
+                    )}
+                    <span className="flex-1 min-w-0 truncate text-[12px] text-zinc-300">{attach.name}{ /pdf/i.test(attach.type || attach.name) ? " · first ~20 pages" : ""}</span>
+                    <button type="button" className="h-11 px-3 text-[11px] uppercase tracking-wider text-zinc-400" onClick={() => setAttach(null)}>Remove</button>
+                  </div>
                 )}
+                {listening && (
+                  <div className="mb-2 flex items-center gap-2 px-1 text-[11px] uppercase tracking-wider text-orange-200">
+                    <span className="lit-wave" aria-hidden><span /><span /><span /><span /><span /></span>
+                    Listening
+                  </div>
+                )}
+                <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} rows={2} placeholder={listening ? "Listening…" : "Message Logic AI — or drop a PDF"} className="glass-bar-inner w-full bg-transparent resize-none text-base sm:text-[15px] px-3 py-2.5 outline-none max-h-32 min-h-[52px] min-w-0" />
+                <div className="mt-2 flex items-center gap-1.5 min-w-0">
+                  <button type="button" className="h-11 w-11 shrink-0 grid place-items-center text-zinc-200" onClick={() => fileRef.current?.click()} aria-label="Attach"><Paperclip className="w-5 h-5" /></button>
+                  <button type="button" className={`h-11 w-11 shrink-0 grid place-items-center ${listening ? "text-orange-400" : "text-zinc-200"}`} onClick={toggleMic} aria-label="Voice"><Mic className="w-5 h-5" /></button>
+                  <button type="button" className={`hidden sm:inline-flex h-11 flex-1 rounded-xl text-[11px] font-bold uppercase tracking-wider ${mode === "company" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("company")}>COMPANY</button>
+                  <button type="button" className={`hidden sm:inline-flex h-11 flex-1 rounded-xl text-[11px] font-bold uppercase tracking-wider ${mode === "general" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("general")}>GENERAL</button>
+                  {sending ? (
+                    <button type="button" onClick={() => abortRef.current?.abort()} className="glass-send bg-transparent border border-white/25" aria-label="Stop">STOP</button>
+                  ) : (
+                    <button type="submit" disabled={!input.trim() && !attach} className="glass-send" aria-label="Send">SEND <ArrowUp className="w-4 h-4" /></button>
+                  )}
+                </div>
               </form>
-              <div className="md:hidden mt-2 flex items-stretch gap-2 w-full">
+              <div className="sm:hidden mt-2 flex items-stretch gap-2 w-full">
                 <button type="button" className={`flex-1 h-11 rounded-full text-[11px] font-bold uppercase tracking-wider ${mode === "company" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("company")}>COMPANY</button>
                 <button type="button" className={`flex-1 h-11 rounded-full text-[11px] font-bold uppercase tracking-wider ${mode === "general" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("general")}>GENERAL</button>
               </div>
