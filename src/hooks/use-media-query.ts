@@ -19,6 +19,7 @@ export function useMediaQuery(query: string) {
 
 /** Smallest matching named breakpoint, SSR-safe (starts at xs). */
 export function useBreakpoint(): Breakpoint {
+  const xs = useMediaQuery(`(min-width: ${BREAKPOINTS.xs}px)`);
   const sm = useMediaQuery(`(min-width: ${BREAKPOINTS.sm}px)`);
   const md = useMediaQuery(`(min-width: ${BREAKPOINTS.md}px)`);
   const lg = useMediaQuery(`(min-width: ${BREAKPOINTS.lg}px)`);
@@ -29,5 +30,6 @@ export function useBreakpoint(): Breakpoint {
   if (lg) return "lg";
   if (md) return "md";
   if (sm) return "sm";
+  if (xs) return "xs";
   return "xs";
 }
