@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef, Suspense, type PointerEvent } from "react";
-import { Lock, Mail, Eye, EyeOff, ArrowRight, Shield, User, CheckCircle2, Zap, Cpu, FolderOpen, Bot } from "lucide-react";
+import { useState, useEffect, Suspense } from "react";
+import { Lock, Mail, Eye, EyeOff, ArrowRight, Shield, User, CheckCircle2, Zap, Cpu, Globe, MessageCircle } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Outfit } from "next/font/google";
 import { COMPANY } from "@/config/company";
-import WebGLParticles from "@/components/motion/webgl-particles";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { env } from "@/config/env";
 
@@ -18,9 +16,6 @@ const display = Outfit({
 });
 
 type Mode = "signin" | "signup" | "forgot";
-
-const TICKER_UNIT = "LOGIC INTELLIGENCE TECHNOLOGIES  ·  WHERE LOGIC MEETS INNOVATION  ·  ";
-const TICKER = Array.from({ length: 8 }, () => TICKER_UNIT).join("");
 
 function validateEmail(email: string) {
   if (!email.trim()) return "Email is required.";
@@ -80,18 +75,6 @@ function AuthContent() {
   }>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [serverSuccess, setServerSuccess] = useState<string | null>(null);
-  const liquidRef = useRef<HTMLDivElement>(null);
-
-  const onLiquidMove = (e: PointerEvent<HTMLDivElement>) => {
-    const el = liquidRef.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const r = el.getBoundingClientRect();
-    const x = ((e.clientX - r.left) / Math.max(1, r.width)) * 100;
-    const y = ((e.clientY - r.top) / Math.max(1, r.height)) * 100;
-    el.style.setProperty("--spot-x", `${x}%`);
-    el.style.setProperty("--spot-y", `${y}%`);
-  };
 
   useEffect(() => {
     const errorDescription = searchParams.get("error_description");
@@ -234,7 +217,7 @@ function AuthContent() {
   };
 
   const inputBase =
-    "w-full pl-11 pr-4 py-2.5 bg-white/[0.06] backdrop-blur-md border border-sky-200/20 rounded-2xl text-[14px] text-white placeholder:text-sky-100/40 focus:outline-none focus:ring-2 focus:ring-amber-300/40 focus:border-sky-300/70 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]";
+    "w-full pl-11 pr-4 py-2.5 bg-white/[0.06] backdrop-blur-md border border-white/15 rounded-2xl text-[14px] text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-cyan-300/35 focus:border-cyan-300/60 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]";
 
   const busy = isLoading || Boolean(oauthBusy);
 
@@ -259,17 +242,19 @@ function AuthContent() {
   }, []);
 
   return (
-    <main
-      className={`${display.className} h-[100dvh] max-h-[100dvh] w-full max-w-[100vw] text-white relative overflow-hidden`}
-      style={{
-        background:
-          "linear-gradient(165deg, #7dd3fc 0%, #38bdf8 22%, #0ea5e9 52%, #0369a1 100%)",
-      }}
-    >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_10%,rgba(255,255,255,0.45),transparent_50%),radial-gradient(ellipse_at_90%_80%,rgba(167,139,250,0.28),transparent_45%)]" />
-      <div className="pointer-events-none absolute inset-0 backdrop-blur-[2px]" />
-      <WebGLParticles className="z-[1] opacity-70" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[32vh] bg-gradient-to-t from-[#075985]/35 to-transparent z-[1]" />
+    <main className={`${display.className} h-[100dvh] max-h-[100dvh] w-full max-w-[100vw] bg-[#050814] text-white relative overflow-hidden`}>
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-40 left-1/4 w-[520px] h-[520px] rounded-full bg-cyan-500/12 blur-[140px]" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[480px] h-[480px] rounded-full bg-blue-700/20 blur-[130px]" />
+        <div
+          className="absolute inset-0 opacity-[0.22]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(14,165,233,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(14,165,233,0.07) 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
+      </div>
 
       <div className="relative z-10 h-[100dvh] max-h-[100dvh] overflow-hidden flex">
         <motion.section
@@ -278,10 +263,10 @@ function AuthContent() {
           transition={swapSpring}
           className="w-full lg:w-1/2 h-full min-w-0 overflow-hidden flex flex-col justify-center px-4 sm:px-7 py-4"
         >
-          <div className="w-full max-w-[440px] mx-auto rounded-3xl border border-white/40 login-glass p-4 sm:p-5">
+          <div className="w-full max-w-[440px] mx-auto">
             <Link href="/" className="flex items-center gap-3 mb-4 group min-w-0">
               <span className="relative shrink-0">
-                <span className="absolute -inset-1 rounded-full bg-gradient-to-tr from-sky-400/60 via-amber-300/40 to-violet-500/50 blur-sm" />
+                <span className="absolute -inset-1 rounded-full bg-gradient-to-tr from-cyan-400/50 to-transparent blur-sm" />
                 <span className="relative block w-12 h-12 rounded-full overflow-hidden border border-white/20 bg-white">
                   <img
                     src={COMPANY.logoIconPath}
@@ -291,22 +276,19 @@ function AuthContent() {
                 </span>
               </span>
               <span className="min-w-0">
-                <span className="block whitespace-nowrap uppercase text-[11px] sm:text-[12.5px] font-semibold tracking-[0.16em] text-white group-hover:text-sky-200 transition-colors">
+                <span className="block whitespace-nowrap uppercase text-[11px] sm:text-[12.5px] font-semibold tracking-[0.16em] text-white group-hover:text-cyan-300 transition-colors">
                   {COMPANY.displayName}
                 </span>
-                <span className="block whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.28em] text-amber-200/90 mt-1">
+                <span className="block whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.28em] text-cyan-400/85 mt-1">
                   {COMPANY.tagline}
                 </span>
               </span>
             </Link>
 
-            <div
-              ref={liquidRef}
-              onPointerMove={onLiquidMove}
-              className="login-liquid relative rounded-[24px] p-4 sm:p-6"
-            >
+            <div className="relative rounded-[24px] border border-white/20 bg-white/[0.07] backdrop-blur-[28px] backdrop-saturate-150 p-4 sm:p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_24px_80px_rgba(0,0,0,0.45)]">
+              <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-br from-white/10 via-transparent to-cyan-400/5" />
               <div className="relative">
-              <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.26em] text-amber-100 mb-2.5 px-3 py-1 rounded-full border border-amber-200/25 bg-sky-400/10 backdrop-blur-md">
+              <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.26em] text-cyan-200 mb-2.5 px-3 py-1 rounded-full border border-white/15 bg-white/10 backdrop-blur-md">
                 Secure client portal
               </p>
               <h1 className="text-[1.65rem] sm:text-[2rem] font-semibold tracking-[-0.045em] leading-[1.05] mb-1.5">
@@ -419,7 +401,7 @@ function AuthContent() {
                             setServerError(null);
                             setServerSuccess(null);
                           }}
-                          className="text-xs font-semibold text-sky-300 hover:text-amber-200"
+                          className="text-xs font-semibold text-cyan-400 hover:text-cyan-300"
                         >
                           Forgot password?
                         </button>
@@ -471,7 +453,7 @@ function AuthContent() {
                 <button
                   type="submit"
                   disabled={busy}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl font-bold text-sm text-[#07102a] bg-gradient-to-r from-sky-300 via-amber-200 to-violet-300 hover:brightness-110 transition-all disabled:opacity-50 mt-2 shadow-[0_10px_40px_rgba(56,189,248,0.28)]"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl font-bold text-sm text-[#041018] bg-gradient-to-r from-cyan-300 to-sky-400 hover:from-cyan-200 hover:to-sky-300 transition-all disabled:opacity-50 mt-2 shadow-[0_10px_40px_rgba(14,165,233,0.25)]"
                 >
                   {isLoading ? (
                     <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
@@ -490,7 +472,7 @@ function AuthContent() {
                     New to the studio?{" "}
                     <button
                       type="button"
-                      className="text-sky-300 font-semibold hover:text-amber-200"
+                      className="text-cyan-400 font-semibold hover:text-cyan-300"
                       onClick={() => {
                         setMode("signup");
                         setServerError(null);
@@ -506,7 +488,7 @@ function AuthContent() {
                     Already registered?{" "}
                     <button
                       type="button"
-                      className="text-sky-300 font-semibold hover:text-amber-200"
+                      className="text-cyan-400 font-semibold hover:text-cyan-300"
                       onClick={() => {
                         setMode("signin");
                         setServerError(null);
@@ -552,110 +534,89 @@ function AuthContent() {
           initial={false}
           animate={{ x: wide && swapped ? "-100%" : 0 }}
           transition={swapSpring}
-          className={`hidden lg:flex relative w-1/2 h-full min-w-0 overflow-hidden ${swapped ? "border-r border-white/25" : "border-l border-white/25"}`}
+          className={`hidden lg:flex relative w-1/2 h-full min-w-0 overflow-hidden ${swapped ? "border-r border-white/5" : "border-l border-white/5"}`}
         >
-          <div className="relative h-full w-full flex flex-col justify-between px-8 xl:px-11 py-7 pb-14 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-indigo-600/15" />
+          <div className="relative h-full w-full flex flex-col justify-between px-8 xl:px-12 py-8">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-sky-300">
+              <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-cyan-400">
                 {COMPANY.entityLabel.toUpperCase()} · COIMBATORE
               </p>
-              <h2 className="mt-2.5 text-[2rem] xl:text-[2.4rem] font-semibold leading-[1.08] tracking-[-0.04em]">
+              <h2 className="mt-3 text-[2.1rem] xl:text-[2.55rem] font-semibold leading-[1.05] tracking-[-0.04em]">
                 Production software.
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-amber-200 to-violet-300 mt-1">
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-sky-200 mt-1">
                   Practical AI.
                 </span>
               </h2>
-              <p className="mt-3 text-zinc-200 text-[13.5px] leading-relaxed">
-                LOGIC INTELLIGENCE TECHNOLOGIES builds websites, custom systems, and private
-                knowledge assistants for Indian SMBs. Sign in to the client portal — the same
-                desk that runs your project, invoices, files, and Logic AI.
-              </p>
-              <p className="mt-2 text-zinc-400 text-[12.5px] leading-relaxed">
-                Demo first. 31-point scoping so the brief does not drift. Source code is yours
-                on full payment. No visiting-card titles. No unpaid “partnerships.”
+              <p className="mt-3 text-zinc-300 text-[13.5px] leading-relaxed">
+                LOGIC INTELLIGENCE TECHNOLOGIES — websites, custom systems, and private
+                knowledge assistants for Indian SMBs. Demo first. 31-point scoping. Source on
+                full payment.
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 my-4">
-              {[
-                { src: "/assets/jobs/ceo-desk.jpg", cap: "Studio" },
-                { src: "/assets/jobs/apply-pane.jpg", cap: "Delivery" },
-                { src: "/assets/briefings/knowledge-assistant.jpg", cap: "Logic AI" },
-              ].map((p) => (
-                <div key={p.cap} className="relative h-[88px] rounded-2xl overflow-hidden border border-white/15">
-                  <Image src={p.src} alt={p.cap} fill sizes="16vw" quality={55} className="object-cover" />
-                  <span className="absolute bottom-1.5 left-2 text-[9px] font-bold uppercase tracking-[0.16em] text-white drop-shadow">
-                    {p.cap}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2.5 my-5">
               {[
                 { k: "Launch from", v: "₹8,999" },
                 { k: "Pro from", v: "₹18,999" },
                 { k: "Custom from", v: "₹50,000" },
-                { k: "HQ", v: "Coimbatore" },
+                { k: "HQ", v: "CBE" },
                 { k: "Demo", v: "Free" },
                 { k: "Source", v: "Yours" },
               ].map((s) => (
                 <div
                   key={s.k}
-                  className="rounded-2xl border border-white/15 login-glass-card px-2.5 py-3 text-center"
+                  className="rounded-2xl border border-white/15 bg-white/[0.07] backdrop-blur-md px-3 py-3.5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
                 >
-                  <p className="text-[15px] xl:text-base font-black tracking-tight">{s.v}</p>
-                  <p className="text-[9px] uppercase tracking-widest text-zinc-400 mt-1">{s.k}</p>
+                  <p className="text-base xl:text-lg font-black tracking-tight">{s.v}</p>
+                  <p className="text-[9px] uppercase tracking-widest text-zinc-500 mt-1">{s.k}</p>
                 </div>
               ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-2 my-4">
+            <div className="grid grid-cols-2 gap-2.5 mb-5">
               {[
-                { icon: FolderOpen, t: "After you sign in", d: "Projects, invoices, files, and tickets in one profile — not a shared inbox." },
-                { icon: Bot, t: "Logic AI on your work", d: "Ask prices, RAG over our catalog, or hand off to WhatsApp with context." },
-                { icon: Cpu, t: "Stack we ship on", d: "Next.js · FastAPI · Grok · pgvector. Production, not a student demo." },
-                { icon: Zap, t: "How we take work", d: "31-point scope. Free demo. Pay after you see the build. Source on close." },
+                { icon: Cpu, t: "Stack", d: "Next.js · FastAPI · Grok · pgvector" },
+                { icon: Zap, t: "Process", d: "31-point scope · demo before pay" },
+                { icon: Globe, t: "Live", d: "Portal · /ai · Knowledge Assistant" },
+                { icon: MessageCircle, t: "Handoff", d: "WhatsApp +91 93428 77474" },
               ].map((b) => (
-                <div key={b.t} className="rounded-2xl border border-white/12 login-glass-card p-3 flex gap-2.5">
-                  <b.icon className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
+                <div
+                  key={b.t}
+                  className="rounded-2xl border border-white/12 bg-white/[0.05] p-3.5 flex gap-3"
+                >
+                  <b.icon className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-widest text-white">{b.t}</p>
-                    <p className="text-[11.5px] text-zinc-300 mt-0.5 leading-snug">{b.d}</p>
+                    <p className="text-[12px] text-zinc-400 mt-0.5 leading-snug">{b.d}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[12.5px] text-zinc-300 mb-4">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-[13px] text-zinc-300 mb-5">
               {[
-                "Google or GitHub — official OAuth",
-                "Staff dashboard for LIT email",
-                "Encrypted session, Coimbatore HQ",
-                "WhatsApp +91 93428 77474",
+                "Projects, files, support in one portal",
+                "Google or GitHub — official buttons",
+                "Staff dashboard · client profile",
+                "RAG answers from your documents",
               ].map((line) => (
                 <li key={line} className="flex items-start gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-sky-300 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 mt-0.5 shrink-0" />
                   {line}
                 </li>
               ))}
             </ul>
 
-            <div className="rounded-2xl border border-white/35 login-glass-card px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-white/85">
-              <a href={COMPANY.websiteUrl} className="hover:text-amber-200">Website</a>
-              <a href={COMPANY.linkedinUrl} className="hover:text-sky-300">LinkedIn</a>
-              <a href={COMPANY.telegramBotUrl} className="hover:text-violet-300">Telegram</a>
-              <a href={COMPANY.instagramUrl} className="hover:text-amber-200">Instagram</a>
-              <a href={`https://wa.me/${COMPANY.whatsappNumber}`} className="hover:text-sky-300">WhatsApp</a>
+            <div className="rounded-2xl border border-white/12 bg-white/[0.06] px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-400">
+              <a href={COMPANY.websiteUrl} className="hover:text-cyan-300">Website</a>
+              <a href={COMPANY.linkedinUrl} className="hover:text-cyan-300">LinkedIn</a>
+              <a href={COMPANY.telegramBotUrl} className="hover:text-cyan-300">Telegram</a>
+              <a href={COMPANY.instagramUrl} className="hover:text-cyan-300">Instagram</a>
+              <a href={`https://wa.me/${COMPANY.whatsappNumber}`} className="hover:text-cyan-300">WhatsApp</a>
             </div>
           </div>
         </motion.aside>
-      </div>
-      <div className="absolute bottom-4 inset-x-0 z-20 overflow-hidden pointer-events-none">
-        <div className="lit-ticker flex w-max">
-          <p className="lit-ticker-text whitespace-nowrap text-[11px] sm:text-[13px] tracking-[0.14em] sm:tracking-[0.18em] uppercase text-sky-100/80 pr-16">{TICKER}</p>
-          <p className="lit-ticker-text whitespace-nowrap text-[11px] sm:text-[13px] tracking-[0.14em] sm:tracking-[0.18em] uppercase text-sky-100/80 pr-16" aria-hidden>{TICKER}</p>
-        </div>
       </div>
     </main>
   );
