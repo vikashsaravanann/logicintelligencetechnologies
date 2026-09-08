@@ -447,17 +447,24 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
   max-width: min(100%, var(--container-max, 80rem));
 }
 @media (max-width: 640px) {
-  html { font-size: 15px; }
-  h1 { font-size: clamp(1.5rem, 7vw, 2.25rem) !important; line-height: 1.15 !important; }
-  h2 { font-size: clamp(1.25rem, 5.5vw, 1.75rem) !important; }
+  html { font-size: 14px; }
+  h1 { font-size: clamp(1.35rem, 7vw, 1.85rem) !important; line-height: 1.15 !important; }
+  h2 { font-size: clamp(1.15rem, 5.5vw, 1.45rem) !important; }
+  h3 { font-size: 1.05rem !important; }
+  p, li { font-size: 0.9rem; }
+  img, video, canvas { max-width: 100% !important; height: auto; }
   .glass-card { border-radius: 1rem; }
-  /* Floating widgets: keep clear of edges, no overlap scroll */
+  section, .container { padding-left: 1rem; padding-right: 1rem; }
+  input, textarea, select { font-size: 16px !important; } /* iOS no-zoom */
+  table, pre, .prose { max-width: 100%; }
+  pre, code { overflow-x: auto; }
   a[aria-label*="WhatsApp"] {
-    bottom: 1rem !important;
-    left: 1rem !important;
-    width: 3.25rem !important;
-    height: 3.25rem !important;
+    bottom: 0.75rem !important;
+    left: 0.75rem !important;
+    width: 2.75rem !important;
+    height: 2.75rem !important;
   }
+  a[aria-label*="WhatsApp"] svg { width: 1.25rem !important; height: 1.25rem !important; }
 }
 
 
