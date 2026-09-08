@@ -32,15 +32,13 @@ const NavLink = ({ href, children, onHover }: { href: string; children: React.Re
   return (
     <Link 
       href={href} 
-      className={`inline-flex flex-col items-center justify-center gap-1.5 py-1 px-0.5 xl:px-1 text-[10px] xl:text-[11px] font-semibold tracking-[0.1em] transition-colors whitespace-nowrap shrink-0 ${isActive(href) ? "text-primary" : "text-zinc-300 hover:text-primary"}`}
+      className={`relative inline-flex items-center justify-center h-11 px-2 text-xs font-semibold tracking-[0.14em] transition-colors whitespace-nowrap shrink-0 ${isActive(href) ? "text-primary" : "text-zinc-200 hover:text-primary"}`}
       onMouseEnter={onHover}
     >
       <span className="inline-flex items-center gap-1 leading-none">{children}</span>
-      <span className="relative h-1.5 w-1.5 shrink-0">
-        {isActive(href) && (
-          <motion.div layoutId="activeNav" className="absolute inset-0 rounded-full bg-primary" />
-        )}
-      </span>
+      {isActive(href) && (
+        <motion.span layoutId="activeNav" className="absolute left-1/2 -translate-x-1/2 bottom-1 h-1.5 w-1.5 rounded-full bg-primary" />
+      )}
     </Link>
   );
 };
@@ -117,27 +115,25 @@ export default function Navbar() {
         style={{ scaleX }}
       />
       
-      <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "bg-[rgba(10,15,30,0.85)] backdrop-blur-[20px] saturate-180 border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.3)] py-4" : "bg-transparent py-6"}`}>
+      <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? "bg-[rgba(10,15,30,0.85)] backdrop-blur-[20px] saturate-180 border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.3)] py-2.5" : "bg-transparent py-3"}`}>
         <div className="mx-auto w-full max-w-[1680px] px-4 lg:px-6 relative z-50">
-          <div className="site-header-bar grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 w-full">
+          <div className="site-header-bar flex items-center gap-4 xl:gap-6 w-full h-11">
             
-            {/* Logo Animation */}
-            <Link href="/" className="flex items-center gap-2.5 group relative z-50 min-w-0">
+            <Link href="/" className="flex items-center gap-2.5 group relative z-50 shrink-0">
               <motion.div 
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 100, damping: 10 }}
-                className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-[0_0_15px_rgba(0,191,255,0.4)] animate-neon-pulse bg-gradient-to-tr from-primary to-accent"
+                className="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-[0_0_15px_rgba(0,191,255,0.4)] animate-neon-pulse bg-gradient-to-tr from-primary to-accent"
               >
-                <img src={COMPANY.logoIconPath} alt="Logo" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<span class="font-bold text-lg text-white">LIT</span>'; }} />
+                <img src={COMPANY.logoIconPath} alt="Logo" className="w-full h-full object-cover rounded-full" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<span class="font-bold text-lg text-white">LIT</span>'; }} />
               </motion.div>
-              <span className="text-[11px] font-bold text-white tracking-wide leading-none whitespace-nowrap hidden xl:inline truncate max-w-[14rem] 2xl:max-w-none">
+              <span className="text-xs font-bold text-white tracking-[0.14em] leading-none whitespace-nowrap hidden lg:inline">
                 {COMPANY.displayName.toUpperCase()}
               </span>
             </Link>
 
-            {/* Desktop Links — middle column minmax(0,1fr) so it cannot paint over CTAs */}
-            <div className="hidden lg:flex items-center justify-center gap-x-2 xl:gap-x-3 min-w-0 flex-nowrap overflow-visible">
+            <div className="hidden lg:flex items-center justify-center gap-x-1 xl:gap-x-2 flex-1 min-w-0 flex-nowrap">
               <NavLink href="/">HOME</NavLink>
               <NavLink href="/ai">AI</NavLink>
               <NavLink href="/work">WORK</NavLink>
@@ -164,9 +160,8 @@ export default function Navbar() {
               <NavLink href="/jobs">JOBS</NavLink>
 
               <div className="relative" onMouseEnter={() => handleMouseEnter('more')} onMouseLeave={handleMouseLeave}>
-                <button type="button" className="inline-flex flex-col items-center justify-center gap-1.5 py-1 px-0.5 xl:px-1 text-[10px] xl:text-[11px] font-semibold tracking-[0.1em] text-zinc-300 hover:text-primary whitespace-nowrap" onClick={() => setActiveDropdown((v) => v === "more" ? null : "more")}>
+                <button type="button" className="relative inline-flex items-center justify-center h-11 px-2 text-xs font-semibold tracking-[0.14em] text-zinc-200 hover:text-primary whitespace-nowrap" onClick={() => setActiveDropdown((v) => v === "more" ? null : "more")}>
                   <span className="inline-flex items-center gap-1 leading-none">MORE <ChevronDown className="w-3.5 h-3.5" /></span>
-                  <span className="h-1.5 w-1.5" />
                 </button>
                 <AnimatePresence>
                   {activeDropdown === 'more' && (
@@ -186,22 +181,22 @@ export default function Navbar() {
             </div>
 
             {/* CTA & Mobile Toggle */}
-            <div className="flex items-center justify-end gap-2 xl:gap-3 shrink-0 relative z-20">
+            <div className="ml-auto flex items-center justify-end gap-2 xl:gap-3 shrink-0 relative z-20 h-11">
               
               {session ? (
                 <div className="hidden lg:flex relative group" onMouseEnter={() => handleMouseEnter('user')} onMouseLeave={handleMouseLeave}>
-                  <button type="button" className="flex items-center gap-2 h-10 px-2.5 rounded-full border border-white/20 hover:bg-white/10 transition-colors shrink-0" aria-label="Account menu">
+                  <button type="button" className="flex items-center gap-2 h-11 px-3 rounded-full border border-white/20 hover:bg-white/10 transition-colors shrink-0" aria-label="Account menu">
                     {session.user?.user_metadata?.avatar_url ? (
-                      <img src={session.user.user_metadata.avatar_url} alt="Profile" className="w-6 h-6 rounded-full shrink-0" />
+                      <img src={session.user.user_metadata.avatar_url} alt="Profile" className="w-6 h-6 rounded-full shrink-0 object-cover" />
                     ) : (
                       <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold shrink-0">
                         {session.user?.email?.[0]?.toUpperCase() || 'U'}
                       </div>
                     )}
-                    <span className="hidden 2xl:inline text-xs font-bold text-white max-w-[120px] truncate">
+                    <span className="hidden xl:inline text-xs font-semibold tracking-[0.08em] text-white uppercase max-w-[11rem] truncate">
                       {session.user?.user_metadata?.full_name || session.user?.email}
                     </span>
-                    <ChevronDown className="w-3 h-3 text-white hidden 2xl:block" />
+                    <ChevronDown className="w-3.5 h-3.5 text-white hidden xl:block" />
                   </button>
                   <AnimatePresence>
                     {activeDropdown === 'user' && (
@@ -227,14 +222,14 @@ export default function Navbar() {
                   </AnimatePresence>
                 </div>
               ) : (
-                <Link href="/login" className="hidden lg:inline-flex items-center justify-center h-9 xl:h-10 px-4 xl:px-5 rounded-full text-[10px] xl:text-[11px] font-black text-black uppercase tracking-[0.16em] bg-white hover:bg-gray-200 transition-all shadow-lg whitespace-nowrap shrink-0">
+                <Link href="/login" className="hidden lg:inline-flex items-center justify-center h-11 px-5 rounded-full text-xs font-bold text-black uppercase tracking-[0.14em] bg-white hover:bg-gray-200 transition-all shadow-lg whitespace-nowrap shrink-0">
                   Sign In
                 </Link>
               )}
-              <Link href="/contact" className="hidden lg:inline-flex shrink-0 relative group h-9 xl:h-10 px-4 xl:px-5 rounded-full overflow-hidden items-center justify-center shadow-[0_0_20px_rgba(0,191,255,0.3)]">
+              <Link href="/contact" className="hidden lg:inline-flex shrink-0 relative group h-11 px-5 rounded-full overflow-hidden items-center justify-center shadow-[0_0_20px_rgba(0,191,255,0.3)]">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
-                <span className="relative z-10 text-[11px] font-bold text-white tracking-widest uppercase whitespace-nowrap">
+                <span className="relative z-10 text-xs font-bold text-white tracking-[0.14em] uppercase whitespace-nowrap">
                   Start Project
                 </span>
               </Link>

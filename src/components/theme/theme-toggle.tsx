@@ -45,7 +45,7 @@ export function ThemeToggle({ className = "", variant = "icon" }: ThemeTogglePro
       onClick={toggle}
       aria-label={label}
       title={label}
-      className={`h-10 w-10 shrink-0 grid place-items-center rounded-full border border-white/15 bg-white/[0.06] text-white hover:bg-white/10 ${className}`}
+      className={`h-11 w-11 shrink-0 grid place-items-center rounded-full border border-white/15 bg-white/[0.06] text-white hover:bg-white/10 ${className}`}
     >
       {mounted ? (
         dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />
