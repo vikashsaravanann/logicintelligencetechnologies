@@ -35,15 +35,16 @@ export default function HeroSection() {
         <div className="max-w-4xl flex flex-col items-center mt-4">
           <div className="flex flex-col items-center gap-4 mb-8">
             <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-primary/30 shadow-[0_0_30px_rgba(0,191,255,0.3)] bg-black">
-              <img
-                src={COMPANY.logoIconPath}
-                srcSet="/assets/logo-icon.webp 128w, /assets/logo-icon-256.webp 256w"
-                sizes="(max-width: 640px) 96px, 112px"
-                width={112}
-                height={112}
-                alt="Logic Intelligence Technologies"
-                className="w-full h-full object-cover"
-              />
+              <picture>
+                <source srcSet="/assets/logo-icon.webp 128w, /assets/logo-icon-256.webp 256w" type="image/webp" sizes="(max-width: 640px) 96px, 112px" />
+                <img
+                  src="/assets/logo-icon.jpg"
+                  alt="Logic Intelligence Technologies"
+                  width={112}
+                  height={112}
+                  className="w-full h-full object-cover"
+                />
+              </picture>
             </div>
             <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/30 bg-white/5 backdrop-blur-md">
               <span className="relative flex h-2 w-2">
