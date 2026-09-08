@@ -19,6 +19,9 @@ const display = Outfit({
 
 type Mode = "signin" | "signup" | "forgot";
 
+const TICKER_UNIT = "LOGIC INTELLIGENCE TECHNOLOGIES  ·  WHERE LOGIC MEETS INNOVATION  ·  ";
+const TICKER = Array.from({ length: 8 }, () => TICKER_UNIT).join("");
+
 function validateEmail(email: string) {
   if (!email.trim()) return "Email is required.";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return "Enter a valid email address.";
@@ -531,7 +534,7 @@ function AuthContent() {
           transition={swapSpring}
           className={`hidden lg:flex relative w-1/2 h-full min-w-0 overflow-hidden ${swapped ? "border-r border-white/5" : "border-l border-white/10"}`}
         >
-          <div className="relative h-full w-full flex flex-col justify-between px-8 xl:px-11 py-7 overflow-hidden">
+          <div className="relative h-full w-full flex flex-col justify-between px-8 xl:px-11 py-7 pb-14 overflow-hidden">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-cyan-400">
                 {COMPANY.entityLabel.toUpperCase()} · COIMBATORE
@@ -627,6 +630,12 @@ function AuthContent() {
             </div>
           </div>
         </motion.aside>
+      </div>
+      <div className="absolute bottom-4 inset-x-0 z-20 overflow-hidden pointer-events-none">
+        <div className="lit-ticker flex w-max">
+          <p className="lit-ticker-text whitespace-nowrap text-[11px] sm:text-[13px] tracking-[0.14em] sm:tracking-[0.18em] uppercase text-white/75 pr-16">{TICKER}</p>
+          <p className="lit-ticker-text whitespace-nowrap text-[11px] sm:text-[13px] tracking-[0.14em] sm:tracking-[0.18em] uppercase text-white/75 pr-16" aria-hidden>{TICKER}</p>
+        </div>
       </div>
     </main>
   );

@@ -540,6 +540,14 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
 
 
 /* AI hero ticker — never wrap, never freeze */
+@keyframes lit-marquee {
+  from { transform: translate3d(-50%, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+.lit-ticker {
+  animation: lit-marquee 80s linear infinite;
+  will-change: transform;
+}
 .lit-ticker, .lit-ticker * {
   overflow-wrap: normal !important;
   word-break: keep-all !important;
