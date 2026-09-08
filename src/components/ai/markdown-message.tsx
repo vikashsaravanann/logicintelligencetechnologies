@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
+import dynamic from "next/dynamic";
 import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+const CodeBlock = dynamic(() => import("./code-block"), { ssr: false });
 
 export function MarkdownMessage({ content }: { content: string }) {
   const components = useMemo(
@@ -22,22 +23,7 @@ export function MarkdownMessage({ content }: { content: string }) {
         const match = /language-(\w+)/.exec(className || "");
         const code = String(children ?? "").replace(/\n$/, "");
         if (match) {
-          return (
-            <SyntaxHighlighter
-              language={match[1]}
-              style={oneDark}
-              PreTag="div"
-              customStyle={{
-                margin: "0.6rem 0",
-                borderRadius: 12,
-                fontSize: 13,
-                background: "#0b1220",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
-            >
-              {code}
-            </SyntaxHighlighter>
-          );
+          return <CodeBlock language={match[1]} code={code} />;
         }
         return (
           <code
