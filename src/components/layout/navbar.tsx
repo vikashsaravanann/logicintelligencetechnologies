@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, X, ChevronDown, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
@@ -11,15 +11,15 @@ import { env } from "@/config/env";
 const PRIMARY_NAV: Array<{ href: string; label: string }> = [
   { href: "/", label: "HOME" },
   { href: "/ai", label: "AI" },
-  { href: "/#services", label: "SERVICES" },
   { href: "/work", label: "WORK" },
   { href: "/packages", label: "PACKAGES" },
   { href: "/about", label: "ABOUT" },
-  { href: "/blog", label: "BLOG" },
   { href: "/jobs", label: "JOBS" },
 ];
 
 const MORE_NAV: Array<{ href: string; label: string }> = [
+  { href: "/#services", label: "SERVICES" },
+  { href: "/blog", label: "BLOG" },
   { href: "/checklist", label: "CHECKLIST" },
   { href: "/discovery", label: "DISCOVERY" },
   { href: "/free-demo", label: "FREE DEMO" },
@@ -50,6 +50,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [session, setSession] = useState<any>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
   const { scrollYProgress } = useScroll();
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
@@ -99,10 +100,14 @@ export default function Navbar() {
   }, [isOpen]);
 
   const handleMouseEnter = (menu: string) => {
-    if (window.innerWidth > 1024) setActiveDropdown(menu);
+    if (window.innerWidth <= 1024) return;
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setActiveDropdown(menu), 120);
   };
   const handleMouseLeave = () => {
-    if (window.innerWidth > 1024) setActiveDropdown(null);
+    if (window.innerWidth <= 1024) return;
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setActiveDropdown(null), 140);
   };
 
   return (
@@ -132,22 +137,20 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Links — middle column minmax(0,1fr) so it cannot paint over CTAs */}
-            <div className="hidden lg:flex items-center justify-center gap-x-2 xl:gap-x-2.5 gap-y-1 min-w-0 flex-wrap">
+            <div className="hidden lg:flex items-center justify-center gap-x-2 xl:gap-x-3 min-w-0 flex-nowrap overflow-visible">
               <NavLink href="/">HOME</NavLink>
               <NavLink href="/ai">AI</NavLink>
-              <NavLink href="/#services">SERVICES</NavLink>
               <NavLink href="/work">WORK</NavLink>
               
-              {/* Packages Dropdown */}
-              <div className="relative group" onMouseEnter={() => handleMouseEnter('packages')} onMouseLeave={handleMouseLeave}>
+              <div className="relative" onMouseEnter={() => handleMouseEnter('packages')} onMouseLeave={handleMouseLeave}>
                 <NavLink href="/packages" onHover={() => handleMouseEnter('packages')}>
                   PACKAGES <ChevronDown className="w-3.5 h-3.5" />
                 </NavLink>
                 <AnimatePresence>
                   {activeDropdown === 'packages' && (
                     <motion.div 
-                      initial={{ opacity: 0, scaleY: 0 }} animate={{ opacity: 1, scaleY: 1 }} exit={{ opacity: 0, scaleY: 0 }} style={{ transformOrigin: "top center" }}
-                      className="absolute top-[100%] left-1/2 -translate-x-1/2 w-[250px] bg-[rgba(10,15,30,0.98)] backdrop-blur-[30px] border border-white/[0.08] rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_40px_rgba(0,191,255,0.1)] p-4 flex flex-col space-y-2"
+                      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
+                      className="absolute top-[100%] left-1/2 -translate-x-1/2 w-[250px] bg-[rgba(10,15,30,0.98)] backdrop-blur-[30px] border border-white/[0.08] rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_40px_rgba(0,191,255,0.1)] p-4 flex flex-col space-y-2 z-[80]"
                     >
                       <Link href="/packages/digital-launch-pack" className="flex justify-between items-center text-[13px] font-medium text-zinc-300 hover:text-white p-2 hover:bg-[rgba(0,191,255,0.08)] rounded-lg transition-colors group/link">Digital Launch Pack <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover/link:opacity-100 transition-opacity" /></Link>
                       <Link href="/packages/business-pro-pack" className="flex justify-between items-center text-[13px] font-medium text-zinc-300 hover:text-white p-2 hover:bg-[rgba(0,191,255,0.08)] rounded-lg transition-colors group/link">Business Pro Pack <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover/link:opacity-100 transition-opacity" /></Link>
@@ -158,11 +161,28 @@ export default function Navbar() {
               </div>
 
               <NavLink href="/about">ABOUT</NavLink>
-              <NavLink href="/blog">BLOG</NavLink>
               <NavLink href="/jobs">JOBS</NavLink>
-              <NavLink href="/checklist">CHECKLIST</NavLink>
-              <NavLink href="/discovery">DISCOVERY</NavLink>
-              <NavLink href="/free-demo">FREE DEMO</NavLink>
+
+              <div className="relative" onMouseEnter={() => handleMouseEnter('more')} onMouseLeave={handleMouseLeave}>
+                <button type="button" className="inline-flex flex-col items-center justify-center gap-1.5 py-1 px-0.5 xl:px-1 text-[10px] xl:text-[11px] font-semibold tracking-[0.1em] text-zinc-300 hover:text-primary whitespace-nowrap" onClick={() => setActiveDropdown((v) => v === "more" ? null : "more")}>
+                  <span className="inline-flex items-center gap-1 leading-none">MORE <ChevronDown className="w-3.5 h-3.5" /></span>
+                  <span className="h-1.5 w-1.5" />
+                </button>
+                <AnimatePresence>
+                  {activeDropdown === 'more' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
+                      className="absolute top-[100%] right-0 w-[220px] bg-[rgba(10,15,30,0.98)] backdrop-blur-[30px] border border-white/[0.08] rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] p-2 flex flex-col z-[80]"
+                    >
+                      {MORE_NAV.map((item) => (
+                        <Link key={item.href} href={item.href} className="px-3 py-2.5 rounded-lg text-[12px] font-semibold tracking-[0.12em] text-zinc-300 hover:text-white hover:bg-white/5">
+                          {item.label}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
             {/* CTA & Mobile Toggle */}

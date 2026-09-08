@@ -41,7 +41,7 @@ export default function DashboardLayout({
         <div className="p-6 flex items-center justify-between cursor-pointer" onClick={() => setSidebarOpen(!isSidebarOpen)}>
           {isSidebarOpen ? (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
-              <div className="w-10 h-10 relative overflow-hidden rounded-lg shadow-lg">
+              <div className="w-10 h-10 relative overflow-hidden rounded-full shadow-lg">
                 <Image src={COMPANY.logoIconPath} alt={COMPANY.displayName} fill className="object-cover" />
               </div>
               <span className="text-lg font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-400 leading-tight flex-1">
@@ -49,7 +49,7 @@ export default function DashboardLayout({
               </span>
             </motion.div>
           ) : (
-            <div className="w-10 h-10 relative overflow-hidden rounded-lg shadow-lg mx-auto">
+            <div className="w-10 h-10 relative overflow-hidden rounded-full shadow-lg mx-auto">
               <Image src={COMPANY.logoIconPath} alt={COMPANY.displayName} fill className="object-cover" />
             </div>
           )}
