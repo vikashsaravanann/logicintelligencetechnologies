@@ -32,7 +32,7 @@ const NavLink = ({ href, children, onHover }: { href: string; children: React.Re
   return (
     <Link 
       href={href} 
-      className={`inline-flex flex-col items-center justify-center gap-1.5 py-1 px-1 text-[10px] xl:text-[11px] 2xl:text-[12px] font-semibold tracking-[0.12em] transition-colors whitespace-nowrap shrink-0 ${isActive(href) ? "text-primary" : "text-zinc-300 hover:text-primary"}`}
+      className={`inline-flex flex-col items-center justify-center gap-1.5 py-1 px-0.5 xl:px-1 text-[10px] xl:text-[11px] font-semibold tracking-[0.1em] transition-colors whitespace-nowrap shrink-0 ${isActive(href) ? "text-primary" : "text-zinc-300 hover:text-primary"}`}
       onMouseEnter={onHover}
     >
       <span className="inline-flex items-center gap-1 leading-none">{children}</span>
@@ -126,13 +126,13 @@ export default function Navbar() {
               >
                 <img src={COMPANY.logoIconPath} alt="Logo" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<span class="font-bold text-lg text-white">LIT</span>'; }} />
               </motion.div>
-              <span className="text-[11px] font-bold text-white tracking-wide leading-none whitespace-nowrap hidden md:inline truncate max-w-[9.5rem] xl:max-w-[14rem] 2xl:max-w-none">
+              <span className="text-[11px] font-bold text-white tracking-wide leading-none whitespace-nowrap hidden xl:inline truncate max-w-[14rem] 2xl:max-w-none">
                 {COMPANY.displayName.toUpperCase()}
               </span>
             </Link>
 
             {/* Desktop Links — middle column minmax(0,1fr) so it cannot paint over CTAs */}
-            <div className="hidden lg:flex items-center justify-center gap-x-3 gap-y-1 min-w-0 flex-wrap">
+            <div className="hidden lg:flex items-center justify-center gap-x-2 xl:gap-x-2.5 gap-y-1 min-w-0 flex-wrap">
               <NavLink href="/">HOME</NavLink>
               <NavLink href="/ai">AI</NavLink>
               <NavLink href="/#services">SERVICES</NavLink>
@@ -141,7 +141,7 @@ export default function Navbar() {
               {/* Packages Dropdown */}
               <div className="relative group" onMouseEnter={() => handleMouseEnter('packages')} onMouseLeave={handleMouseLeave}>
                 <NavLink href="/packages" onHover={() => handleMouseEnter('packages')}>
-                  PACKAGES <ChevronDown className="w-4 h-4" />
+                  PACKAGES <ChevronDown className="w-3.5 h-3.5" />
                 </NavLink>
                 <AnimatePresence>
                   {activeDropdown === 'packages' && (
@@ -162,10 +162,11 @@ export default function Navbar() {
               <NavLink href="/jobs">JOBS</NavLink>
               <NavLink href="/checklist">CHECKLIST</NavLink>
               <NavLink href="/discovery">DISCOVERY</NavLink>
+              <NavLink href="/free-demo">FREE DEMO</NavLink>
             </div>
 
             {/* CTA & Mobile Toggle */}
-            <div className="flex items-center justify-end gap-3 shrink-0 relative z-20">
+            <div className="flex items-center justify-end gap-2 xl:gap-3 shrink-0 relative z-20">
               
               {session ? (
                 <div className="hidden lg:flex relative group" onMouseEnter={() => handleMouseEnter('user')} onMouseLeave={handleMouseLeave}>
@@ -206,11 +207,11 @@ export default function Navbar() {
                   </AnimatePresence>
                 </div>
               ) : (
-                <Link href="/login" className="hidden lg:inline-flex items-center justify-center h-10 px-5 rounded-full text-[11px] font-black text-black uppercase tracking-[0.2em] bg-white hover:bg-gray-200 transition-all shadow-lg whitespace-nowrap shrink-0">
+                <Link href="/login" className="hidden lg:inline-flex items-center justify-center h-9 xl:h-10 px-4 xl:px-5 rounded-full text-[10px] xl:text-[11px] font-black text-black uppercase tracking-[0.16em] bg-white hover:bg-gray-200 transition-all shadow-lg whitespace-nowrap shrink-0">
                   Sign In
                 </Link>
               )}
-              <Link href="/contact" className="hidden lg:inline-flex shrink-0 relative group h-10 px-5 rounded-full overflow-hidden items-center justify-center shadow-[0_0_20px_rgba(0,191,255,0.3)]">
+              <Link href="/contact" className="hidden lg:inline-flex shrink-0 relative group h-9 xl:h-10 px-4 xl:px-5 rounded-full overflow-hidden items-center justify-center shadow-[0_0_20px_rgba(0,191,255,0.3)]">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
                 <span className="relative z-10 text-[11px] font-bold text-white tracking-widest uppercase whitespace-nowrap">
