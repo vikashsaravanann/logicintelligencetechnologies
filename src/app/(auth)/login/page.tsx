@@ -246,14 +246,6 @@ function AuthContent() {
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 left-1/4 w-[520px] h-[520px] rounded-full bg-cyan-500/12 blur-[140px]" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[480px] h-[480px] rounded-full bg-blue-700/20 blur-[130px]" />
-        <div
-          className="absolute inset-0 opacity-[0.22]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(14,165,233,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(14,165,233,0.07) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
       </div>
 
       <div className="relative z-10 h-[100dvh] max-h-[100dvh] overflow-hidden flex">
@@ -534,7 +526,7 @@ function AuthContent() {
           initial={false}
           animate={{ x: wide && swapped ? "-100%" : 0 }}
           transition={swapSpring}
-          className={`hidden lg:flex relative w-1/2 h-full min-w-0 overflow-hidden ${swapped ? "border-r border-white/5" : "border-l border-white/5"}`}
+          className="hidden lg:flex relative w-1/2 h-full min-w-0 overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-indigo-600/15" />
           <div className="relative h-full w-full flex flex-col justify-between px-8 xl:px-12 py-8">
