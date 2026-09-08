@@ -462,16 +462,9 @@ export default function JobsClient() {
 
       <section id="apply" className="relative px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto pb-28 scroll-mt-28">
         <div className="relative rounded-[32px] border border-white/20 bg-[#0A0F1E] shadow-[0_40px_100px_rgba(0,0,0,0.5)] overflow-hidden">
-          <div className="flex flex-col lg:flex-row lg:items-stretch">
-            <aside className="relative hidden lg:block lg:w-[38%] lg:shrink-0 self-stretch overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/assets/jobs/apply-pane.jpg"
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover object-center"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/92 via-[#0A0F1E]/35 to-[#0A0F1E]/70" />
-              <div className="relative z-10 p-8 flex flex-col justify-start gap-5">
+          <div className="grid lg:grid-cols-[minmax(300px,38%)_minmax(0,1fr)] lg:items-stretch">
+            <aside className="relative hidden lg:flex lg:flex-col h-full min-h-full overflow-hidden border-r border-white/10">
+              <div className="relative z-10 p-8 flex flex-col gap-4 shrink-0 bg-gradient-to-b from-[#0A0F1E] to-[#0A0F1E]/80">
                 <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300">
                   <Lock className="w-3.5 h-3.5" /> Confidential
                 </p>
@@ -485,12 +478,18 @@ export default function JobsClient() {
                   <li className="flex gap-2"><Briefcase className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Held privately in our CRM</li>
                 </ul>
                 {seats.find((s) => s.id === seat) && (
-                  <div className="rounded-2xl border border-cyan-400/30 bg-black/50 backdrop-blur-md p-4 mt-1">
+                  <div className="rounded-2xl border border-cyan-400/30 bg-black/50 backdrop-blur-md p-4">
                     <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-200 mb-1">You are applying for</p>
                     <p className="text-lg font-black mb-2 uppercase">{seats.find((s) => s.id === seat)!.t}</p>
                     <p className="text-[13px] text-zinc-300 leading-relaxed">{seats.find((s) => s.id === seat)!.who}</p>
                   </div>
                 )}
+              </div>
+              <div className="relative flex-1 min-h-[420px] grid grid-rows-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/assets/jobs/apply-pane.jpg" alt="" className="w-full h-full object-cover" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/assets/jobs/ceo-desk.jpg" alt="" className="w-full h-full object-cover" />
               </div>
             </aside>
 
