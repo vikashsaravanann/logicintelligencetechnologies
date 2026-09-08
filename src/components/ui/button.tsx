@@ -26,7 +26,7 @@ const buttonVariants = cva(
         sm: "h-11 min-h-[44px] rounded-md px-3 text-sm",
         lg: "h-12 md:h-11 min-h-[44px] rounded-md px-8 text-sm",
         icon: "h-11 w-11 md:h-10 md:w-10 min-h-[40px] rounded-full",
-        pill: "h-9 min-h-9 min-w-[6.75rem] px-5 rounded-full text-[10px] font-bold uppercase tracking-[0.16em]",
+        pill: "h-9 min-h-9 min-w-[4.5rem] sm:min-w-[6.75rem] px-3 sm:px-5 rounded-full text-[10px] font-bold uppercase tracking-[0.16em]",
       },
     },
     defaultVariants: {
