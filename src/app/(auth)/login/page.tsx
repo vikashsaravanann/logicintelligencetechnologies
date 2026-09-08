@@ -251,13 +251,13 @@ function AuthContent() {
       className={`${display.className} h-[100dvh] max-h-[100dvh] w-full max-w-[100vw] text-white relative overflow-hidden`}
       style={{
         background:
-          "radial-gradient(ellipse 55% 45% at 12% 18%, rgba(56,189,248,0.32), transparent 58%), radial-gradient(ellipse 48% 50% at 92% 8%, rgba(139,92,246,0.36), transparent 52%), radial-gradient(ellipse 70% 42% at 70% 108%, rgba(212,175,55,0.28), transparent 55%), #07102a",
+          "linear-gradient(165deg, #7dd3fc 0%, #38bdf8 22%, #0ea5e9 52%, #0369a1 100%)",
       }}
     >
-      <WebGLParticles className="z-[1]" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[38vh] bg-gradient-to-t from-violet-700/25 via-sky-500/10 to-transparent blur-2xl z-[1]" />
-      <div className="pointer-events-none absolute -top-24 left-1/4 w-[420px] h-[420px] rounded-full bg-sky-400/15 blur-[120px] z-[1]" />
-      <div className="pointer-events-none absolute top-10 right-[12%] w-[280px] h-[280px] rounded-full bg-amber-400/12 blur-[100px] z-[1]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_10%,rgba(255,255,255,0.45),transparent_50%),radial-gradient(ellipse_at_90%_80%,rgba(167,139,250,0.28),transparent_45%)]" />
+      <div className="pointer-events-none absolute inset-0 backdrop-blur-[2px]" />
+      <WebGLParticles className="z-[1] opacity-70" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[32vh] bg-gradient-to-t from-[#075985]/35 to-transparent z-[1]" />
 
       <div className="relative z-10 h-[100dvh] max-h-[100dvh] overflow-hidden flex">
         <motion.section
@@ -266,7 +266,7 @@ function AuthContent() {
           transition={swapSpring}
           className="w-full lg:w-1/2 h-full min-w-0 overflow-hidden flex flex-col justify-center px-4 sm:px-7 py-4"
         >
-          <div className="w-full max-w-[440px] mx-auto rounded-3xl border border-white/12 login-glass p-4 sm:p-5 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+          <div className="w-full max-w-[440px] mx-auto rounded-3xl border border-white/40 login-glass p-4 sm:p-5">
             <Link href="/" className="flex items-center gap-3 mb-4 group min-w-0">
               <span className="relative shrink-0">
                 <span className="absolute -inset-1 rounded-full bg-gradient-to-tr from-sky-400/60 via-amber-300/40 to-violet-500/50 blur-sm" />
@@ -288,8 +288,8 @@ function AuthContent() {
               </span>
             </Link>
 
-            <div className="relative rounded-[24px] border border-white/20 bg-white/[0.07] backdrop-blur-[28px] backdrop-saturate-150 p-4 sm:p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_24px_80px_rgba(0,0,0,0.45)]">
-              <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-br from-sky-300/10 via-transparent to-violet-500/10" />
+            <div className="relative rounded-[24px] border border-white/40 bg-white/15 backdrop-blur-[28px] backdrop-saturate-150 p-4 sm:p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.5),0_24px_80px_rgba(3,105,161,0.25)]">
+              <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-br from-white/25 via-transparent to-sky-200/10" />
               <div className="relative">
               <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.26em] text-amber-100 mb-2.5 px-3 py-1 rounded-full border border-amber-200/25 bg-sky-400/10 backdrop-blur-md">
                 Secure client portal
@@ -537,7 +537,7 @@ function AuthContent() {
           initial={false}
           animate={{ x: wide && swapped ? "-100%" : 0 }}
           transition={swapSpring}
-          className={`hidden lg:flex relative w-1/2 h-full min-w-0 overflow-hidden ${swapped ? "border-r border-white/5" : "border-l border-white/10"}`}
+          className={`hidden lg:flex relative w-1/2 h-full min-w-0 overflow-hidden ${swapped ? "border-r border-white/25" : "border-l border-white/25"}`}
         >
           <div className="relative h-full w-full flex flex-col justify-between px-8 xl:px-11 py-7 pb-14 overflow-hidden">
             <div>
@@ -626,7 +626,7 @@ function AuthContent() {
               ))}
             </ul>
 
-            <div className="rounded-2xl border border-white/12 bg-black/40 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-400">
+            <div className="rounded-2xl border border-white/35 login-glass-card px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-white/85">
               <a href={COMPANY.websiteUrl} className="hover:text-amber-200">Website</a>
               <a href={COMPANY.linkedinUrl} className="hover:text-sky-300">LinkedIn</a>
               <a href={COMPANY.telegramBotUrl} className="hover:text-violet-300">Telegram</a>
