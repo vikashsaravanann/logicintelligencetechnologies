@@ -170,19 +170,19 @@ export default function JobsClient() {
         transition={{ duration: 0.45 }}
         className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto py-16 sm:py-20"
       >
-        <div className="grid lg:grid-cols-[minmax(0,0.95fr)_1.15fr] gap-8 lg:gap-12 items-center">
-          <div className="relative rounded-[28px] overflow-hidden border border-white/10 bg-black shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+        <div className="grid lg:grid-cols-[minmax(0,0.9fr)_1.2fr] gap-8 lg:gap-12 items-start">
+          <div className="relative aspect-[3/4] max-h-[560px] rounded-[28px] overflow-hidden border border-white/10 bg-black shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={COMPANY.founder.photoPath}
               alt={`${COMPANY.founder.name}, Founder of ${COMPANY.displayName}`}
-              className="w-full h-auto max-h-[640px] object-contain object-center bg-black"
+              className="absolute inset-0 w-full h-full object-cover object-[center_18%]"
             />
           </div>
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">The founder — filled</p>
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-2">{COMPANY.founder.name}</h2>
-            <p className="text-sm text-zinc-400 mb-5">{COMPANY.founder.title} · {COMPANY.address}</p>
+          <div className="lg:pt-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-3">The founder — filled</p>
+            <h2 className="text-2xl sm:text-4xl font-black tracking-tight mb-2 uppercase">{COMPANY.founder.name}</h2>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400 mb-5">{COMPANY.founder.title} · {COMPANY.address}</p>
             <p className="text-zinc-200 leading-relaxed mb-4">{COMPANY.founder.bio}</p>
             <p className="text-zinc-300 leading-relaxed mb-6">{founder.d}</p>
             <ul className="space-y-2 text-sm text-zinc-300 mb-6">
@@ -205,16 +205,16 @@ export default function JobsClient() {
             transition={{ duration: 0.4 }}
             className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"
           >
-            <w.icon className="w-5 h-5 text-cyan-300 mb-3" />
-            <h3 className="font-bold mb-2">{w.t}</h3>
-            <p className="text-sm text-zinc-400 leading-relaxed">{w.d}</p>
+            <w.icon className="w-4 h-4 text-cyan-300 mb-3" />
+            <h3 className="text-[12px] font-black uppercase tracking-[0.12em] mb-2">{w.t}</h3>
+            <p className="text-[12px] text-zinc-400 leading-relaxed">{w.d}</p>
           </motion.article>
         ))}
       </section>
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-6">
-        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary mb-2">Open seats</p>
-        <h2 className="text-2xl sm:text-3xl font-black mb-8">Four chairs. One founder. No purchased titles.</h2>
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary mb-2">Open seats</p>
+        <h2 className="text-xl sm:text-2xl font-black mb-8 uppercase tracking-tight">Four chairs. One founder. No purchased titles.</h2>
       </section>
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-10">
@@ -225,17 +225,17 @@ export default function JobsClient() {
             <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] to-transparent lg:bg-gradient-to-r" />
             <span className="absolute top-4 left-4 text-[10px] font-black uppercase tracking-[0.16em] rounded-full border border-cyan-300/40 bg-black/50 px-3 py-1 text-cyan-200">Hiring · Featured</span>
           </div>
-          <div className="p-6 sm:p-8 flex flex-col">
-            <h3 className="text-2xl font-black mb-2">{featured.t}</h3>
-            <p className="text-sm text-zinc-300 leading-relaxed mb-3">{featured.d}</p>
-            <p className="text-xs text-zinc-400 mb-4">{featured.who}</p>
-            <p className="text-xs text-zinc-400 mb-4">{featured.salary} · {featured.equity}</p>
-            <ul className="grid sm:grid-cols-1 gap-2 text-[13px] text-zinc-200 mb-6">
+          <div className="p-6 sm:p-8 flex flex-col bg-[#0A0F1E]">
+            <h3 className="text-xl font-black mb-2 uppercase tracking-tight">{featured.t}</h3>
+            <p className="text-[13px] text-zinc-300 leading-relaxed mb-3">{featured.d}</p>
+            <p className="text-[11px] uppercase tracking-wide text-zinc-500 mb-3">{featured.who}</p>
+            <p className="text-[11px] text-zinc-400 mb-4">{featured.salary} · {featured.equity}</p>
+            <ul className="grid gap-2 text-[12px] text-zinc-200 mb-6">
               {featured.days.map((d) => (
-                <li key={d} className="rounded-xl border border-white/10 px-3 py-2">90 days · {d}</li>
+                <li key={d} className="rounded-xl border border-white/10 px-3 py-2">90 DAYS · {d}</li>
               ))}
             </ul>
-            <button type="button" onClick={() => apply("ceo")} className="mt-auto h-12 px-6 rounded-xl bg-primary text-black font-bold">Apply for CEO</button>
+            <button type="button" onClick={() => apply("ceo")} className="mt-auto h-11 px-6 rounded-xl bg-primary text-black font-bold text-[11px] uppercase tracking-[0.14em]">Apply for CEO</button>
           </div>
         </article>
       </section>
@@ -247,70 +247,71 @@ export default function JobsClient() {
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            whileHover={{ y: -4 }}
             transition={{ duration: 0.35 }}
-            className="rounded-[24px] overflow-hidden border border-white/10 bg-white/[0.03] flex flex-col"
+            className="rounded-[24px] overflow-hidden border border-white/10 bg-[#0A0F1E] flex flex-col"
           >
-            <div className="relative h-40">
+            <div className="relative aspect-[16/10] shrink-0 overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={s.cover} alt="" className="absolute inset-0 w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] to-transparent" />
-              <span className="absolute bottom-3 left-3 text-[10px] font-black uppercase tracking-wider text-cyan-200">Hiring</span>
+              <span className="absolute top-3 left-3 text-[9px] font-black uppercase tracking-[0.16em] rounded-full bg-black/55 border border-white/15 px-2.5 py-1 text-cyan-200">Hiring</span>
             </div>
-            <div className="p-5 flex flex-col flex-1">
-              <h3 className="font-black mb-2">{s.t}</h3>
-              <p className="text-sm text-zinc-300 leading-relaxed mb-3 flex-1">{s.d}</p>
-              <p className="text-[12px] text-zinc-500 mb-3">{s.who}</p>
-              <p className="text-[11px] text-zinc-400 mb-3">{s.salary} · {s.equity}</p>
-              <ul className="space-y-1 text-[12px] text-zinc-300 mb-4">
+            <div className="relative z-10 p-5 flex flex-col gap-2 flex-1 bg-[#0A0F1E]">
+              <h3 className="text-[13px] font-black uppercase tracking-[0.12em] leading-snug">{s.t}</h3>
+              <p className="text-[12px] text-zinc-300 leading-relaxed">{s.d}</p>
+              <p className="text-[11px] text-zinc-500">{s.who}</p>
+              <p className="text-[11px] text-zinc-400">{s.salary} · {s.equity}</p>
+              <ul className="space-y-1 text-[11px] text-zinc-300 mt-1">
                 {s.days.map((d) => <li key={d}>▸ {d}</li>)}
               </ul>
-              <button type="button" onClick={() => apply(s.id)} className="h-11 rounded-xl border border-white/15 font-bold text-sm hover:bg-white/5">Apply</button>
+              <button type="button" onClick={() => apply(s.id)} className="mt-auto h-10 rounded-xl border border-white/15 font-bold text-[11px] uppercase tracking-[0.14em] hover:bg-white/5">Apply</button>
             </div>
           </motion.article>
         ))}
       </section>
 
-      <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-12 overflow-x-auto">
-        <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary mb-3">Compensation (indicative)</h2>
-        <table className="w-full text-left text-sm min-w-[520px] border border-white/10 rounded-2xl overflow-hidden">
-          <thead className="bg-white/5 text-[11px] uppercase tracking-wider text-zinc-400">
-            <tr><th className="p-3">Seat</th><th className="p-3">Cash now</th><th className="p-3">After revenue</th><th className="p-3">Equity</th></tr>
-          </thead>
-          <tbody>
-            {seats.map((s) => (
-              <tr key={s.id} className="border-t border-white/10">
-                <td className="p-3 font-semibold">{s.t}</td>
-                <td className="p-3 text-zinc-400">{s.id === "founder" ? "—" : s.id === "sales" ? "Commission" : "None until revenue"}</td>
-                <td className="p-3 text-zinc-300">{s.salary}</td>
-                <td className="p-3 text-zinc-300">{s.equity}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <section className="relative px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-12">
+        <div className="absolute inset-0 -z-10 rounded-[28px] overflow-hidden opacity-25">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/assets/jobs/studio-hero.jpg" alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-[#0A0F1E]/80" />
+        </div>
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary mb-5">Compensation — indicative</p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {seats.map((s) => (
+            <article key={s.id} className="rounded-2xl border border-white/10 bg-[#0A0F1E]/80 backdrop-blur-sm p-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-cyan-200 mb-3 leading-snug">{s.t}</p>
+              <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Cash now</p>
+              <p className="text-[12px] text-zinc-200 mb-3">{s.id === "founder" ? "—" : s.id === "sales" ? "Commission" : "None until revenue"}</p>
+              <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">After revenue</p>
+              <p className="text-[12px] text-zinc-200 mb-3">{s.salary}</p>
+              <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Equity</p>
+              <p className="text-[12px] text-zinc-200">{s.equity}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
-      <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto grid sm:grid-cols-3 gap-3 pb-12">
+      <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto grid sm:grid-cols-3 gap-3 pb-10">
         {steps.map((s) => (
-          <article key={s.n} className="rounded-2xl border border-white/10 p-5">
-            <p className="text-[11px] font-black tracking-[0.2em] text-primary mb-2">{s.n}</p>
-            <h3 className="font-bold mb-1">{s.t}</h3>
-            <p className="text-sm text-zinc-400">{s.d}</p>
+          <article key={s.n} className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+            <p className="text-[10px] font-black tracking-[0.2em] text-primary mb-2">{s.n}</p>
+            <h3 className="text-[13px] font-black uppercase tracking-[0.1em] mb-1">{s.t}</h3>
+            <p className="text-[12px] text-zinc-400 leading-relaxed">{s.d}</p>
           </article>
         ))}
       </section>
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-12">
-        <div className="rounded-2xl border border-red-400/20 bg-red-500/5 p-6">
-          <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-red-300 mb-4">We will not offer</h2>
-          <ul className="grid sm:grid-cols-2 gap-2 text-sm text-zinc-300">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
+          <h2 className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400 mb-4">We will not offer</h2>
+          <ul className="grid sm:grid-cols-2 gap-2 text-[12px] text-zinc-300">
             {red.map((r) => (
               <li key={r} className="flex items-start gap-2">
-                <X className="w-4 h-4 text-red-300 shrink-0 mt-0.5" /> {r}
+                <X className="w-3.5 h-3.5 text-zinc-500 shrink-0 mt-0.5" /> {r}
               </li>
             ))}
           </ul>
-          <p className="text-xs text-zinc-500 mt-5">Equity vests over four years with a one-year cliff after the registered entity exists. Letters of intent until incorporation.</p>
+          <p className="text-[11px] text-zinc-500 mt-5">Equity vests over four years with a one-year cliff after the registered entity exists. Letters of intent until incorporation.</p>
         </div>
       </section>
 
@@ -318,10 +319,10 @@ export default function JobsClient() {
 
       <div className="jobs-sticky-apply">
         <div className="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <button type="button" onClick={() => setOpen(true)} className="col-span-2 sm:col-span-1 h-12 rounded-xl bg-primary text-black font-bold text-sm">Apply</button>
-          <a href={`mailto:${COMPANY.email}?subject=${encodeURIComponent("Leadership application — name the seat")}`} className="h-12 rounded-xl border border-white/15 grid place-items-center text-sm font-bold">Email</a>
-          <a href={`https://wa.me/${COMPANY.whatsappNumber}?text=${encodeURIComponent("Hi LIT — applying for a leadership seat.")}`} className="h-12 rounded-xl border border-white/15 grid place-items-center text-sm font-bold gap-1"><span className="inline-flex items-center gap-1"><Phone className="w-4 h-4" /> WhatsApp</span></a>
-          <a href="/docs/jobs-leadership.pdf" download className="h-12 rounded-xl border border-white/15 grid place-items-center text-sm font-bold"><span className="inline-flex items-center gap-1"><Download className="w-4 h-4" /> Brief PDF</span></a>
+          <button type="button" onClick={() => setOpen(true)} className="col-span-2 sm:col-span-1 h-11 rounded-xl bg-primary text-black font-bold text-[11px] uppercase tracking-[0.14em]">Apply</button>
+          <a href={`mailto:${COMPANY.email}?subject=${encodeURIComponent("Leadership application — name the seat")}`} className="h-11 rounded-xl border border-white/15 grid place-items-center text-[11px] font-bold uppercase tracking-[0.14em]">Email</a>
+          <a href={`https://wa.me/${COMPANY.whatsappNumber}?text=${encodeURIComponent("Hi LIT — applying for a leadership seat.")}`} className="h-11 rounded-xl border border-white/15 grid place-items-center text-[11px] font-bold uppercase tracking-[0.14em]"><span className="inline-flex items-center gap-1"><Phone className="w-3.5 h-3.5" /> WhatsApp</span></a>
+          <a href="/docs/jobs-leadership.pdf" download className="h-11 rounded-xl border border-white/15 grid place-items-center text-[11px] font-bold uppercase tracking-[0.14em]"><span className="inline-flex items-center gap-1"><Download className="w-3.5 h-3.5" /> Brief PDF</span></a>
         </div>
       </div>
 
