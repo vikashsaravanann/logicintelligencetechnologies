@@ -634,8 +634,8 @@ export default function AiChatPage() {
             <button type="button" onClick={() => setMode("general")} className={`inline-flex items-center justify-center h-8 min-w-[7.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "general" ? "bg-[#E8651C] text-white" : "text-[color:var(--ai-muted)]"}`}>GENERAL</button>
           </div>
           <div className="flex items-center justify-end gap-1.5 shrink-0">
-            <Button asChild variant="pill" size="pill" className="hidden sm:inline-flex"><Link href="/">HOME</Link></Button>
-            <button type="button" onClick={newChat} className="h-8 px-3.5 rounded-full bg-[#E8651C] text-[10px] font-bold uppercase tracking-wider text-white shrink-0">NEW</button>
+            <Link href="/" className="inline-flex items-center justify-center h-9 min-w-[3.25rem] px-3 rounded-full border border-white/15 text-[10px] font-bold uppercase tracking-wider text-white shrink-0">HOME</Link>
+            <button type="button" onClick={newChat} className="h-9 min-w-[3.25rem] px-3.5 rounded-full bg-[#E8651C] text-[10px] font-bold uppercase tracking-wider text-white shrink-0">NEW</button>
             <span className="hidden sm:inline-flex"><ThemeToggle /></span>
           </div>
         </div>
@@ -757,20 +757,20 @@ export default function AiChatPage() {
                 </div>
               )}
               {attachError && <p className="mb-2 text-[11px] text-red-300">{attachError}</p>}
-              <form onSubmit={onSubmit} className="flex items-end gap-2 rounded-2xl border border-white/12 bg-black/50 px-2 py-2 focus-within:border-orange-400/35">
+              <form onSubmit={onSubmit} className="flex items-center gap-1.5 rounded-2xl border border-white/12 bg-black/50 px-1.5 py-1.5 focus-within:border-orange-400/35 min-w-0">
                 <input ref={fileRef} type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf" className="hidden" onChange={(e) => void onPickFile(e.target.files?.[0])} />
-                <button type="button" className="p-2.5 text-zinc-400 hover:text-white" onClick={() => fileRef.current?.click()} aria-label="Attach"><Paperclip className="w-4 h-4" /></button>
-                <button type="button" className={`p-2.5 ${listening ? "text-orange-400" : "text-zinc-400 hover:text-white"}`} onClick={toggleMic} aria-label="Voice"><Mic className="w-4 h-4" /></button>
+                <button type="button" className="h-11 w-11 shrink-0 grid place-items-center text-zinc-300 hover:text-white" onClick={() => fileRef.current?.click()} aria-label="Attach"><Paperclip className="w-5 h-5" /></button>
+                <button type="button" className={`h-11 w-11 shrink-0 grid place-items-center ${listening ? "text-orange-400" : "text-zinc-300 hover:text-white"}`} onClick={toggleMic} aria-label="Voice"><Mic className="w-5 h-5" /></button>
                 <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} rows={1} placeholder={listening ? "Listening…" : "Message Logic AI"} className="flex-1 bg-transparent resize-none text-base sm:text-[15px] py-2.5 outline-none max-h-32 min-w-0" />
                 {sending ? (
-                  <button type="button" onClick={() => abortRef.current?.abort()} className="h-10 w-10 rounded-full border border-white/20 grid place-items-center" aria-label="Stop"><Square className="w-3 h-3" /></button>
+                  <button type="button" onClick={() => abortRef.current?.abort()} className="h-11 w-11 shrink-0 rounded-full border border-white/25 grid place-items-center text-white" aria-label="Stop"><Square className="w-3.5 h-3.5" /></button>
                 ) : (
-                  <button type="submit" disabled={!input.trim() && !attach} className="h-10 w-10 rounded-full bg-[#E8651C] text-white grid place-items-center disabled:opacity-40" aria-label="Send"><ArrowUp className="w-4 h-4" /></button>
+                  <button type="submit" disabled={!input.trim() && !attach} className="h-11 w-11 shrink-0 rounded-full bg-[#E8651C] text-white grid place-items-center disabled:opacity-70" aria-label="Send"><ArrowUp className="w-5 h-5" /></button>
                 )}
               </form>
-              <div className="md:hidden mt-2 flex items-center justify-center gap-2">
-                <Button type="button" variant={mode === "company" ? "accent" : "pill"} size="pill" className="flex-1 max-w-[10rem]" onClick={() => setMode("company")}>COMPANY</Button>
-                <Button type="button" variant={mode === "general" ? "accent" : "pill"} size="pill" className="flex-1 max-w-[10rem]" onClick={() => setMode("general")}>GENERAL</Button>
+              <div className="md:hidden mt-2 flex items-stretch gap-2 w-full">
+                <button type="button" className={`flex-1 h-11 rounded-full text-[11px] font-bold uppercase tracking-wider ${mode === "company" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("company")}>COMPANY</button>
+                <button type="button" className={`flex-1 h-11 rounded-full text-[11px] font-bold uppercase tracking-wider ${mode === "general" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("general")}>GENERAL</button>
               </div>
             </div>
           </div>
