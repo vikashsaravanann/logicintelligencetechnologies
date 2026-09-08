@@ -244,14 +244,24 @@ function AuthContent() {
 
   return (
     <main className={`${display.className} h-[100dvh] max-h-[100dvh] w-full max-w-[100vw] bg-[#050814] text-white relative overflow-hidden`}>
+      <Image
+        src="/assets/jobs/studio-hero.jpg"
+        alt=""
+        fill
+        sizes="100vw"
+        quality={70}
+        priority
+        className="object-cover object-center"
+      />
+      <div className="absolute inset-0 bg-[#050814]/72" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[46vh] bg-gradient-to-t from-orange-600/45 via-orange-500/12 to-transparent blur-2xl" />
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 left-1/4 w-[520px] h-[520px] rounded-full bg-cyan-500/12 blur-[140px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[480px] h-[480px] rounded-full bg-blue-700/20 blur-[130px]" />
+        <div className="absolute -top-40 left-1/4 w-[520px] h-[520px] rounded-full bg-cyan-500/10 blur-[140px]" />
         <div
-          className="absolute inset-0 opacity-[0.22]"
+          className="absolute inset-0 opacity-[0.12]"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(14,165,233,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(14,165,233,0.07) 1px, transparent 1px)",
+              "linear-gradient(rgba(14,165,233,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(14,165,233,0.08) 1px, transparent 1px)",
             backgroundSize: "64px 64px",
           }}
         />
@@ -264,7 +274,7 @@ function AuthContent() {
           transition={swapSpring}
           className="w-full lg:w-1/2 h-full min-w-0 overflow-hidden flex flex-col justify-center px-4 sm:px-7 py-4"
         >
-          <div className="w-full max-w-[440px] mx-auto">
+          <div className="w-full max-w-[440px] mx-auto rounded-3xl border border-white/12 bg-black/40 backdrop-blur-xl p-4 sm:p-5 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
             <Link href="/" className="flex items-center gap-3 mb-4 group min-w-0">
               <span className="relative shrink-0">
                 <span className="absolute -inset-1 rounded-full bg-gradient-to-tr from-cyan-400/50 to-transparent blur-sm" />
@@ -535,18 +545,8 @@ function AuthContent() {
           initial={false}
           animate={{ x: wide && swapped ? "-100%" : 0 }}
           transition={swapSpring}
-          className={`hidden lg:flex relative w-1/2 h-full min-w-0 overflow-hidden ${swapped ? "border-r border-white/5" : "border-l border-white/5"}`}
+          className={`hidden lg:flex relative w-1/2 h-full min-w-0 overflow-hidden ${swapped ? "border-r border-white/5" : "border-l border-white/10"}`}
         >
-          <Image
-            src="/assets/jobs/studio-hero.jpg"
-            alt=""
-            fill
-            sizes="50vw"
-            quality={60}
-            className="object-cover object-center"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#050814]/92 via-[#050814]/78 to-[#050814]/95" />
           <div className="relative h-full w-full flex flex-col justify-between px-8 xl:px-11 py-7 overflow-hidden">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-cyan-400">
