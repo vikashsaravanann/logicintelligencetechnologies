@@ -185,12 +185,12 @@ export default function JobsClient() {
       f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf");
     if (!isPdf) {
       setCv(null);
-      setCvNote("PDF only. Word, images, and ZIP files are not accepted.");
+      setCvNote("Please attach a PDF CV only. Word, images, and ZIP files are not accepted.");
       return;
     }
     if (f.size > 2 * 1024 * 1024) {
       setCv(null);
-      setCvNote("This file is over 2 MB. Compress the PDF and upload again.");
+      setCvNote("This CV is over 2 MB. Compress the PDF and upload again.");
       return;
     }
     const reader = new FileReader();
@@ -201,7 +201,7 @@ export default function JobsClient() {
         const head = atob(raw.slice(0, 16));
         if (!head.startsWith("%PDF")) {
           setCv(null);
-          setCvNote("That file is not a valid PDF. Export from Word or Pages as PDF.");
+          setCvNote("That file is not a valid PDF. Please export your CV as PDF and try again.");
           return;
         }
       } catch {
@@ -440,108 +440,106 @@ export default function JobsClient() {
                   </div>
 
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">1 · Identity</p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">1 · Personal details</p>
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
                         <label className={label} htmlFor="name">Full name</label>
-                        <input id="name" required value={name} onChange={(e) => setName(e.target.value)} className={field} placeholder="The name you use professionally" />
+                        <input id="name" required value={name} onChange={(e) => setName(e.target.value)} className={field} placeholder="First name and last name" />
                       </div>
                       <div>
-                        <label className={label} htmlFor="email">Work email</label>
-                        <input id="email" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={field} placeholder="you@company.com" />
-                        <p className={hint}>Confirmation is sent here.</p>
+                        <label className={label} htmlFor="email">Email address</label>
+                        <input id="email" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={field} placeholder="name@company.com" />
+                        <p className={hint}>We send the confirmation to this address.</p>
                       </div>
                       <div>
                         <label className={label} htmlFor="phone">WhatsApp number</label>
-                        <input id="phone" required value={phone} onChange={(e) => setPhone(e.target.value)} className={field} placeholder="+91" />
+                        <input id="phone" required value={phone} onChange={(e) => setPhone(e.target.value)} className={field} placeholder="+91 98765 43210" />
                       </div>
                       <div>
-                        <label className={label} htmlFor="city">City & relocation</label>
-                        <input id="city" required value={city} onChange={(e) => setCity(e.target.value)} className={field} placeholder="Coimbatore — or willing to relocate" />
+                        <label className={label} htmlFor="city">Current city</label>
+                        <input id="city" required value={city} onChange={(e) => setCity(e.target.value)} className={field} placeholder="Coimbatore, or willing to relocate" />
                       </div>
                       <div className="sm:col-span-2">
-                        <label className={label} htmlFor="linkedin">LinkedIn</label>
+                        <label className={label} htmlFor="linkedin">LinkedIn profile</label>
                         <input id="linkedin" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} className={field} placeholder="https://www.linkedin.com/in/your-name" />
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">2 · Where you are now</p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">2 · Experience</p>
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className={label} htmlFor="role">Current role & company</label>
-                        <input id="role" required value={currentRole} onChange={(e) => setCurrentRole(e.target.value)} className={field} placeholder="Head of Operations, Studio X" />
+                        <label className={label} htmlFor="role">Current designation & organisation</label>
+                        <input id="role" required value={currentRole} onChange={(e) => setCurrentRole(e.target.value)} className={field} placeholder="Head of Operations, Example Ltd" />
                       </div>
                       <div>
-                        <label className={label} htmlFor="years">Years owning this function</label>
+                        <label className={label} htmlFor="years">Years in this function</label>
                         <input id="years" required value={years} onChange={(e) => setYears(e.target.value)} className={field} placeholder="8" />
                       </div>
                       <div>
-                        <label className={label} htmlFor="start">Earliest start date</label>
-                        <input id="start" required value={start} onChange={(e) => setStart(e.target.value)} className={field} placeholder="Immediate / 30 days notice" />
+                        <label className={label} htmlFor="start">Earliest joining date</label>
+                        <input id="start" required value={start} onChange={(e) => setStart(e.target.value)} className={field} placeholder="Immediate, or 30 days notice" />
                       </div>
                       <div>
-                        <label className={label} htmlFor="cash">Cash after first revenue</label>
-                        <input id="cash" value={cash} onChange={(e) => setCash(e.target.value)} className={field} placeholder="Optional — we are cash-light until revenue" />
+                        <label className={label} htmlFor="cash">Compensation expectation</label>
+                        <input id="cash" value={cash} onChange={(e) => setCash(e.target.value)} className={field} placeholder="Optional — after first revenue" />
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">3 · Proof — this is the interview</p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">3 · Proof of work</p>
                     <div className="grid gap-4">
                       <div>
-                        <label className={label} htmlFor="shipped">What you personally shipped</label>
+                        <label className={label} htmlFor="shipped">Work you have personally shipped</label>
                         <textarea id="shipped" required minLength={20} rows={4} value={shipped} onChange={(e) => setShipped(e.target.value)} className={area} placeholder="One or two products, P&Ls, or teams you owned. Revenue, uptime, headcount — numbers, not slogans." />
-                        <p className={hint}>If we cannot see the outcome, we will not call.</p>
+                        <p className={hint}>If we cannot see a measurable outcome, we will not schedule a call.</p>
                       </div>
                       <div>
                         <label className={label} htmlFor="ninety">Your first 90 days in this seat</label>
                         <textarea id="ninety" required minLength={20} rows={4} value={ninety} onChange={(e) => setNinety(e.target.value)} className={area} placeholder="Three outcomes you will own. Be specific to the seat you chose." />
                       </div>
                       <div>
-                        <label className={label} htmlFor="why">Why this seat — and why us</label>
+                        <label className={label} htmlFor="why">Why this seat, and why this company</label>
                         <textarea id="why" required minLength={20} rows={3} value={whySeat} onChange={(e) => setWhySeat(e.target.value)} className={area} placeholder="Why Logic Intelligence Technologies. Why Coimbatore. Why now — not later." />
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">4 · Résumé</p>
-                    <div className="flex flex-col gap-4">
-                      <div>
-                        <label className={label} htmlFor="heard">How you found this page</label>
-                        <input id="heard" value={heard} onChange={(e) => setHeard(e.target.value)} className={field} placeholder="LinkedIn, referral, Logic AI, Instagram…" />
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">4 · Source</p>
+                    <label className={label} htmlFor="heard">How did you hear about this role?</label>
+                    <input id="heard" value={heard} onChange={(e) => setHeard(e.target.value)} className={field} placeholder="LinkedIn, referral, Logic AI, Instagram" />
+                  </div>
+
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">5 · CV</p>
+                    <p className={label}>CV (PDF)</p>
+                    {cv ? (
+                      <div className="flex items-center gap-4 rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-5 py-4">
+                        <span className="h-12 w-12 rounded-xl border border-cyan-400/30 bg-black/30 grid place-items-center shrink-0 text-cyan-200 text-[10px] font-black">PDF</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold text-white truncate">{cv.name}</p>
+                          <p className="text-[12px] text-zinc-400 mt-0.5">CV attached. You may replace or remove it.</p>
+                        </div>
+                        <button type="button" onClick={() => { setCv(null); setCvNote(null); }} className="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-300 hover:text-white shrink-0">Remove</button>
                       </div>
-                      <div>
-                        <p className={label}>Curriculum vitae</p>
-                        {cv ? (
-                          <div className="flex items-center gap-4 rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-5 py-4">
-                            <span className="h-12 w-12 rounded-xl border border-cyan-400/30 bg-black/30 grid place-items-center shrink-0 text-cyan-200 text-[10px] font-black">PDF</span>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm font-semibold text-white truncate">{cv.name}</p>
-                              <p className="text-[12px] text-zinc-400 mt-0.5">Attached. Optional — you may replace or remove it.</p>
-                            </div>
-                            <button type="button" onClick={() => { setCv(null); setCvNote(null); }} className="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-300 hover:text-white shrink-0">Remove</button>
-                          </div>
-                        ) : (
-                          <label className="flex items-center gap-4 rounded-2xl border border-white/15 bg-white/[0.05] px-5 py-4 cursor-pointer hover:border-cyan-400/40 hover:bg-white/[0.07] transition">
-                            <span className="h-12 w-12 rounded-xl border border-cyan-400/30 bg-cyan-400/10 grid place-items-center shrink-0">
-                              <Upload className="w-5 h-5 text-cyan-300" />
-                            </span>
-                            <span className="min-w-0">
-                              <span className="block text-sm font-semibold text-white">Attach a PDF résumé</span>
-                              <span className="block text-[12px] text-zinc-400 mt-1 leading-relaxed">
-                                Optional. One PDF, 2 MB or smaller. Microsoft Word, images, and compressed folders are not accepted.
-                              </span>
-                            </span>
-                            <input type="file" accept=".pdf,application/pdf" className="hidden" onChange={(e) => { onCv(e.target.files?.[0]); e.target.value = ""; }} />
-                          </label>
-                        )}
-                        {cvNote && <p className="mt-2 text-[13px] text-amber-200">{cvNote}</p>}
-                      </div>
-                    </div>
+                    ) : (
+                      <label className="flex items-center gap-4 rounded-2xl border border-white/15 bg-white/[0.05] px-5 py-4 cursor-pointer hover:border-cyan-400/40 hover:bg-white/[0.07] transition">
+                        <span className="h-12 w-12 rounded-xl border border-cyan-400/30 bg-cyan-400/10 grid place-items-center shrink-0">
+                          <Upload className="w-5 h-5 text-cyan-300" />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block text-sm font-semibold text-white">Attach your CV</span>
+                          <span className="block text-[12px] text-zinc-400 mt-1 leading-relaxed">
+                            Optional. PDF only, 2 MB maximum. Word documents, images, and ZIP files are not accepted.
+                          </span>
+                        </span>
+                        <input type="file" accept=".pdf,application/pdf" className="hidden" onChange={(e) => { onCv(e.target.files?.[0]); e.target.value = ""; }} />
+                      </label>
+                    )}
+                    {cvNote && <p className="mt-2 text-[13px] text-amber-200">{cvNote}</p>}
                   </div>
 
                   {err && <p className="text-sm text-red-300">{err}</p>}
