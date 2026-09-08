@@ -10,11 +10,20 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const schema = z.object({
-  name: z.string().min(1),
+  name: z.string().min(2),
   email: z.string().email(),
+  phone: z.string().min(8),
+  city: z.string().min(2),
   seat: z.string().min(1),
-  pitch: z.string().min(10),
-  start: z.string().optional(),
+  linkedin: z.string().optional(),
+  currentRole: z.string().min(2),
+  years: z.string().min(1),
+  start: z.string().min(1),
+  shipped: z.string().min(20),
+  ninety: z.string().min(20),
+  why: z.string().min(20),
+  cash: z.string().optional(),
+  heard: z.string().optional(),
   cvName: z.string().optional(),
   cvBase64: z.string().optional(),
 });
@@ -26,33 +35,53 @@ export async function POST(req: Request) {
     if (!parsed.success) {
       return NextResponse.json({ ok: false, error: parsed.error.issues[0]?.message || "Invalid input" }, { status: 400 });
     }
-    const { name, email, seat, pitch, start, cvName, cvBase64 } = parsed.data;
-    const message = [`Seat: ${seat}`, start ? `Start: ${start}` : "", pitch, cvName ? `CV: ${cvName}` : ""].filter(Boolean).join("\n\n");
+    const d = parsed.data;
+    const message = [
+      `SEAT: ${d.seat}`,
+      `PHONE: ${d.phone}`,
+      `CITY: ${d.city}`,
+      d.linkedin ? `LINKEDIN: ${d.linkedin}` : "",
+      `CURRENT ROLE: ${d.currentRole}`,
+      `YEARS: ${d.years}`,
+      `START: ${d.start}`,
+      d.cash ? `CASH EXPECTATION: ${d.cash}` : "",
+      d.heard ? `SOURCE: ${d.heard}` : "",
+      d.cvName ? `CV: ${d.cvName}` : "",
+      "",
+      "WHAT THEY SHIPPED",
+      d.shipped,
+      "",
+      "90-DAY OWNERSHIP",
+      d.ninety,
+      "",
+      "WHY THIS SEAT",
+      d.why,
+    ].filter((line) => line !== "").join("\n");
 
     try {
       await supabaseAdmin.from("contact_leads").insert([
-        { name, email: email.trim().toLowerCase(), company: seat, message },
+        { name: d.name, email: d.email.trim().toLowerCase(), company: d.seat, message },
       ]);
     } catch (e) {
       console.error("[jobs] lead insert", e);
     }
 
     const attachments =
-      cvBase64 && cvName
-        ? [{ filename: cvName, content: Buffer.from(cvBase64.split(",").pop() || cvBase64, "base64") }]
+      d.cvBase64 && d.cvName
+        ? [{ filename: d.cvName, content: Buffer.from(d.cvBase64.split(",").pop() || d.cvBase64, "base64") }]
         : undefined;
 
     await sendEmail({
       to: process.env.LEAD_NOTIFICATION_EMAIL || "support@logicintelligencetechnologies.in",
       from: "noReply",
-      replyTo: email,
-      subject: `Leadership application: ${seat} — ${name}`,
+      replyTo: d.email,
+      subject: `Leadership application: ${d.seat} — ${d.name}`,
       react: React.createElement(NewLeadNotificationEmail, {
-        fullName: name,
-        companyName: seat,
-        email,
-        phone: "",
-        service: `Jobs — ${seat}`,
+        fullName: d.name,
+        companyName: d.seat,
+        email: d.email,
+        phone: d.phone,
+        service: `Jobs — ${d.seat}`,
         requirements: message,
         submissionDate: new Date().toISOString(),
       }),
@@ -60,12 +89,12 @@ export async function POST(req: Request) {
     });
 
     await sendEmail({
-      to: email,
+      to: d.email,
       from: "noReply",
       subject: "We received your leadership application — Logic Intelligence Technologies",
       react: React.createElement(JobApplicationEmail, {
-        fullName: name,
-        seat,
+        fullName: d.name,
+        seat: d.seat,
       }),
     });
 

@@ -15,6 +15,7 @@ type Seat = {
   equity: string;
   d: string;
   who: string;
+  extra: string;
   days: string[];
 };
 
@@ -28,6 +29,7 @@ const seats: Seat[] = [
     equity: "Control stays with Vikash",
     d: "Vikash Saravanan keeps product, AI architecture, capital allocation, and final scoping. Directors report into the function they own — they do not replace the founder.",
     who: "Filled. You work with him, not instead of him.",
+    extra: "This seat is not open.",
     days: ["Ship Logic AI quality", "Scope every paid project", "Capital allocation"],
   },
   {
@@ -37,8 +39,9 @@ const seats: Seat[] = [
     cover: "/assets/jobs/ceo-desk.jpg",
     salary: "Modest salary after first revenue",
     equity: "Six-month trial. Title is not for sale.",
-    d: "Run the company so Vikash can stay on product. Operations, sales cadence, legal hygiene, hiring loop, and weekly cash. You are measured on signed work and a clean pipeline — not slide decks.",
+    d: "Run the company so Vikash can stay on product. You own operations, sales cadence, legal hygiene, the hiring loop, and weekly cash. You are measured on signed work and a clean pipeline — not slide decks.",
     who: "Operator who has already closed revenue or run a small P&L. Not a first-job CEO.",
+    extra: "First 90 days in Coimbatore. You sit next to the founder. Hybrid only after you have shipped in the room.",
     days: ["Own weekly cash and pipeline", "Close two paid demos to signed work", "Stand up a hiring loop"],
   },
   {
@@ -50,6 +53,7 @@ const seats: Seat[] = [
     equity: "0.5–2% after the registered entity exists",
     d: "Architecture, Git, uptime, and delivery against the 31-point scoping framework. You stop scope creep in production, not in a retrospective.",
     who: "Staff-level engineer who has shipped Next.js / Python systems and reviewed other people's deploys.",
+    extra: "You review every production deploy. Vercel, Supabase, and GitHub are already live — you raise the bar, you do not rebuild the stack for sport.",
     days: ["Uptime and Git hygiene", "Ship without scope creep", "Review every production deploy"],
   },
   {
@@ -61,6 +65,7 @@ const seats: Seat[] = [
     equity: "Small option after entity",
     d: "Pipeline, Discovery, and conversion. Prices stay on the site. You never invent a pack on a call. WhatsApp and Logic AI already warm the lead — you close it.",
     who: "Closer who can run a 45-minute Discovery without discounting the floor.",
+    extra: "Digital Launch from ₹8,999. Business Pro from ₹18,999. You protect the floor. Commission follows signed work, not meetings booked.",
     days: ["Build a 30-lead pipeline", "Run demos that do not invent prices", "Convert two Discovery calls"],
   },
   {
@@ -72,6 +77,7 @@ const seats: Seat[] = [
     equity: "Equity-heavier than cash",
     d: "RAG quality, Logic AI, golden-set eval, and client statements of work. You keep prices as constrained facts and make the assistant useful for Coimbatore businesses.",
     who: "Builder who has shipped retrieval or LLM features, not a prompt-only résumé.",
+    extra: "xAI / Groq in production. You own eval, not demos. If the model invents a rupee, that is your incident.",
     days: ["Golden-set eval every week", "No invented prices in chat", "Own one client SOW"],
   },
 ];
@@ -85,7 +91,7 @@ const red = [
 ];
 
 const steps = [
-  { n: "01", t: "Ten lines", d: "Name the seat. What you shipped. What you will own in ninety days. When you can start." },
+  { n: "01", t: "The form", d: "Name the seat. Proof of work. Ninety-day plan. Start date. We store it in our CRM and email you a confirmation." },
   { n: "02", t: "45-minute call", d: "With Vikash. No slide theatre. Bring one artefact of work you are proud of." },
   { n: "03", t: "Six-month trial", d: "Letter of intent until incorporation. Then four-year vest, one-year cliff." },
 ];
@@ -97,18 +103,27 @@ const why = [
   { icon: Clock, t: "Ninety-day ownership", d: "Each seat has three outcomes on the card. Miss them and the trial ends. Hit them and you write the next quarter." },
 ];
 
-const fade = {
-  hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0 },
-};
+const fade = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0 } };
+
+const field =
+  "w-full h-12 rounded-xl bg-white/[0.06] border border-white/15 px-4 text-[15px] text-white placeholder:text-zinc-500 focus:outline-none focus:border-cyan-400/60";
+const label = "block text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-400 mb-1.5";
 
 export default function JobsClient() {
-  const [open, setOpen] = useState(false);
   const [seat, setSeat] = useState("ceo");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [pitch, setPitch] = useState("");
+  const [phone, setPhone] = useState("");
+  const [city, setCity] = useState("");
+  const [linkedin, setLinkedin] = useState("");
+  const [currentRole, setCurrentRole] = useState("");
+  const [years, setYears] = useState("");
   const [start, setStart] = useState("");
+  const [shipped, setShipped] = useState("");
+  const [ninety, setNinety] = useState("");
+  const [whySeat, setWhySeat] = useState("");
+  const [cash, setCash] = useState("");
+  const [heard, setHeard] = useState("");
   const [cv, setCv] = useState<{ name: string; data: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [ok, setOk] = useState(false);
@@ -117,6 +132,11 @@ export default function JobsClient() {
   const founder = seats.find((s) => s.id === "founder")!;
   const featured = seats.find((s) => s.id === "ceo")!;
   const directors = seats.filter((s) => s.id !== "founder" && s.id !== "ceo");
+
+  function goApply(id: string) {
+    setSeat(id);
+    document.getElementById("apply")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -129,9 +149,18 @@ export default function JobsClient() {
         body: JSON.stringify({
           name,
           email,
+          phone,
+          city,
           seat: seats.find((s) => s.id === seat)?.t || seat,
-          pitch,
+          linkedin,
+          currentRole,
+          years,
           start,
+          shipped,
+          ninety,
+          why: whySeat,
+          cash,
+          heard,
           cvName: cv?.name,
           cvBase64: cv?.data,
         }),
@@ -139,7 +168,6 @@ export default function JobsClient() {
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || "Failed");
       setOk(true);
-      setOpen(false);
     } catch (ex) {
       setErr((ex as Error).message);
     } finally {
@@ -153,11 +181,6 @@ export default function JobsClient() {
     const reader = new FileReader();
     reader.onload = () => setCv({ name: f.name, data: String(reader.result || "") });
     reader.readAsDataURL(f);
-  }
-
-  function apply(id: string) {
-    setSeat(id);
-    setOpen(true);
   }
 
   return (
@@ -206,86 +229,78 @@ export default function JobsClient() {
             className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"
           >
             <w.icon className="w-4 h-4 text-cyan-300 mb-3" />
-            <h3 className="text-[12px] font-black uppercase tracking-[0.12em] mb-2">{w.t}</h3>
-            <p className="text-[12px] text-zinc-400 leading-relaxed">{w.d}</p>
+            <h3 className="text-[13px] font-black uppercase tracking-[0.12em] mb-2">{w.t}</h3>
+            <p className="text-sm text-zinc-400 leading-relaxed">{w.d}</p>
           </motion.article>
         ))}
       </section>
 
-      <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-6">
-        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary mb-2">Open seats</p>
-        <h2 className="text-xl sm:text-2xl font-black mb-8 uppercase tracking-tight">Four chairs. One founder. No purchased titles.</h2>
+      <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-8">
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">Open seats</p>
+        <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tight">Four chairs. One founder.<br className="hidden sm:block" /> No purchased titles.</h2>
+        <p className="text-base sm:text-lg text-zinc-300 max-w-3xl leading-relaxed">
+          Each seat owns a function. You apply for one. We email you a confirmation the moment the form lands in our CRM. Cash is modest until revenue. Equity vests. If you want a visiting card for a cheque, stop here.
+        </p>
       </section>
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-10">
-        <article className="rounded-[28px] overflow-hidden border border-cyan-400/30 bg-white/[0.03] grid lg:grid-cols-2">
-          <div className="relative min-h-[240px] lg:min-h-[360px]">
+        <article className="rounded-[28px] overflow-hidden border border-cyan-400/25 bg-white/[0.04] backdrop-blur-xl grid lg:grid-cols-2">
+          <div className="relative min-h-[220px] lg:min-h-full aspect-[16/10] lg:aspect-auto">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={featured.cover} alt="" className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] to-transparent lg:bg-gradient-to-r" />
-            <span className="absolute top-4 left-4 text-[10px] font-black uppercase tracking-[0.16em] rounded-full border border-cyan-300/40 bg-black/50 px-3 py-1 text-cyan-200">Hiring · Featured</span>
+            <span className="absolute top-4 left-4 text-[10px] font-black uppercase tracking-[0.16em] rounded-full border border-cyan-300/40 bg-black/55 px-3 py-1 text-cyan-200">Hiring · Featured</span>
           </div>
-          <div className="p-6 sm:p-8 flex flex-col bg-[#0A0F1E]">
-            <h3 className="text-xl font-black mb-2 uppercase tracking-tight">{featured.t}</h3>
-            <p className="text-[13px] text-zinc-300 leading-relaxed mb-3">{featured.d}</p>
-            <p className="text-[11px] uppercase tracking-wide text-zinc-500 mb-3">{featured.who}</p>
-            <p className="text-[11px] text-zinc-400 mb-4">{featured.salary} · {featured.equity}</p>
-            <ul className="grid gap-2 text-[12px] text-zinc-200 mb-6">
+          <div className="p-6 sm:p-10 flex flex-col bg-[#0A0F1E]/92">
+            <h3 className="text-2xl sm:text-3xl font-black mb-3 tracking-tight">{featured.t}</h3>
+            <p className="text-base text-zinc-200 leading-relaxed mb-4">{featured.d}</p>
+            <p className="text-sm text-zinc-400 mb-3">{featured.who}</p>
+            <p className="text-sm text-zinc-400 mb-5">{featured.extra}</p>
+            <p className="text-sm text-cyan-200/90 mb-5">{featured.salary} · {featured.equity}</p>
+            <ul className="grid gap-2 text-sm text-zinc-200 mb-8">
               {featured.days.map((d) => (
-                <li key={d} className="rounded-xl border border-white/10 px-3 py-2">90 DAYS · {d}</li>
+                <li key={d} className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">90 days · {d}</li>
               ))}
             </ul>
-            <button type="button" onClick={() => apply("ceo")} className="mt-auto h-11 px-6 rounded-xl bg-primary text-black font-bold text-[11px] uppercase tracking-[0.14em]">Apply for CEO</button>
+            <button type="button" onClick={() => goApply("ceo")} className="mt-auto h-12 px-6 rounded-xl bg-primary text-black font-bold text-sm uppercase tracking-[0.12em]">Apply for CEO</button>
           </div>
         </article>
       </section>
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto grid md:grid-cols-3 gap-5 pb-14">
         {directors.map((s) => (
-          <motion.article
-            key={s.id}
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.35 }}
-            className="rounded-[24px] overflow-hidden border border-white/10 bg-[#0A0F1E] flex flex-col"
-          >
+          <article key={s.id} className="rounded-[24px] overflow-hidden border border-white/12 bg-white/[0.04] backdrop-blur-xl flex flex-col">
             <div className="relative aspect-[16/10] shrink-0 overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={s.cover} alt="" className="absolute inset-0 w-full h-full object-cover" />
               <span className="absolute top-3 left-3 text-[9px] font-black uppercase tracking-[0.16em] rounded-full bg-black/55 border border-white/15 px-2.5 py-1 text-cyan-200">Hiring</span>
             </div>
-            <div className="relative z-10 p-5 flex flex-col gap-2 flex-1 bg-[#0A0F1E]">
-              <h3 className="text-[13px] font-black uppercase tracking-[0.12em] leading-snug">{s.t}</h3>
-              <p className="text-[12px] text-zinc-300 leading-relaxed">{s.d}</p>
-              <p className="text-[11px] text-zinc-500">{s.who}</p>
-              <p className="text-[11px] text-zinc-400">{s.salary} · {s.equity}</p>
-              <ul className="space-y-1 text-[11px] text-zinc-300 mt-1">
+            <div className="relative z-10 p-6 flex flex-col gap-3 flex-1 bg-[#0A0F1E]/95">
+              <h3 className="text-lg font-black tracking-tight">{s.t}</h3>
+              <p className="text-sm text-zinc-200 leading-relaxed">{s.d}</p>
+              <p className="text-sm text-zinc-400">{s.who}</p>
+              <p className="text-sm text-zinc-400">{s.extra}</p>
+              <p className="text-sm text-cyan-200/80">{s.salary} · {s.equity}</p>
+              <ul className="space-y-1.5 text-sm text-zinc-300">
                 {s.days.map((d) => <li key={d}>▸ {d}</li>)}
               </ul>
-              <button type="button" onClick={() => apply(s.id)} className="mt-auto h-10 rounded-xl border border-white/15 font-bold text-[11px] uppercase tracking-[0.14em] hover:bg-white/5">Apply</button>
+              <button type="button" onClick={() => goApply(s.id)} className="mt-auto h-12 rounded-xl border border-white/15 font-bold text-sm uppercase tracking-[0.12em] hover:bg-white/5">Apply</button>
             </div>
-          </motion.article>
+          </article>
         ))}
       </section>
 
-      <section className="relative px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-12">
-        <div className="absolute inset-0 -z-10 rounded-[28px] overflow-hidden opacity-25">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/assets/jobs/studio-hero.jpg" alt="" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-[#0A0F1E]/80" />
-        </div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary mb-5">Compensation — indicative</p>
+      <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-12">
+        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary mb-5">Compensation — indicative</p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {seats.map((s) => (
-            <article key={s.id} className="rounded-2xl border border-white/10 bg-[#0A0F1E]/80 backdrop-blur-sm p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-cyan-200 mb-3 leading-snug">{s.t}</p>
+            <article key={s.id} className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-5">
+              <p className="text-[12px] font-black uppercase tracking-[0.1em] text-cyan-200 mb-4 leading-snug">{s.t}</p>
               <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Cash now</p>
-              <p className="text-[12px] text-zinc-200 mb-3">{s.id === "founder" ? "—" : s.id === "sales" ? "Commission" : "None until revenue"}</p>
+              <p className="text-sm text-zinc-200 mb-3">{s.id === "founder" ? "—" : s.id === "sales" ? "Commission" : "None until revenue"}</p>
               <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">After revenue</p>
-              <p className="text-[12px] text-zinc-200 mb-3">{s.salary}</p>
+              <p className="text-sm text-zinc-200 mb-3">{s.salary}</p>
               <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Equity</p>
-              <p className="text-[12px] text-zinc-200">{s.equity}</p>
+              <p className="text-sm text-zinc-200">{s.equity}</p>
             </article>
           ))}
         </div>
@@ -293,63 +308,125 @@ export default function JobsClient() {
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto grid sm:grid-cols-3 gap-3 pb-10">
         {steps.map((s) => (
-          <article key={s.n} className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-            <p className="text-[10px] font-black tracking-[0.2em] text-primary mb-2">{s.n}</p>
-            <h3 className="text-[13px] font-black uppercase tracking-[0.1em] mb-1">{s.t}</h3>
-            <p className="text-[12px] text-zinc-400 leading-relaxed">{s.d}</p>
+          <article key={s.n} className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-6">
+            <p className="text-[11px] font-black tracking-[0.2em] text-primary mb-2">{s.n}</p>
+            <h3 className="text-lg font-black mb-2">{s.t}</h3>
+            <p className="text-sm text-zinc-400 leading-relaxed">{s.d}</p>
           </article>
         ))}
       </section>
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-12">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-          <h2 className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400 mb-4">We will not offer</h2>
-          <ul className="grid sm:grid-cols-2 gap-2 text-[12px] text-zinc-300">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+          <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-400 mb-4">We will not offer</h2>
+          <ul className="grid sm:grid-cols-2 gap-2 text-sm text-zinc-300">
             {red.map((r) => (
               <li key={r} className="flex items-start gap-2">
                 <X className="w-3.5 h-3.5 text-zinc-500 shrink-0 mt-0.5" /> {r}
               </li>
             ))}
           </ul>
-          <p className="text-[11px] text-zinc-500 mt-5">Equity vests over four years with a one-year cliff after the registered entity exists. Letters of intent until incorporation.</p>
+          <p className="text-sm text-zinc-500 mt-5">Equity vests over four years with a one-year cliff after the registered entity exists. Letters of intent until incorporation.</p>
         </div>
       </section>
 
-      {ok && <p className="text-center text-sm text-cyan-200 pb-6">Application received. We reply within 24 hours.</p>}
+      <section id="apply" className="px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto pb-28 scroll-mt-28">
+        <div className="rounded-[28px] border border-white/15 bg-white/[0.07] backdrop-blur-2xl shadow-[0_30px_80px_rgba(0,0,0,0.45)] p-5 sm:p-8">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-2">Confidential application</p>
+          <h2 className="text-2xl sm:text-3xl font-black mb-2">Apply for a seat</h2>
+          <p className="text-sm text-zinc-400 mb-6 leading-relaxed">
+            Stored in our CRM. You get a confirmation email. We get the application. Reply within 24 hours.
+          </p>
+
+          {ok ? (
+            <p className="text-cyan-200 text-base py-10 text-center">Application received. Check your inbox — we reply within 24 hours.</p>
+          ) : (
+            <form onSubmit={submit} className="grid gap-4">
+              <div>
+                <label className={label} htmlFor="seat">Seat</label>
+                <select id="seat" value={seat} onChange={(e) => setSeat(e.target.value)} className={field}>
+                  {seats.filter((s) => s.open).map((s) => <option key={s.id} value={s.id} className="bg-[#0A0F1E]">{s.t}</option>)}
+                </select>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={label} htmlFor="name">Full name</label>
+                  <input id="name" required value={name} onChange={(e) => setName(e.target.value)} className={field} placeholder="As on your ID" />
+                </div>
+                <div>
+                  <label className={label} htmlFor="email">Email</label>
+                  <input id="email" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={field} placeholder="you@company.com" />
+                </div>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={label} htmlFor="phone">Phone (WhatsApp)</label>
+                  <input id="phone" required value={phone} onChange={(e) => setPhone(e.target.value)} className={field} placeholder="+91" />
+                </div>
+                <div>
+                  <label className={label} htmlFor="city">City</label>
+                  <input id="city" required value={city} onChange={(e) => setCity(e.target.value)} className={field} placeholder="Coimbatore / willing to relocate" />
+                </div>
+              </div>
+              <div>
+                <label className={label} htmlFor="linkedin">LinkedIn URL</label>
+                <input id="linkedin" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} className={field} placeholder="https://linkedin.com/in/…" />
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={label} htmlFor="role">Current role & company</label>
+                  <input id="role" required value={currentRole} onChange={(e) => setCurrentRole(e.target.value)} className={field} placeholder="Head of Ops, Studio X" />
+                </div>
+                <div>
+                  <label className={label} htmlFor="years">Years in this function</label>
+                  <input id="years" required value={years} onChange={(e) => setYears(e.target.value)} className={field} placeholder="8" />
+                </div>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={label} htmlFor="start">When you can start</label>
+                  <input id="start" required value={start} onChange={(e) => setStart(e.target.value)} className={field} placeholder="Immediate / 30 days" />
+                </div>
+                <div>
+                  <label className={label} htmlFor="cash">Cash expectation (optional)</label>
+                  <input id="cash" value={cash} onChange={(e) => setCash(e.target.value)} className={field} placeholder="After first revenue" />
+                </div>
+              </div>
+              <div>
+                <label className={label} htmlFor="shipped">What you shipped (proof)</label>
+                <textarea id="shipped" required minLength={20} rows={4} value={shipped} onChange={(e) => setShipped(e.target.value)} className={`${field} h-auto py-3`} placeholder="One or two products or P&Ls you personally owned. Numbers, not slogans." />
+              </div>
+              <div>
+                <label className={label} htmlFor="ninety">What you will own in 90 days</label>
+                <textarea id="ninety" required minLength={20} rows={4} value={ninety} onChange={(e) => setNinety(e.target.value)} className={`${field} h-auto py-3`} placeholder="Three outcomes. Be specific to this seat." />
+              </div>
+              <div>
+                <label className={label} htmlFor="why">Why this seat — not another</label>
+                <textarea id="why" required minLength={20} rows={3} value={whySeat} onChange={(e) => setWhySeat(e.target.value)} className={`${field} h-auto py-3`} placeholder="Why Logic Intelligence Technologies. Why now." />
+              </div>
+              <div>
+                <label className={label} htmlFor="heard">How you found this page</label>
+                <input id="heard" value={heard} onChange={(e) => setHeard(e.target.value)} className={field} placeholder="LinkedIn / referral / /ai" />
+              </div>
+              <label className="flex items-center justify-center h-12 rounded-xl border border-dashed border-white/25 text-sm text-zinc-400 cursor-pointer hover:bg-white/5">
+                {cv ? cv.name : "CV — PDF, optional, 2 MB"}
+                <input type="file" accept=".pdf,application/pdf" className="hidden" onChange={(e) => onCv(e.target.files?.[0])} />
+              </label>
+              {err && <p className="text-sm text-red-300">{err}</p>}
+              <button type="submit" disabled={busy} className="h-12 rounded-xl bg-primary text-black font-bold uppercase tracking-[0.14em]">{busy ? "Sending…" : "Submit application"}</button>
+            </form>
+          )}
+        </div>
+      </section>
 
       <div className="jobs-sticky-apply">
         <div className="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <button type="button" onClick={() => setOpen(true)} className="col-span-2 sm:col-span-1 h-11 rounded-xl bg-primary text-black font-bold text-[11px] uppercase tracking-[0.14em]">Apply</button>
-          <a href={`mailto:${COMPANY.email}?subject=${encodeURIComponent("Leadership application — name the seat")}`} className="h-11 rounded-xl border border-white/15 grid place-items-center text-[11px] font-bold uppercase tracking-[0.14em]">Email</a>
-          <a href={`https://wa.me/${COMPANY.whatsappNumber}?text=${encodeURIComponent("Hi LIT — applying for a leadership seat.")}`} className="h-11 rounded-xl border border-white/15 grid place-items-center text-[11px] font-bold uppercase tracking-[0.14em]"><span className="inline-flex items-center gap-1"><Phone className="w-3.5 h-3.5" /> WhatsApp</span></a>
-          <a href="/docs/jobs-leadership.pdf" download className="h-11 rounded-xl border border-white/15 grid place-items-center text-[11px] font-bold uppercase tracking-[0.14em]"><span className="inline-flex items-center gap-1"><Download className="w-3.5 h-3.5" /> Brief PDF</span></a>
+          <button type="button" onClick={() => goApply(seat)} className="col-span-2 sm:col-span-1 h-12 rounded-xl bg-primary text-black font-bold text-sm uppercase tracking-[0.12em]">Apply</button>
+          <a href={`mailto:${COMPANY.email}?subject=${encodeURIComponent("Leadership application — name the seat")}`} className="h-12 rounded-xl border border-white/15 grid place-items-center text-sm font-bold uppercase tracking-[0.12em]">Email</a>
+          <a href={`https://wa.me/${COMPANY.whatsappNumber}?text=${encodeURIComponent("Hi LIT — applying for a leadership seat.")}`} className="h-12 rounded-xl border border-white/15 grid place-items-center text-sm font-bold uppercase tracking-[0.12em]"><span className="inline-flex items-center gap-1"><Phone className="w-4 h-4" /> WhatsApp</span></a>
+          <a href="/docs/jobs-leadership.pdf" download className="h-12 rounded-xl border border-white/15 grid place-items-center text-sm font-bold uppercase tracking-[0.12em]"><span className="inline-flex items-center gap-1"><Download className="w-4 h-4" /> Brief PDF</span></a>
         </div>
       </div>
-
-      {open && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-6" onClick={() => setOpen(false)}>
-          <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border border-white/10 bg-[#0A0F1E] p-5 sm:p-6 max-h-[92dvh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-black uppercase tracking-wider text-sm">Apply</h3>
-              <button type="button" onClick={() => setOpen(false)} className="h-11 w-11 grid place-items-center" aria-label="Close"><X className="w-5 h-5" /></button>
-            </div>
-            <label className="block text-[11px] uppercase tracking-wider text-zinc-400 mb-1">Seat</label>
-            <select value={seat} onChange={(e) => setSeat(e.target.value)} className="w-full h-11 mb-3 rounded-xl bg-white/5 border border-white/15 px-3 text-sm">
-              {seats.filter((s) => s.open).map((s) => <option key={s.id} value={s.id}>{s.t}</option>)}
-            </select>
-            <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" className="w-full h-11 mb-3 rounded-xl bg-white/5 border border-white/15 px-3 text-base sm:text-sm" />
-            <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full h-11 mb-3 rounded-xl bg-white/5 border border-white/15 px-3 text-base sm:text-sm" />
-            <input value={start} onChange={(e) => setStart(e.target.value)} placeholder="When you can start" className="w-full h-11 mb-3 rounded-xl bg-white/5 border border-white/15 px-3 text-base sm:text-sm" />
-            <textarea required minLength={10} value={pitch} onChange={(e) => setPitch(e.target.value)} placeholder="Ten lines: what you shipped, what you will own in 90 days." rows={6} className="w-full mb-3 rounded-xl bg-white/5 border border-white/15 px-3 py-2 text-base sm:text-sm" />
-            <label className="block h-11 mb-3 rounded-xl border border-dashed border-white/20 grid place-items-center text-xs text-zinc-400 cursor-pointer">
-              {cv ? cv.name : "CV (optional, PDF, 2 MB)"}
-              <input type="file" accept=".pdf,application/pdf" className="hidden" onChange={(e) => onCv(e.target.files?.[0])} />
-            </label>
-            {err && <p className="text-sm text-red-300 mb-2">{err}</p>}
-            <button type="submit" disabled={busy} className="w-full h-12 rounded-xl bg-primary text-black font-bold">{busy ? "Sending…" : "Submit application"}</button>
-          </form>
-        </div>
-      )}
     </>
   );
 }
