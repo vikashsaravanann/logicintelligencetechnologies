@@ -1,7 +1,9 @@
+import dynamic from "next/dynamic";
 import Navbar from '@/components/layout/navbar';
 import Footer from '@/components/layout/footer';
-import SupportChatWidget from '@/components/shared/support-chat-widget';
-import FloatingWhatsApp from '@/components/shared/floating-whatsapp';
+
+const SupportChatWidget = dynamic(() => import('@/components/shared/support-chat-widget'), { ssr: false });
+const FloatingWhatsApp = dynamic(() => import('@/components/shared/floating-whatsapp'), { ssr: false });
 
 export default function MarketingLayout({
   children,
