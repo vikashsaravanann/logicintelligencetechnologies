@@ -523,10 +523,10 @@ export default function AiChatPage() {
       <div className="min-h-[100dvh] text-[color:var(--ai-ink)] relative overflow-hidden" style={{ background: glow }}>
         <style>{`@keyframes lit-marquee{from{transform:translate3d(-50%,0,0)}to{transform:translate3d(0,0,0)}}.lit-ticker{animation:lit-marquee 5s linear infinite;will-change:transform}@media (prefers-reduced-motion:reduce){.lit-ticker{animation:lit-marquee 5s linear infinite!important;animation-iteration-count:infinite!important}}`}</style>
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42vh] bg-gradient-to-t from-orange-600/40 via-orange-500/10 to-transparent blur-2xl" />
-        <header className="relative z-30 grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-3 px-4 sm:px-8 py-5">
-          <Link href="/" className="justify-self-start flex items-center gap-2 min-w-0 max-w-[58vw] sm:max-w-full">
-            <Image src={COMPANY.logoIconPath} alt="" width={28} height={28} className="rounded-full object-cover border border-white/20 shrink-0" />
-            <span className="hidden xs:inline sm:inline text-[10px] sm:text-[13px] font-semibold tracking-[0.08em] uppercase truncate">LOGIC INTELLIGENCE TECHNOLOGIES</span>
+        <header className="relative z-30 grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:px-8 py-3 sm:py-5">
+          <Link href="/" className="justify-self-start flex items-center gap-2 min-w-0 max-w-[70vw] sm:max-w-full">
+            <Image src={COMPANY.logoIconPath} alt="" width={24} height={24} className="rounded-full object-cover border border-white/20 shrink-0 sm:w-7 sm:h-7" />
+            <span className="hidden sm:inline text-[10px] sm:text-[13px] font-semibold tracking-[0.08em] uppercase truncate">LOGIC INTELLIGENCE TECHNOLOGIES</span>
           </Link>
           <nav className="hidden md:flex justify-self-center items-center gap-1 rounded-full border border-white/10 bg-black/30 px-2 py-1.5 backdrop-blur-md">
             {LAND_NAV.filter(([, href]) => href !== "/contact").map(([label, href]) => (
@@ -550,18 +550,18 @@ export default function AiChatPage() {
             </div>
           </div>
         )}
-        <main className="relative z-10 flex flex-col items-center text-center px-6 pt-16 sm:pt-24 pb-28">
-          <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/35 px-3 py-1 text-xs mb-8"><Sparkles className="w-3.5 h-3.5 text-orange-300" /> Logic AI</p>
-          <h1 className="max-w-5xl font-serif text-[2.4rem] sm:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-[color:var(--ai-ink)]">The fastest way<br /> to Build and Grow<br /> your Website.</h1>
-          <p className="mt-6 max-w-xl text-sm sm:text-base text-[color:var(--ai-muted)] leading-relaxed">Logic Intelligence Technologies helps businesses build stunning websites and scale their online presence with AI-powered tools for design, automation, and growth.</p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <button type="button" onClick={() => setLanded(false)} className="inline-flex items-center gap-2 rounded-full bg-[#E8651C] px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(232,101,28,0.35)] hover:brightness-110">Get Started <ArrowRight className="w-4 h-4" /></button>
-            <Link href="/ai-assistant" className="rounded-full border border-white/15 bg-black/25 px-6 py-3 text-sm">Learn More</Link>
+        <main className="relative z-10 flex flex-col items-center text-center px-4 sm:px-6 pt-10 sm:pt-24 pb-24">
+          <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/35 px-3 py-1 text-[11px] sm:text-xs mb-6 sm:mb-8"><Sparkles className="w-3.5 h-3.5 text-orange-300" /> Logic AI</p>
+          <h1 className="max-w-5xl font-serif text-[1.7rem] sm:text-6xl lg:text-7xl leading-[1.12] tracking-tight text-[color:var(--ai-ink)]">The fastest way<br /> to Build and Grow<br /> your Website.</h1>
+          <p className="mt-4 sm:mt-6 max-w-xl text-[13px] sm:text-base text-[color:var(--ai-muted)] leading-relaxed px-1">Logic Intelligence Technologies helps businesses build stunning websites and scale their online presence with AI-powered tools for design, automation, and growth.</p>
+          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row w-full max-w-xs sm:max-w-none items-stretch sm:items-center justify-center gap-2.5 sm:gap-3">
+            <button type="button" onClick={() => setLanded(false)} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#E8651C] px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(232,101,28,0.35)] hover:brightness-110">Get Started <ArrowRight className="w-4 h-4" /></button>
+            <Link href="/ai-assistant" className="rounded-full border border-white/15 bg-black/25 px-5 py-3 text-sm text-center">Learn More</Link>
           </div>
         </main>
-        <div className="absolute bottom-5 inset-x-0 overflow-hidden pointer-events-none">
+        <div className="absolute bottom-4 inset-x-0 overflow-hidden pointer-events-none">
           <div className="lit-ticker flex w-max">
-            <p className="lit-ticker-text whitespace-nowrap text-[12px] tracking-[0.28em] uppercase text-white/45 pr-16">{TICKER}</p>
+            <p className="lit-ticker-text whitespace-nowrap text-[10px] sm:text-[12px] tracking-[0.18em] sm:tracking-[0.28em] uppercase text-white/45 pr-16">{TICKER}</p>
             <p className="lit-ticker-text whitespace-nowrap text-[12px] tracking-[0.28em] uppercase text-white/45 pr-16" aria-hidden>{TICKER}</p>
           </div>
         </div>
@@ -620,21 +620,21 @@ export default function AiChatPage() {
   return (
     <div className="min-h-[100dvh] text-[color:var(--ai-ink)] flex flex-col" style={{ background: glow }}>
       <header className="sticky top-0 z-30 border-b border-[color:var(--ai-border)] bg-[color:var(--ai-header)] backdrop-blur-xl">
-        <div className="h-16 px-3 sm:px-5 grid grid-cols-[minmax(0,1fr)_auto] xl:grid-cols-[minmax(220px,1fr)_auto_minmax(220px,1fr)] items-center gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <button type="button" className="lg:hidden h-9 w-9 rounded-full border border-white/12 grid place-items-center" onClick={() => setSidebarOpen(true)} aria-label="Open history"><Menu className="w-4 h-4" /></button>
-            <Image src={COMPANY.logoIconPath} alt="" width={32} height={32} className="rounded-full object-cover border border-white/20 shrink-0" />
+        <div className="h-14 sm:h-16 px-2 sm:px-5 grid grid-cols-[minmax(0,1fr)_auto] xl:grid-cols-[minmax(220px,1fr)_auto_minmax(220px,1fr)] items-center gap-1.5 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
+            <button type="button" className="lg:hidden h-9 w-9 rounded-full border border-white/12 grid place-items-center shrink-0" onClick={() => setSidebarOpen(true)} aria-label="Open history"><Menu className="w-4 h-4" /></button>
+            <Image src={COMPANY.logoIconPath} alt="" width={28} height={28} className="rounded-full object-cover border border-white/20 shrink-0 hidden sm:block" />
             <button type="button" onClick={() => setLanded(true)} className="text-left min-w-0">
-              <h1 className="text-[13px] font-black tracking-[0.16em] uppercase leading-none">LOGIC AI</h1>
-              <p className="mt-1 text-[10px] text-zinc-500 truncate uppercase tracking-[0.12em]">{sending ? "Thinking" : lastProvider ? `Ready · ${lastProvider}` : "Ready"}{userEmail ? ` · ${userEmail}` : " · guest"}</p>
+              <h1 className="text-[12px] sm:text-[13px] font-black tracking-[0.14em] uppercase leading-none">LOGIC AI</h1>
+              <p className="mt-1 text-[10px] text-zinc-500 truncate uppercase tracking-[0.12em]">{sending ? "Thinking" : lastProvider ? `Ready · ${lastProvider}` : "Ready"}<span className="hidden sm:inline">{userEmail ? ` · ${userEmail}` : " · guest"}</span></p>
             </button>
           </div>
           <div className="hidden md:flex justify-self-center items-center rounded-full border border-[color:var(--ai-border)] bg-[color:var(--ai-panel)] p-0.5">
             <button type="button" onClick={() => setMode("company")} className={`inline-flex items-center justify-center h-8 min-w-[7.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "company" ? "bg-[#E8651C] text-white" : "text-[color:var(--ai-muted)]"}`}>COMPANY</button>
             <button type="button" onClick={() => setMode("general")} className={`inline-flex items-center justify-center h-8 min-w-[7.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "general" ? "bg-[#E8651C] text-white" : "text-[color:var(--ai-muted)]"}`}>GENERAL</button>
           </div>
-          <div className="justify-self-end flex flex-nowrap items-center justify-end gap-2">
-            <Button asChild variant="pill" size="pill"><Link href="/">HOME</Link></Button>
+          <div className="justify-self-end flex flex-nowrap items-center justify-end gap-1.5 sm:gap-2">
+            <Button asChild variant="pill" size="pill" className="hidden sm:inline-flex"><Link href="/">HOME</Link></Button>
             <Button type="button" variant="accent" size="pill" onClick={newChat}>NEW</Button>
             <ThemeToggle />
           </div>
@@ -659,9 +659,9 @@ export default function AiChatPage() {
           )}
         </AnimatePresence>
 
-        <section className="flex flex-col min-h-0 min-w-0 max-h-[calc(100dvh-4rem)]">
+        <section className="flex flex-col min-h-0 min-w-0 max-h-[calc(100dvh-3.5rem)] sm:max-h-[calc(100dvh-4rem)]">
           <div className="flex-1 overflow-y-auto">
-            <div className="w-full max-w-[48rem] mx-auto px-4 sm:px-6 py-8 space-y-6">
+            <div className="w-full max-w-[48rem] mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-6">
               {(!active || active.messages.length === 0) && (
                 <div className="text-center pt-8">
                   <p className="text-xl font-semibold tracking-tight mb-2">How can Logic AI help?</p>
@@ -674,13 +674,13 @@ export default function AiChatPage() {
                 </div>
               )}
               {active?.messages.map((m, i) => (
-                <div key={m.id} className={`flex gap-3 items-end ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div key={m.id} className={`flex gap-2 sm:gap-3 items-end ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                   {m.role === "assistant" && (
-                    <div className="w-8 h-8 rounded-full bg-orange-500/20 border border-orange-400/30 flex items-center justify-center shrink-0 mb-1">
+                    <div className="hidden sm:flex w-8 h-8 rounded-full bg-orange-500/20 border border-orange-400/30 items-center justify-center shrink-0 mb-1">
                       <Sparkles className={`w-3.5 h-3.5 text-orange-300 ${sending && !m.content ? "animate-pulse" : ""}`} />
                     </div>
                   )}
-                  <div className={`rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${m.role === "user" ? "bg-[#E8651C] text-white max-w-[min(100%,34rem)]" : "bg-black/35 border border-white/10 w-full min-w-0"}`}>
+                  <div className={`rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-[14px] sm:text-[15px] leading-relaxed min-w-0 ${m.role === "user" ? "bg-[#E8651C] text-white max-w-[min(100%,34rem)]" : "bg-black/35 border border-white/10 w-full"}`}>
                     {m.role === "assistant" ? (
                       m.content ? (
                         <>
@@ -715,11 +715,11 @@ export default function AiChatPage() {
                       </div>
                     )}
                   </div>
-                  {m.role === "user" && <SenderFace />}
+                  {m.role === "user" && <span className="hidden sm:inline-flex"><SenderFace /></span>}
                 </div>
               ))}
               {!sending && lastAssistant && (
-                <div className="flex flex-wrap gap-2 pl-11">
+                <div className="flex flex-wrap gap-2 pl-0 sm:pl-11">
                   {followUps(lastAssistant.content).map((q) => (
                     <button key={q} type="button" onClick={() => void send(q)} className="text-[11px] rounded-full border border-white/12 px-3 py-1.5 hover:border-orange-400/50">{q}</button>
                   ))}
@@ -731,7 +731,7 @@ export default function AiChatPage() {
           </div>
 
           <div className="border-t border-white/8 bg-black/35 backdrop-blur-xl">
-            <div className="w-full max-w-[48rem] mx-auto px-4 sm:px-6 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <div className="w-full max-w-[48rem] mx-auto px-3 sm:px-6 pt-2 sm:pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               {showLead && !leadOk && (
                 <form onSubmit={(e) => { e.preventDefault(); void submitLead(); }} className="mb-3 flex flex-col sm:flex-row gap-2 rounded-2xl border border-white/10 bg-black/40 px-3 py-2">
                   <p className="sm:sr-only text-[11px] text-zinc-400">Optional follow-up.</p>
@@ -759,16 +759,16 @@ export default function AiChatPage() {
                 <input ref={fileRef} type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf" className="hidden" onChange={(e) => void onPickFile(e.target.files?.[0])} />
                 <button type="button" className="p-2.5 text-zinc-400 hover:text-white" onClick={() => fileRef.current?.click()} aria-label="Attach"><Paperclip className="w-4 h-4" /></button>
                 <button type="button" className={`p-2.5 ${listening ? "text-orange-400" : "text-zinc-400 hover:text-white"}`} onClick={toggleMic} aria-label="Voice"><Mic className="w-4 h-4" /></button>
-                <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} rows={1} placeholder={listening ? "Listening…" : "Message Logic AI"} className="flex-1 bg-transparent resize-none text-[15px] py-2.5 outline-none max-h-32" />
+                <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} rows={1} placeholder={listening ? "Listening…" : "Message Logic AI"} className="flex-1 bg-transparent resize-none text-base sm:text-[15px] py-2.5 outline-none max-h-32 min-w-0" />
                 {sending ? (
                   <button type="button" onClick={() => abortRef.current?.abort()} className="h-10 w-10 rounded-full border border-white/20 grid place-items-center" aria-label="Stop"><Square className="w-3 h-3" /></button>
                 ) : (
                   <button type="submit" disabled={!input.trim() && !attach} className="h-10 w-10 rounded-full bg-[#E8651C] text-white grid place-items-center disabled:opacity-40" aria-label="Send"><ArrowUp className="w-4 h-4" /></button>
                 )}
               </form>
-              <div className="md:hidden mt-2 flex flex-nowrap items-center justify-center gap-2">
-                <Button type="button" variant={mode === "company" ? "accent" : "pill"} size="pill" onClick={() => setMode("company")}>COMPANY</Button>
-                <Button type="button" variant={mode === "general" ? "accent" : "pill"} size="pill" onClick={() => setMode("general")}>GENERAL</Button>
+              <div className="md:hidden mt-2 flex items-center justify-center gap-2">
+                <Button type="button" variant={mode === "company" ? "accent" : "pill"} size="pill" className="flex-1 max-w-[10rem]" onClick={() => setMode("company")}>COMPANY</Button>
+                <Button type="button" variant={mode === "general" ? "accent" : "pill"} size="pill" className="flex-1 max-w-[10rem]" onClick={() => setMode("general")}>GENERAL</Button>
               </div>
             </div>
           </div>
