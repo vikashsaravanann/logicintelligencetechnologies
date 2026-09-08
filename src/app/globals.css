@@ -464,7 +464,6 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
   h1 { font-size: clamp(1.35rem, 7vw, 1.85rem) !important; line-height: 1.15 !important; }
   h2 { font-size: clamp(1.15rem, 5.5vw, 1.45rem) !important; }
   h3 { font-size: 1.05rem !important; }
-  p, li { font-size: 0.9rem; }
   img, video, canvas { max-width: 100% !important; height: auto; }
   .glass-card { border-radius: 1rem; }
   section, .container { padding-left: 1rem; padding-right: 1rem; }
@@ -478,6 +477,11 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
     height: 2.75rem !important;
   }
   a[aria-label*="WhatsApp"] svg { width: 1.25rem !important; height: 1.25rem !important; }
+  .ai-chrome :is(h1, h2, p),
+  .site-header-bar :is(h1, h2, p) {
+    font-size: inherit !important;
+    line-height: inherit !important;
+  }
 }
 @media (min-width: 640px) and (max-width: 767px) {
   html { font-size: 15px; }
