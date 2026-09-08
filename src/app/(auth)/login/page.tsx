@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Outfit } from "next/font/google";
 import { COMPANY } from "@/config/company";
+import WebGLParticles from "@/components/motion/webgl-particles";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { env } from "@/config/env";
 
@@ -253,8 +254,9 @@ function AuthContent() {
         priority
         className="object-cover object-center"
       />
-      <div className="absolute inset-0 bg-[#050814]/72" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[46vh] bg-gradient-to-t from-orange-600/45 via-orange-500/12 to-transparent blur-2xl" />
+      <div className="absolute inset-0 bg-[#050814]/62" />
+      <WebGLParticles className="z-[1]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[46vh] bg-gradient-to-t from-orange-600/45 via-orange-500/12 to-transparent blur-2xl z-[1]" />
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 left-1/4 w-[520px] h-[520px] rounded-full bg-cyan-500/10 blur-[140px]" />
         <div
@@ -274,7 +276,7 @@ function AuthContent() {
           transition={swapSpring}
           className="w-full lg:w-1/2 h-full min-w-0 overflow-hidden flex flex-col justify-center px-4 sm:px-7 py-4"
         >
-          <div className="w-full max-w-[440px] mx-auto rounded-3xl border border-white/12 bg-black/40 backdrop-blur-xl p-4 sm:p-5 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+          <div className="w-full max-w-[440px] mx-auto rounded-3xl border border-white/12 login-glass p-4 sm:p-5 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
             <Link href="/" className="flex items-center gap-3 mb-4 group min-w-0">
               <span className="relative shrink-0">
                 <span className="absolute -inset-1 rounded-full bg-gradient-to-tr from-cyan-400/50 to-transparent blur-sm" />
@@ -595,7 +597,7 @@ function AuthContent() {
               ].map((s) => (
                 <div
                   key={s.k}
-                  className="rounded-2xl border border-white/15 bg-black/35 backdrop-blur-md px-2.5 py-3 text-center"
+                  className="rounded-2xl border border-white/15 login-glass-card px-2.5 py-3 text-center"
                 >
                   <p className="text-[15px] xl:text-base font-black tracking-tight">{s.v}</p>
                   <p className="text-[9px] uppercase tracking-widest text-zinc-400 mt-1">{s.k}</p>
@@ -610,7 +612,7 @@ function AuthContent() {
                 { icon: Cpu, t: "Stack we ship on", d: "Next.js · FastAPI · Grok · pgvector. Production, not a student demo." },
                 { icon: Zap, t: "How we take work", d: "31-point scope. Free demo. Pay after you see the build. Source on close." },
               ].map((b) => (
-                <div key={b.t} className="rounded-2xl border border-white/12 bg-black/35 p-3 flex gap-2.5">
+                <div key={b.t} className="rounded-2xl border border-white/12 login-glass-card p-3 flex gap-2.5">
                   <b.icon className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-widest text-white">{b.t}</p>

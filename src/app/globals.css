@@ -521,6 +521,23 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
   nav a { white-space: nowrap; }
 }
 
+.login-glass {
+  background: rgba(5, 8, 20, 0.42);
+  -webkit-backdrop-filter: blur(28px) saturate(1.35);
+  backdrop-filter: blur(28px) saturate(1.35);
+}
+.login-glass-card {
+  background: rgba(5, 8, 20, 0.38);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .login-glass,
+  .login-glass-card {
+    background: rgba(5, 8, 20, 0.88);
+  }
+}
+
 
 /* AI hero ticker — never wrap, never freeze */
 .lit-ticker, .lit-ticker * {
