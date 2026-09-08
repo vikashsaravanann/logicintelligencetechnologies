@@ -345,30 +345,39 @@ export default function JobsClient() {
         </div>
 
         <div className="relative rounded-[32px] border border-white/20 bg-white/[0.08] backdrop-blur-2xl shadow-[0_40px_100px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.18)] overflow-hidden">
-          <div className="grid lg:grid-cols-[minmax(0,0.9fr)_1.15fr]">
-            <aside className="p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-white/10 bg-black/20">
-              <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 mb-4">
-                <Lock className="w-3.5 h-3.5" /> Confidential
-              </p>
-              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-3 uppercase">Join the leadership table</h2>
-              <p className="text-[15px] text-zinc-300 leading-relaxed mb-6">
-                Four open seats. One founder. If you have already shipped a function — operations, engineering, sales, or AI — this is the form. Titles are not for sale. The trial is six months. The first ninety days are in Coimbatore.
-              </p>
-              <ul className="space-y-3 text-sm text-zinc-300 mb-8">
-                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Confirmation email the moment you submit</li>
-                <li className="flex gap-2"><Mail className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Vikash reads every application within 24 hours</li>
-                <li className="flex gap-2"><Briefcase className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Stored privately in our CRM — not a public job board</li>
-              </ul>
-              {seats.find((s) => s.id === seat) && (
-                <div className="rounded-2xl border border-cyan-400/25 bg-cyan-400/10 p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-200 mb-1">You are applying for</p>
-                  <p className="text-lg font-black mb-2">{seats.find((s) => s.id === seat)!.t}</p>
-                  <p className="text-[13px] text-zinc-300 leading-relaxed">{seats.find((s) => s.id === seat)!.who}</p>
-                </div>
-              )}
+          <div className="grid lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.2fr)] items-stretch">
+            <aside className="relative hidden lg:block overflow-hidden min-h-full border-r border-white/10">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/assets/jobs/ceo-desk.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-center" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/75 to-[#0A0F1E]/35" />
+              <div className="relative z-10 h-full min-h-[640px] p-8 flex flex-col justify-end">
+                <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 mb-4">
+                  <Lock className="w-3.5 h-3.5" /> Confidential
+                </p>
+                <h2 className="text-3xl font-black tracking-tight mb-3 uppercase leading-tight">Join the leadership table</h2>
+                <p className="text-[14px] text-zinc-200 leading-relaxed mb-6">
+                  Four open seats. One founder. If you have already shipped a function — operations, engineering, sales, or AI — this is the form. Titles are not for sale.
+                </p>
+                <ul className="space-y-3 text-sm text-zinc-200 mb-6">
+                  <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Confirmation email on submit</li>
+                  <li className="flex gap-2"><Mail className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Reviewed by Vikash within 24 hours</li>
+                  <li className="flex gap-2"><Briefcase className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Held privately in our CRM</li>
+                </ul>
+                {seats.find((s) => s.id === seat) && (
+                  <div className="rounded-2xl border border-cyan-400/30 bg-black/40 backdrop-blur-md p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-200 mb-1">You are applying for</p>
+                    <p className="text-lg font-black mb-2 uppercase">{seats.find((s) => s.id === seat)!.t}</p>
+                    <p className="text-[13px] text-zinc-300 leading-relaxed">{seats.find((s) => s.id === seat)!.who}</p>
+                  </div>
+                )}
+              </div>
             </aside>
 
-            <div className="p-5 sm:p-8">
+            <div className="p-5 sm:p-8 bg-[#0A0F1E]/40">
+              <div className="lg:hidden mb-6">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 mb-2">Confidential application</p>
+                <h2 className="text-2xl font-black uppercase tracking-tight">Join the leadership table</h2>
+              </div>
               {ok ? (
                 <div className="py-16 text-center">
                   <CheckCircle2 className="w-12 h-12 text-cyan-300 mx-auto mb-4" />
@@ -473,10 +482,18 @@ export default function JobsClient() {
                         <label className={label} htmlFor="heard">How you found this page</label>
                         <input id="heard" value={heard} onChange={(e) => setHeard(e.target.value)} className={field} placeholder="LinkedIn, referral, Logic AI, Instagram…" />
                       </div>
-                      <label className="flex flex-col items-center justify-center gap-2 min-h-[92px] rounded-2xl border border-dashed border-white/25 bg-white/[0.04] text-sm text-zinc-300 cursor-pointer hover:bg-white/[0.07] transition px-4 py-5">
-                        <Upload className="w-5 h-5 text-cyan-300" />
-                        <span className="font-semibold">{cv ? cv.name : "Drop your CV — PDF, optional, 2 MB"}</span>
-                        <span className="text-[12px] text-zinc-500">A short artefact of work beats a ten-page résumé.</span>
+                      <label className="flex flex-col sm:flex-row items-center sm:items-start gap-4 rounded-2xl border border-white/15 bg-white/[0.05] px-5 py-5 cursor-pointer hover:border-cyan-400/40 hover:bg-white/[0.07] transition">
+                        <span className="h-12 w-12 rounded-xl border border-cyan-400/30 bg-cyan-400/10 grid place-items-center shrink-0">
+                          <Upload className="w-5 h-5 text-cyan-300" />
+                        </span>
+                        <span className="text-center sm:text-left">
+                          <span className="block text-sm font-bold text-white tracking-wide">
+                            {cv ? cv.name : "Upload résumé — PDF only, 2 MB maximum"}
+                          </span>
+                          <span className="block text-[12px] text-zinc-400 mt-1 leading-relaxed">
+                            A single PDF. Word, ZIP, and files over 2 MB are not accepted. A one-page artefact of work is preferred to a long résumé.
+                          </span>
+                        </span>
                         <input type="file" accept=".pdf,application/pdf" className="hidden" onChange={(e) => onCv(e.target.files?.[0])} />
                       </label>
                     </div>
