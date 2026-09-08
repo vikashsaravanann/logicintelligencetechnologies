@@ -522,3 +522,83 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* —— Glass composer (mobile-first) — concentric: outer 20px, pad 8px, inner 12px ——
+   Snippet:
+   .glass-bar {
+     border-radius: 20px;
+     padding: 8px;
+     background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+     backdrop-filter: blur(18px) saturate(1.2);
+     box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 8px 32px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.18);
+   }
+   .glass-bar-inner { border-radius: 12px; }
+*/
+.glass-bar {
+  border-radius: 20px;
+  padding: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 100%);
+  backdrop-filter: blur(18px) saturate(1.25);
+  -webkit-backdrop-filter: blur(18px) saturate(1.25);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 10px 36px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: box-shadow 150ms ease-out;
+}
+.glass-bar:focus-within {
+  box-shadow:
+    0 0 0 1px rgba(232, 101, 28, 0.5),
+    0 10px 36px rgba(232, 101, 28, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+.glass-bar-inner {
+  border-radius: 12px;
+}
+.glass-send {
+  height: 44px;
+  min-width: 44px;
+  padding-left: 16px;
+  padding-right: 14px;
+  border-radius: 12px;
+  background: #E8651C;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.glass-send:disabled { opacity: 0.7; }
+.lit-wave {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 18px;
+}
+.lit-wave span {
+  width: 3px;
+  border-radius: 2px;
+  background: #E8651C;
+  animation: lit-wave 0.85s ease-in-out infinite;
+}
+.lit-wave span:nth-child(2) { animation-delay: 0.1s; }
+.lit-wave span:nth-child(3) { animation-delay: 0.2s; }
+.lit-wave span:nth-child(4) { animation-delay: 0.3s; }
+.lit-wave span:nth-child(5) { animation-delay: 0.15s; }
+@keyframes lit-wave {
+  0%, 100% { height: 4px; }
+  50% { height: 18px; }
+}
+.jobs-sticky-apply {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent, rgba(10, 15, 30, 0.92) 28%);
+  backdrop-filter: blur(12px);
+}
