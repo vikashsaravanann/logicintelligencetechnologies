@@ -50,11 +50,14 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
+      { url: '/icon-48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/icon-96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icon.png', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
     ],
     apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
-    shortcut: '/favicon.ico',
+    shortcut: '/icon-48.png',
   },
   manifest: '/site.webmanifest',
   verification: {
@@ -71,6 +74,28 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
+        <link rel="icon" href="/icon-48.png" type="image/png" sizes="48x48" />
+        <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" sizes="180x180" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: COMPANY.legalName,
+              url: COMPANY.websiteUrl,
+              logo: "https://www.logicintelligencetechnologies.in/icon-192.png",
+              image: "https://www.logicintelligencetechnologies.in/icon.png",
+              sameAs: [
+                COMPANY.linkedinUrl,
+                COMPANY.instagramUrl,
+                COMPANY.facebookUrl,
+              ],
+            }),
+          }}
+        />
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
