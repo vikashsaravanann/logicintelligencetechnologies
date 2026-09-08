@@ -534,7 +534,7 @@ export default function AiChatPage() {
   if (landed) {
     return (
       <div className="min-h-[100dvh] text-[color:var(--ai-ink)] relative overflow-hidden" style={{ background: glow }}>
-        <style>{`@keyframes lit-marquee{from{transform:translate3d(-50%,0,0)}to{transform:translate3d(0,0,0)}}.lit-ticker{animation:lit-marquee 5s linear infinite;will-change:transform}@media (prefers-reduced-motion:reduce){.lit-ticker{animation:lit-marquee 5s linear infinite!important;animation-iteration-count:infinite!important}}`}</style>
+        <style>{`@keyframes lit-marquee{from{transform:translate3d(-50%,0,0)}to{transform:translate3d(0,0,0)}}.lit-ticker{animation:lit-marquee 80s linear infinite;will-change:transform}@media (prefers-reduced-motion:reduce){.lit-ticker{animation:lit-marquee 80s linear infinite}}`}</style>
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42vh] bg-gradient-to-t from-orange-600/40 via-orange-500/10 to-transparent blur-2xl" />
         <header className="relative z-30 grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:px-8 py-3 sm:py-5">
           <Link href="/" className="justify-self-start flex items-center gap-2 min-w-0 max-w-[70vw] sm:max-w-full">
@@ -574,8 +574,8 @@ export default function AiChatPage() {
         </main>
         <div className="absolute bottom-4 inset-x-0 overflow-hidden pointer-events-none">
           <div className="lit-ticker flex w-max">
-            <p className="lit-ticker-text whitespace-nowrap text-[10px] sm:text-[12px] tracking-[0.18em] sm:tracking-[0.28em] uppercase text-white/45 pr-16">{TICKER}</p>
-            <p className="lit-ticker-text whitespace-nowrap text-[12px] tracking-[0.28em] uppercase text-white/45 pr-16" aria-hidden>{TICKER}</p>
+            <p className="lit-ticker-text whitespace-nowrap text-[11px] sm:text-[13px] tracking-[0.14em] sm:tracking-[0.18em] uppercase text-white/75 pr-16">{TICKER}</p>
+            <p className="lit-ticker-text whitespace-nowrap text-[11px] sm:text-[13px] tracking-[0.14em] sm:tracking-[0.18em] uppercase text-white/75 pr-16" aria-hidden>{TICKER}</p>
           </div>
         </div>
       </div>
