@@ -75,7 +75,7 @@ export default function WhyUsSection() {
                   </div>
                   <div>
                     <h4 className="text-white font-bold text-sm mb-1">{point.title}</h4>
-                    <p className="text-zinc-500 text-xs leading-relaxed">{point.desc}</p>
+                    <p className="text-zinc-400 text-xs leading-relaxed">{point.desc}</p>
                   </div>
                 </motion.div>
               ))}

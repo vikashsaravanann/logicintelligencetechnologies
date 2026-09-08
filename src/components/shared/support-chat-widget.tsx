@@ -9,6 +9,7 @@ import { MarkdownMessage } from "@/components/ai/markdown-message";
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
+  citations?: string[];
 };
 
 const GREETING: ChatMessage = {
@@ -16,9 +17,16 @@ const GREETING: ChatMessage = {
   content: `Hi! I'm the ${COMPANY.displayName} support assistant. Ask about packages, services, or past work — or share your email to check a form you submitted.`,
 };
 
-const WA = `https://wa.me/${COMPANY.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
-  "Hi Logic Intelligence — I'd like help with a project."
-)}`;
+const PRICE_RE = /₹|price|pack|cost|8,999|18,999|how much/i;
+function waTranscript(messages: ChatMessage[]) {
+  const slice = messages.filter((m) => m.content).slice(-6);
+  const body =
+    "Hi LIT — from the site chat.\n\n" +
+    slice
+      .map((m) => `${m.role === "user" ? "Visitor" : "LOGIC AI"}: ${m.content.replace(/\s+/g, " ").slice(0, 280)}`)
+      .join("\n\n");
+  return `https://wa.me/${COMPANY.phone.replace(/\D/g, "")}?text=${encodeURIComponent(body.slice(0, 1800))}`;
+}
 
 export default function SupportChatWidget() {
   const [open, setOpen] = useState(false);
@@ -106,6 +114,16 @@ export default function SupportChatWidget() {
                   return copy;
                 });
               }
+              if (json.type === "meta" && json.citations) {
+                setMessages((prev) => {
+                  const copy = [...prev];
+                  const last = copy[copy.length - 1];
+                  if (last?.role === "assistant") {
+                    copy[copy.length - 1] = { ...last, citations: json.citations };
+                  }
+                  return copy;
+                });
+              }
               if (json.type === "done" && json.content) {
                 full = json.content;
                 setMessages((prev) => {
@@ -126,7 +144,7 @@ export default function SupportChatWidget() {
         if (!full.trim()) {
           throw new Error("empty stream");
         }
-        if (!leadOk && /price|₹|pack|8,999|18,999/i.test(text + full) && localStorage.getItem("lit_ai_lead_done") !== "1") {
+        if (!leadOk && PRICE_RE.test(text + full) && localStorage.getItem("lit_ai_lead_done") !== "1") {
           setShowLead(true);
         }
         return;
@@ -269,7 +287,16 @@ export default function SupportChatWidget() {
                         Thinking…
                       </span>
                     ) : m.role === "assistant" && m.content ? (
-                      <MarkdownMessage content={m.content} />
+                      <>
+                        <MarkdownMessage content={m.content} />
+                        {m.citations && m.citations.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {m.citations.map((c) => (
+                              <span key={c} className="text-[10px] rounded-full border border-white/10 px-2 py-0.5 text-zinc-400">From {c}</span>
+                            ))}
+                          </div>
+                        )}
+                      </>
                     ) : (
                       <span className="whitespace-pre-wrap">{m.content}</span>
                     )}
@@ -319,7 +346,7 @@ export default function SupportChatWidget() {
               </div>
               <div className="mt-2 text-center">
                 <a
-                  href={WA}
+                  href={waTranscript(messages)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-[#25D366] hover:underline"

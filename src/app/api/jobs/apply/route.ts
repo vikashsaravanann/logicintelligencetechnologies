@@ -3,7 +3,7 @@ import { z } from "zod";
 import * as React from "react";
 import { sendEmail } from "@/lib/email/send-email";
 import NewLeadNotificationEmail from "@/emails/new-lead-notification-email";
-import LeadConfirmationEmail from "@/emails/lead-confirmation-email";
+import JobApplicationEmail from "@/emails/job-application-email";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -63,9 +63,9 @@ export async function POST(req: Request) {
       to: email,
       from: "noReply",
       subject: "We received your leadership application — Logic Intelligence Technologies",
-      react: React.createElement(LeadConfirmationEmail, {
+      react: React.createElement(JobApplicationEmail, {
         fullName: name,
-        service: `Leadership — ${seat}`,
+        seat,
       }),
     });
 

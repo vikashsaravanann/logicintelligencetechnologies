@@ -535,8 +535,8 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
    .glass-bar-inner { border-radius: 12px; }
 */
 .glass-bar {
-  border-radius: 20px;
-  padding: 8px;
+  border-radius: 16px;
+  padding: 6px 8px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 100%);
   backdrop-filter: blur(18px) saturate(1.25);
   -webkit-backdrop-filter: blur(18px) saturate(1.25);
@@ -553,25 +553,27 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
     inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 .glass-bar-inner {
-  border-radius: 12px;
+  border-radius: 10px;
 }
 .glass-send {
-  height: 44px;
-  min-width: 44px;
-  padding-left: 16px;
-  padding-right: 14px;
-  border-radius: 12px;
+  height: 36px;
+  min-width: 4.5rem;
+  padding-left: 12px;
+  padding-right: 10px;
+  border-radius: 10px;
   background: #E8651C;
   color: #fff;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   flex-shrink: 0;
+  line-height: 1;
+  text-align: center;
 }
 .glass-send:disabled { opacity: 0.7; }
 .lit-wave {

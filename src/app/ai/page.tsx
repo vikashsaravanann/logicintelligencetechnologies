@@ -643,8 +643,8 @@ export default function AiChatPage() {
             </button>
           </div>
           <div className="hidden md:flex justify-self-center items-center rounded-full border border-[color:var(--ai-border)] bg-[color:var(--ai-panel)] p-0.5">
-            <button type="button" onClick={() => setMode("company")} className={`inline-flex items-center justify-center h-8 min-w-[7.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "company" ? "bg-[#E8651C] text-white" : "text-[color:var(--ai-muted)]"}`}>COMPANY</button>
-            <button type="button" onClick={() => setMode("general")} className={`inline-flex items-center justify-center h-8 min-w-[7.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "general" ? "bg-[#E8651C] text-white" : "text-[color:var(--ai-muted)]"}`}>GENERAL</button>
+            <button type="button" onClick={() => setMode("company")} className={`inline-flex items-center justify-center text-center h-8 min-w-[6.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "company" ? "bg-[#E8651C] text-white" : "text-[color:var(--ai-muted)]"}`}>COMPANY</button>
+            <button type="button" onClick={() => setMode("general")} className={`inline-flex items-center justify-center text-center h-8 min-w-[6.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "general" ? "bg-[#E8651C] text-white" : "text-[color:var(--ai-muted)]"}`}>GENERAL</button>
           </div>
           <div className="flex items-center justify-end gap-1.5 shrink-0">
             <Link href="/" className="inline-flex items-center justify-center h-9 min-w-[3.25rem] px-3 rounded-full border border-white/15 text-[10px] font-bold uppercase tracking-wider text-white shrink-0">HOME</Link>
@@ -782,41 +782,41 @@ export default function AiChatPage() {
                 className={`glass-bar ${dragging ? "ring-1 ring-orange-400/60" : ""}`}
               >
                 <input ref={fileRef} type="file" accept=".txt,.md,.pdf,image/png,image/jpeg,image/webp,image/gif,text/plain,text/markdown,application/pdf" className="hidden" onChange={(e) => void onPickFile(e.target.files?.[0])} />
-                {dragging && <p className="text-center text-[11px] uppercase tracking-wider text-orange-200 pb-2">Drop a PDF or image here</p>}
+                {dragging && <p className="text-center text-[10px] uppercase tracking-wider text-orange-200 pb-1">Drop a PDF or image here</p>}
                 {attach && (
-                  <div className="glass-bar-inner mb-2 flex items-center gap-2 border border-white/10 bg-black/30 px-2 py-1.5">
+                  <div className="glass-bar-inner mb-1.5 flex items-center gap-2 border border-white/10 bg-black/30 px-2 py-1">
                     {attach.kind === "image" ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={attach.data} alt="" className="h-10 w-10 rounded-lg object-cover" />
+                      <img src={attach.data} alt="" className="h-8 w-8 rounded-md object-cover" />
                     ) : (
-                      <span className="grid h-10 w-10 place-items-center rounded-lg bg-white/10 text-[10px] font-bold">PDF</span>
+                      <span className="grid h-8 w-8 place-items-center rounded-md bg-white/10 text-[9px] font-bold">PDF</span>
                     )}
-                    <span className="flex-1 min-w-0 truncate text-[12px] text-zinc-300">{attach.name}{ /pdf/i.test(attach.type || attach.name) ? " · first ~20 pages" : ""}</span>
-                    <button type="button" className="h-11 px-3 text-[11px] uppercase tracking-wider text-zinc-400" onClick={() => setAttach(null)}>Remove</button>
+                    <span className="flex-1 min-w-0 truncate text-[11px] text-zinc-300">{attach.name}</span>
+                    <button type="button" className="h-8 px-2 text-[10px] uppercase tracking-wider text-zinc-400" onClick={() => setAttach(null)}>Remove</button>
                   </div>
                 )}
                 {listening && (
-                  <div className="mb-2 flex items-center gap-2 px-1 text-[11px] uppercase tracking-wider text-orange-200">
+                  <div className="mb-1 flex items-center gap-2 px-1 text-[10px] uppercase tracking-wider text-orange-200">
                     <span className="lit-wave" aria-hidden><span /><span /><span /><span /><span /></span>
                     Listening
                   </div>
                 )}
-                <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} rows={2} placeholder={listening ? "Listening…" : "Message Logic AI — or drop a PDF"} className="glass-bar-inner w-full bg-transparent resize-none text-base sm:text-[15px] px-3 py-2.5 outline-none max-h-32 min-h-[52px] min-w-0" />
-                <div className="mt-2 flex items-center gap-1.5 min-w-0">
-                  <button type="button" className="h-11 w-11 shrink-0 grid place-items-center text-zinc-200" onClick={() => fileRef.current?.click()} aria-label="Attach"><Paperclip className="w-5 h-5" /></button>
-                  <button type="button" className={`h-11 w-11 shrink-0 grid place-items-center ${listening ? "text-orange-400" : "text-zinc-200"}`} onClick={toggleMic} aria-label="Voice"><Mic className="w-5 h-5" /></button>
-                  <button type="button" className={`hidden sm:inline-flex h-11 flex-1 rounded-xl text-[11px] font-bold uppercase tracking-wider ${mode === "company" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("company")}>COMPANY</button>
-                  <button type="button" className={`hidden sm:inline-flex h-11 flex-1 rounded-xl text-[11px] font-bold uppercase tracking-wider ${mode === "general" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("general")}>GENERAL</button>
+                <div className="flex items-center gap-1 min-w-0">
+                  <button type="button" className="h-9 w-9 shrink-0 grid place-items-center text-zinc-200" onClick={() => fileRef.current?.click()} aria-label="Attach"><Paperclip className="w-4 h-4" /></button>
+                  <button type="button" className={`h-9 w-9 shrink-0 grid place-items-center ${listening ? "text-orange-400" : "text-zinc-200"}`} onClick={toggleMic} aria-label="Voice"><Mic className="w-4 h-4" /></button>
+                  <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} rows={1} placeholder={listening ? "Listening…" : "Message Logic AI"} className="glass-bar-inner flex-1 bg-transparent resize-none text-[15px] px-2 py-1.5 outline-none max-h-24 min-h-[36px] min-w-0 leading-5" />
+                  <a href={waTranscript(active?.messages || [])} target="_blank" rel="noopener noreferrer" className="h-9 px-2.5 shrink-0 rounded-[10px] border border-white/15 grid place-items-center text-[10px] font-bold uppercase tracking-wider text-white" aria-label="WhatsApp with transcript">WA</a>
                   {sending ? (
                     <button type="button" onClick={() => abortRef.current?.abort()} className="glass-send bg-transparent border border-white/25" aria-label="Stop">STOP</button>
                   ) : (
-                    <button type="submit" disabled={!input.trim() && !attach} className="glass-send" aria-label="Send">SEND <ArrowUp className="w-4 h-4" /></button>
+                    <button type="submit" disabled={!input.trim() && !attach} className="glass-send" aria-label="Send">SEND <ArrowUp className="w-3.5 h-3.5" /></button>
                   )}
                 </div>
               </form>
+              <p className="mt-1.5 text-center text-[10px] text-zinc-500 tracking-wide">/price · /demo · /wa — last 6 turns go to WhatsApp</p>
               <div className="sm:hidden mt-2 flex items-stretch gap-2 w-full">
-                <button type="button" className={`flex-1 h-11 rounded-full text-[11px] font-bold uppercase tracking-wider ${mode === "company" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("company")}>COMPANY</button>
-                <button type="button" className={`flex-1 h-11 rounded-full text-[11px] font-bold uppercase tracking-wider ${mode === "general" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("general")}>GENERAL</button>
+                <button type="button" className={`flex-1 h-9 rounded-full text-[10px] font-bold uppercase tracking-wider text-center ${mode === "company" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("company")}>COMPANY</button>
+                <button type="button" className={`flex-1 h-9 rounded-full text-[10px] font-bold uppercase tracking-wider text-center ${mode === "general" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("general")}>GENERAL</button>
               </div>
             </div>
           </div>

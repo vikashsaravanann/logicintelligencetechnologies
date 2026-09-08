@@ -52,7 +52,7 @@ export default function TestimonialsSection() {
                 </blockquote>
                 <figcaption className="mt-6 pt-4 border-t border-white/10">
                   <p className="text-white font-bold text-sm">{t.name}</p>
-                  <p className="text-zinc-500 text-xs">
+                  <p className="text-zinc-400 text-xs">
                     {t.role}, {t.company}
                   </p>
                   {t.projectSlug && (

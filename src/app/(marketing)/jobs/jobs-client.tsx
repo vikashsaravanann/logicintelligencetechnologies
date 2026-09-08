@@ -134,6 +134,20 @@ export default function JobsClient() {
   return (
     <>
       <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto pb-8">
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary mb-3 text-center">Org — filled vs open</p>
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+          {seats.map((s) => (
+            <div key={s.id} className={`min-w-[7.5rem] rounded-2xl border px-3 py-3 text-center ${s.open ? "border-dashed border-cyan-400/40 bg-cyan-500/5" : "border-white/15 bg-white/5"}`}>
+              <div className={`mx-auto mb-2 h-10 w-10 rounded-full grid place-items-center text-[8px] font-black uppercase ${s.open ? "border-2 border-dashed border-cyan-300 text-cyan-200" : "overflow-hidden"}`}>
+                {s.photo ? <img src={s.photo} alt="" className="h-full w-full rounded-full object-cover object-top" /> : s.open ? "Open" : "Filled"}
+              </div>
+              <p className="text-[10px] font-bold uppercase tracking-wider leading-tight">{s.t.replace("Director of ", "Dir. ")}</p>
+              <p className="text-[10px] text-zinc-500 mt-0.5">{s.open ? "Hiring" : "Filled"}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+      <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto pb-8">
         <article className="rounded-3xl border border-cyan-400/30 bg-white/[0.04] p-5 sm:p-8 grid sm:grid-cols-[auto_1fr] gap-5 items-start">
           <div className="h-16 w-16 rounded-full border-2 border-dashed border-cyan-400/50 grid place-items-center text-[10px] font-black uppercase tracking-wider text-cyan-200">Open</div>
           <div>
