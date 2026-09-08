@@ -372,33 +372,31 @@ export default function JobsClient() {
       </section>
 
       <section id="apply" className="relative px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto pb-28 scroll-mt-28">
-        <div className="absolute inset-x-4 sm:inset-x-6 -top-10 bottom-16 rounded-[32px] overflow-hidden pointer-events-none">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/assets/jobs/studio-hero.jpg" alt="" className="w-full h-full object-cover opacity-40" />
-          <div className="absolute inset-0 bg-[#0A0F1E]/70" />
-        </div>
-
-        <div className="relative rounded-[32px] border border-white/20 bg-white/[0.08] backdrop-blur-2xl shadow-[0_40px_100px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.18)] overflow-hidden">
+        <div className="relative rounded-[32px] border border-white/20 bg-[#0A0F1E] shadow-[0_40px_100px_rgba(0,0,0,0.5)] overflow-hidden">
           <div className="flex flex-col lg:flex-row lg:items-stretch">
-            <aside className="relative hidden lg:flex lg:w-[38%] lg:shrink-0 overflow-hidden border-r border-white/10 min-h-full">
+            <aside className="relative hidden lg:block lg:w-[38%] lg:shrink-0 self-stretch overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/assets/jobs/ceo-desk.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-center" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/75 to-[#0A0F1E]/35" />
-              <div className="relative z-10 h-full min-h-[640px] p-8 flex flex-col justify-end">
-                <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 mb-4">
+              <img
+                src="/assets/jobs/apply-pane.jpg"
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/92 via-[#0A0F1E]/35 to-[#0A0F1E]/70" />
+              <div className="relative z-10 p-8 flex flex-col justify-start gap-5">
+                <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300">
                   <Lock className="w-3.5 h-3.5" /> Confidential
                 </p>
-                <h2 className="text-3xl font-black tracking-tight mb-3 uppercase leading-tight">Join the leadership table</h2>
-                <p className="text-[14px] text-zinc-200 leading-relaxed mb-6">
+                <h2 className="text-3xl font-black tracking-tight uppercase leading-[1.05]">Join the leadership table</h2>
+                <p className="text-[14px] text-zinc-200 leading-relaxed">
                   Four open seats. One founder. If you have already shipped a function — operations, engineering, sales, or AI — this is the form. Titles are not for sale.
                 </p>
-                <ul className="space-y-3 text-sm text-zinc-200 mb-6">
+                <ul className="space-y-3 text-sm text-zinc-200">
                   <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Confirmation email on submit</li>
                   <li className="flex gap-2"><Mail className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Reviewed by Vikash within 24 hours</li>
                   <li className="flex gap-2"><Briefcase className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Held privately in our CRM</li>
                 </ul>
                 {seats.find((s) => s.id === seat) && (
-                  <div className="rounded-2xl border border-cyan-400/30 bg-black/40 backdrop-blur-md p-4">
+                  <div className="rounded-2xl border border-cyan-400/30 bg-black/50 backdrop-blur-md p-4 mt-1">
                     <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-200 mb-1">You are applying for</p>
                     <p className="text-lg font-black mb-2 uppercase">{seats.find((s) => s.id === seat)!.t}</p>
                     <p className="text-[13px] text-zinc-300 leading-relaxed">{seats.find((s) => s.id === seat)!.who}</p>
