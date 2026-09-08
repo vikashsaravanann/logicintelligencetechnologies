@@ -483,6 +483,16 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
     font-size: inherit !important;
     line-height: inherit !important;
   }
+  /* Keep send / submit / icon actions on screen */
+  button[type="submit"],
+  button[aria-label="Send"],
+  button[aria-label="Send message"],
+  button[aria-label="Open menu"],
+  button[aria-label="Open history"] {
+    min-width: 44px;
+    min-height: 44px;
+    flex-shrink: 0;
+  }
 }
 @media (min-width: 640px) and (max-width: 767px) {
   html { font-size: 15px; }
