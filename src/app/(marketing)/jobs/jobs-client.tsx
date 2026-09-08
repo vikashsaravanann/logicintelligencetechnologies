@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { COMPANY } from "@/config/company";
-import { Download, Phone, X, MapPin, Clock, ShieldCheck, Rocket, Lock, Mail, Upload, CheckCircle2, Briefcase } from "lucide-react";
+import { Download, Phone, X, MapPin, Clock, ShieldCheck, Rocket, Lock, Mail, Upload, CheckCircle2, Briefcase, FileText, Calendar, Scale } from "lucide-react";
 
 type Seat = {
   id: string;
@@ -83,17 +83,44 @@ const seats: Seat[] = [
 ];
 
 const red = [
-  "Unpaid CEO with no trial and no cash path",
-  "Unvested co-founder with no cliff",
-  "Director in exchange for a cheque",
-  "Partnership programme or visiting-card title",
-  "A priced funding round on this page",
+  { t: "Unpaid CEO with no trial", d: "If there is no six-month letter of intent and no cash path after first revenue, it is not a seat. It is volunteer theatre." },
+  { t: "Unvested co-founder with no cliff", d: "Equity without a one-year cliff and a four-year vest is a gift, not a partnership. We do not gift titles." },
+  { t: "Director in exchange for a cheque", d: "Cash does not buy a visiting card. Investment is not on this page. Employment is." },
+  { t: "Partnership programme", d: "We are not selling a franchise, a reseller badge, or a co-branded slide. Apply for a function or do not apply." },
+  { t: "A priced funding round here", d: "This page is hiring. The investor briefing is a separate operating update. It is not a priced round." },
+];
+
+const offer = [
+  { t: "Letter of intent", d: "Until the company is incorporated. You work. We write the terms. Nothing is verbal." },
+  { t: "Four-year vest, one-year cliff", d: "After the registered entity exists. Leave in month eleven and you take no equity. Stay and it vests monthly." },
+  { t: "Cash after first revenue", d: "Modest salary once signed work is in the bank. Sales is commission-first. Nobody is paid to sit on a deck." },
 ];
 
 const steps = [
-  { n: "01", t: "The form", d: "Name the seat. Proof of work. Ninety-day plan. Start date. We store it in our CRM and email you a confirmation." },
-  { n: "02", t: "45-minute call", d: "With Vikash. No slide theatre. Bring one artefact of work you are proud of." },
-  { n: "03", t: "Six-month trial", d: "Letter of intent until incorporation. Then four-year vest, one-year cliff." },
+  {
+    n: "01",
+    t: "The confidential form",
+    time: "About 10 minutes",
+    icon: FileText,
+    d: "Name the seat. Full name, email, WhatsApp, city, current designation, years in the function, joining date. Then proof: what you shipped, what you will own in 90 days, and why this seat — not another.",
+    extra: "The file lands in our CRM the same minute. You receive a confirmation email. Vikash reads every application within 24 hours. A CV is optional; a measurable outcome is not.",
+  },
+  {
+    n: "02",
+    t: "45-minute working call",
+    time: "One conversation",
+    icon: Calendar,
+    d: "With Vikash, in Coimbatore or on a tight video. No slide theatre. Bring one artefact of work you are proud of — a ship, a P&L, a hiring loop, a retrieval eval. We will ask how you would run the first 90 days of the seat you named.",
+    extra: "If the call is a pitch for a title, it ends. If it is a conversation about ownership, we send a letter of intent outline the same week.",
+  },
+  {
+    n: "03",
+    t: "Six-month trial",
+    time: "Then vest",
+    icon: Scale,
+    d: "You sit next to the founder for the first 90 days. Hybrid only after you have shipped in the room. The trial is employment under a letter of intent until incorporation — not a co-founder handshake and not a purchased title.",
+    extra: "Hit the three outcomes on the seat card and you write the next quarter. Miss them and the trial ends cleanly. After the entity exists: four-year vest, one-year cliff.",
+  },
 ];
 
 const why = [
@@ -347,27 +374,89 @@ export default function JobsClient() {
         </div>
       </section>
 
-      <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto grid sm:grid-cols-3 gap-3 pb-10">
-        {steps.map((s) => (
-          <article key={s.n} className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-6">
-            <p className="text-[11px] font-black tracking-[0.2em] text-primary mb-2">{s.n}</p>
-            <h3 className="text-lg font-black mb-2">{s.t}</h3>
-            <p className="text-sm text-zinc-400 leading-relaxed">{s.d}</p>
-          </article>
-        ))}
+      <section className="relative px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-10 overflow-hidden">
+        <div className="relative rounded-[28px] border border-white/12 overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/assets/jobs/apply-pane.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-25" />
+          <div className="absolute inset-0 bg-[#0A0F1E]/80" />
+          <div
+            className="absolute inset-0 opacity-[0.14] pointer-events-none"
+            style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.35) 0.6px, transparent 0.6px)", backgroundSize: "3px 3px" }}
+          />
+          <div className="relative z-10 p-6 sm:p-10">
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-300 mb-2">How hiring works</p>
+            <h2 className="text-3xl sm:text-4xl font-black uppercase tracking-tight mb-3">Three gates. Then you own a function.</h2>
+            <p className="text-sm sm:text-base text-zinc-300 max-w-3xl leading-relaxed mb-10">
+              We do not run a campus drive. We do not collect résumés for a pile. Every candidate names a seat, proves work, and sits a 45-minute call with the founder. The people who pass walk into a six-month trial next to the desk — not a title on a visiting card.
+            </p>
+            <div className="relative space-y-0">
+              <div className="hidden sm:block absolute left-[27px] top-4 bottom-4 w-px bg-gradient-to-b from-cyan-400/70 via-white/15 to-transparent" />
+              {steps.map((s, i) => (
+                <motion.article
+                  key={s.n}
+                  initial={{ opacity: 0, x: -16 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.45, delay: i * 0.08 }}
+                  className="relative sm:pl-16 pb-10 last:pb-0"
+                >
+                  <span className="hidden sm:grid absolute left-0 top-0 h-14 w-14 place-items-center rounded-2xl border border-cyan-400/40 bg-[#0A0F1E] text-cyan-200 shadow-[0_0_24px_rgba(34,211,238,0.15)]">
+                    <s.icon className="w-5 h-5" />
+                  </span>
+                  <p className="text-[11px] font-black tracking-[0.2em] text-primary mb-1">{s.n} · {s.time}</p>
+                  <h3 className="text-2xl font-black uppercase tracking-tight mb-3">{s.t}</h3>
+                  <p className="text-[15px] text-zinc-200 leading-relaxed mb-3 max-w-3xl">{s.d}</p>
+                  <p className="text-sm text-zinc-400 leading-relaxed max-w-3xl">{s.extra}</p>
+                </motion.article>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-12">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-          <h2 className="text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-400 mb-4">We will not offer</h2>
-          <ul className="grid sm:grid-cols-2 gap-2 text-sm text-zinc-300">
-            {red.map((r) => (
-              <li key={r} className="flex items-start gap-2">
-                <X className="w-3.5 h-3.5 text-zinc-500 shrink-0 mt-0.5" /> {r}
-              </li>
-            ))}
-          </ul>
-          <p className="text-sm text-zinc-500 mt-5">Equity vests over four years with a one-year cliff after the registered entity exists. Letters of intent until incorporation.</p>
+        <div className="grid lg:grid-cols-2 gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="rounded-[28px] border border-cyan-400/25 bg-cyan-400/5 p-6 sm:p-8"
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-300 mb-3">What a seat actually is</p>
+            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight mb-6">We will offer</h2>
+            <ul className="space-y-5">
+              {offer.map((o) => (
+                <li key={o.t}>
+                  <p className="text-sm font-black uppercase tracking-[0.12em] text-white mb-1">{o.t}</p>
+                  <p className="text-sm text-zinc-300 leading-relaxed">{o.d}</p>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.08 }}
+            className="rounded-[28px] border border-white/12 bg-white/[0.04] p-6 sm:p-8"
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-400 mb-3">Boundaries</p>
+            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight mb-6">We will not offer</h2>
+            <ul className="space-y-5">
+              {red.map((r) => (
+                <li key={r.t} className="flex gap-3">
+                  <X className="w-4 h-4 text-zinc-500 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-black uppercase tracking-[0.12em] text-white mb-1">{r.t}</p>
+                    <p className="text-sm text-zinc-400 leading-relaxed">{r.d}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <p className="text-sm text-zinc-500 mt-8 leading-relaxed">
+              Equity vests over four years with a one-year cliff after the registered entity exists. Letters of intent until incorporation. If you need a cheque for a visiting card, this page is not for you.
+            </p>
+          </motion.div>
         </div>
       </section>
 
