@@ -59,7 +59,7 @@ export default function HowItWorksSection() {
                 <div className="flex flex-col items-center">
                   <div className="w-16 h-16 rounded-2xl bg-black border-2 border-white/10 flex items-center justify-center relative z-10 group-hover:border-primary group-hover:shadow-[0_0_20px_rgba(0,191,255,0.4)] transition-all duration-300 transform group-hover:-translate-y-2">
                     <step.icon className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors" />
-                    <div className="absolute -top-3 -right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center text-[10px] font-bold text-white shadow-lg">
+                    <div className="absolute -top-3 -right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center text-[10px] font-bold text-black shadow-lg">
                       {step.id}
                     </div>
                   </div>
