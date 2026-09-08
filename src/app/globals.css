@@ -424,6 +424,8 @@ html, body {
 html {
   overflow-x: hidden;
   max-width: 100%;
+  /* Fluid root type: 14px phone → 16px laptop */
+  font-size: clamp(14px, 0.35vw + 13.4px, 16px);
 }
 body {
   overflow-x: hidden !important;
@@ -433,6 +435,10 @@ img, video, canvas, svg {
   max-width: 100%;
   height: auto;
 }
+/* Fluid headings — Tailwind sizes still win when set; this is the fallback */
+h1 { font-size: clamp(1.35rem, 1.05rem + 3.2vw, 3.5rem); line-height: 1.12; }
+h2 { font-size: clamp(1.15rem, 0.95rem + 1.8vw, 2.25rem); line-height: 1.2; }
+h3 { font-size: clamp(1.05rem, 0.95rem + 0.8vw, 1.5rem); }
 /* Prevent long words / URLs from forcing horizontal scroll */
 p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
   overflow-wrap: anywhere;
@@ -456,14 +462,9 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
 }
 /* RESPONSIVE BREAKPOINTS — keep in sync with src/config/breakpoints.ts */
 @media (max-width: 389px) {
-  html { font-size: 13px; }
-  h1 { font-size: clamp(1.2rem, 8vw, 1.55rem) !important; }
+  html { font-size: 13.5px; }
 }
 @media (max-width: 639px) {
-  html { font-size: 14px; }
-  h1 { font-size: clamp(1.35rem, 7vw, 1.85rem) !important; line-height: 1.15 !important; }
-  h2 { font-size: clamp(1.15rem, 5.5vw, 1.45rem) !important; }
-  h3 { font-size: 1.05rem !important; }
   img, video, canvas { max-width: 100% !important; height: auto; }
   .glass-card { border-radius: 1rem; }
   section, .container { padding-left: 1rem; padding-right: 1rem; }
