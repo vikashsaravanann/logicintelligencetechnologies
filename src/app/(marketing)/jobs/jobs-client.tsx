@@ -99,7 +99,7 @@ const why = [
 
 const fade = {
   hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
+  show: { opacity: 1, y: 0 },
 };
 
 export default function JobsClient() {
@@ -167,6 +167,7 @@ export default function JobsClient() {
         whileInView="show"
         viewport={{ once: true, margin: "-80px" }}
         variants={fade}
+        transition={{ duration: 0.45 }}
         className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto py-16 sm:py-20"
       >
         <div className="grid lg:grid-cols-[minmax(0,0.95fr)_1.15fr] gap-8 lg:gap-12 items-center">
