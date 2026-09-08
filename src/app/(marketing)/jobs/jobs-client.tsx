@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { COMPANY } from "@/config/company";
 import { Download, Phone, X, MapPin, Clock, ShieldCheck, Rocket, Lock, Mail, Upload, CheckCircle2, Briefcase, FileText, Calendar, Scale } from "lucide-react";
@@ -257,12 +258,14 @@ export default function JobsClient() {
         className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto py-16 sm:py-20"
       >
         <div className="grid lg:grid-cols-[minmax(0,0.9fr)_1.2fr] gap-8 lg:gap-12 items-start">
-          <div className="relative aspect-[3/4] max-h-[560px] rounded-[28px] overflow-hidden border border-white/10 bg-black shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+          <div className="relative aspect-[3/4] max-h-[420px] sm:max-h-[560px] rounded-[22px] sm:rounded-[28px] overflow-hidden border border-white/10 bg-black shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+            <Image
               src={COMPANY.founder.photoPath}
               alt={`${COMPANY.founder.name}, Founder of ${COMPANY.displayName}`}
-              className="absolute inset-0 w-full h-full object-cover object-[center_18%]"
+              fill
+              sizes="(max-width: 1024px) 100vw, 40vw"
+              quality={70}
+              className="object-cover object-[center_18%]"
             />
           </div>
           <div className="lg:pt-4">
@@ -308,11 +311,13 @@ export default function JobsClient() {
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-10">
         <article className="relative isolate overflow-hidden rounded-[28px] border border-cyan-400/25 min-h-[420px] sm:min-h-[480px] lg:min-h-[520px]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={featured.cover}
+          <Image
+            src={featured.cover!}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover object-center"
+            fill
+            sizes="100vw"
+            quality={68}
+            className="object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/80 to-[#0A0F1E]/20 lg:bg-gradient-to-r lg:from-transparent lg:via-[#0A0F1E]/55 lg:to-[#0A0F1E]" />
           <span className="absolute top-4 left-4 z-10 text-[10px] font-black uppercase tracking-[0.16em] rounded-full border border-cyan-300/40 bg-black/55 px-3 py-1 text-cyan-200">Hiring · Featured</span>
@@ -338,8 +343,7 @@ export default function JobsClient() {
         {directors.map((s) => (
           <article key={s.id} className="rounded-[24px] overflow-hidden border border-white/12 bg-white/[0.04] backdrop-blur-xl flex flex-col">
             <div className="relative aspect-[16/10] shrink-0 overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={s.cover} alt="" className="absolute inset-0 w-full h-full object-cover" />
+              <Image src={s.cover!} alt="" fill sizes="(max-width: 768px) 100vw, 33vw" quality={65} className="object-cover" />
               <span className="absolute top-3 left-3 text-[9px] font-black uppercase tracking-[0.16em] rounded-full bg-black/55 border border-white/15 px-2.5 py-1 text-cyan-200">Hiring</span>
             </div>
             <div className="relative z-10 p-6 flex flex-col gap-3 flex-1 bg-[#0A0F1E]/95">
@@ -376,8 +380,7 @@ export default function JobsClient() {
 
       <section className="relative px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-10 overflow-hidden">
         <div className="relative rounded-[28px] border border-white/12 overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/assets/jobs/apply-pane.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-25" />
+          <Image src="/assets/jobs/apply-pane.jpg" alt="" fill sizes="100vw" quality={50} className="object-cover opacity-25" />
           <div className="absolute inset-0 bg-[#0A0F1E]/80" />
           <div
             className="absolute inset-0 opacity-[0.14] pointer-events-none"
@@ -460,11 +463,20 @@ export default function JobsClient() {
         </div>
       </section>
 
-      <section id="apply" className="relative px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto pb-28 scroll-mt-28">
-        <div className="relative rounded-[32px] border border-white/20 bg-[#0A0F1E] shadow-[0_40px_100px_rgba(0,0,0,0.5)] overflow-hidden">
-          <div className="grid lg:grid-cols-[minmax(300px,38%)_minmax(0,1fr)] lg:items-stretch">
-            <aside className="relative hidden lg:flex lg:flex-col h-full min-h-full overflow-hidden border-r border-white/10">
-              <div className="relative z-10 p-8 flex flex-col gap-4 shrink-0 bg-gradient-to-b from-[#0A0F1E] to-[#0A0F1E]/80">
+      <section id="apply" className="relative px-3 sm:px-6 lg:px-8 max-w-5xl mx-auto pb-24 sm:pb-28 scroll-mt-24">
+        <div className="relative rounded-[24px] sm:rounded-[32px] border border-white/20 bg-[#0A0F1E] shadow-[0_40px_100px_rgba(0,0,0,0.5)] overflow-hidden">
+          <div className="grid lg:grid-cols-[minmax(280px,38%)_minmax(0,1fr)] lg:items-stretch">
+            <div className="relative hidden lg:block self-stretch min-h-full overflow-hidden">
+              <Image
+                src="/assets/jobs/apply-pane.jpg"
+                alt=""
+                fill
+                sizes="(min-width: 1024px) 38vw, 0px"
+                quality={68}
+                className="object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/80 via-[#0A0F1E]/25 to-[#0A0F1E]/45" />
+              <div className="relative z-10 p-8 flex flex-col gap-4">
                 <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300">
                   <Lock className="w-3.5 h-3.5" /> Confidential
                 </p>
@@ -478,22 +490,16 @@ export default function JobsClient() {
                   <li className="flex gap-2"><Briefcase className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Held privately in our CRM</li>
                 </ul>
                 {seats.find((s) => s.id === seat) && (
-                  <div className="rounded-2xl border border-cyan-400/30 bg-black/50 backdrop-blur-md p-4">
+                  <div className="rounded-2xl border border-cyan-400/30 bg-black/50 backdrop-blur-md p-4 mt-auto">
                     <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-200 mb-1">You are applying for</p>
                     <p className="text-lg font-black mb-2 uppercase">{seats.find((s) => s.id === seat)!.t}</p>
                     <p className="text-[13px] text-zinc-300 leading-relaxed">{seats.find((s) => s.id === seat)!.who}</p>
                   </div>
                 )}
               </div>
-              <div className="relative flex-1 min-h-[420px] grid grid-rows-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/assets/jobs/apply-pane.jpg" alt="" className="w-full h-full object-cover" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/assets/jobs/ceo-desk.jpg" alt="" className="w-full h-full object-cover" />
-              </div>
-            </aside>
+            </div>
 
-            <div className="flex-1 min-w-0 p-5 sm:p-8 bg-[#0A0F1E]/40">
+            <div className="min-w-0 p-4 sm:p-6 lg:p-8 bg-[#0A0F1E]/40">
               <div className="lg:hidden mb-6">
                 <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 mb-2">Confidential application</p>
                 <h2 className="text-2xl font-black uppercase tracking-tight">Join the leadership table</h2>
@@ -505,10 +511,10 @@ export default function JobsClient() {
                   <p className="text-zinc-300 max-w-md mx-auto leading-relaxed">Check your inbox for confirmation. We reply within 24 hours — usually with a 45-minute call time.</p>
                 </div>
               ) : (
-                <form onSubmit={submit} className="grid gap-6">
+                <form onSubmit={submit} className="grid gap-4 sm:gap-6">
                   <div>
                     <p className={label}>Choose the seat</p>
-                    <div className="grid sm:grid-cols-2 gap-2.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       {seats.filter((s) => s.open).map((s) => (
                         <button
                           key={s.id}
