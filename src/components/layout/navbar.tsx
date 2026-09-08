@@ -124,7 +124,7 @@ export default function Navbar() {
                 transition={{ type: "spring", stiffness: 100, damping: 10 }}
                 className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-[0_0_15px_rgba(0,191,255,0.4)] animate-neon-pulse bg-gradient-to-tr from-primary to-accent"
               >
-                <img src="/assets/logo.jpg" alt="Logo" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<span class="font-bold text-lg text-white">LIT</span>'; }} />
+                <img src={COMPANY.logoIconPath} alt="Logo" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<span class="font-bold text-lg text-white">LIT</span>'; }} />
               </motion.div>
               <span className="text-[11px] font-bold text-white tracking-wide leading-none whitespace-nowrap hidden md:inline truncate max-w-[9.5rem] xl:max-w-[14rem] 2xl:max-w-none">
                 {COMPANY.displayName.toUpperCase()}
