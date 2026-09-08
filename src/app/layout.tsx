@@ -45,10 +45,18 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     siteName: COMPANY.legalName,
-    images: [{ url: COMPANY.bannerPath, width: 1200, height: 630 }],
+    images: [
+      {
+        url: COMPANY.bannerPath,
+        width: 1200,
+        height: 630,
+        alt: 'Logic Intelligence Technologies — Where Logic Meets Innovation',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
+    images: [COMPANY.bannerPath],
   },
   icons: {
     icon: [

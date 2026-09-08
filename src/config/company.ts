@@ -17,7 +17,7 @@ export const COMPANY = {
   websiteUrl: 'https://www.logicintelligencetechnologies.in',
   logoIconPath: '/assets/logo-icon.jpg',
   logoFullPath: '/assets/logo.jpg',
-  bannerPath: '/assets/banner.jpg',
+  bannerPath: '/assets/og-banner.jpg',
   tagline: 'Where Logic Meets Innovation',
   founder: {
     name: 'Vikash Saravanan',
