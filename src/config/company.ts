@@ -15,7 +15,7 @@ export const COMPANY = {
   linkedinUrl: 'https://www.linkedin.com/company/logic-intelligence-technologies/',
   facebookUrl: 'https://www.facebook.com/share/166anMT53Cj/?mibextid=wwXIfr',
   websiteUrl: 'https://www.logicintelligencetechnologies.in',
-  logoIconPath: '/assets/logo-icon.jpg',
+  logoIconPath: '/assets/logo-icon.webp',
   logoFullPath: '/assets/logo.jpg',
   bannerPath: '/assets/banner.jpg',
   tagline: 'Where Logic Meets Innovation',
