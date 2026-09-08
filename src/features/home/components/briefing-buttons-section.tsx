@@ -7,14 +7,14 @@ import { ArrowUpRight } from "lucide-react";
 const ITEMS = [
   {
     href: "/ai-assistant",
-    image: "/portfolio/vaulthr.jpg",
+    image: "/assets/briefings/knowledge-assistant.jpg",
     kicker: "Product",
     title: "Knowledge Assistant",
     body: "Private RAG over your documents. Demo on /ai first.",
   },
   {
     href: "/investors",
-    image: "/portfolio/luxe.jpg",
+    image: "/assets/briefings/investor-briefing.jpg",
     kicker: "Briefing",
     title: "Investor briefing",
     body: "Operating update. Not a priced round. Walk the live stack.",
