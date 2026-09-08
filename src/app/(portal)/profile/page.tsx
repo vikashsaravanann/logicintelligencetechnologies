@@ -64,7 +64,7 @@ export default async function ProfilePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#050814] text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#050814] text-white relative overflow-x-hidden grid justify-items-center">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[520px] h-[520px] rounded-full bg-cyan-500/10 blur-[120px]" />
         <div
@@ -77,7 +77,7 @@ export default async function ProfilePage() {
         />
       </div>
 
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 pt-24 sm:pt-28 pb-20 flex flex-col items-stretch">
+      <div className="relative z-10 portal-shell pt-24 sm:pt-28 pb-20">
         <div className="mb-4">
           <BackToHome inline />
         </div>
