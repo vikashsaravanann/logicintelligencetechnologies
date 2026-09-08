@@ -222,7 +222,7 @@ function AuthContent() {
   };
 
   const inputBase =
-    "w-full pl-11 pr-4 py-2.5 bg-white/[0.06] backdrop-blur-md border border-white/15 rounded-2xl text-[14px] text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-cyan-300/35 focus:border-cyan-300/60 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]";
+    "w-full pl-11 pr-4 py-2.5 bg-white/[0.06] backdrop-blur-md border border-sky-200/20 rounded-2xl text-[14px] text-white placeholder:text-sky-100/40 focus:outline-none focus:ring-2 focus:ring-amber-300/40 focus:border-sky-300/70 transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]";
 
   const busy = isLoading || Boolean(oauthBusy);
 
@@ -249,10 +249,15 @@ function AuthContent() {
   return (
     <main
       className={`${display.className} h-[100dvh] max-h-[100dvh] w-full max-w-[100vw] text-white relative overflow-hidden`}
-      style={{ background: "var(--ai-glow)" }}
+      style={{
+        background:
+          "radial-gradient(ellipse 55% 45% at 12% 18%, rgba(56,189,248,0.32), transparent 58%), radial-gradient(ellipse 48% 50% at 92% 8%, rgba(139,92,246,0.36), transparent 52%), radial-gradient(ellipse 70% 42% at 70% 108%, rgba(212,175,55,0.28), transparent 55%), #07102a",
+      }}
     >
       <WebGLParticles className="z-[1]" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42vh] bg-gradient-to-t from-orange-600/40 via-orange-500/10 to-transparent blur-2xl z-[1]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[38vh] bg-gradient-to-t from-violet-700/25 via-sky-500/10 to-transparent blur-2xl z-[1]" />
+      <div className="pointer-events-none absolute -top-24 left-1/4 w-[420px] h-[420px] rounded-full bg-sky-400/15 blur-[120px] z-[1]" />
+      <div className="pointer-events-none absolute top-10 right-[12%] w-[280px] h-[280px] rounded-full bg-amber-400/12 blur-[100px] z-[1]" />
 
       <div className="relative z-10 h-[100dvh] max-h-[100dvh] overflow-hidden flex">
         <motion.section
@@ -264,7 +269,7 @@ function AuthContent() {
           <div className="w-full max-w-[440px] mx-auto rounded-3xl border border-white/12 login-glass p-4 sm:p-5 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
             <Link href="/" className="flex items-center gap-3 mb-4 group min-w-0">
               <span className="relative shrink-0">
-                <span className="absolute -inset-1 rounded-full bg-gradient-to-tr from-cyan-400/50 to-transparent blur-sm" />
+                <span className="absolute -inset-1 rounded-full bg-gradient-to-tr from-sky-400/60 via-amber-300/40 to-violet-500/50 blur-sm" />
                 <span className="relative block w-12 h-12 rounded-full overflow-hidden border border-white/20 bg-white">
                   <img
                     src={COMPANY.logoIconPath}
@@ -274,19 +279,19 @@ function AuthContent() {
                 </span>
               </span>
               <span className="min-w-0">
-                <span className="block whitespace-nowrap uppercase text-[11px] sm:text-[12.5px] font-semibold tracking-[0.16em] text-white group-hover:text-cyan-300 transition-colors">
+                <span className="block whitespace-nowrap uppercase text-[11px] sm:text-[12.5px] font-semibold tracking-[0.16em] text-white group-hover:text-sky-200 transition-colors">
                   {COMPANY.displayName}
                 </span>
-                <span className="block whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.28em] text-cyan-400/85 mt-1">
+                <span className="block whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.28em] text-amber-200/90 mt-1">
                   {COMPANY.tagline}
                 </span>
               </span>
             </Link>
 
             <div className="relative rounded-[24px] border border-white/20 bg-white/[0.07] backdrop-blur-[28px] backdrop-saturate-150 p-4 sm:p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_24px_80px_rgba(0,0,0,0.45)]">
-              <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-br from-white/10 via-transparent to-cyan-400/5" />
+              <div className="pointer-events-none absolute inset-0 rounded-[28px] bg-gradient-to-br from-sky-300/10 via-transparent to-violet-500/10" />
               <div className="relative">
-              <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.26em] text-cyan-200 mb-2.5 px-3 py-1 rounded-full border border-white/15 bg-white/10 backdrop-blur-md">
+              <p className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.26em] text-amber-100 mb-2.5 px-3 py-1 rounded-full border border-amber-200/25 bg-sky-400/10 backdrop-blur-md">
                 Secure client portal
               </p>
               <h1 className="text-[1.65rem] sm:text-[2rem] font-semibold tracking-[-0.045em] leading-[1.05] mb-1.5">
@@ -399,7 +404,7 @@ function AuthContent() {
                             setServerError(null);
                             setServerSuccess(null);
                           }}
-                          className="text-xs font-semibold text-cyan-400 hover:text-cyan-300"
+                          className="text-xs font-semibold text-sky-300 hover:text-amber-200"
                         >
                           Forgot password?
                         </button>
@@ -451,7 +456,7 @@ function AuthContent() {
                 <button
                   type="submit"
                   disabled={busy}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl font-bold text-sm text-[#041018] bg-gradient-to-r from-cyan-300 to-sky-400 hover:from-cyan-200 hover:to-sky-300 transition-all disabled:opacity-50 mt-2 shadow-[0_10px_40px_rgba(14,165,233,0.25)]"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl font-bold text-sm text-[#07102a] bg-gradient-to-r from-sky-300 via-amber-200 to-violet-300 hover:brightness-110 transition-all disabled:opacity-50 mt-2 shadow-[0_10px_40px_rgba(56,189,248,0.28)]"
                 >
                   {isLoading ? (
                     <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
@@ -470,7 +475,7 @@ function AuthContent() {
                     New to the studio?{" "}
                     <button
                       type="button"
-                      className="text-cyan-400 font-semibold hover:text-cyan-300"
+                      className="text-sky-300 font-semibold hover:text-amber-200"
                       onClick={() => {
                         setMode("signup");
                         setServerError(null);
@@ -486,7 +491,7 @@ function AuthContent() {
                     Already registered?{" "}
                     <button
                       type="button"
-                      className="text-cyan-400 font-semibold hover:text-cyan-300"
+                      className="text-sky-300 font-semibold hover:text-amber-200"
                       onClick={() => {
                         setMode("signin");
                         setServerError(null);
@@ -536,12 +541,12 @@ function AuthContent() {
         >
           <div className="relative h-full w-full flex flex-col justify-between px-8 xl:px-11 py-7 pb-14 overflow-hidden">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-cyan-400">
+              <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-sky-300">
                 {COMPANY.entityLabel.toUpperCase()} · COIMBATORE
               </p>
               <h2 className="mt-2.5 text-[2rem] xl:text-[2.4rem] font-semibold leading-[1.08] tracking-[-0.04em]">
                 Production software.
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-sky-200 mt-1">
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-amber-200 to-violet-300 mt-1">
                   Practical AI.
                 </span>
               </h2>
@@ -598,7 +603,7 @@ function AuthContent() {
                 { icon: Zap, t: "How we take work", d: "31-point scope. Free demo. Pay after you see the build. Source on close." },
               ].map((b) => (
                 <div key={b.t} className="rounded-2xl border border-white/12 login-glass-card p-3 flex gap-2.5">
-                  <b.icon className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" />
+                  <b.icon className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-widest text-white">{b.t}</p>
                     <p className="text-[11.5px] text-zinc-300 mt-0.5 leading-snug">{b.d}</p>
@@ -615,26 +620,26 @@ function AuthContent() {
                 "WhatsApp +91 93428 77474",
               ].map((line) => (
                 <li key={line} className="flex items-start gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-sky-300 mt-0.5 shrink-0" />
                   {line}
                 </li>
               ))}
             </ul>
 
             <div className="rounded-2xl border border-white/12 bg-black/40 px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-400">
-              <a href={COMPANY.websiteUrl} className="hover:text-cyan-300">Website</a>
-              <a href={COMPANY.linkedinUrl} className="hover:text-cyan-300">LinkedIn</a>
-              <a href={COMPANY.telegramBotUrl} className="hover:text-cyan-300">Telegram</a>
-              <a href={COMPANY.instagramUrl} className="hover:text-cyan-300">Instagram</a>
-              <a href={`https://wa.me/${COMPANY.whatsappNumber}`} className="hover:text-cyan-300">WhatsApp</a>
+              <a href={COMPANY.websiteUrl} className="hover:text-amber-200">Website</a>
+              <a href={COMPANY.linkedinUrl} className="hover:text-sky-300">LinkedIn</a>
+              <a href={COMPANY.telegramBotUrl} className="hover:text-violet-300">Telegram</a>
+              <a href={COMPANY.instagramUrl} className="hover:text-amber-200">Instagram</a>
+              <a href={`https://wa.me/${COMPANY.whatsappNumber}`} className="hover:text-sky-300">WhatsApp</a>
             </div>
           </div>
         </motion.aside>
       </div>
       <div className="absolute bottom-4 inset-x-0 z-20 overflow-hidden pointer-events-none">
         <div className="lit-ticker flex w-max">
-          <p className="lit-ticker-text whitespace-nowrap text-[11px] sm:text-[13px] tracking-[0.14em] sm:tracking-[0.18em] uppercase text-white/75 pr-16">{TICKER}</p>
-          <p className="lit-ticker-text whitespace-nowrap text-[11px] sm:text-[13px] tracking-[0.14em] sm:tracking-[0.18em] uppercase text-white/75 pr-16" aria-hidden>{TICKER}</p>
+          <p className="lit-ticker-text whitespace-nowrap text-[11px] sm:text-[13px] tracking-[0.14em] sm:tracking-[0.18em] uppercase text-sky-100/80 pr-16">{TICKER}</p>
+          <p className="lit-ticker-text whitespace-nowrap text-[11px] sm:text-[13px] tracking-[0.14em] sm:tracking-[0.18em] uppercase text-sky-100/80 pr-16" aria-hidden>{TICKER}</p>
         </div>
       </div>
     </main>

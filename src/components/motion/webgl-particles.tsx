@@ -42,7 +42,7 @@ export default function WebGLParticles({ className = "" }: { className?: string 
         float d = dot(p, p);
         if (d > 1.0) discard;
         float glow = exp(-d * 3.2);
-        gl_FragColor = vec4(0.45, 0.82, 1.0, glow * v_a * 0.85);
+        gl_FragColor = vec4(mix(vec3(0.48, 0.82, 1.0), vec3(0.93, 0.76, 0.28), glow * 0.55), glow * v_a * 0.8);
       }
     `;
 
