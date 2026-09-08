@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import PageBackdrop from "@/components/ui/page-backdrop";
 import { blogPosts } from "@/data/blogData";
 
 export const metadata: Metadata = {
@@ -15,8 +16,7 @@ export default function BlogListPage() {
 
   return (
     <main className="min-h-screen bg-[#0A0F1E] text-white pt-32 pb-24 relative overflow-hidden">
-      {/* Background ambient glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[500px] bg-primary/10 blur-[120px] rounded-full pointer-events-none opacity-60" />
+      <PageBackdrop src="/assets/backdrops/work-hero.jpg" />
       
       <section className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="mb-16 md:mb-24 text-center md:text-left">

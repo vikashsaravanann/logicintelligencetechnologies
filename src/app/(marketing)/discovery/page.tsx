@@ -1,6 +1,7 @@
 "use client";
 import FloatingElements from "@/components/motion/floating-elements";
 import BackToHome from "@/components/ui/back-to-home";
+import PageBackdrop from "@/components/ui/page-backdrop";
 import { useState } from "react";
 import { Send, CheckCircle2, MessageSquare, ChevronRight, ChevronLeft, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -140,7 +141,7 @@ export default function DiscoveryPage() {
       <BackToHome />
       {/* Hero Section */}
       <section className="relative py-12 px-6 lg:px-8 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
+        <PageBackdrop src="/assets/backdrops/about-hero.jpg" />
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-6">
              Enterprise Onboarding

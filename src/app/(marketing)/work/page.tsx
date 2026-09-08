@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import FloatingElements from "@/components/motion/floating-elements";
 import BackToHome from "@/components/ui/back-to-home";
+import PageBackdrop from "@/components/ui/page-backdrop";
 import { portfolioProjects } from "@/data/portfolioData";
 import { COMPANY } from "@/config/company";
 import MasonryGrid from "./masonry-grid";
@@ -21,7 +22,9 @@ export default function WorkPage() {
   return (
     <main className="min-h-screen bg-[#0A0F1E] text-white pt-32">
       <BackToHome />
-      <section className="py-16 px-6 lg:px-8 max-w-7xl mx-auto">
+      <section className="relative py-16 px-6 lg:px-8 overflow-hidden">
+        <PageBackdrop src="/assets/backdrops/work-hero.jpg" />
+        <div className="relative z-10 max-w-7xl mx-auto">
         <div className="text-center mb-16 max-w-3xl mx-auto">
           <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">
             Our Portfolio
@@ -39,6 +42,7 @@ export default function WorkPage() {
           <Link href="/free-demo" className="inline-flex px-8 py-4 rounded-xl text-sm font-bold text-black bg-primary neon-btn">
             Request a Free Demo
           </Link>
+        </div>
         </div>
       </section>
 

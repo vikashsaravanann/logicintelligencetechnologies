@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Download, CheckCircle2, ArrowRight } from "lucide-react";
 import BackToHome from "@/components/ui/back-to-home";
+import PageBackdrop from "@/components/ui/page-backdrop";
 import FloatingElements from "@/components/motion/floating-elements";
 
 export default function ChecklistLeadMagnet() {
@@ -47,7 +48,7 @@ export default function ChecklistLeadMagnet() {
     <main className="min-h-screen bg-[#0A0D1A] text-white pt-24">
       <BackToHome />
       <section className="relative py-20 px-6 lg:px-8 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/10 blur-[150px] rounded-full pointer-events-none" />
+        <PageBackdrop src="/assets/jobs/studio-hero.jpg" />
         <div className="max-w-4xl mx-auto text-center relative z-10 mb-16">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-8">
              Free Resource

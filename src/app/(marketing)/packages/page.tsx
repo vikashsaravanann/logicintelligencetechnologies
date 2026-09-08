@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import FloatingElements from "@/components/motion/floating-elements";
 import PackagesSection from "@/features/home/components/packages-section";
 import Link from 'next/link';
+import PageBackdrop from '@/components/ui/page-backdrop';
 import { servicesData } from '@/data/servicesData';
 import { 
   Code, Hotel, Plane, Terminal, Gamepad, ShoppingCart, 
@@ -23,7 +24,12 @@ export const metadata: Metadata = {
 export default function PackagesAndServicesPage() {
   return (
     <main className="min-h-screen bg-[#0A0F1E] text-white pt-20">
-      <PackagesSection />
+      <section className="relative overflow-hidden">
+        <PageBackdrop src="/assets/jobs/studio-hero.jpg" />
+        <div className="relative z-10">
+          <PackagesSection />
+        </div>
+      </section>
       
       <section className="py-20 px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/5 relative">
         <div className="text-center max-w-3xl mx-auto mb-16 relative z-10">

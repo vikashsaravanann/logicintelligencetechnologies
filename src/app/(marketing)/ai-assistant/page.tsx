@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import BackToHome from "@/components/ui/back-to-home";
+import PageBackdrop from "@/components/ui/page-backdrop";
 import FloatingElements from "@/components/motion/floating-elements";
 import { COMPANY } from "@/config/company";
 import {
@@ -51,7 +52,9 @@ export default function AiAssistantPage() {
     <main className="min-h-screen bg-[#0A0F1E] text-white pt-28 sm:pt-32">
       <BackToHome />
 
-      <section className="px-6 lg:px-8 max-w-5xl mx-auto text-center pb-12">
+      <section className="relative px-6 lg:px-8 overflow-hidden">
+        <PageBackdrop src="/assets/backdrops/work-hero.jpg" />
+        <div className="relative z-10 max-w-5xl mx-auto text-center pb-12">
         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-4">
           LIT Knowledge Assistant
         </p>
@@ -81,6 +84,7 @@ export default function AiAssistantPage() {
           >
             Book a scoped demo
           </Link>
+        </div>
         </div>
       </section>
 

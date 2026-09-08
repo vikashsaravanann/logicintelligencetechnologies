@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import FloatingElements from "@/components/motion/floating-elements";
 import BackToHome from "@/components/ui/back-to-home";
+import PageBackdrop from "@/components/ui/page-backdrop";
 import { COMPANY } from "@/config/company";
 import {
   ExternalLink,
@@ -95,7 +96,9 @@ export default function AboutPage() {
       <BackToHome />
 
       {/* Hero */}
-      <section className="py-14 sm:py-20 px-6 lg:px-8 max-w-7xl mx-auto text-center">
+      <section className="relative py-14 sm:py-20 px-6 lg:px-8 overflow-hidden">
+        <PageBackdrop src="/assets/backdrops/about-hero.jpg" />
+        <div className="relative z-10 max-w-7xl mx-auto text-center">
         <span className="inline-flex items-center gap-2 text-primary font-bold tracking-widest uppercase text-xs sm:text-sm mb-5 px-3 py-1.5 rounded-full border border-primary/25 bg-primary/10">
           <Rocket className="w-3.5 h-3.5" />
           Coimbatore technology startup
@@ -113,6 +116,7 @@ export default function AboutPage() {
           platforms, and AI-integrated systems for teams that want modern
           software without traditional agency overhead.
         </p>
+        </div>
       </section>
 
       {/* Snapshot */}

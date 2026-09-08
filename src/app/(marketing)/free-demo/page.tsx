@@ -1,6 +1,7 @@
 "use client";
 import FloatingElements from "@/components/motion/floating-elements";
 import BackToHome from "@/components/ui/back-to-home";
+import PageBackdrop from "@/components/ui/page-backdrop";
 import { useState, useEffect } from "react";
 import { Send, CheckCircle2, MessageSquare, ShieldCheck, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
@@ -93,7 +94,7 @@ export default function FreeDemoPage() {
       <BackToHome />
       {/* Hero Section */}
       <section className="relative py-20 px-6 lg:px-8 overflow-hidden border-b border-white/5">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/10 blur-[150px] rounded-full pointer-events-none" />
+        <PageBackdrop src="/assets/backdrops/contact-hero.jpg" />
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-8">
              Zero Risk. Zero Commitment.

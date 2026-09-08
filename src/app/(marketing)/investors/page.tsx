@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import BackToHome from "@/components/ui/back-to-home";
+import PageBackdrop from "@/components/ui/page-backdrop";
 import { COMPANY } from "@/config/company";
 import { ArrowRight, Phone } from "lucide-react";
 
@@ -23,7 +24,9 @@ export default function InvestorsPage() {
   return (
     <main className="min-h-screen bg-[#0A0F1E] text-white pt-24 sm:pt-28">
       <BackToHome />
-      <section className="px-6 lg:px-8 max-w-4xl mx-auto text-center pb-12">
+      <section className="relative px-6 lg:px-8 overflow-hidden">
+        <PageBackdrop src="/assets/jobs/studio-hero.jpg" />
+        <div className="relative z-10 max-w-4xl mx-auto text-center pb-12 pt-6">
         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-4">
           LOGIC INTELLIGENCE TECHNOLOGIES
         </p>
@@ -37,6 +40,7 @@ export default function InvestorsPage() {
         <p className="mt-6 inline-block rounded-full bg-red-500/15 border border-red-400/30 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-red-300">
           Not raising
         </p>
+        </div>
       </section>
       <section className="px-6 lg:px-8 max-w-5xl mx-auto grid sm:grid-cols-2 gap-4 pb-14">
         {points.map((p) => (
