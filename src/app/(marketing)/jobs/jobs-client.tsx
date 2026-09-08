@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { COMPANY } from "@/config/company";
-import { Download, Phone, X, MapPin, Clock, ShieldCheck, Rocket } from "lucide-react";
+import { Download, Phone, X, MapPin, Clock, ShieldCheck, Rocket, Lock, Mail, Upload, CheckCircle2, Briefcase } from "lucide-react";
 
 type Seat = {
   id: string;
@@ -106,8 +106,10 @@ const why = [
 const fade = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0 } };
 
 const field =
-  "w-full h-12 rounded-xl bg-white/[0.06] border border-white/15 px-4 text-[15px] text-white placeholder:text-zinc-500 focus:outline-none focus:border-cyan-400/60";
-const label = "block text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-400 mb-1.5";
+  "w-full h-12 rounded-2xl bg-white/[0.07] border border-white/12 px-4 text-[15px] text-white placeholder:text-zinc-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] focus:outline-none focus:border-cyan-400/55 focus:ring-2 focus:ring-cyan-400/20 transition";
+const area = `${field} h-auto min-h-[108px] py-3 leading-relaxed`;
+const label = "block text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-300 mb-1.5";
+const hint = "mt-1.5 text-[12px] text-zinc-500 leading-snug";
 
 export default function JobsClient() {
   const [seat, setSeat] = useState("ceo");
@@ -330,92 +332,160 @@ export default function JobsClient() {
         </div>
       </section>
 
-      <section id="apply" className="px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto pb-28 scroll-mt-28">
-        <div className="rounded-[28px] border border-white/15 bg-white/[0.07] backdrop-blur-2xl shadow-[0_30px_80px_rgba(0,0,0,0.45)] p-5 sm:p-8">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-2">Confidential application</p>
-          <h2 className="text-2xl sm:text-3xl font-black mb-2">Apply for a seat</h2>
-          <p className="text-sm text-zinc-400 mb-6 leading-relaxed">
-            Stored in our CRM. You get a confirmation email. We get the application. Reply within 24 hours.
-          </p>
+      <section id="apply" className="relative px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto pb-28 scroll-mt-28">
+        <div className="absolute inset-x-4 sm:inset-x-6 -top-10 bottom-16 rounded-[32px] overflow-hidden pointer-events-none">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/assets/jobs/studio-hero.jpg" alt="" className="w-full h-full object-cover opacity-40" />
+          <div className="absolute inset-0 bg-[#0A0F1E]/70" />
+        </div>
 
-          {ok ? (
-            <p className="text-cyan-200 text-base py-10 text-center">Application received. Check your inbox — we reply within 24 hours.</p>
-          ) : (
-            <form onSubmit={submit} className="grid gap-4">
-              <div>
-                <label className={label} htmlFor="seat">Seat</label>
-                <select id="seat" value={seat} onChange={(e) => setSeat(e.target.value)} className={field}>
-                  {seats.filter((s) => s.open).map((s) => <option key={s.id} value={s.id} className="bg-[#0A0F1E]">{s.t}</option>)}
-                </select>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className={label} htmlFor="name">Full name</label>
-                  <input id="name" required value={name} onChange={(e) => setName(e.target.value)} className={field} placeholder="As on your ID" />
+        <div className="relative rounded-[32px] border border-white/20 bg-white/[0.08] backdrop-blur-2xl shadow-[0_40px_100px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.18)] overflow-hidden">
+          <div className="grid lg:grid-cols-[minmax(0,0.9fr)_1.15fr]">
+            <aside className="p-6 sm:p-8 border-b lg:border-b-0 lg:border-r border-white/10 bg-black/20">
+              <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 mb-4">
+                <Lock className="w-3.5 h-3.5" /> Confidential
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-3">Join the leadership table</h2>
+              <p className="text-[15px] text-zinc-300 leading-relaxed mb-6">
+                Four open seats. One founder. If you have already shipped a function — operations, engineering, sales, or AI — this is the form. Titles are not for sale. The trial is six months. The first ninety days are in Coimbatore.
+              </p>
+              <ul className="space-y-3 text-sm text-zinc-300 mb-8">
+                <li className="flex gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Confirmation email the moment you submit</li>
+                <li className="flex gap-2"><Mail className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Vikash reads every application within 24 hours</li>
+                <li className="flex gap-2"><Briefcase className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" /> Stored privately in our CRM — not a public job board</li>
+              </ul>
+              {seats.find((s) => s.id === seat) && (
+                <div className="rounded-2xl border border-cyan-400/25 bg-cyan-400/10 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-200 mb-1">You are applying for</p>
+                  <p className="text-lg font-black mb-2">{seats.find((s) => s.id === seat)!.t}</p>
+                  <p className="text-[13px] text-zinc-300 leading-relaxed">{seats.find((s) => s.id === seat)!.who}</p>
                 </div>
-                <div>
-                  <label className={label} htmlFor="email">Email</label>
-                  <input id="email" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={field} placeholder="you@company.com" />
+              )}
+            </aside>
+
+            <div className="p-5 sm:p-8">
+              {ok ? (
+                <div className="py-16 text-center">
+                  <CheckCircle2 className="w-12 h-12 text-cyan-300 mx-auto mb-4" />
+                  <h3 className="text-2xl font-black mb-2">Application received</h3>
+                  <p className="text-zinc-300 max-w-md mx-auto leading-relaxed">Check your inbox for confirmation. We reply within 24 hours — usually with a 45-minute call time.</p>
                 </div>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className={label} htmlFor="phone">Phone (WhatsApp)</label>
-                  <input id="phone" required value={phone} onChange={(e) => setPhone(e.target.value)} className={field} placeholder="+91" />
-                </div>
-                <div>
-                  <label className={label} htmlFor="city">City</label>
-                  <input id="city" required value={city} onChange={(e) => setCity(e.target.value)} className={field} placeholder="Coimbatore / willing to relocate" />
-                </div>
-              </div>
-              <div>
-                <label className={label} htmlFor="linkedin">LinkedIn URL</label>
-                <input id="linkedin" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} className={field} placeholder="https://linkedin.com/in/…" />
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className={label} htmlFor="role">Current role & company</label>
-                  <input id="role" required value={currentRole} onChange={(e) => setCurrentRole(e.target.value)} className={field} placeholder="Head of Ops, Studio X" />
-                </div>
-                <div>
-                  <label className={label} htmlFor="years">Years in this function</label>
-                  <input id="years" required value={years} onChange={(e) => setYears(e.target.value)} className={field} placeholder="8" />
-                </div>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className={label} htmlFor="start">When you can start</label>
-                  <input id="start" required value={start} onChange={(e) => setStart(e.target.value)} className={field} placeholder="Immediate / 30 days" />
-                </div>
-                <div>
-                  <label className={label} htmlFor="cash">Cash expectation (optional)</label>
-                  <input id="cash" value={cash} onChange={(e) => setCash(e.target.value)} className={field} placeholder="After first revenue" />
-                </div>
-              </div>
-              <div>
-                <label className={label} htmlFor="shipped">What you shipped (proof)</label>
-                <textarea id="shipped" required minLength={20} rows={4} value={shipped} onChange={(e) => setShipped(e.target.value)} className={`${field} h-auto py-3`} placeholder="One or two products or P&Ls you personally owned. Numbers, not slogans." />
-              </div>
-              <div>
-                <label className={label} htmlFor="ninety">What you will own in 90 days</label>
-                <textarea id="ninety" required minLength={20} rows={4} value={ninety} onChange={(e) => setNinety(e.target.value)} className={`${field} h-auto py-3`} placeholder="Three outcomes. Be specific to this seat." />
-              </div>
-              <div>
-                <label className={label} htmlFor="why">Why this seat — not another</label>
-                <textarea id="why" required minLength={20} rows={3} value={whySeat} onChange={(e) => setWhySeat(e.target.value)} className={`${field} h-auto py-3`} placeholder="Why Logic Intelligence Technologies. Why now." />
-              </div>
-              <div>
-                <label className={label} htmlFor="heard">How you found this page</label>
-                <input id="heard" value={heard} onChange={(e) => setHeard(e.target.value)} className={field} placeholder="LinkedIn / referral / /ai" />
-              </div>
-              <label className="flex items-center justify-center h-12 rounded-xl border border-dashed border-white/25 text-sm text-zinc-400 cursor-pointer hover:bg-white/5">
-                {cv ? cv.name : "CV — PDF, optional, 2 MB"}
-                <input type="file" accept=".pdf,application/pdf" className="hidden" onChange={(e) => onCv(e.target.files?.[0])} />
-              </label>
-              {err && <p className="text-sm text-red-300">{err}</p>}
-              <button type="submit" disabled={busy} className="h-12 rounded-xl bg-primary text-black font-bold uppercase tracking-[0.14em]">{busy ? "Sending…" : "Submit application"}</button>
-            </form>
-          )}
+              ) : (
+                <form onSubmit={submit} className="grid gap-6">
+                  <div>
+                    <p className={label}>Choose the seat</p>
+                    <div className="grid sm:grid-cols-2 gap-2.5">
+                      {seats.filter((s) => s.open).map((s) => (
+                        <button
+                          key={s.id}
+                          type="button"
+                          onClick={() => setSeat(s.id)}
+                          className={`text-left rounded-2xl border px-4 py-3 transition ${
+                            seat === s.id
+                              ? "border-cyan-400/60 bg-cyan-400/15 shadow-[0_0_24px_rgba(34,211,238,0.15)]"
+                              : "border-white/12 bg-white/[0.04] hover:bg-white/[0.07]"
+                          }`}
+                        >
+                          <span className="block text-[13px] font-black tracking-tight">{s.t}</span>
+                          <span className="block text-[11px] text-zinc-400 mt-0.5">{s.salary}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">1 · Identity</p>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className={label} htmlFor="name">Full name</label>
+                        <input id="name" required value={name} onChange={(e) => setName(e.target.value)} className={field} placeholder="The name you use professionally" />
+                      </div>
+                      <div>
+                        <label className={label} htmlFor="email">Work email</label>
+                        <input id="email" required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={field} placeholder="you@company.com" />
+                        <p className={hint}>Confirmation is sent here.</p>
+                      </div>
+                      <div>
+                        <label className={label} htmlFor="phone">WhatsApp number</label>
+                        <input id="phone" required value={phone} onChange={(e) => setPhone(e.target.value)} className={field} placeholder="+91" />
+                      </div>
+                      <div>
+                        <label className={label} htmlFor="city">City & relocation</label>
+                        <input id="city" required value={city} onChange={(e) => setCity(e.target.value)} className={field} placeholder="Coimbatore — or willing to relocate" />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className={label} htmlFor="linkedin">LinkedIn</label>
+                        <input id="linkedin" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} className={field} placeholder="https://www.linkedin.com/in/your-name" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">2 · Where you are now</p>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className={label} htmlFor="role">Current role & company</label>
+                        <input id="role" required value={currentRole} onChange={(e) => setCurrentRole(e.target.value)} className={field} placeholder="Head of Operations, Studio X" />
+                      </div>
+                      <div>
+                        <label className={label} htmlFor="years">Years owning this function</label>
+                        <input id="years" required value={years} onChange={(e) => setYears(e.target.value)} className={field} placeholder="8" />
+                      </div>
+                      <div>
+                        <label className={label} htmlFor="start">Earliest start date</label>
+                        <input id="start" required value={start} onChange={(e) => setStart(e.target.value)} className={field} placeholder="Immediate / 30 days notice" />
+                      </div>
+                      <div>
+                        <label className={label} htmlFor="cash">Cash after first revenue</label>
+                        <input id="cash" value={cash} onChange={(e) => setCash(e.target.value)} className={field} placeholder="Optional — we are cash-light until revenue" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">3 · Proof — this is the interview</p>
+                    <div className="grid gap-4">
+                      <div>
+                        <label className={label} htmlFor="shipped">What you personally shipped</label>
+                        <textarea id="shipped" required minLength={20} rows={4} value={shipped} onChange={(e) => setShipped(e.target.value)} className={area} placeholder="One or two products, P&Ls, or teams you owned. Revenue, uptime, headcount — numbers, not slogans." />
+                        <p className={hint}>If we cannot see the outcome, we will not call.</p>
+                      </div>
+                      <div>
+                        <label className={label} htmlFor="ninety">Your first 90 days in this seat</label>
+                        <textarea id="ninety" required minLength={20} rows={4} value={ninety} onChange={(e) => setNinety(e.target.value)} className={area} placeholder="Three outcomes you will own. Be specific to the seat you chose." />
+                      </div>
+                      <div>
+                        <label className={label} htmlFor="why">Why this seat — and why us</label>
+                        <textarea id="why" required minLength={20} rows={3} value={whySeat} onChange={(e) => setWhySeat(e.target.value)} className={area} placeholder="Why Logic Intelligence Technologies. Why Coimbatore. Why now — not later." />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200/90 mb-3">4 · Attachments</p>
+                    <div className="grid gap-4">
+                      <div>
+                        <label className={label} htmlFor="heard">How you found this page</label>
+                        <input id="heard" value={heard} onChange={(e) => setHeard(e.target.value)} className={field} placeholder="LinkedIn, referral, Logic AI, Instagram…" />
+                      </div>
+                      <label className="flex flex-col items-center justify-center gap-2 min-h-[92px] rounded-2xl border border-dashed border-white/25 bg-white/[0.04] text-sm text-zinc-300 cursor-pointer hover:bg-white/[0.07] transition px-4 py-5">
+                        <Upload className="w-5 h-5 text-cyan-300" />
+                        <span className="font-semibold">{cv ? cv.name : "Drop your CV — PDF, optional, 2 MB"}</span>
+                        <span className="text-[12px] text-zinc-500">A short artefact of work beats a ten-page résumé.</span>
+                        <input type="file" accept=".pdf,application/pdf" className="hidden" onChange={(e) => onCv(e.target.files?.[0])} />
+                      </label>
+                    </div>
+                  </div>
+
+                  {err && <p className="text-sm text-red-300">{err}</p>}
+                  <button type="submit" disabled={busy} className="h-14 rounded-2xl bg-primary text-black font-black uppercase tracking-[0.16em] text-sm shadow-[0_12px_40px_rgba(0,191,255,0.35)] hover:brightness-110 disabled:opacity-60">
+                    {busy ? "Sending…" : "Submit confidential application"}
+                  </button>
+                  <p className="text-center text-[12px] text-zinc-500">By submitting you agree we may email and WhatsApp you about this seat only.</p>
+                </form>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
