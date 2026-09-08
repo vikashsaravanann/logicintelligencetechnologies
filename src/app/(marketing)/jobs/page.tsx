@@ -30,7 +30,7 @@ export default function JobsPage() {
           </p>
           <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[1.05] max-w-3xl mb-5 uppercase">
             Own a function.
-            <span className="block text-zinc-300 font-semibold text-xl sm:text-2xl mt-3 tracking-tight">Not a title you buy.</span>
+            <span className="block text-zinc-300 font-semibold text-xl sm:text-2xl mt-3 tracking-tight uppercase">Not a title you buy.</span>
           </h1>
           <p className="text-zinc-300 text-sm sm:text-base max-w-2xl leading-relaxed">
             Four leadership seats are open next to the founder. Bootstrapped studio shipping

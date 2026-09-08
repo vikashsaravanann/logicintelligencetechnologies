@@ -239,31 +239,36 @@ export default function JobsClient() {
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-8">
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">Open seats</p>
-        <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tight">Four chairs. One founder.<br className="hidden sm:block" /> No purchased titles.</h2>
+        <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tight uppercase">Four chairs. One founder.<br className="hidden sm:block" /> No purchased titles.</h2>
         <p className="text-base sm:text-lg text-zinc-300 max-w-3xl leading-relaxed">
           Each seat owns a function. You apply for one. We email you a confirmation the moment the form lands in our CRM. Cash is modest until revenue. Equity vests. If you want a visiting card for a cheque, stop here.
         </p>
       </section>
 
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-10">
-        <article className="rounded-[28px] overflow-hidden border border-cyan-400/25 bg-white/[0.04] backdrop-blur-xl grid lg:grid-cols-2">
-          <div className="relative min-h-[220px] lg:min-h-full aspect-[16/10] lg:aspect-auto">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={featured.cover} alt="" className="absolute inset-0 w-full h-full object-cover" />
-            <span className="absolute top-4 left-4 text-[10px] font-black uppercase tracking-[0.16em] rounded-full border border-cyan-300/40 bg-black/55 px-3 py-1 text-cyan-200">Hiring · Featured</span>
-          </div>
-          <div className="p-6 sm:p-10 flex flex-col bg-[#0A0F1E]/92">
-            <h3 className="text-2xl sm:text-3xl font-black mb-3 tracking-tight">{featured.t}</h3>
-            <p className="text-base text-zinc-200 leading-relaxed mb-4">{featured.d}</p>
-            <p className="text-sm text-zinc-400 mb-3">{featured.who}</p>
-            <p className="text-sm text-zinc-400 mb-5">{featured.extra}</p>
-            <p className="text-sm text-cyan-200/90 mb-5">{featured.salary} · {featured.equity}</p>
-            <ul className="grid gap-2 text-sm text-zinc-200 mb-8">
-              {featured.days.map((d) => (
-                <li key={d} className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">90 days · {d}</li>
-              ))}
-            </ul>
-            <button type="button" onClick={() => goApply("ceo")} className="mt-auto h-12 px-6 rounded-xl bg-primary text-black font-bold text-sm uppercase tracking-[0.12em]">Apply for CEO</button>
+        <article className="relative isolate overflow-hidden rounded-[28px] border border-cyan-400/25 min-h-[420px] sm:min-h-[480px] lg:min-h-[520px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={featured.cover}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/80 to-[#0A0F1E]/20 lg:bg-gradient-to-r lg:from-transparent lg:via-[#0A0F1E]/55 lg:to-[#0A0F1E]" />
+          <span className="absolute top-4 left-4 z-10 text-[10px] font-black uppercase tracking-[0.16em] rounded-full border border-cyan-300/40 bg-black/55 px-3 py-1 text-cyan-200">Hiring · Featured</span>
+          <div className="relative z-10 flex min-h-[420px] sm:min-h-[480px] lg:min-h-[520px] items-end lg:items-stretch">
+            <div className="w-full lg:ml-auto lg:w-[52%] p-6 sm:p-10 flex flex-col justify-center">
+              <h3 className="text-2xl sm:text-3xl font-black mb-3 tracking-tight uppercase">{featured.t}</h3>
+              <p className="text-base text-zinc-200 leading-relaxed mb-4">{featured.d}</p>
+              <p className="text-sm text-zinc-300 mb-3">{featured.who}</p>
+              <p className="text-sm text-zinc-300 mb-5">{featured.extra}</p>
+              <p className="text-sm text-cyan-200 mb-5 uppercase tracking-wide">{featured.salary} · {featured.equity}</p>
+              <ul className="grid gap-2 text-sm text-zinc-200 mb-8">
+                {featured.days.map((d) => (
+                  <li key={d} className="rounded-xl border border-white/10 bg-black/35 backdrop-blur-sm px-4 py-3 uppercase tracking-wide text-[12px]">{d}</li>
+                ))}
+              </ul>
+              <button type="button" onClick={() => goApply("ceo")} className="h-12 px-6 rounded-xl bg-primary text-black font-bold text-sm uppercase tracking-[0.12em] w-full sm:w-auto">Apply for CEO</button>
+            </div>
           </div>
         </article>
       </section>
@@ -277,7 +282,7 @@ export default function JobsClient() {
               <span className="absolute top-3 left-3 text-[9px] font-black uppercase tracking-[0.16em] rounded-full bg-black/55 border border-white/15 px-2.5 py-1 text-cyan-200">Hiring</span>
             </div>
             <div className="relative z-10 p-6 flex flex-col gap-3 flex-1 bg-[#0A0F1E]/95">
-              <h3 className="text-lg font-black tracking-tight">{s.t}</h3>
+              <h3 className="text-lg font-black tracking-tight uppercase">{s.t}</h3>
               <p className="text-sm text-zinc-200 leading-relaxed">{s.d}</p>
               <p className="text-sm text-zinc-400">{s.who}</p>
               <p className="text-sm text-zinc-400">{s.extra}</p>
@@ -345,7 +350,7 @@ export default function JobsClient() {
               <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 mb-4">
                 <Lock className="w-3.5 h-3.5" /> Confidential
               </p>
-              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-3">Join the leadership table</h2>
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-3 uppercase">Join the leadership table</h2>
               <p className="text-[15px] text-zinc-300 leading-relaxed mb-6">
                 Four open seats. One founder. If you have already shipped a function — operations, engineering, sales, or AI — this is the form. Titles are not for sale. The trial is six months. The first ninety days are in Coimbatore.
               </p>
