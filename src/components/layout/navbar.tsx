@@ -32,11 +32,11 @@ const NavLink = ({ href, children, onHover }: { href: string; children: React.Re
   return (
     <Link 
       href={href} 
-      className={`inline-flex flex-col items-center justify-center gap-2 min-h-[44px] py-2 px-1.5 xl:px-2.5 text-[13px] xl:text-[15px] 2xl:text-base font-bold tracking-[0.08em] transition-colors whitespace-nowrap shrink-0 ${isActive(href) ? "text-primary" : "text-zinc-200 hover:text-primary"}`}
+      className={`inline-flex flex-col items-center justify-center gap-1.5 py-1 px-0.5 xl:px-1 text-[10px] xl:text-[11px] font-semibold tracking-[0.1em] transition-colors whitespace-nowrap shrink-0 ${isActive(href) ? "text-primary" : "text-zinc-300 hover:text-primary"}`}
       onMouseEnter={onHover}
     >
       <span className="inline-flex items-center gap-1 leading-none">{children}</span>
-      <span className="relative h-2 w-2 shrink-0">
+      <span className="relative h-1.5 w-1.5 shrink-0">
         {isActive(href) && (
           <motion.div layoutId="activeNav" className="absolute inset-0 rounded-full bg-primary" />
         )}
@@ -122,17 +122,17 @@ export default function Navbar() {
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 100, damping: 10 }}
-                className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-[0_0_15px_rgba(0,191,255,0.4)] animate-neon-pulse bg-gradient-to-tr from-primary to-accent"
+                className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-[0_0_15px_rgba(0,191,255,0.4)] animate-neon-pulse bg-gradient-to-tr from-primary to-accent"
               >
                 <img src={COMPANY.logoIconPath} alt="Logo" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement!.innerHTML = '<span class="font-bold text-lg text-white">LIT</span>'; }} />
               </motion.div>
-              <span className="text-sm font-bold text-white tracking-wide leading-none whitespace-nowrap hidden 2xl:inline truncate max-w-none">
+              <span className="text-[11px] font-bold text-white tracking-wide leading-none whitespace-nowrap hidden xl:inline truncate max-w-[14rem] 2xl:max-w-none">
                 {COMPANY.displayName.toUpperCase()}
               </span>
             </Link>
 
             {/* Desktop Links — middle column minmax(0,1fr) so it cannot paint over CTAs */}
-            <div className="hidden lg:flex items-center justify-center gap-x-3 xl:gap-x-4 2xl:gap-x-5 gap-y-1 min-w-0 flex-wrap">
+            <div className="hidden lg:flex items-center justify-center gap-x-2 xl:gap-x-2.5 gap-y-1 min-w-0 flex-wrap">
               <NavLink href="/">HOME</NavLink>
               <NavLink href="/ai">AI</NavLink>
               <NavLink href="/#services">SERVICES</NavLink>
@@ -141,7 +141,7 @@ export default function Navbar() {
               {/* Packages Dropdown */}
               <div className="relative group" onMouseEnter={() => handleMouseEnter('packages')} onMouseLeave={handleMouseLeave}>
                 <NavLink href="/packages" onHover={() => handleMouseEnter('packages')}>
-                  PACKAGES <ChevronDown className="w-4 h-4 xl:w-5 xl:h-5" />
+                  PACKAGES <ChevronDown className="w-3.5 h-3.5" />
                 </NavLink>
                 <AnimatePresence>
                   {activeDropdown === 'packages' && (
