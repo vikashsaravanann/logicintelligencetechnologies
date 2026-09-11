@@ -1,4 +1,6 @@
 import { Metadata } from 'next';
+import JsonLd from "@/components/seo/json-ld";
+import { SITE, breadcrumb, faqPage, packageOffers, PACKAGES_FAQ } from "@/lib/seo/schema";
 import FloatingElements from "@/components/motion/floating-elements";
 import PackagesSection from "@/features/home/components/packages-section";
 import Link from 'next/link';
@@ -24,6 +26,16 @@ export const metadata: Metadata = {
 export default function PackagesAndServicesPage() {
   return (
     <main className="min-h-screen bg-[#0A0F1E] text-white pt-20">
+      <JsonLd
+        data={[
+          breadcrumb([
+            { name: "Home", path: "/" },
+            { name: "Packages", path: "/packages" },
+          ]),
+          packageOffers(),
+          faqPage(`${SITE}/packages`, PACKAGES_FAQ),
+        ]}
+      />
       <section className="relative overflow-hidden">
         <PageBackdrop src="/assets/jobs/studio-hero.jpg" />
         <div className="relative z-10">
