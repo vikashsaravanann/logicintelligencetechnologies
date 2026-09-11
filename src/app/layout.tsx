@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { COMPANY } from '@/config/company';
+import { organizationNode, websiteNode } from '@/lib/seo/schema';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -41,6 +42,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.logicintelligencetechnologies.in'
   ),
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_IN',
@@ -95,16 +99,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Organization",
-              name: COMPANY.legalName,
-              url: COMPANY.websiteUrl,
-              logo: "https://www.logicintelligencetechnologies.in/icon-192.png",
-              image: "https://www.logicintelligencetechnologies.in/icon.png",
-              sameAs: [
-                COMPANY.linkedinUrl,
-                COMPANY.instagramUrl,
-                COMPANY.facebookUrl,
-              ],
+              "@graph": [organizationNode(), websiteNode()],
             }),
           }}
         />

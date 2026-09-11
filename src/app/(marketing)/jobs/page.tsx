@@ -3,6 +3,8 @@ import Image from "next/image";
 import BackToHome from "@/components/ui/back-to-home";
 import { COMPANY } from "@/config/company";
 import JobsClient from "./jobs-client";
+import JsonLd from "@/components/seo/json-ld";
+import { SITE, breadcrumb, faqPage, jobPostings, JOBS_FAQ } from "@/lib/seo/schema";
 
 export const metadata: Metadata = {
   title: "Leadership Jobs — CEO and Directors",
@@ -13,6 +15,16 @@ export const metadata: Metadata = {
 export default function JobsPage() {
   return (
     <main className="min-h-screen bg-[#0A0F1E] text-white">
+      <JsonLd
+        data={[
+          breadcrumb([
+            { name: "Home", path: "/" },
+            { name: "Jobs", path: "/jobs" },
+          ]),
+          faqPage(`${SITE}/jobs`, JOBS_FAQ),
+          ...jobPostings(),
+        ]}
+      />
       <BackToHome />
       <section className="relative min-h-[70vh] sm:min-h-[78vh] flex items-end overflow-hidden pt-24">
         <Image
