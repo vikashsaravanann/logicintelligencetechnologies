@@ -1,11 +1,11 @@
 type JsonLdProps = {
-  data: Record<string, unknown> | Record<string, unknown>[];
+  data: object | object[];
 };
 
 export default function JsonLd({ data }: JsonLdProps) {
   const payload = Array.isArray(data)
     ? { "@context": "https://schema.org", "@graph": data }
-    : { "@context": "https://schema.org", ...data };
+    : { "@context": "https://schema.org", ...(data as Record<string, unknown>) };
 
   return (
     <script
