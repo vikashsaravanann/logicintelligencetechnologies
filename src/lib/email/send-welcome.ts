@@ -1,8 +1,11 @@
 import "server-only";
+import * as React from "react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendEmail } from "./send-email";
 import WelcomeEmail from "@/emails/welcome-email";
-import * as React from "react";
+import { isSupabaseLive } from "./config";
+import { isValidEmail, normalizeEmail, sanitizePersonName } from "./validation";
+import { emailLog, maskEmail } from "./logger";
 
 interface EnsureWelcomeOptions {
   userId?: string;
@@ -11,48 +14,71 @@ interface EnsureWelcomeOptions {
   avatarUrl?: string | null;
 }
 
-/**
- * Idempotent welcome email.
- * Guarded by profiles.welcome_email_sent_at (actual schema column).
- */
 export async function ensureWelcomeEmail({
   userId,
   email,
   fullName,
 }: EnsureWelcomeOptions) {
-  const cleanEmail = (email || "").trim().toLowerCase();
-  if (!cleanEmail || !cleanEmail.includes("@")) {
+  const cleanEmail = normalizeEmail(email);
+  if (!isValidEmail(cleanEmail)) {
     return { success: false, message: "Invalid email address", alreadySent: false };
   }
+  const safeName = sanitizePersonName(fullName || "") || null;
 
   try {
-    if (userId) {
-      const { data: existing } = await supabaseAdmin
+    if (userId && isSupabaseLive()) {
+      const { data: claimed, error } = await supabaseAdmin
         .from("profiles")
-        .select("welcome_email_sent_at")
+        .update({ welcome_email_sent_at: new Date().toISOString() })
         .eq("id", userId)
+        .is("welcome_email_sent_at", null)
+        .select("id")
         .maybeSingle();
 
-      if (existing?.welcome_email_sent_at) {
-        return {
-          success: true,
-          message: "Welcome email already sent",
-          alreadySent: true,
-        };
+      if (error) {
+        emailLog("warn", "welcome_claim_failed", {
+          message: error.message?.slice(0, 180),
+        });
+      } else if (!claimed) {
+        const { data: existing } = await supabaseAdmin
+          .from("profiles")
+          .select("welcome_email_sent_at")
+          .eq("id", userId)
+          .maybeSingle();
+        if (existing?.welcome_email_sent_at) {
+          return {
+            success: true,
+            message: "Welcome email already sent",
+            alreadySent: true,
+          };
+        }
       }
     }
 
     const emailResult = await sendEmail({
       to: cleanEmail,
       from: "noReply",
-      subject: "Welcome to Logic Intelligence Technologies!",
+      subject: "Welcome to Logic Intelligence Technologies",
+      category: "transactional",
+      eventType: "welcome",
+      templateKey: "welcome-email",
+      idempotencyKey: userId ? `welcome:${userId}` : `welcome-email:${cleanEmail}`,
       react: React.createElement(WelcomeEmail, {
-        email: fullName || cleanEmail,
+        email: safeName || cleanEmail,
       }),
     });
 
     if (!emailResult.success) {
-      console.error("[Email Error] Welcome email failed:", emailResult.message);
+      emailLog("error", "welcome_send_failed", {
+        recipient: maskEmail(cleanEmail),
+        message: emailResult.message,
+      });
+      if (userId && isSupabaseLive()) {
+        await supabaseAdmin
+          .from("profiles")
+          .update({ welcome_email_sent_at: null })
+          .eq("id", userId);
+      }
       return {
         success: false,
         message: emailResult.message,
@@ -60,28 +86,19 @@ export async function ensureWelcomeEmail({
       };
     }
 
-    // Mark sent — only columns that exist on public.profiles
-    if (userId) {
-      const { error } = await supabaseAdmin.from("profiles").upsert(
-        {
-          id: userId,
-          full_name: fullName || null,
-          welcome_email_sent_at: new Date().toISOString(),
-        },
-        { onConflict: "id" }
-      );
-      if (error) {
-        console.error("[DB Error] Failed to mark welcome_email_sent_at:", error);
-      }
+    if (emailResult.skipped && emailResult.message === "Already sent") {
+      return { success: true, message: "Welcome email already sent", alreadySent: true };
     }
 
     return {
       success: true,
-      message: "Welcome email sent successfully",
-      alreadySent: false,
+      message: "Welcome email queued",
+      alreadySent: Boolean(emailResult.skipped),
     };
   } catch (error) {
-    console.error("ensureWelcomeEmail Error:", error);
+    emailLog("error", "welcome_exception", {
+      message: error instanceof Error ? error.message : String(error),
+    });
     return {
       success: false,
       message: "Internal server error",

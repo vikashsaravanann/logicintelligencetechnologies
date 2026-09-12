@@ -1,22 +1,23 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-  // Public
   NEXT_PUBLIC_SUPABASE_URL: z.string().min(1, "Supabase URL is required"),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, "Supabase Anon Key is required"),
-  NEXT_PUBLIC_SITE_URL: z.string().optional().default("https://www.logicintelligencetechnologies.in"),
-
-  // Secrets
+  NEXT_PUBLIC_SITE_URL: z
+    .string()
+    .optional()
+    .default("https://www.logicintelligencetechnologies.in"),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
   SUPABASE_WEBHOOK_SECRET: z.string().optional(),
-  LEAD_NOTIFICATION_EMAIL: z.string().optional().default("support@logicintelligencetechnologies.in"),
-  
-  // Redis (Optional)
+  LEAD_NOTIFICATION_EMAIL: z
+    .string()
+    .optional()
+    .default("support@logicintelligencetechnologies.in"),
   UPSTASH_REDIS_REST_URL: z.string().optional(),
   UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 });
 
-const _env = envSchema.safeParse({
+const parsed = envSchema.safeParse({
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
@@ -27,19 +28,32 @@ const _env = envSchema.safeParse({
   UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
-if (!_env.success) {
+if (!parsed.success) {
   console.error(
-    "❌ Invalid or missing environment variables:",
-    _env.error.flatten().fieldErrors
+    "Invalid or missing public environment variables:",
+    parsed.error.flatten().fieldErrors
   );
-  // Do not throw an error during Vercel build so the deployment doesn't fail
   if (process.env.VERCEL) {
-    console.warn("⚠️ Bypassing environment variable crash for Vercel build.");
+    console.warn("Public env validation failed during Vercel build; runtime checks still apply.");
   }
 }
 
-export const env = _env.success ? _env.data : {
+const PLACEHOLDER = {
   NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co",
   NEXT_PUBLIC_SUPABASE_ANON_KEY: "placeholder",
   NEXT_PUBLIC_SITE_URL: "https://www.logicintelligencetechnologies.in",
-} as any;
+  SUPABASE_SERVICE_ROLE_KEY: undefined,
+  SUPABASE_WEBHOOK_SECRET: undefined,
+  LEAD_NOTIFICATION_EMAIL: "support@logicintelligencetechnologies.in",
+  UPSTASH_REDIS_REST_URL: undefined,
+  UPSTASH_REDIS_REST_TOKEN: undefined,
+} as const;
+
+export const env = parsed.success ? parsed.data : PLACEHOLDER;
+
+export function isPublicEnvLive(): boolean {
+  return (
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
+    !String(process.env.NEXT_PUBLIC_SUPABASE_URL).includes("placeholder")
+  );
+}

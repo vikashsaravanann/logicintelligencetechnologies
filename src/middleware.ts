@@ -1,31 +1,34 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+function isCompanyEmail(email: string): boolean {
+  return email.toLowerCase().endsWith("@logicintelligencetechnologies.in");
+}
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });
-  
+
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
-  // If going to dashboard without a session, redirect to login
-  if (req.nextUrl.pathname.startsWith('/dashboard')) {
+  const path = req.nextUrl.pathname;
+
+  if (path.startsWith("/dashboard") || path.startsWith("/admin")) {
     if (!session) {
-      return NextResponse.redirect(new URL('/login', req.url));
+      return NextResponse.redirect(new URL("/login", req.url));
     }
-    // Check for admin domain
-    const email = session.user.email || '';
-    if (!email.endsWith('@logicintelligencetechnologies.in')) {
-      return NextResponse.redirect(new URL('/profile', req.url));
+    const email = session.user.email || "";
+    if (!isCompanyEmail(email)) {
+      return NextResponse.redirect(new URL("/profile", req.url));
     }
   }
 
-  // If going to profile without a session, redirect to login
-  if (req.nextUrl.pathname.startsWith('/profile')) {
+  if (path.startsWith("/profile")) {
     if (!session) {
-      return NextResponse.redirect(new URL('/login', req.url));
+      return NextResponse.redirect(new URL("/login", req.url));
     }
   }
 
@@ -33,5 +36,12 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/profile/:path*'],
+  matcher: [
+    "/dashboard",
+    "/dashboard/:path*",
+    "/profile",
+    "/profile/:path*",
+    "/admin",
+    "/admin/:path*",
+  ],
 };
