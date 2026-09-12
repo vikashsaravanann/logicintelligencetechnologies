@@ -122,21 +122,19 @@ export function getSmtpFromAddress(sender: SenderKey = "noReply"): string {
   return `"${COMPANY.displayName}" <${COMPANY.emails[sender]}>`;
 }
 
-export function isSmtpConfigured(sender: SenderKey = "noReply"): boolean {
+export function hasSenderCredentials(sender: SenderKey): boolean {
   try {
     getSmtpConfig(sender);
     return true;
   } catch {
-    if (sender !== "noReply") {
-      try {
-        getSmtpConfig("noReply");
-        return true;
-      } catch {
-        return false;
-      }
-    }
     return false;
   }
+}
+
+export function isSmtpConfigured(sender: SenderKey = "noReply"): boolean {
+  if (hasSenderCredentials(sender)) return true;
+  if (sender !== "noReply") return hasSenderCredentials("noReply");
+  return false;
 }
 
 export function resolveSender(sender: SenderKey): SenderKey {
