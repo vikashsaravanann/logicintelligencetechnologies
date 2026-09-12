@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     let subject = "";
     let fromAddress: "noReply" | "hello" | "admin" | "vikash" | "support" = "hello";
     let replyToAddress: string | undefined = undefined;
-    let eventType = type;
+    const eventType = type;
     const site = COMPANY.websiteUrl;
 
     switch (type) {
