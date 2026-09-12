@@ -3,12 +3,14 @@ import * as React from "react";
 
 const LOGO_URL =
   "https://www.logicintelligencetechnologies.in/assets/logo.jpg";
+const BANNER_URL =
+  "https://www.logicintelligencetechnologies.in/assets/og-banner.jpg";
 
 export const EmailHeader = () => {
   return (
     <Section style={header}>
       <Row>
-        <Column style={{ width: "56px", verticalAlign: "middle" }}>
+        <Column style={{ width: "50%", verticalAlign: "middle", textAlign: "left" }}>
           <Img
             src={LOGO_URL}
             alt="Logic Intelligence Technologies"
@@ -17,17 +19,23 @@ export const EmailHeader = () => {
             style={logo}
           />
         </Column>
-        <Column style={{ verticalAlign: "middle", paddingLeft: "12px" }}>
-          <Text style={brand}>Logic Intelligence Technologies</Text>
-          <Text style={tagline}>Web · AI · Production software</Text>
+        <Column style={{ width: "50%", verticalAlign: "middle", textAlign: "right" }}>
+          <Img
+            src={BANNER_URL}
+            alt="Logic Intelligence Technologies"
+            width="160"
+            height="48"
+            style={banner}
+          />
         </Column>
       </Row>
+      <Text style={brandFallback}>Logic Intelligence Technologies</Text>
     </Section>
   );
 };
 
 const header = {
-  padding: "28px 36px 20px 36px",
+  padding: "20px 28px 16px 28px",
   backgroundColor: "#0A0F1E",
   borderBottom: "1px solid rgba(0,191,255,0.25)",
 };
@@ -38,16 +46,19 @@ const logo = {
   border: "2px solid rgba(0,191,255,0.45)",
 };
 
-const brand = {
-  margin: "0",
-  color: "#ffffff",
-  fontSize: "15px",
-  fontWeight: 700,
-  letterSpacing: "0.02em",
+const banner = {
+  display: "block",
+  marginLeft: "auto",
+  maxWidth: "160px",
+  height: "48px",
+  objectFit: "cover" as const,
+  borderRadius: "8px",
 };
 
-const tagline = {
-  margin: "4px 0 0 0",
+const brandFallback = {
+  margin: "10px 0 0 0",
   color: "#94a3b8",
-  fontSize: "12px",
+  fontSize: "11px",
+  letterSpacing: "0.04em",
+  textTransform: "uppercase" as const,
 };

@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test src/lib/email/*.test.ts",
     "eval:rag": "node scripts/eval-rag-golden.mjs",
     "seed:knowledge": "node scripts/seed-knowledge.mjs",
     "backfill:embeddings": "node scripts/backfill-embeddings.mjs"

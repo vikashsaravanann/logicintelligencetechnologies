@@ -1,0 +1,21 @@
+name: email-tests
+
+on:
+  pull_request:
+  push:
+    paths:
+      - "src/lib/email/**"
+      - "emails/**"
+      - "src/app/api/**"
+      - ".github/workflows/email-tests.yml"
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Email unit tests
+        run: node --experimental-strip-types --test src/lib/email/*.test.ts

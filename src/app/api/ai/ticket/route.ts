@@ -6,6 +6,8 @@ import { sendEmail } from "@/lib/email/send-email";
 import NewLeadNotificationEmail from "@/emails/new-lead-notification-email";
 import { env } from "@/config/env";
 import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
+import { getLeadNotificationRecipients } from "@/lib/email/recipients";
+import { isValidEmail, sanitizeMultilineText, sanitizePersonName } from "@/lib/email/validation";
 import * as React from "react";
 
 export const runtime = "nodejs";
@@ -17,10 +19,13 @@ export async function POST(request: Request) {
   }
   try {
     const body = await request.json();
-    const name = String(body.name || "Website visitor").trim().slice(0, 80);
+    const name = sanitizePersonName(String(body.name || "Website visitor"), 80);
     const email = String(body.email || "").trim().toLowerCase();
-    const summary = String(body.summary || body.transcript || "Asked to talk to a human from Logic AI.").slice(0, 4000);
-    if (!email.includes("@")) {
+    const summary = sanitizeMultilineText(
+      String(body.summary || body.transcript || "Asked to talk to a human from Logic AI."),
+      4000
+    );
+    if (!isValidEmail(email)) {
       return NextResponse.json({ ok: false, error: "Email is required so we can reply." }, { status: 400 });
     }
 
@@ -54,10 +59,14 @@ export async function POST(request: Request) {
     }
 
     await sendEmail({
-      to: ["support@logicintelligencetechnologies.in", "vikash@logicintelligencetechnologies.in"],
+      to: getLeadNotificationRecipients(),
       from: "noReply",
       replyTo: email,
       subject: `Human handoff: ${name}`,
+      category: "transactional",
+      eventType: "ai-handoff",
+      templateKey: "new-lead-notification-email",
+      idempotencyKey: `ai-handoff:${email}:${new Date().toISOString().slice(0, 13)}`,
       react: React.createElement(NewLeadNotificationEmail, {
         fullName: name,
         companyName: "",

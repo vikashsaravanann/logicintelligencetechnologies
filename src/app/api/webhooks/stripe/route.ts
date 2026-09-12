@@ -64,8 +64,12 @@ export async function POST(req: NextRequest) {
         // Send payment received email
         await sendEmail({
           to: invoice.client_email,
-          subject: `Payment Received for ${invoiceNumber}`,
+          subject: `Payment received for ${invoiceNumber}`,
           from: "vikash",
+          category: "transactional",
+          eventType: "payment-received",
+          templateKey: "payment-received-email",
+          idempotencyKey: `payment-received:${session.id}`,
           react: React.createElement(PaymentReceivedEmail, {
             fullName: invoice.client_name,
             amount: `₹${amountPaid.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`,

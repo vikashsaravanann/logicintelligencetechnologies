@@ -1,29 +1,40 @@
-# Definitive Email Infrastructure
+# Email infrastructure
 
-Logic Intelligence Technologies uses **Zoho SMTP** with **Nodemailer** for all transactional emails.
-Resend and Gmail are NOT used.
+Logic Intelligence Technologies sends mail through **Zoho SMTP** (`smtp.zoho.in`) with **Nodemailer**. Resend, SendGrid, Postmark, SES, and Gmail are not used.
 
-## Active Mailboxes & Envs
-- no-reply@logicintelligencetechnologies.in -> \`SMTP_NOREPLY_PASS\`
-- hello@logicintelligencetechnologies.in -> \`SMTP_HELLO_PASS\`
-- admin@logicintelligencetechnologies.in -> \`SMTP_ADMIN_PASS\`
-- support@logicintelligencetechnologies.in -> \`SMTP_SUPPORT_PASS\`
-- vikash@logicintelligencetechnologies.in -> \`SMTP_VIKASH_PASS\`
+Canonical sender: `src/lib/email/send-email.ts`. Routes must not create their own transporters.
 
-## Fallback Env
-- \`SMTP_PASS\`
-- \`SMTP_USER\`
-- \`SMTP_HOST\` (smtp.zoho.in)
-- \`SMTP_PORT\` (587)
+## Mailboxes
 
-## Code Architecture
-- \`src/lib/email/send-email.ts\`: Exposes \`sendEmail()\` which automatically routes to the correct SMTP transporter based on the \`from\` property.
-- \`src/lib/email/smtp.ts\`: Initializes transporters and configures mock fallback when variables are missing.
-- \`src/emails/*\`: Contains all the \`@react-email/components\` React templates.
+Configured via per-sender env vars (`SMTP_<NAME>_HOST/PORT/USER/PASS/FROM`):
 
-## Triggers
-1. **Welcome Email**: \`src/app/api/webhooks/signup/route.ts\` (Supabase webhook on \`auth.users\` insert).
-2. **Login Notification**: \`src/app/auth/callback/route.ts\` & \`src/app/api/auth/login-notification/route.ts\`.
-3. **Contact / Demo**: \`src/app/api/contact/route.ts\` & \`src/app/api/free-demo/route.ts\`.
-4. **Checklist Download**: \`src/app/api/checklist/route.ts\`.
-5. **Weekly Recognition**: \`src/app/api/cron/weekly-recognition/route.ts\`.
+- `no-reply@logicintelligencetechnologies.in`
+- `hello@logicintelligencetechnologies.in`
+- `admin@logicintelligencetechnologies.in`
+- `support@logicintelligencetechnologies.in`
+- `vikash@logicintelligencetechnologies.in`
+
+Legacy fallback: `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`.
+
+## Delivery path
+
+```
+validate → persist business record → claim outbox (idempotency_key) → render → Zoho SMTP → status
+```
+
+If SMTP fails after a lead write, the lead is kept. API responses say **request received**, not **email sent**, unless the caller is an admin tool.
+
+## Marketing vs transactional
+
+- Transactional: contact, demo, discovery, jobs, welcome, invoices, login alert, AI handoff.
+- Marketing: weekly recognition. Suppression and unsubscribe are required.
+- Newsletter confirmation is transactional (user-initiated) but still includes List-Unsubscribe.
+
+## Operator actions
+
+1. Apply `supabase/migrations/20260912000000_email_outbox.sql`.
+2. Set `CRON_SECRET` and `EMAIL_UNSUBSCRIBE_SECRET` in Vercel.
+3. Confirm Zoho SPF/DKIM/DMARC in DNS. Values must come from the Zoho admin — they are not stored in this repository.
+4. Call `GET /api/admin/smtp-verify` with admin session or `x-cron-secret`.
+
+This file is the current architecture. Historical notes that mention Resend or GitHub Pages mail are obsolete.

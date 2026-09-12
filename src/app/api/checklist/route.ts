@@ -5,105 +5,126 @@ import ChecklistSubmissionEmail from "@/emails/checklist-submission-email";
 import LeadConfirmationEmail from "@/emails/lead-confirmation-email";
 import ChecklistDownloadEmail from "@/emails/checklist-download-email";
 import NewLeadNotificationEmail from "@/emails/new-lead-notification-email";
-import { env } from "@/config/env";
 import { z } from "zod";
 import * as React from "react";
 import path from "path";
 import fs from "fs";
+import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
+import { getLeadNotificationRecipients } from "@/lib/email/recipients";
+import { isSupabaseLive } from "@/lib/email/config";
+import { sanitizeMultilineText, sanitizePersonName } from "@/lib/email/validation";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const schema = z.object({
-  email: z.string().email("Invalid email address").optional(),
-  answers: z.array(z.string()).optional(),
-  // "lead_magnet" = /checklist free-PDF form. Absent = /discovery questionnaire.
-  type: z.string().optional(),
+  email: z.string().email("Invalid email address").max(254).optional(),
+  answers: z.array(z.string().max(2000)).max(40).optional(),
+  type: z.string().max(40).optional(),
 });
 
 export async function POST(req: Request) {
   try {
+    if (!rateLimit(`checklist:${clientIp(req)}`, 10, 15 * 60_000)) {
+      return NextResponse.json(
+        { success: false, message: "Too many requests. Please try again shortly." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const parsed = schema.safeParse(body);
-    
+
     if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: "Invalid input", errors: parsed.error.flatten() },
+        { success: false, message: "Invalid input" },
         { status: 400 }
       );
     }
-    
-    const { answers = [], email, type } = parsed.data as any;
-    const isLeadMagnet = type === "lead_magnet";
-    const displayName = email ? email.split("@")[0] : "there";
 
-    // 1. Insert into Supabase
-    if (env.NEXT_PUBLIC_SUPABASE_URL) {
+    const answers = (parsed.data.answers || []).map((item) => sanitizeMultilineText(item, 2000));
+    const email = parsed.data.email?.trim().toLowerCase();
+    const isLeadMagnet = parsed.data.type === "lead_magnet";
+    const displayName = email ? sanitizePersonName(email.split("@")[0], 80) : "there";
+
+    let leadId: string | null = null;
+    if (isSupabaseLive()) {
       try {
-        const { error: dbError } = await supabaseAdmin
+        const { data, error: dbError } = await supabaseAdmin
           .from("checklist_leads")
           .insert([
-            { 
+            {
               name: "Anonymous",
-              email: email || "unknown@example.com", 
-              company: isLeadMagnet ? "Lead Magnet" : (answers[1] || ""),
-              role: isLeadMagnet ? "Downloaded Checklist" : (answers[2] || ""),
-            }
-          ]);
-        
+              email: email || "unknown@example.com",
+              company: isLeadMagnet ? "Lead Magnet" : answers[1] || "",
+              role: isLeadMagnet ? "Downloaded Checklist" : answers[2] || "",
+            },
+          ])
+          .select("id")
+          .maybeSingle();
+
         if (dbError) {
           console.error("[DB Error] Failed to insert checklist submission:", dbError);
         }
+        leadId = data?.id || null;
       } catch (dbErr) {
         console.error("[DB Error] Checklist insert exception:", dbErr);
       }
     }
 
-    // 2. Send confirmation email to user (if they provided email)
-    // - Lead magnet (/checklist page)  -> ChecklistDownloadEmail + PDF attachment
-    // - Discovery form (/discovery page) -> LeadConfirmationEmail for the questionnaire
+    const idemBase = leadId || `${email || "anon"}:${isLeadMagnet ? "magnet" : "discovery"}:${new Date().toISOString().slice(0, 13)}`;
+
     if (email) {
       try {
-        let attachments: any[] = [];
+        const attachments: Array<{ filename: string; path: string }> = [];
         if (isLeadMagnet) {
-           const pdfPath = path.join(process.cwd(), 'public', 'checklist.pdf');
-           if (fs.existsSync(pdfPath)) {
-               attachments.push({
-                   filename: 'Website-Launch-Checklist.pdf',
-                   path: pdfPath
-               });
-           }
+          const pdfPath = path.join(process.cwd(), "public", "checklist.pdf");
+          if (fs.existsSync(pdfPath)) {
+            attachments.push({
+              filename: "Website-Launch-Checklist.pdf",
+              path: pdfPath,
+            });
+          }
         }
 
         const emailResult = await sendEmail({
           to: email,
           from: "noReply",
-          subject: isLeadMagnet ? "Your Free Website Launch Checklist (PDF Inside)" : "We received your discovery responses!",
+          subject: isLeadMagnet
+            ? "Your Website Launch Checklist"
+            : "We received your discovery responses",
+          category: "transactional",
+          eventType: isLeadMagnet ? "resource-delivery" : "discovery-confirmation",
+          templateKey: isLeadMagnet ? "checklist-download-email" : "lead-confirmation-email",
+          idempotencyKey: `${isLeadMagnet ? "resource" : "discovery"}-confirmation:${idemBase}`,
           react: isLeadMagnet
             ? React.createElement(ChecklistDownloadEmail, { fullName: displayName })
             : React.createElement(LeadConfirmationEmail, {
                 fullName: displayName,
                 service: "Project Discovery Questionnaire",
               }),
-          attachments: attachments.length > 0 ? attachments : undefined
+          attachments: attachments.length > 0 ? attachments : undefined,
         });
-      if (!emailResult.success) {
-        console.error("[Email Error] Failed to send email:", emailResult.message);
-      }
+        if (!emailResult.success) {
+          console.error("[Email Error] Failed to send email:", emailResult.message);
+        }
       } catch (emailErr) {
         console.error("[Email Error] Checklist user confirmation failed:", emailErr);
       }
     }
 
-    // 3. Send Internal Notification Email
-    // - Lead magnet  -> NewLeadNotificationEmail (checklist download)
-    // - Discovery    -> ChecklistSubmissionEmail (full answers)
     try {
       const emailResult = await sendEmail({
-        to: env.LEAD_NOTIFICATION_EMAIL,
+        to: getLeadNotificationRecipients(),
         from: "noReply",
         replyTo: email || undefined,
-        subject: isLeadMagnet ? `New Checklist Download: ${email}` : `New Discovery Questionnaire: ${email || 'Anonymous'}`,
+        subject: isLeadMagnet
+          ? `New checklist download: ${email}`
+          : `New discovery questionnaire: ${email || "Anonymous"}`,
+        category: "transactional",
+        eventType: isLeadMagnet ? "resource-internal" : "discovery-internal",
+        templateKey: isLeadMagnet ? "new-lead-notification-email" : "checklist-submission-email",
+        idempotencyKey: `${isLeadMagnet ? "resource" : "discovery"}-internal:${idemBase}`,
         react: isLeadMagnet
           ? React.createElement(NewLeadNotificationEmail, {
               fullName: displayName,
@@ -111,14 +132,15 @@ export async function POST(req: Request) {
               email: email || "Not provided",
               phone: "—",
               service: "Free Checklist Download",
-              requirements: `The visitor requested the free Website Launch Checklist PDF from the /checklist page.`,
+              requirements:
+                "The visitor requested the Website Launch Checklist PDF from the /checklist page.",
               submissionDate: new Date().toISOString(),
             })
           : React.createElement(ChecklistSubmissionEmail, {
-            email: email || 'Not provided',
-            answers: answers,
-            submissionDate: new Date().toISOString()
-          }),
+              email: email || "Not provided",
+              answers,
+              submissionDate: new Date().toISOString(),
+            }),
       });
       if (!emailResult.success) {
         console.error("[Email Error] Failed to send email:", emailResult.message);
@@ -127,7 +149,7 @@ export async function POST(req: Request) {
       console.error("[Email Error] Checklist internal notification failed:", emailErr);
     }
 
-    return NextResponse.json({ success: true, message: "Checklist received" });
+    return NextResponse.json({ success: true, message: "Request received" });
   } catch (error) {
     console.error("Checklist API Error:", error);
     return NextResponse.json(

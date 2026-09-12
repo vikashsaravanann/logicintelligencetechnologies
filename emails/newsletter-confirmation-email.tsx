@@ -7,11 +7,13 @@ import { EmailButton } from "./components/email-button";
 
 export default function NewsletterConfirmationEmail({
   email,
+  unsubscribeUrl,
 }: {
   email: string;
+  unsubscribeUrl?: string;
 }) {
   return (
-    <EmailLayout preview="You're subscribed to LIT updates">
+    <EmailLayout preview="You're subscribed to LIT updates. Unsubscribe any time.">
       <EmailHeader />
       <Section style={{ padding: "24px 32px" }}>
         <Text
@@ -22,10 +24,10 @@ export default function NewsletterConfirmationEmail({
             margin: "0 0 12px",
           }}
         >
-          You&apos;re on the list
+          You're on the list
         </Text>
         <Text style={{ color: "#334155", fontSize: "15px", lineHeight: "1.6" }}>
-          Thanks for subscribing{email ? ` (${email})` : ""}. You&apos;ll receive
+          Thanks for subscribing{email ? ` (${email})` : ""}. You'll receive
           practical updates on web, AI, and product delivery from Logic
           Intelligence Technologies.
         </Text>
@@ -36,7 +38,7 @@ export default function NewsletterConfirmationEmail({
           Book a free demo
         </EmailButton>
       </Section>
-      <EmailFooter />
+      <EmailFooter unsubscribeUrl={unsubscribeUrl} />
     </EmailLayout>
   );
 }
