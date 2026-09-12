@@ -147,6 +147,8 @@ export default function Footer() {
                 { label: 'TERMS OF SERVICE', href: '/terms' },
                 { label: 'PRIVACY POLICY', href: '/privacy' },
                 { label: 'REFUND POLICY', href: '/refund-policy' },
+                { label: 'ACCESSIBILITY', href: '/accessibility' },
+                { label: 'COOKIE POLICY', href: '/cookie-policy' },
               ].map((item) => (
                 <li key={item.label}>
                   <Link href={item.href} className="text-zinc-400 hover:text-white text-xs xl:text-sm uppercase tracking-widest font-semibold flex items-center gap-3 group transition-colors truncate">

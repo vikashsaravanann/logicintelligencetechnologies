@@ -18,7 +18,13 @@ const PRIMARY_NAV: Array<{ href: string; label: string }> = [
 ];
 
 const MORE_NAV: Array<{ href: string; label: string }> = [
-  { href: "/#services", label: "SERVICES" },
+  { href: "/services", label: "SERVICES" },
+  { href: "/industries", label: "INDUSTRIES" },
+  { href: "/products", label: "PRODUCTS" },
+  { href: "/resources", label: "RESOURCES" },
+  { href: "/book-consultation", label: "BOOK CALL" },
+  { href: "/client/login", label: "CLIENT PORTAL" },
+  { href: "/support", label: "SUPPORT" },
   { href: "/blog", label: "BLOG" },
   { href: "/checklist", label: "CHECKLIST" },
   { href: "/discovery", label: "DISCOVERY" },
