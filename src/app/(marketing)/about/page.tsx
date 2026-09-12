@@ -25,12 +25,12 @@ export const metadata: Metadata = {
   description:
     "Logic Intelligence Technologies is a Coimbatore-based technology startup building production web apps, e-commerce, and practical AI systems — transparent pricing, free demo before you pay.",
   openGraph: {
-    title: "About Logic Intelligence Technologies",
+    title: "About Logic Intelligence Technologies — Coimbatore Tech Startup",
     description:
-      "Coimbatore technology startup for custom websites, e-commerce, and AI-integrated software. Founded by Vikash Saravanan.",
+      "Meet the team behind Logic Intelligence Technologies. Founded by Vikash Saravanan, we build production web apps, e-commerce platforms, and AI systems for businesses across India.",
     images: [
       {
-        url: COMPANY.bannerPath,
+        url: "/assets/og-banner.jpg",
         width: 1200,
         height: 630,
         alt: "Logic Intelligence Technologies",

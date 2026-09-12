@@ -1,11 +1,27 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { PDF_RESOURCES } from "@/config/pdfs";
-import { ArrowRight, Download, FileText, Sparkles, BookOpen } from "lucide-react";
+import { ArrowRight, Download, FileText, Sparkles, BookOpen, Code2, Brain, BarChart3, Briefcase, FileCheck, Archive } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Engineering Resources, Guides & Architecture Whitepapers | Logic Intelligence Technologies",
   description: "Download enterprise technical guides, architecture checklists, business automation playbooks, and corporate capability profiles.",
+  openGraph: {
+    title: "Resources & Downloads | Logic Intelligence Technologies",
+    description: "Free enterprise guides, technical checklists, AI readiness frameworks, and project templates from Logic Intelligence Technologies.",
+    images: [{ url: "/assets/og-banner.jpg", width: 1200, height: 630, alt: "LIT Resources" }],
+  },
+};
+
+const CATEGORY_STYLES: Record<string, { color: string; bg: string; border: string; Icon: React.ComponentType<{ className?: string }> }> = {
+  "Corporate":       { color: "#00BFFF", bg: "rgba(0,191,255,0.08)",  border: "rgba(0,191,255,0.2)",  Icon: Briefcase },
+  "Services":        { color: "#8B5CF6", bg: "rgba(139,92,246,0.08)", border: "rgba(139,92,246,0.2)", Icon: Code2 },
+  "Technical Guide": { color: "#10B981", bg: "rgba(16,185,129,0.08)", border: "rgba(16,185,129,0.2)", Icon: FileCheck },
+  "AI & Data":       { color: "#F59E0B", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)", Icon: Brain },
+  "Strategy":        { color: "#EC4899", bg: "rgba(236,72,153,0.08)", border: "rgba(236,72,153,0.2)", Icon: BarChart3 },
+  "Templates":       { color: "#6366F1", bg: "rgba(99,102,241,0.08)", border: "rgba(99,102,241,0.2)", Icon: Archive },
+  "Legal & Contracts": { color: "#F97316", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.2)", Icon: FileText },
+  "Case Studies":    { color: "#22C55E", bg: "rgba(34,197,94,0.08)",  border: "rgba(34,197,94,0.2)",  Icon: BookOpen },
 };
 
 export default function ResourcesPage() {
@@ -31,17 +47,27 @@ export default function ResourcesPage() {
 
         {/* Resources Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {PDF_RESOURCES.map((res) => (
+          {PDF_RESOURCES.map((res) => {
+            const catStyle = CATEGORY_STYLES[res.category] ?? {
+              color: "#00BFFF",
+              bg: "rgba(0,191,255,0.08)",
+              border: "rgba(0,191,255,0.2)",
+              Icon: FileText,
+            };
+            const { Icon: CatIcon } = catStyle;
+            return (
             <div
               key={res.id}
-              className="group rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)]"
+              className="group rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,191,255,0.1)] overflow-hidden relative"
+              style={{ borderTopColor: catStyle.color, borderTopWidth: "2px" }}
             >
+              <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: `linear-gradient(90deg, ${catStyle.color}, transparent)` }} />
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                    <FileText className="w-6 h-6" />
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform" style={{ background: catStyle.bg, border: `1px solid ${catStyle.border}`, color: catStyle.color }}>
+                    <CatIcon className="w-6 h-6" />
                   </div>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-400">
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full border" style={{ color: catStyle.color, background: catStyle.bg, borderColor: catStyle.border }}>
                     {res.category}
                   </span>
                 </div>
@@ -65,14 +91,18 @@ export default function ResourcesPage() {
                 <a
                   href={res.publicPath}
                   download={res.filename}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/5 hover:bg-primary hover:text-black transition-all border border-white/10 text-zinc-300"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all border text-zinc-300 hover:text-black"
+                  style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = catStyle.color; (e.currentTarget as HTMLAnchorElement).style.borderColor = catStyle.color; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.05)"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.1)"; }}
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>PDF</span>
                 </a>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

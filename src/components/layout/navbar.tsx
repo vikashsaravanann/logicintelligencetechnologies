@@ -188,7 +188,13 @@ export default function Navbar() {
 
             {/* CTA & Mobile Toggle */}
             <div className="ml-auto flex items-center justify-end gap-2 shrink-0 relative z-20 h-9">
-              
+              <Link href="/free-demo" className="hidden lg:inline-flex items-center justify-center h-8 px-4 rounded-full text-[10px] font-bold text-primary uppercase tracking-[0.14em] border border-primary/40 bg-primary/10 hover:bg-primary/20 hover:border-primary/60 transition-all whitespace-nowrap shrink-0">
+                Free Demo
+              </Link>
+              <Link href="/book-consultation" className="hidden xl:inline-flex items-center justify-center h-8 px-4 rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] border border-white/20 bg-white/5 hover:bg-white/10 hover:border-white/30 transition-all whitespace-nowrap shrink-0">
+                Book Call
+              </Link>
+
               {session ? (
                 <div className="hidden lg:flex relative group" onMouseEnter={() => handleMouseEnter('user')} onMouseLeave={handleMouseLeave}>
                   <button type="button" className="flex items-center gap-1.5 h-8 px-2.5 rounded-full border border-white/20 hover:bg-white/10 transition-colors shrink-0" aria-label="Account menu">
@@ -306,6 +312,12 @@ export default function Navbar() {
                       Sign In
                     </Link>
                   )}
+                  <Link href="/free-demo" onClick={() => setIsOpen(false)} className="px-6 py-4 text-center rounded-xl text-base font-bold text-primary border border-primary/40 bg-primary/10 hover:bg-primary/20 w-full transition-all">
+                    Free Demo
+                  </Link>
+                  <Link href="/book-consultation" onClick={() => setIsOpen(false)} className="px-6 py-4 text-center rounded-xl text-base font-bold text-white border border-white/20 bg-white/5 hover:bg-white/10 w-full transition-all">
+                    Book Call
+                  </Link>
                   <ThemeToggle variant="pill" className="w-full justify-center whitespace-nowrap" />
                   <Link href="/contact" onClick={() => setIsOpen(false)} className="relative group px-6 py-4 text-center rounded-xl overflow-hidden w-full flex items-center justify-center shadow-[0_0_20px_rgba(0,191,255,0.3)]">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 opacity-90 transition-opacity duration-300"></div>

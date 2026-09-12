@@ -71,10 +71,51 @@ export function sanitizeMultilineText(value: string, maxLen = 5000): string {
     .slice(0, maxLen);
 }
 
+// ---------------------------------------------------------------------------
+// SSRF-safe URL check
+// Blocks private/loopback/link-local/metadata addresses in addition to
+// non-http(s) schemes.  This prevents user-supplied URLs from being used to
+// probe internal infrastructure.
+// ---------------------------------------------------------------------------
+
+/** IPv4 ranges that are never valid external destinations. */
+const PRIVATE_IPV4 = [
+  // Loopback
+  /^127\./,
+  // RFC-1918 private
+  /^10\./,
+  /^172\.(1[6-9]|2\d|3[01])\./,
+  /^192\.168\./,
+  // Link-local (APIPA, AWS/GCP metadata)
+  /^169\.254\./,
+  // Broadcast / unspecified
+  /^0\./,
+  /^255\./,
+];
+
+function isPrivateHostname(hostname: string): boolean {
+  // url.hostname for IPv6 includes brackets: "[::1]"
+  // Strip them for matching, but keep the raw value for name checks
+  const stripped = hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  const h = stripped.split(":")[0]; // strip port from IPv4/name (IPv6 already stripped)
+
+  // Loopback names
+  if (h === "localhost" || h === "ip6-localhost" || h === "ip6-loopback") return true;
+  // IPv6 loopback / unspecified
+  if (stripped === "::1" || stripped === "::") return true;
+  // IPv6 link-local (fe80::/10)
+  if (stripped.startsWith("fe80")) return true;
+
+  // IPv4 private ranges
+  return PRIVATE_IPV4.some((re) => re.test(h));
+}
+
 export function isSafeHttpUrl(value: string): boolean {
   try {
     const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:";
+    if (url.protocol !== "https:" && url.protocol !== "http:") return false;
+    if (isPrivateHostname(url.hostname)) return false;
+    return true;
   } catch {
     return false;
   }

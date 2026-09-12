@@ -7,15 +7,98 @@ on:
       - "src/lib/email/**"
       - "emails/**"
       - "src/app/api/**"
+      - "supabase/migrations/**"
       - ".github/workflows/email-tests.yml"
 
 jobs:
+  # ──────────────────────────────────────────────────────────────────────
+  # Unit + Security tests
+  # These run without a live database or SMTP connection.
+  # ──────────────────────────────────────────────────────────────────────
   unit:
+    name: Email unit & security tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Email unit tests
-        run: node --experimental-strip-types --test src/lib/email/*.test.ts
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run email tests
+        run: |
+          node --experimental-strip-types --test \
+            src/lib/email/validation.test.ts \
+            src/lib/email/retry.test.ts \
+            src/lib/email/ssrf.test.ts \
+            src/lib/email/attachments.test.ts \
+            src/lib/email/double-optin.test.ts
+
+  # ──────────────────────────────────────────────────────────────────────
+  # TypeScript type check
+  # ──────────────────────────────────────────────────────────────────────
+  typecheck:
+    name: TypeScript typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Lint
+  # ──────────────────────────────────────────────────────────────────────
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+  # ──────────────────────────────────────────────────────────────────────
+  # Build verification
+  # Uses placeholder env vars so the build completes without real secrets.
+  # ──────────────────────────────────────────────────────────────────────
+  build:
+    name: Next.js build
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder' }}
+      NEXT_PUBLIC_SITE_URL: "https://www.logicintelligencetechnologies.in"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build

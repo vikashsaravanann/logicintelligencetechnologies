@@ -4,6 +4,29 @@ import Link from "next/link";
 import { servicesData } from "@/data/servicesData";
 import { ArrowLeft, CheckCircle2, Layers, Cpu, ShieldCheck, Zap, ArrowRight, HelpCircle } from "lucide-react";
 
+const serviceVisuals: Record<string, string> = {
+  "full-stack-development":      "linear-gradient(135deg, #1a3a5c 0%, #0d1b2e 100%)",
+  "hotel-website":               "linear-gradient(135deg, #3a2a1a 0%, #2e1b0d 100%)",
+  "travel-agency-website":       "linear-gradient(135deg, #1a5c3a 0%, #0d2e1b 100%)",
+  "ecommerce-website":           "linear-gradient(135deg, #3a1a5c 0%, #1e0d2e 100%)",
+  "software-development":        "linear-gradient(135deg, #1a5c3a 0%, #0d2e1b 100%)",
+  "game-development":            "linear-gradient(135deg, #5c1a3a 0%, #2e0d1b 100%)",
+  "mobile-app-development":      "linear-gradient(135deg, #1a4a5c 0%, #0d2030 100%)",
+  "seo-optimization":            "linear-gradient(135deg, #3a5c1a 0%, #1e2e0d 100%)",
+  "ui-ux-design":                "linear-gradient(135deg, #5c1a4a 0%, #2e0d20 100%)",
+  "logo-branding":               "linear-gradient(135deg, #5c3a1a 0%, #2e1b0d 100%)",
+  "web-designing":               "linear-gradient(135deg, #1a1a5c 0%, #0d0d2e 100%)",
+  "web-deployment":              "linear-gradient(135deg, #1a4a5c 0%, #0d2030 100%)",
+  "business-website":            "linear-gradient(135deg, #1a3a5c 0%, #0d1b2e 100%)",
+  "crm-software":                "linear-gradient(135deg, #1a5c3a 0%, #0d2e1b 100%)",
+  "school-management-software":  "linear-gradient(135deg, #3a4a1a 0%, #1e260d 100%)",
+  "billing-software":            "linear-gradient(135deg, #5c3a1a 0%, #2e1b0d 100%)",
+  "api-development":             "linear-gradient(135deg, #1a3a5c 0%, #0d1b2e 100%)",
+  "cloud-deployment":            "linear-gradient(135deg, #1a4a5c 0%, #0d2030 100%)",
+  "ai-solutions":                "linear-gradient(135deg, #5c3a1a 0%, #2e1b0d 100%)",
+  "ai-integration":              "linear-gradient(135deg, #5c3a1a 0%, #2e1b0d 100%)",
+};
+
 // Alias resolution map to handle canonical routes from audit
 const SLUG_ALIASES: Record<string, string> = {
   "web-development": "full-stack-development",
@@ -44,6 +67,8 @@ export default async function ServiceDetailPage({ params }: Props) {
     notFound();
   }
 
+  const serviceHeroGradient = serviceVisuals[canonicalSlug] ?? "linear-gradient(135deg, #1a2a4a 0%, #0d1520 100%)";
+
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
       {/* Ambient Lighting */}
@@ -59,14 +84,37 @@ export default async function ServiceDetailPage({ params }: Props) {
           <span>Back to All Services</span>
         </Link>
 
-        {/* Hero Section */}
+        {/* Service Hero Visual */}
+        <div
+          className="relative rounded-3xl overflow-hidden mb-12 h-[200px] md:h-[260px]"
+          style={{ background: serviceHeroGradient }}
+        >
+          <div className="absolute inset-0 opacity-[0.07] flex items-center justify-end pr-10">
+            <svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="110" cy="110" r="100" stroke="white" strokeWidth="3" strokeDasharray="12 8" />
+              <circle cx="110" cy="110" r="70" stroke="white" strokeWidth="2" strokeDasharray="8 6" />
+              <circle cx="110" cy="110" r="40" stroke="white" strokeWidth="1.5" />
+              <circle cx="110" cy="110" r="12" fill="white" />
+              <line x1="110" y1="10" x2="110" y2="50" stroke="white" strokeWidth="2" />
+              <line x1="110" y1="170" x2="110" y2="210" stroke="white" strokeWidth="2" />
+              <line x1="10" y1="110" x2="50" y2="110" stroke="white" strokeWidth="2" />
+              <line x1="170" y1="110" x2="210" y2="110" stroke="white" strokeWidth="2" />
+            </svg>
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-transparent" />
+          <div className="relative z-10 p-8 md:p-12 flex items-end h-full">
+            <div>
+              <span className="text-xs font-bold tracking-widest uppercase text-white/50 mb-2 block">{service.subtitle}</span>
+              <h1 className="text-3xl md:text-5xl font-black text-white leading-tight">{service.title}</h1>
+            </div>
+          </div>
+        </div>
+
+        {/* Hero Description */}
         <div className="mb-16 border-b border-white/10 pb-12">
           <div className="inline-block px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-widest uppercase mb-4">
             {service.subtitle}
           </div>
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight uppercase mb-6">
-            {service.title}
-          </h1>
           <p className="text-base sm:text-lg text-zinc-300 max-w-4xl leading-relaxed whitespace-pre-line mb-8">
             {service.description}
           </p>

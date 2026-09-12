@@ -9,6 +9,7 @@ import {
   sanitizePersonName,
   isSafeHttpUrl,
 } from "@/lib/email/validation";
+import { writeAdminAudit } from "@/lib/email/audit";
 
 import InvoiceEmail from "@/emails/invoice-email";
 import PaymentReceivedEmail from "@/emails/payment-received-email";
@@ -29,10 +30,39 @@ function safeUrl(value: unknown, fallback: string): string {
 }
 
 export async function POST(req: Request) {
+  // Identify the caller for the audit log — session email or 'cron'
+  const authHeader = req.headers.get("authorization") ?? "";
+  const xCronHeader = req.headers.get("x-cron-secret") ?? "";
+  const isMachineCall =
+    Boolean(process.env.CRON_SECRET) &&
+    (authHeader.startsWith("Bearer ") || xCronHeader);
+  const ipAddress = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+
   try {
     const auth = await requireAdminApi(req);
     if (!auth.ok) {
       return NextResponse.json({ error: auth.message }, { status: auth.status });
+    }
+
+    // Determine caller identity for audit trail (never expose the token itself)
+    let triggeredBy = "cron";
+    if (!isMachineCall) {
+      // Authenticated via session — extract email from cookie-based session
+      // requireAdminApi already verified this; we read it best-effort for audit
+      try {
+        const { cookies } = await import("next/headers");
+        const { createRouteHandlerClient } = await import("@supabase/auth-helpers-nextjs");
+        const { env } = await import("@/config/env");
+        const cookieStore = await cookies();
+        const supabase = createRouteHandlerClient(
+          { cookies: () => cookieStore as any },
+          { supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL, supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY }
+        );
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.email) triggeredBy = `session:${session.user.email}`;
+      } catch {
+        triggeredBy = "session:unknown";
+      }
     }
 
     const body = await req.json();
@@ -149,8 +179,26 @@ export async function POST(req: Request) {
 
     if (!emailResult.success) {
       console.error("[Email Error] Admin Trigger Failed:", emailResult.message);
+      await writeAdminAudit({
+        triggeredBy,
+        emailType: type,
+        recipient: email,
+        outboxId: emailResult.outboxId,
+        status: "failed",
+        errorMessage: emailResult.message,
+        ipAddress,
+      });
       return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
     }
+
+    await writeAdminAudit({
+      triggeredBy,
+      emailType: type,
+      recipient: email,
+      outboxId: emailResult.outboxId,
+      status: emailResult.skipped ? "dry_run" : "sent",
+      ipAddress,
+    });
 
     return NextResponse.json({ success: true, message: `Queued ${type} email`, status: emailResult.status });
   } catch (error) {

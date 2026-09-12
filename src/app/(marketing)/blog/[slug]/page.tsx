@@ -33,11 +33,47 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   });
 
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white pt-32 pb-24 relative selection:bg-primary/30">
-      {/* Background decoration */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[400px] bg-primary/10 blur-[120px] rounded-full pointer-events-none opacity-50" />
+    <main className="min-h-screen bg-[#0A0F1E] text-white pb-24 relative selection:bg-primary/30">
+      {/* Full-width article hero banner */}
+      <div className="relative w-full h-[320px] md:h-[420px] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0d1b3e] via-[#0A0F1E] to-[#0d2533]" />
+        <div className="absolute inset-0 opacity-[0.06]">
+          <svg width="100%" height="100%" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice">
+            <circle cx="900" cy="210" r="250" fill="white" />
+            <circle cx="200" cy="80" r="140" fill="white" />
+            <circle cx="600" cy="380" r="100" fill="#00BFFF" />
+          </svg>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/30 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 max-w-3xl mx-auto px-6 lg:px-8 pb-12 pt-24">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-400 mb-5">
+            <span className="flex items-center gap-1.5 text-primary font-medium bg-primary/10 px-3 py-1 rounded-full border border-primary/20 text-xs">
+              <Tag className="w-3.5 h-3.5" />
+              {post.category}
+            </span>
+            <span className="flex items-center gap-1.5 text-xs">
+              <Calendar className="w-4 h-4" />
+              {formattedDate}
+            </span>
+            <span className="hidden sm:inline text-zinc-700">•</span>
+            <span className="flex items-center gap-1.5 text-xs">
+              <Clock className="w-4 h-4" />
+              {post.readingTime}
+            </span>
+          </div>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4 leading-[1.1] tracking-tight">
+            {post.title}
+          </h1>
+          <p className="text-lg text-zinc-300 leading-relaxed font-light max-w-2xl">
+            {post.excerpt}
+          </p>
+        </div>
+      </div>
 
-      <article className="max-w-3xl mx-auto px-6 lg:px-8 relative z-10">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[400px] bg-primary/10 blur-[120px] rounded-full pointer-events-none opacity-30" />
+
+      <article className="max-w-3xl mx-auto px-6 lg:px-8 relative z-10 pt-12">
         <Link
           href="/blog"
           className="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors mb-12 group"
@@ -47,32 +83,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </div>
           Back to all articles
         </Link>
-
-        <header className="mb-12 border-b border-white/10 pb-12">
-          <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-400 mb-6">
-            <span className="flex items-center gap-1.5 text-primary font-medium bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
-              <Tag className="w-3.5 h-3.5" />
-              {post.category}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4" />
-              {formattedDate}
-            </span>
-            <span className="hidden sm:inline text-zinc-700">•</span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="w-4 h-4" />
-              {post.readingTime}
-            </span>
-          </div>
-
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-6 leading-[1.1] tracking-tight">
-            {post.title}
-          </h1>
-          
-          <p className="text-xl text-zinc-400 leading-relaxed font-light">
-            {post.excerpt}
-          </p>
-        </header>
 
         <div className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-p:text-zinc-300 prose-p:leading-relaxed prose-li:text-zinc-300">
           {post.body.map((block, i) => {

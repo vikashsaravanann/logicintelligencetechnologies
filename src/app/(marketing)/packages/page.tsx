@@ -21,6 +21,11 @@ const iconMap: Record<string, any> = {
 export const metadata: Metadata = {
   title: 'Packages & Services | Logic Intelligence Technologies',
   description: 'Transparent, fixed-price packages and expert services for web development, e-commerce, and enterprise software.',
+  openGraph: {
+    title: 'Pricing Packages | Logic Intelligence Technologies',
+    description: 'Digital Launch Pack from ₹8,999 · Business Pro from ₹18,999 · Enterprise from ₹50,000. Transparent fixed-price packages for web, e-commerce, and AI software.',
+    images: [{ url: '/assets/og-banner.jpg', width: 1200, height: 630, alt: 'LIT Packages & Pricing' }],
+  },
 };
 
 export default function PackagesAndServicesPage() {

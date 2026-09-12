@@ -1,11 +1,43 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { servicesData } from "@/data/servicesData";
-import { ArrowRight, CheckCircle2, Sparkles, Layers, ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, CheckCircle2, Sparkles, Layers, ShieldCheck, Zap, Code, Hotel, Plane, Terminal, Gamepad, ShoppingCart, Smartphone, Search, Palette, Brush, Layout, UploadCloud, Building, Users, GraduationCap, Receipt, CodeSquare, Cloud } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Enterprise Engineering & AI Services | Logic Intelligence Technologies",
   description: "Comprehensive software engineering services: Full-Stack Web Development, AI Integration, Cloud Systems, Custom ERP, and Mobile Applications.",
+  openGraph: {
+    title: "Enterprise Technology Services | Logic Intelligence Technologies",
+    description: "Custom web development, AI solutions, e-commerce, and enterprise software for Coimbatore businesses.",
+    images: [{ url: "/assets/og-banner.jpg", width: 1200, height: 630, alt: "LIT Services" }],
+  },
+};
+
+const SERVICE_ACCENT: Record<string, string> = {
+  "full-stack-development":     "#00BFFF",
+  "hotel-website":              "#F59E0B",
+  "travel-agency-website":      "#10B981",
+  "ecommerce-website":          "#8B5CF6",
+  "software-development":       "#10B981",
+  "game-development":           "#EC4899",
+  "mobile-app-development":     "#3B82F6",
+  "seo-optimization":           "#22C55E",
+  "ui-ux-design":               "#F472B6",
+  "logo-branding":              "#F97316",
+  "web-designing":              "#6366F1",
+  "web-deployment":             "#0EA5E9",
+  "business-website":           "#00BFFF",
+  "crm-software":               "#10B981",
+  "school-management-software": "#84CC16",
+  "billing-software":           "#F59E0B",
+  "api-development":            "#00BFFF",
+  "cloud-deployment":           "#0EA5E9",
+};
+
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Code, Hotel, Plane, Terminal, Gamepad, ShoppingCart,
+  Smartphone, Search, Palette, Brush, Layout, UploadCloud,
+  Building, Users, GraduationCap, Receipt, CodeSquare, Cloud,
 };
 
 export default function ServicesPage() {
@@ -32,19 +64,24 @@ export default function ServicesPage() {
 
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {servicesData.map((svc) => (
+          {servicesData.map((svc) => {
+            const accent = SERVICE_ACCENT[svc.slug] ?? "#00BFFF";
+            const Icon = iconMap[svc.icon] ?? Layers;
+            return (
             <div
               key={svc.slug}
-              className="group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)]"
+              className="group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)] overflow-hidden"
+              style={{ borderLeftColor: accent, borderLeftWidth: "3px" }}
             >
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: `radial-gradient(ellipse at 0% 50%, ${accent}0d 0%, transparent 70%)` }} />
               <div>
-                <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
-                  <Layers className="w-6 h-6" />
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform" style={{ background: `${accent}1a`, border: `1px solid ${accent}33`, color: accent }}>
+                  <Icon className="w-6 h-6" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">
                   {svc.title}
                 </h3>
-                <p className="text-xs text-primary font-semibold mb-4 tracking-wide uppercase">
+                <p className="text-xs font-semibold mb-4 tracking-wide uppercase" style={{ color: accent }}>
                   {svc.subtitle}
                 </p>
                 <p className="text-sm text-zinc-400 line-clamp-3 mb-6 leading-relaxed">
@@ -55,7 +92,7 @@ export default function ServicesPage() {
                   <div className="space-y-2 mb-8">
                     {svc.whatWeBuild.slice(0, 3).map((item, idx) => (
                       <div key={idx} className="flex items-center gap-2 text-xs text-zinc-300">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" style={{ color: accent }} />
                         <span className="truncate">{item}</span>
                       </div>
                     ))}
@@ -79,7 +116,8 @@ export default function ServicesPage() {
                 </Link>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Global CTA Banner */}
