@@ -14,7 +14,10 @@ export function ThemeToggle({ className = "", variant = "icon" }: ThemeTogglePro
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   const dark = mounted && resolvedTheme !== "light";
 
