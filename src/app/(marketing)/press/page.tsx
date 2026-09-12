@@ -55,7 +55,7 @@ export default function PressPage() {
                 </div>
                 <div>
                   <span className="text-zinc-500 font-bold uppercase block">Headquarters</span>
-                  <span className="text-white font-semibold">{COMPANY.address.city}, {COMPANY.address.state}, India</span>
+                  <span className="text-white font-semibold">{COMPANY.address}</span>
                 </div>
                 <div>
                   <span className="text-zinc-500 font-bold uppercase block">Focus Areas</span>
@@ -63,7 +63,7 @@ export default function PressPage() {
                 </div>
                 <div>
                   <span className="text-zinc-500 font-bold uppercase block">Official Website</span>
-                  <span className="text-primary font-semibold">{COMPANY.website}</span>
+                  <span className="text-primary font-semibold">{COMPANY.websiteUrl}</span>
                 </div>
               </div>
             </div>

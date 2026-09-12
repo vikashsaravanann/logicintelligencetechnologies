@@ -35,6 +35,48 @@ export type OutboxRow = {
   provider_message_id: string | null;
 };
 
+export type EnqueueEmailParams = {
+  recipient: string;
+  subject: string;
+  templateId?: string;
+  category?: EmailCategory;
+  sender?: string;
+  replyTo?: string;
+  html?: string;
+  text?: string;
+  idempotencyKey?: string;
+  correlationId?: string;
+  metadata?: Record<string, any>;
+};
+
+export async function enqueueEmail(
+  params: EnqueueEmailParams
+): Promise<{ id: string; duplicate: boolean; alreadySent: boolean } | null> {
+  const category: EmailCategory = params.category || "transactional";
+  const idempotencyKey =
+    params.idempotencyKey ||
+    `enqueue_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  const sender = params.sender || "no-reply@logicintelligencetechnologies.in";
+
+  return await claimOutbox({
+    eventType: params.templateId || "general_notification",
+    templateKey: params.templateId,
+    category,
+    recipient: params.recipient,
+    sender,
+    replyTo: params.replyTo,
+    subject: params.subject,
+    html:
+      params.html ||
+      (params.metadata
+        ? `<p>${params.subject}</p><pre>${JSON.stringify(params.metadata, null, 2)}</pre>`
+        : `<p>${params.subject}</p>`),
+    text: params.text,
+    idempotencyKey,
+    correlationId: params.correlationId,
+  });
+}
+
 export async function claimOutbox(
   input: OutboxInsert
 ): Promise<{ id: string; duplicate: boolean; alreadySent: boolean } | null> {

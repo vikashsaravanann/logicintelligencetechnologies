@@ -76,7 +76,7 @@ export default function AccessibilityPage() {
               <p className="font-bold text-white mb-1">Accessibility Support Desk</p>
               <p className="text-zinc-400">Email: <a href={`mailto:${COMPANY.email}?subject=Accessibility%20Issue`} className="text-primary hover:underline">{COMPANY.email}</a></p>
               <p className="text-zinc-400">Phone: {COMPANY.phone}</p>
-              <p className="text-zinc-400">Address: {COMPANY.address.street}, {COMPANY.address.city}, {COMPANY.address.state} {COMPANY.address.postalCode}</p>
+              <p className="text-zinc-400">Address: {COMPANY.address}</p>
             </div>
           </section>
         </div>

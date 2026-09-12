@@ -41,7 +41,7 @@ export default function ClientProfilePage() {
             <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider block mb-1">
               Primary Headquarters
             </span>
-            <p className="text-white font-medium">{COMPANY.address.city}, {COMPANY.address.state}, India</p>
+            <p className="text-white font-medium">{COMPANY.address}</p>
           </div>
 
           <div>
