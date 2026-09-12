@@ -81,3 +81,7 @@ export const packagesData = [
     timeline: []
   }
 ];
+
+export function getPackageVisual(slug: string): string {
+  return `/images/packages/${slug}.svg`;
+}

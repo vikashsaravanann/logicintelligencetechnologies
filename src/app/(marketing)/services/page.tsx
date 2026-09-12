@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { servicesData } from "@/data/servicesData";
 import { ArrowRight, CheckCircle2, Sparkles, Layers, ShieldCheck, Zap, Code, Hotel, Plane, Terminal, Gamepad, ShoppingCart, Smartphone, Search, Palette, Brush, Layout, UploadCloud, Building, Users, GraduationCap, Receipt, CodeSquare, Cloud } from "lucide-react";
+import SafeImage from "@/components/ui/safe-image";
 
 export const metadata: Metadata = {
   title: "Enterprise Engineering & AI Services | Logic Intelligence Technologies",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Enterprise Technology Services | Logic Intelligence Technologies",
     description: "Custom web development, AI solutions, e-commerce, and enterprise software for Coimbatore businesses.",
-    images: [{ url: "/assets/og-banner.jpg", width: 1200, height: 630, alt: "LIT Services" }],
+    images: [{ url: "/api/og?title=Enterprise+Technology+Services&category=18+Core+Capabilities", width: 1200, height: 630, alt: "LIT Services" }],
   },
 };
 
@@ -49,10 +50,10 @@ export default function ServicesPage() {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
+        <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-widest uppercase mb-6">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Full-Stack & Intelligent Systems</span>
+            <span>Full-Stack &amp; Intelligent Systems</span>
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 uppercase">
             ENGINEERING EXCELLENCE FOR <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">ENTERPRISE GROWTH</span>
@@ -68,54 +69,67 @@ export default function ServicesPage() {
             const accent = SERVICE_ACCENT[svc.slug] ?? "#00BFFF";
             const Icon = iconMap[svc.icon] ?? Layers;
             return (
-            <div
-              key={svc.slug}
-              className="group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] p-8 transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)] overflow-hidden"
-              style={{ borderLeftColor: accent, borderLeftWidth: "3px" }}
-            >
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: `radial-gradient(ellipse at 0% 50%, ${accent}0d 0%, transparent 70%)` }} />
-              <div>
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform" style={{ background: `${accent}1a`, border: `1px solid ${accent}33`, color: accent }}>
-                  <Icon className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">
-                  {svc.title}
-                </h3>
-                <p className="text-xs font-semibold mb-4 tracking-wide uppercase" style={{ color: accent }}>
-                  {svc.subtitle}
-                </p>
-                <p className="text-sm text-zinc-400 line-clamp-3 mb-6 leading-relaxed">
-                  {svc.description}
-                </p>
-
-                {svc.whatWeBuild && svc.whatWeBuild.length > 0 && (
-                  <div className="space-y-2 mb-8">
-                    {svc.whatWeBuild.slice(0, 3).map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-xs text-zinc-300">
-                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" style={{ color: accent }} />
-                        <span className="truncate">{item}</span>
-                      </div>
-                    ))}
+              <div
+                key={svc.slug}
+                className="group relative flex flex-col justify-between rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)] overflow-hidden"
+              >
+                {/* Service Card Visual Header */}
+                <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/40">
+                  <SafeImage
+                    src={`/images/services/${svc.slug}.svg`}
+                    alt={`${svc.title} Visual Architecture`}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute top-3 left-3 z-10">
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center backdrop-blur-md shadow-lg"
+                      style={{ background: "rgba(10, 15, 30, 0.85)", border: `1px solid ${accent}55`, color: accent }}
+                    >
+                      <Icon className="w-5 h-5" />
+                    </div>
                   </div>
-                )}
-              </div>
+                </div>
 
-              <div className="pt-6 border-t border-white/5 flex items-center justify-between">
-                <Link
-                  href={`/services/${svc.slug}`}
-                  className="inline-flex items-center gap-2 text-sm font-bold text-white group-hover:text-primary transition-colors"
-                >
-                  <span>Explore Architecture</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  href="/book-consultation"
-                  className="text-xs font-semibold text-zinc-400 hover:text-white"
-                >
-                  Book Call
-                </Link>
+                <div className="p-6 sm:p-8 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">
+                    {svc.title}
+                  </h3>
+                  <p className="text-xs font-semibold mb-3 tracking-wide uppercase" style={{ color: accent }}>
+                    {svc.subtitle}
+                  </p>
+                  <p className="text-sm text-zinc-400 line-clamp-3 mb-6 leading-relaxed flex-grow">
+                    {svc.description}
+                  </p>
+
+                  {svc.whatWeBuild && svc.whatWeBuild.length > 0 && (
+                    <div className="space-y-2 mb-8">
+                      {svc.whatWeBuild.slice(0, 3).map((item, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-xs text-zinc-300">
+                          <CheckCircle2 className="w-3.5 h-3.5 shrink-0" style={{ color: accent }} />
+                          <span className="truncate">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="pt-6 border-t border-white/10 flex items-center justify-between mt-auto">
+                    <Link
+                      href={`/services/${svc.slug}`}
+                      className="inline-flex items-center gap-2 text-sm font-bold text-white group-hover:text-primary transition-colors"
+                    >
+                      <span>Explore Architecture</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                    <Link
+                      href="/book-consultation"
+                      className="text-xs font-semibold text-zinc-400 hover:text-white"
+                    >
+                      Book Call
+                    </Link>
+                  </div>
+                </div>
               </div>
-            </div>
             );
           })}
         </div>

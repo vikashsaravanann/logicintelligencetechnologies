@@ -43,9 +43,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "Cloud HR platform covering onboarding, leave, attendance, and payroll workflows for growing teams that outgrew spreadsheets.",
     category: "SaaS",
     tags: ["React", "Node.js", "PostgreSQL", "AWS"],
-    // Professional office / people-ops visual (not FreshBite asset)
-    image:
-      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=85",
+    image: "/portfolio/vaulthr.jpg",
     client: "Mid-market services firm",
     problem:
       "HR data lived in disconnected sheets. Leave requests stalled in email threads, onboarding checklists were incomplete, and payroll prep consumed days each cycle.",
@@ -66,8 +64,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "High-conversion portfolio for an interior design studio: project storytelling, image-led galleries, and a structured inquiry path for qualified leads.",
     category: "Corporate",
     tags: ["Next.js", "Framer Motion", "Vercel"],
-    image:
-      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1400&q=85",
+    image: "/portfolio/luxe.jpg",
     client: "Luxe Interiors Studio",
     problem:
       "The previous site buried strong project photography behind slow pages and a generic contact form. Serious clients could not quickly assess fit or start a project conversation.",
@@ -88,8 +85,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "Appointment scheduling, patient-facing booking, and automated reminders designed for clinics that still relied on phone-only booking.",
     category: "Web App",
     tags: ["Next.js", "Supabase", "Twilio", "Tailwind CSS"],
-    image:
-      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1400&q=85",
+    image: "/portfolio/mediconnect.jpg",
     client: "Multi-doctor clinic group",
     problem:
       "Front desk was overwhelmed by inbound calls. No-shows were high because reminders were manual, and doctors could not see a reliable day view of the schedule.",
@@ -110,8 +106,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "Direct-to-consumer storefront for organic products: subscriptions, inventory-aware catalog, and delivery status for repeat customers.",
     category: "E-Commerce",
     tags: ["Next.js", "Stripe", "Sanity CMS", "Vercel"],
-    image:
-      "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1400&q=85",
+    image: "/portfolio/greenleaf.jpg",
     client: "GreenLeaf Organics",
     problem:
       "Marketplace commissions eroded margin, and the brand lacked a owned channel for subscriptions and product storytelling.",
@@ -132,8 +127,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "Memberships, class schedules, trainer profiles, and local payment rails for fitness centers that needed more than a static brochure site.",
     category: "SaaS",
     tags: ["React", "FastAPI", "PostgreSQL", "Razorpay"],
-    image:
-      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1400&q=85",
+    image: "/portfolio/urbanfit.jpg",
     client: "UrbanFit Gyms",
     problem:
       "Memberships were tracked offline; class capacity was oversold; payments did not reconcile cleanly with attendance.",

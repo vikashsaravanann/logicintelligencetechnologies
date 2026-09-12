@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Briefcase, CheckCircle2, Heart, Sparkles, Target, Users } from "lucide-react";
+import SafeImage from "@/components/ui/safe-image";
 
 export const metadata: Metadata = {
   title: "Careers & Life at Logic Intelligence Technologies",
@@ -34,7 +35,7 @@ export default function CareersPage() {
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
             We are a team of relentless full-stack architects, machine learning engineers, and product builders based in Coimbatore. We prioritize ownership, production excellence, and tangible business impact over corporate bureaucracy.
           </p>
-          <div className="mt-8 flex justify-center gap-4">
+          <div className="mt-8 mb-12 flex justify-center gap-4">
             <Link
               href="/jobs"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-primary text-black font-bold hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.4)]"
@@ -42,6 +43,17 @@ export default function CareersPage() {
               <span>View Open Leadership & Engineering Roles</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
+          </div>
+
+          {/* Careers Visual Banner */}
+          <div className="max-w-4xl mx-auto aspect-[21/9] relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black/50">
+            <SafeImage
+              src="/images/careers/tech-culture.svg"
+              alt="LIT Engineering Culture & Careers"
+              fill
+              priority
+              className="object-cover"
+            />
           </div>
         </div>
 

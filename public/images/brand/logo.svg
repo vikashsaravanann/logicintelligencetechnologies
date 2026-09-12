@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 80" width="100%" height="100%">
+  <defs>
+    <linearGradient id="brandLogoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00BFFF"/>
+      <stop offset="100%" stop-color="#7B2FBE"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(10, 10)">
+    <rect x="0" y="0" width="60" height="60" rx="14" fill="#0A1128" stroke="url(#brandLogoGrad)" stroke-width="2"/>
+    <path d="M 18 45 L 18 18 L 30 18 L 30 35 L 42 35 L 42 45 Z" fill="#00BFFF"/>
+    <circle cx="42" cy="18" r="4" fill="#00FF88"/>
+    <text x="80" y="32" fill="#FFFFFF" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="900" letter-spacing="1">LOGIC INTELLIGENCE</text>
+    <text x="80" y="48" fill="rgba(255,255,255,0.65)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700" letter-spacing="3.5">TECHNOLOGIES</text>
+  </g>
+</svg>

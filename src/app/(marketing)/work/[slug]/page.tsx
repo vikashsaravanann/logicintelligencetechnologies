@@ -17,9 +17,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const project = getProjectBySlug(slug);
   if (!project) return { title: "Project Not Found" };
 
+  const ogUrl = `/api/og?title=${encodeURIComponent(project.title)}&type=case-study&category=${encodeURIComponent(project.category)}`;
+
   return {
-    title: project.title,
+    title: `${project.title} | Case Study`,
     description: project.description,
+    openGraph: {
+      title: `${project.title} | Logic Intelligence Technologies`,
+      description: project.description,
+      images: [{ url: ogUrl, width: 1200, height: 630, alt: project.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${project.title} | Logic Intelligence Technologies`,
+      description: project.description,
+      images: [ogUrl],
+    },
   };
 }
 

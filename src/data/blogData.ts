@@ -5,6 +5,11 @@ export type BlogPost = {
   category: string;
   publishedAt: string; // "2026-08-28"
   readingTime: string; // "5 min read"
+  image: string;
+  author: {
+    name: string;
+    role: string;
+  };
   // Body is an array of simple content blocks so we don't need a markdown
   // parser dependency — add paragraphs, headings, and lists as plain objects.
   body: (
@@ -23,6 +28,11 @@ export const blogPosts: BlogPost[] = [
     category: "Guides",
     publishedAt: "2026-08-28",
     readingTime: "6 min read",
+    image: "/images/blog/website-pricing-breakdown.svg",
+    author: {
+      name: "Vikash Saravanan",
+      role: "Founder & Lead Architect",
+    },
     body: [
       {
         type: "paragraph",
@@ -66,6 +76,11 @@ export const blogPosts: BlogPost[] = [
     category: "Guides",
     publishedAt: "2026-08-28",
     readingTime: "5 min read",
+    image: "/images/blog/saas-vs-custom-software.svg",
+    author: {
+      name: "Vikash Saravanan",
+      role: "Founder & Lead Architect",
+    },
     body: [
       {
         type: "paragraph",

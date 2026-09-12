@@ -6,7 +6,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Start Your Project | Logic Intelligence Technologies",
     description: "Tell us about your web or software project. We reply within 24 hours with a clear plan and honest pricing.",
-    images: [{ url: "/assets/og-banner.jpg", width: 1200, height: 630, alt: "Contact Logic Intelligence Technologies" }],
+    images: [{ url: "/api/og?title=Start%20Your%20Project&category=Contact%20Us", width: 1200, height: 630, alt: "Contact Logic Intelligence Technologies" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Start Your Project | Logic Intelligence Technologies",
+    description: "Tell us about your web or software project. We reply within 24 hours with a clear plan and honest pricing.",
+    images: ["/api/og?title=Start%20Your%20Project&category=Contact%20Us"],
   },
 };
 

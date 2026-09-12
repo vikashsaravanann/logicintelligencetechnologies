@@ -20,6 +20,8 @@ import {
   Users,
 } from "lucide-react";
 
+import { SafeImage } from "@/components/ui/safe-image";
+
 export const metadata: Metadata = {
   title: "About Us | Technology Startup in Coimbatore",
   description:
@@ -30,12 +32,19 @@ export const metadata: Metadata = {
       "Meet the team behind Logic Intelligence Technologies. Founded by Vikash Saravanan, we build production web apps, e-commerce platforms, and AI systems for businesses across India.",
     images: [
       {
-        url: "/assets/og-banner.jpg",
+        url: "/api/og?title=About%20Logic%20Intelligence%20Technologies&category=Coimbatore%20Tech%20Startup",
         width: 1200,
         height: 630,
-        alt: "Logic Intelligence Technologies",
+        alt: "Logic Intelligence Technologies About Us",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Logic Intelligence Technologies — Coimbatore Tech Startup",
+    description:
+      "Meet the team behind Logic Intelligence Technologies. Founded by Vikash Saravanan, we build production web apps, e-commerce platforms, and AI systems.",
+    images: ["/api/og?title=About%20Logic%20Intelligence%20Technologies&category=Coimbatore%20Tech%20Startup"],
   },
 };
 
@@ -277,16 +286,16 @@ export default function AboutPage() {
                 the work — not a private limited corporate shell.
               </p>
             </div>
-            <div className="relative h-[260px] sm:h-[320px] rounded-3xl overflow-hidden border border-white/10 order-1 md:order-2 shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
-              <img
-                src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=85"
-                alt="Modern studio workspace in Coimbatore"
-                className="w-full h-full object-cover object-center"
-                loading="lazy"
+            <div className="relative h-[260px] sm:h-[320px] rounded-3xl overflow-hidden border border-white/10 order-1 md:order-2 shadow-[0_20px_50px_rgba(0,0,0,0.35)] bg-zinc-950">
+              <SafeImage
+                src="/images/about/company-architecture.svg"
+                alt="Modern engineering studio architecture in Coimbatore"
+                fill
+                className="object-cover object-center"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E]/90 via-transparent to-transparent" />
-              <div className="absolute bottom-5 left-5 right-5">
-                <p className="text-white font-bold text-sm">Coimbatore HQ mindset</p>
+              <div className="absolute bottom-5 left-5 right-5 z-10">
+                <p className="text-white font-bold text-sm">Coimbatore HQ Mindset</p>
                 <p className="text-zinc-400 text-xs">Engineering-first product studio</p>
               </div>
             </div>
@@ -294,16 +303,16 @@ export default function AboutPage() {
 
           {/* Block 2 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-            <div className="relative h-[260px] sm:h-[320px] rounded-3xl overflow-hidden border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
-              <img
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=85"
-                alt="Collaborative product team workshop"
-                className="w-full h-full object-cover object-center"
-                loading="lazy"
+            <div className="relative h-[260px] sm:h-[320px] rounded-3xl overflow-hidden border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.35)] bg-zinc-950">
+              <SafeImage
+                src="/images/careers/tech-culture.svg"
+                alt="Collaborative product team engineering culture"
+                fill
+                className="object-cover object-center"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E]/90 via-transparent to-transparent" />
-              <div className="absolute bottom-5 left-5 right-5">
-                <p className="text-white font-bold text-sm">Partnership over proposals</p>
+              <div className="absolute bottom-5 left-5 right-5 z-10">
+                <p className="text-white font-bold text-sm">Partnership Over Proposals</p>
                 <p className="text-zinc-400 text-xs">Discovery → build → launch</p>
               </div>
             </div>
@@ -338,16 +347,16 @@ export default function AboutPage() {
                 can run with confidence.
               </p>
             </div>
-            <div className="relative h-[260px] sm:h-[320px] rounded-3xl overflow-hidden border border-white/10 order-1 md:order-2 shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
-              <img
-                src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=85"
-                alt="Technology and AI product development"
-                className="w-full h-full object-cover object-center"
-                loading="lazy"
+            <div className="relative h-[260px] sm:h-[320px] rounded-3xl overflow-hidden border border-white/10 order-1 md:order-2 shadow-[0_20px_50px_rgba(0,0,0,0.35)] bg-zinc-950">
+              <SafeImage
+                src="/images/ai/intelligent-interface.svg"
+                alt="Intelligent interface and AI product development"
+                fill
+                className="object-cover object-center"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E]/90 via-transparent to-transparent" />
-              <div className="absolute bottom-5 left-5 right-5">
-                <p className="text-white font-bold text-sm">Production-ready systems</p>
+              <div className="absolute bottom-5 left-5 right-5 z-10">
+                <p className="text-white font-bold text-sm">Production-Ready Systems</p>
                 <p className="text-zinc-400 text-xs">Web · AI · long-term support</p>
               </div>
             </div>

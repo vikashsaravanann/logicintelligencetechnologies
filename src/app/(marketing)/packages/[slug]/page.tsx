@@ -18,6 +18,9 @@ const iconMap: Record<string, any> = {
   Building, Users, GraduationCap, Receipt, CodeSquare, Cloud
 };
 
+import SafeImage from "@/components/ui/safe-image";
+import Breadcrumbs from "@/components/ui/breadcrumbs";
+
 export function generateStaticParams() {
   const pkgParams = packagesData.map((pkg) => ({ slug: pkg.slug }));
   const srvParams = servicesData.map((srv) => ({ slug: srv.slug }));
@@ -31,10 +34,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   
   const item = pkg || srv;
   if (!item) return { title: "Not Found" };
+
+  const ogUrl = `/api/og?title=${encodeURIComponent(item.title)}&category=${encodeURIComponent(pkg ? "Package" : "Service")}&tagline=${encodeURIComponent(item.subtitle)}`;
   
   return {
     title: `${item.title} | Logic Intelligence Technologies`,
     description: item.subtitle,
+    openGraph: {
+      title: item.title,
+      description: item.subtitle,
+      images: [{ url: ogUrl, width: 1200, height: 630, alt: item.title }],
+    },
   };
 }
 
@@ -47,9 +57,28 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
 
   if (pkg) {
     return (
-      <main className="min-h-screen bg-[#0A0F1E] text-white pt-32">
-        <BackToHome />
-        <section className="py-20 px-6 lg:px-8 max-w-5xl mx-auto text-center relative">
+      <main className="min-h-screen bg-[#0A0F1E] text-white pt-28 pb-20">
+        <div className="max-w-5xl mx-auto px-6 mb-8">
+          <Breadcrumbs
+            items={[
+              { name: "Packages", url: "/packages" },
+              { name: pkg.title, url: `/packages/${pkg.slug}` },
+            ]}
+          />
+        </div>
+
+        <section className="px-6 lg:px-8 max-w-5xl mx-auto text-center relative">
+          {/* Visual Banner */}
+          <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden mb-10 border border-white/10 shadow-2xl bg-black/50">
+            <SafeImage
+              src={`/images/packages/${pkg.slug}.svg`}
+              alt={`${pkg.title} Architecture Visual`}
+              fill
+              priority
+              className="object-cover"
+            />
+          </div>
+
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-[300px] opacity-[0.1] blur-[100px] bg-gradient-to-r from-primary to-accent pointer-events-none" />
           <h1 className="text-3xl md:text-4xl lg:text-6xl font-black text-white mb-4 relative z-10">{pkg.title}</h1>
           <p className="text-xl text-zinc-300 max-w-3xl mx-auto mb-6 relative z-10">{pkg.subtitle}</p>
@@ -114,11 +143,31 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
     const Icon = iconMap[srv.icon] || Code;
     
     return (
-      <main className="min-h-screen bg-[#0A0F1E] text-white pt-32 pb-20">
-        <BackToHome />
+      <main className="min-h-screen bg-[#0A0F1E] text-white pt-28 pb-20">
+        <div className="max-w-6xl mx-auto px-6 mb-8">
+          <Breadcrumbs
+            items={[
+              { name: "Services", url: "/services" },
+              { name: srv.title, url: `/packages/${srv.slug}` },
+            ]}
+          />
+        </div>
+
+        {/* Visual Banner */}
+        <div className="max-w-6xl mx-auto px-6 mb-12">
+          <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black/50">
+            <SafeImage
+              src={`/images/services/${srv.slug}.svg`}
+              alt={`${srv.title} Architecture Visual`}
+              fill
+              priority
+              className="object-cover"
+            />
+          </div>
+        </div>
         
         {/* Service Hero Section */}
-        <section className="py-20 px-6 lg:px-8 max-w-6xl mx-auto relative">
+        <section className="py-12 px-6 lg:px-8 max-w-6xl mx-auto relative">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] opacity-10 blur-[120px] bg-primary pointer-events-none" />
           <div className="flex flex-col md:flex-row items-start md:items-center gap-12 relative z-10">
             <div className="flex-1">

@@ -5,6 +5,7 @@ import { Download, CheckCircle2, ArrowRight } from "lucide-react";
 import BackToHome from "@/components/ui/back-to-home";
 import PageBackdrop from "@/components/ui/page-backdrop";
 import FloatingElements from "@/components/motion/floating-elements";
+import SafeImage from "@/components/ui/safe-image";
 
 export default function ChecklistLeadMagnet() {
   const [email, setEmail] = useState("");
@@ -75,10 +76,17 @@ export default function ChecklistLeadMagnet() {
                </button>
              </motion.div>
           ) : (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-[#12172b] p-8 md:p-6 md:p-10 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
-              
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#12172b] rounded-3xl border border-white/10 shadow-2xl p-8 md:p-12">
               <div className="mb-8">
+                <div className="w-full aspect-[16/9] relative rounded-2xl overflow-hidden mb-6 border border-white/10 shadow-xl bg-black/40">
+                  <SafeImage
+                    src="/images/resources/website-development-checklist.svg"
+                    alt="Website Development Checklist Preview"
+                    fill
+                    priority
+                    className="object-cover"
+                  />
+                </div>
                 <h3 className="text-xl font-bold text-white mb-4">What's inside:</h3>
                 <ul className="space-y-3">
                   {["Performance & SEO optimization checks", "Security & data privacy requirements", "Mobile responsiveness standards", "Analytics & tracking setup steps"].map((item, i) => (

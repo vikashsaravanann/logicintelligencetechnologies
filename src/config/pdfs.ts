@@ -6,6 +6,7 @@ export interface PdfResource {
   category: string;
   filename: string;
   publicPath: string;
+  coverImage: string;
   version: string;
   publishedAt: string;
 }
@@ -19,6 +20,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Corporate",
     filename: "company-profile.pdf",
     publicPath: "/resources/company-profile.pdf",
+    coverImage: "/images/resources/company-profile.svg",
     version: "2026.1",
     publishedAt: "2026-01-15",
   },
@@ -30,6 +32,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Services",
     filename: "services-brochure.pdf",
     publicPath: "/resources/services-brochure.pdf",
+    coverImage: "/images/resources/services-brochure.svg",
     version: "2026.1",
     publishedAt: "2026-01-15",
   },
@@ -41,6 +44,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Corporate",
     filename: "capability-statement.pdf",
     publicPath: "/resources/capability-statement.pdf",
+    coverImage: "/images/resources/capability-statement.svg",
     version: "2026.1",
     publishedAt: "2026-01-20",
   },
@@ -52,6 +56,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Technical Guide",
     filename: "website-development-checklist.pdf",
     publicPath: "/resources/website-development-checklist.pdf",
+    coverImage: "/images/resources/website-development-checklist.svg",
     version: "2026.2",
     publishedAt: "2026-02-01",
   },
@@ -63,6 +68,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "AI & Data",
     filename: "ai-readiness-assessment.pdf",
     publicPath: "/resources/ai-readiness-assessment.pdf",
+    coverImage: "/images/resources/ai-readiness-assessment.svg",
     version: "2026.1",
     publishedAt: "2026-02-10",
   },
@@ -74,6 +80,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Strategy",
     filename: "business-automation-guide.pdf",
     publicPath: "/resources/business-automation-guide.pdf",
+    coverImage: "/images/resources/business-automation-guide.svg",
     version: "2026.1",
     publishedAt: "2026-02-15",
   },
@@ -85,6 +92,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Templates",
     filename: "technology-roadmap-template.pdf",
     publicPath: "/resources/technology-roadmap-template.pdf",
+    coverImage: "/images/resources/technology-roadmap-template.svg",
     version: "2026.1",
     publishedAt: "2026-02-20",
   },
@@ -96,6 +104,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Templates",
     filename: "project-proposal-template.pdf",
     publicPath: "/resources/project-proposal-template.pdf",
+    coverImage: "/images/resources/project-proposal-template.svg",
     version: "2026.1",
     publishedAt: "2026-02-25",
   },
@@ -107,6 +116,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Legal & Contracts",
     filename: "statement-of-work.pdf",
     publicPath: "/resources/statement-of-work.pdf",
+    coverImage: "/images/resources/statement-of-work.svg",
     version: "2026.1",
     publishedAt: "2026-03-01",
   },
@@ -118,6 +128,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Case Studies",
     filename: "case-study.pdf",
     publicPath: "/resources/case-study.pdf",
+    coverImage: "/images/resources/case-study.svg",
     version: "2026.1",
     publishedAt: "2026-03-05",
   },
@@ -129,6 +140,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Press & Media",
     filename: "press-kit.pdf",
     publicPath: "/resources/press-kit.pdf",
+    coverImage: "/images/resources/press-kit.svg",
     version: "2026.1",
     publishedAt: "2026-03-10",
   },
@@ -140,6 +152,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Investors",
     filename: "investor-partnership-information-memorandum.pdf",
     publicPath: "/resources/investor-partnership-information-memorandum.pdf",
+    coverImage: "/images/resources/investor-partnership-information-memorandum.svg",
     version: "2026.1",
     publishedAt: "2026-03-15",
   },

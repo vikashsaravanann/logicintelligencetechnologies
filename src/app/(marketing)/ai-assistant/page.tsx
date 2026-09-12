@@ -3,6 +3,7 @@ import Link from "next/link";
 import BackToHome from "@/components/ui/back-to-home";
 import PageBackdrop from "@/components/ui/page-backdrop";
 import FloatingElements from "@/components/motion/floating-elements";
+import SafeImage from "@/components/ui/safe-image";
 import { COMPANY } from "@/config/company";
 import {
   FileText,
@@ -71,7 +72,7 @@ export default function AiAssistantPage() {
           your tone; you get the lead. Free demo on ten of your real questions
           before you pay.
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8 mb-12">
           <Link
             href="/ai"
             className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-black bg-primary hover:brightness-110"
@@ -84,6 +85,17 @@ export default function AiAssistantPage() {
           >
             Book a scoped demo
           </Link>
+        </div>
+
+        {/* Visual Architecture Banner */}
+        <div className="max-w-4xl mx-auto aspect-[21/9] relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black/50">
+          <SafeImage
+            src="/images/ai/intelligent-interface.svg"
+            alt="LIT Knowledge Assistant Architecture"
+            fill
+            priority
+            className="object-cover"
+          />
         </div>
         </div>
       </section>

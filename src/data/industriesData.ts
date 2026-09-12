@@ -156,3 +156,11 @@ export const industriesData: IndustryData[] = [
     compliance: ["Scalable Microservices", "Modern CI/CD"]
   }
 ];
+
+export function getIndustryVisual(slug: string): string {
+  return `/images/industries/${slug}.svg`;
+}
+
+export function getIndustryBySlug(slug: string) {
+  return industriesData.find((i) => i.slug === slug);
+}

@@ -473,3 +473,11 @@ export const servicesData = [
     faqs: []
   }
 ];
+
+export function getServiceVisual(slug: string): string {
+  return `/images/services/${slug}.svg`;
+}
+
+export function getServiceBySlug(slug: string) {
+  return servicesData.find((s) => s.slug === slug);
+}

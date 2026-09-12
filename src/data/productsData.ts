@@ -72,3 +72,11 @@ export const productsData: ProductItem[] = [
     ]
   }
 ];
+
+export function getProductVisual(slug: string): string {
+  return `/images/products/${slug}.svg`;
+}
+
+export function getProductBySlug(slug: string) {
+  return productsData.find((p) => p.slug === slug);
+}

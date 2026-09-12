@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { PDF_RESOURCES } from "@/config/pdfs";
 import { ArrowRight, Download, FileText, Sparkles, BookOpen, Code2, Brain, BarChart3, Briefcase, FileCheck, Archive } from "lucide-react";
+import SafeImage from "@/components/ui/safe-image";
 
 export const metadata: Metadata = {
   title: "Engineering Resources, Guides & Architecture Whitepapers | Logic Intelligence Technologies",
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Resources & Downloads | Logic Intelligence Technologies",
     description: "Free enterprise guides, technical checklists, AI readiness frameworks, and project templates from Logic Intelligence Technologies.",
-    images: [{ url: "/assets/og-banner.jpg", width: 1200, height: 630, alt: "LIT Resources" }],
+    images: [{ url: "/api/og?title=Technical+Resources+%26+Whitepapers&category=Executive+Briefs", width: 1200, height: 630, alt: "LIT Resources" }],
   },
 };
 
@@ -32,13 +33,13 @@ export default function ResourcesPage() {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
+        <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-widest uppercase mb-6">
             <BookOpen className="w-3.5 h-3.5" />
-            <span>Executive & Technical Knowledge Hub</span>
+            <span>Executive &amp; Technical Knowledge Hub</span>
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 uppercase">
-            RESOURCES, FRAMEWORKS & <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TECHNICAL BRIEFS</span>
+            RESOURCES, FRAMEWORKS &amp; <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TECHNICAL BRIEFS</span>
           </h1>
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
             Curated blueprints, checklists, and templates developed from our real-world enterprise deployments. Available for direct download.
@@ -54,53 +55,57 @@ export default function ResourcesPage() {
               border: "rgba(0,191,255,0.2)",
               Icon: FileText,
             };
-            const { Icon: CatIcon } = catStyle;
             return (
-            <div
-              key={res.id}
-              className="group rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,191,255,0.1)] overflow-hidden relative"
-              style={{ borderTopColor: catStyle.color, borderTopWidth: "2px" }}
-            >
-              <div className="absolute top-0 left-0 right-0 h-[1px]" style={{ background: `linear-gradient(90deg, ${catStyle.color}, transparent)` }} />
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform" style={{ background: catStyle.bg, border: `1px solid ${catStyle.border}`, color: catStyle.color }}>
-                    <CatIcon className="w-6 h-6" />
+              <div
+                key={res.id}
+                className="group rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.12)] overflow-hidden"
+              >
+                {/* Visual Cover Thumbnail */}
+                <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/40">
+                  <SafeImage
+                    src={res.coverImage}
+                    alt={`${res.title} Cover`}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute top-3 left-3 z-10">
+                    <span
+                      className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full border backdrop-blur-md"
+                      style={{ color: catStyle.color, background: "rgba(10, 15, 30, 0.8)", borderColor: catStyle.border }}
+                    >
+                      {res.category}
+                    </span>
                   </div>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full border" style={{ color: catStyle.color, background: catStyle.bg, borderColor: catStyle.border }}>
-                    {res.category}
-                  </span>
                 </div>
 
-                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">
-                  {res.title}
-                </h3>
-                <p className="text-sm text-zinc-400 mb-6 leading-relaxed">
-                  {res.description}
-                </p>
-              </div>
+                <div className="p-6 sm:p-8 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">
+                    {res.title}
+                  </h3>
+                  <p className="text-sm text-zinc-400 mb-6 leading-relaxed flex-grow">
+                    {res.description}
+                  </p>
 
-              <div className="pt-6 border-t border-white/5 flex items-center justify-between">
-                <Link
-                  href={`/resources/${res.slug}`}
-                  className="inline-flex items-center gap-2 text-sm font-bold text-white group-hover:text-primary transition-colors"
-                >
-                  <span>View Details</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <a
-                  href={res.publicPath}
-                  download={res.filename}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all border text-zinc-300 hover:text-black"
-                  style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = catStyle.color; (e.currentTarget as HTMLAnchorElement).style.borderColor = catStyle.color; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.05)"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.1)"; }}
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>PDF</span>
-                </a>
+                  <div className="pt-6 border-t border-white/10 flex items-center justify-between mt-auto">
+                    <Link
+                      href={`/resources/${res.slug}`}
+                      className="inline-flex items-center gap-2 text-sm font-bold text-white group-hover:text-primary transition-colors"
+                    >
+                      <span>View Details</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                    <a
+                      href={res.publicPath}
+                      download={res.filename}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all border text-zinc-300 hover:text-black hover:bg-primary"
+                      style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }}
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>PDF</span>
+                    </a>
+                  </div>
+                </div>
               </div>
-            </div>
             );
           })}
         </div>
