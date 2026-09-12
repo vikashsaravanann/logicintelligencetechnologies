@@ -1,18 +1,47 @@
 import "server-only";
+import * as React from "react";
+import { render } from "@react-email/components";
+import { COMPANY } from "@/config/company";
 import {
   getSmtpTransporter,
   getSmtpFromAddress,
   isSmtpConfigured,
   resolveSender,
+  hasSenderCredentials,
 } from "./smtp";
-import * as React from "react";
-import { render } from "@react-email/components";
-import { COMPANY } from "@/config/company";
+import {
+  parseRecipientList,
+  sanitizeSubject,
+  containsHeaderInjection,
+  isValidEmail,
+  normalizeEmail,
+} from "./validation";
+import { classifyEmailError } from "./errors";
+import {
+  isEmailDryRun,
+  isPreviewEmailIsolation,
+  isAllowedPreviewRecipient,
+  SEND_MAIL_TIMEOUT_MS,
+} from "./config";
+import { defaultReplyTo } from "./recipients";
+import { isSuppressed } from "./suppression";
+import {
+  claimOutbox,
+  markOutboxFailure,
+  markOutboxSent,
+  recordAttempt,
+} from "./outbox";
+import { buildOneClickUnsubscribeUrl } from "./unsubscribe";
+import { emailLog, maskEmail } from "./logger";
+import type {
+  EmailAttachment,
+  EmailCategory,
+  EmailDeliveryStatus,
+  EmailResponse,
+  SenderKey,
+} from "./types";
 
-export type EmailResponse = {
-  success: boolean;
-  message: string;
-};
+export type { EmailResponse };
 
 interface SendEmailOptions {
   to: string | string[];
@@ -20,15 +49,17 @@ interface SendEmailOptions {
   react: React.ReactElement;
   replyTo?: string;
   from: keyof typeof COMPANY.emails | string;
-  attachments?: Array<{
-    filename: string;
-    content?: Buffer | string;
-    path?: string;
-    contentType?: string;
-  }>;
+  attachments?: EmailAttachment[];
+  category?: EmailCategory;
+  idempotencyKey?: string;
+  eventType?: string;
+  templateKey?: string;
+  correlationId?: string;
+  allowFallbackSender?: boolean;
+  listUnsubscribeEmail?: string;
 }
 
-function getSenderKeyFromEmail(email: string): keyof typeof COMPANY.emails {
+function getSenderKeyFromEmail(email: string): SenderKey {
   const normalized = email
     .toLowerCase()
     .replace(/.*</, "")
@@ -36,24 +67,38 @@ function getSenderKeyFromEmail(email: string): keyof typeof COMPANY.emails {
     .trim();
   for (const [key, value] of Object.entries(COMPANY.emails)) {
     if (value.toLowerCase() === normalized) {
-      return key as keyof typeof COMPANY.emails;
+      return key as SenderKey;
     }
   }
   return "noReply";
 }
 
-function normalizeRecipients(to: string | string[]): string[] {
-  const list = Array.isArray(to) ? to : [to];
-  return list
-    .map((e) => String(e || "").trim().toLowerCase())
-    .filter((e) => e.includes("@") && !e.endsWith("@example.com"));
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timer) clearTimeout(timer);
+  });
+}
+
+function safeReplyTo(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  if (containsHeaderInjection(value)) return undefined;
+  const cleaned = value.replace(/.*</, "").replace(/>.*/, "").trim();
+  if (cleaned.includes("@")) {
+    return isValidEmail(cleaned) ? normalizeEmail(cleaned) : undefined;
+  }
+  if (cleaned in COMPANY.emails) {
+    return COMPANY.emails[cleaned as SenderKey];
+  }
+  return undefined;
 }
 
 /**
- * Transactional email sender with:
- * - sender fallback to noReply when mailbox-specific SMTP is missing
- * - one automatic retry via noReply on transport failure
- * - never throws to the request path
+ * Canonical transactional/marketing sender.
+ * Never throws. Lead-producing callers must persist business records first.
  */
 export async function sendEmail({
   to,
@@ -62,70 +107,252 @@ export async function sendEmail({
   replyTo,
   from,
   attachments,
+  category = "transactional",
+  idempotencyKey,
+  eventType = "transactional",
+  templateKey,
+  correlationId,
+  allowFallbackSender = true,
+  listUnsubscribeEmail,
 }: SendEmailOptions): Promise<EmailResponse> {
-  const recipients = normalizeRecipients(to);
+  const recipients = parseRecipientList(to);
   if (!recipients.length) {
-    return { success: false, message: "No valid recipients" };
+    return { success: false, message: "No valid recipients", status: "failed" };
   }
 
-  const requested =
+  const safeSubject = sanitizeSubject(subject);
+  const requested: SenderKey =
     typeof from === "string" && from.includes("@")
       ? getSenderKeyFromEmail(from)
-      : (from as keyof typeof COMPANY.emails);
+      : (from as SenderKey);
+  const resolvedReplyTo = safeReplyTo(replyTo) || defaultReplyTo();
 
-  if (!isSmtpConfigured(requested) && !isSmtpConfigured("noReply")) {
-    console.error("[Email] SMTP not configured — cannot send", { subject, to: recipients });
-    return { success: false, message: "SMTP not configured" };
+  if (isPreviewEmailIsolation()) {
+    const allowed = recipients.filter(isAllowedPreviewRecipient);
+    if (!allowed.length) {
+      emailLog("info", "preview_blocked", {
+        subject: safeSubject,
+        recipients: recipients.map(maskEmail),
+      });
+      return {
+        success: true,
+        message: "Preview isolation: delivery skipped",
+        status: "skipped",
+        skipped: true,
+      };
+    }
+    recipients.splice(0, recipients.length, ...allowed);
   }
 
-  const primary = resolveSender(requested);
+  if (category === "marketing") {
+    const kept: string[] = [];
+    for (const recipient of recipients) {
+      if (await isSuppressed(recipient, "marketing")) {
+        emailLog("info", "suppressed", { recipient: maskEmail(recipient), subject: safeSubject });
+      } else {
+        kept.push(recipient);
+      }
+    }
+    if (!kept.length) {
+      return {
+        success: true,
+        message: "Recipient suppressed",
+        status: "suppressed",
+        skipped: true,
+      };
+    }
+    recipients.splice(0, recipients.length, ...kept);
+  }
 
+  if (!isSmtpConfigured(requested) && !isSmtpConfigured("noReply") && !isEmailDryRun()) {
+    emailLog("error", "smtp_unconfigured", { subject: safeSubject });
+    return { success: false, message: "SMTP not configured", status: "failed" };
+  }
+
+  const primary = hasSenderCredentials(requested) ? requested : resolveSender(requested);
+  const unsubRecipient = listUnsubscribeEmail || (category === "marketing" ? recipients[0] : undefined);
+  const listUnsub = unsubRecipient ? buildOneClickUnsubscribeUrl(unsubRecipient) : undefined;
+
+  let html = "";
+  let text = "";
   try {
-    const html = await render(react);
-    const text = await render(react, { plainText: true });
+    html = await render(react);
+    text = await render(react, { plainText: true });
+  } catch (err) {
+    emailLog("error", "render_failed", {
+      message: err instanceof Error ? err.message : String(err),
+      subject: safeSubject,
+    });
+    return { success: false, message: "Internal failure while sending email", status: "failed" };
+  }
 
-    const attempt = async (sender: keyof typeof COMPANY.emails) => {
-      const transporter = getSmtpTransporter(sender);
-      const fromAddress = getSmtpFromAddress(sender);
-      return transporter.sendMail({
-        from: fromAddress,
-        to: recipients,
-        subject,
+  const outbox = idempotencyKey
+    ? await claimOutbox({
+        eventType,
+        templateKey,
+        category,
+        recipient: recipients.join(","),
+        sender: COMPANY.emails[primary],
+        replyTo: resolvedReplyTo,
+        subject: safeSubject,
         html,
         text,
-        replyTo: replyTo || COMPANY.emails.support || COMPANY.emails.hello,
-        attachments,
-      });
-    };
+        idempotencyKey,
+        correlationId,
+      })
+    : null;
 
+  if (outbox?.duplicate && outbox.alreadySent) {
+    return {
+      success: true,
+      message: "Already sent",
+      status: "sent",
+      outboxId: outbox.id,
+      skipped: true,
+    };
+  }
+  if (outbox?.duplicate && !outbox.alreadySent) {
+    return {
+      success: true,
+      message: "Delivery already in progress",
+      status: "queued",
+      outboxId: outbox.id,
+      skipped: true,
+    };
+  }
+
+  if (isEmailDryRun()) {
+    emailLog("info", "dry_run", {
+      subject: safeSubject,
+      recipients: recipients.map(maskEmail),
+      from: primary,
+    });
+    if (outbox?.id) await markOutboxSent(outbox.id, "dry-run");
+    return {
+      success: true,
+      message: "Dry run: email not sent",
+      status: "sent",
+      outboxId: outbox?.id,
+      skipped: true,
+    };
+  }
+
+  const attempt = async (sender: SenderKey) => {
+    const transporter = getSmtpTransporter(sender);
+    const fromAddress = getSmtpFromAddress(sender);
+    return withTimeout(
+      transporter.sendMail({
+        from: fromAddress,
+        to: recipients,
+        subject: safeSubject,
+        html,
+        text,
+        replyTo: resolvedReplyTo,
+        attachments,
+        headers: listUnsub
+          ? {
+              "List-Unsubscribe": `<${listUnsub}>`,
+              "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+            }
+          : undefined,
+      }),
+      SEND_MAIL_TIMEOUT_MS,
+      "SMTP sendMail"
+    );
+  };
+
+  try {
     try {
       const result = await attempt(primary);
-      return { success: true, message: `Email sent: ${result.messageId}` };
-    } catch (primaryErr) {
-      console.error("[Email] primary send failed, retrying noReply", {
-        primary,
-        err: primaryErr instanceof Error ? primaryErr.message : String(primaryErr),
-        subject,
-        to: recipients,
+      await recordAttempt({
+        outboxId: outbox?.id,
+        attempt: 1,
+        status: "sent",
+        providerMessageId: result.messageId,
       });
-      if (primary !== "noReply" && isSmtpConfigured("noReply")) {
+      if (outbox?.id) await markOutboxSent(outbox.id, result.messageId, false);
+      return {
+        success: true,
+        message: `Email sent: ${result.messageId}`,
+        status: "sent",
+        messageId: result.messageId,
+        outboxId: outbox?.id,
+      };
+    } catch (primaryErr) {
+      const classified = classifyEmailError(primaryErr);
+      emailLog("error", "primary_send_failed", {
+        sender: primary,
+        err: classified.message,
+        code: classified.code,
+        retryable: classified.retryable,
+        subject: safeSubject,
+        recipients: recipients.map(maskEmail),
+      });
+
+      const canFallback =
+        allowFallbackSender &&
+        classified.retryable &&
+        primary !== "noReply" &&
+        isSmtpConfigured("noReply");
+
+      if (canFallback) {
         const result = await attempt("noReply");
-        return { success: true, message: `Email sent via fallback: ${result.messageId}` };
+        await recordAttempt({
+          outboxId: outbox?.id,
+          attempt: 2,
+          status: "sent",
+          providerMessageId: result.messageId,
+        });
+        if (outbox?.id) await markOutboxSent(outbox.id, result.messageId, true);
+        emailLog("warn", "fallback_sender_used", {
+          primary,
+          subject: safeSubject,
+        });
+        return {
+          success: true,
+          message: `Email sent via fallback: ${result.messageId}`,
+          status: "sent",
+          messageId: result.messageId,
+          outboxId: outbox?.id,
+          fallbackUsed: true,
+        };
       }
-      throw primaryErr;
+
+      const status: EmailDeliveryStatus = outbox?.id
+        ? await markOutboxFailure(outbox.id, 1, classified)
+        : classified.retryable
+          ? "retrying"
+          : "failed";
+      await recordAttempt({
+        outboxId: outbox?.id,
+        attempt: 1,
+        status: "failed",
+        errorCode: classified.code,
+        errorMessage: classified.message,
+      });
+      return {
+        success: false,
+        message: "Internal failure while sending email",
+        status,
+        outboxId: outbox?.id,
+      };
     }
   } catch (error: unknown) {
-    const err = error as { code?: string; responseCode?: number; command?: string };
-    console.error("Email delivery failed", {
+    const classified = classifyEmailError(error);
+    emailLog("error", "delivery_failed", {
       type: error instanceof Error ? error.name : "UnknownEmailError",
-      message: error instanceof Error ? error.message : String(error),
-      code: err?.code,
-      responseCode: err?.responseCode,
-      command: err?.command,
+      message: classified.message,
+      code: classified.code,
       sender: primary,
-      to: recipients,
-      subject,
+      recipients: recipients.map(maskEmail),
+      subject: safeSubject,
     });
-    return { success: false, message: "Internal failure while sending email" };
+    if (outbox?.id) await markOutboxFailure(outbox.id, 1, classified);
+    return {
+      success: false,
+      message: "Internal failure while sending email",
+      status: classified.retryable ? "retrying" : "failed",
+      outboxId: outbox?.id,
+    };
   }
 }
