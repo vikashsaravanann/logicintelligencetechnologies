@@ -21,9 +21,14 @@ export const COMPANY = {
   tagline: 'Where Logic Meets Innovation',
   founder: {
     name: 'Vikash Saravanan',
-    title: 'Founder',
-    photoPath: '/assets/founder.jpg',
-    bio: 'B.Tech student in Artificial Intelligence & Data Science and founder of Logic Intelligence Technologies. Vikash started the studio to give Coimbatore businesses — and teams across India — production-ready web products and practical AI systems, with transparent pricing and a free demo before payment.',
+    title: 'Founder & Lead Systems Engineer',
+    photoPath: '/images/founder/vikash-saravanan-profile-square.webp',
+    photoPathJpg: '/assets/founder.jpg',
+    bio: 'Vikash Saravanan is an AI and data science engineer and the Founder of Logic Intelligence Technologies. His work focuses on full-stack software engineering, intelligent automation, workflow systems, and scalable application architecture.',
+    portfolioUrl: 'https://vikashsaravanann.github.io/startupwithvikash/',
+    linkedinUrl: 'https://www.linkedin.com/in/vikash-saravanan-j7528/',
+    githubUrl: 'https://github.com/vikashsaravanann',
+    instagramUrl: 'https://www.instagram.com/vikash.saravanann',
   },
   emails: {
     noReply: 'no-reply@logicintelligencetechnologies.in',
