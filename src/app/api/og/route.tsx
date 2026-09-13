@@ -118,7 +118,7 @@ export async function GET(request: NextRequest) {
               <span>Coimbatore, Tamil Nadu</span>
             </div>
             <div style={{ color: "#00FF88", fontWeight: "700" }}>
-              // VERIFIED PRODUCTION SPEC
+              {"// VERIFIED PRODUCTION SPEC"}
             </div>
           </div>
         </div>
