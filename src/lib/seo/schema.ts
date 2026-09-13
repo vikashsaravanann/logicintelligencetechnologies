@@ -1,4 +1,5 @@
 import { COMPANY } from "@/config/company";
+import { FOUNDER } from "@/config/founder";
 import { packagesData } from "@/data/packagesData";
 
 export const SITE = COMPANY.websiteUrl.replace(/\/$/, "");
@@ -7,6 +8,7 @@ export const LOGO_192 = `${SITE}/icon-192.png`;
 export const LOGO_512 = `${SITE}/icon.png`;
 export const ORG_ID = `${SITE}/#organization`;
 export const WEBSITE_ID = `${SITE}/#website`;
+export const FOUNDER_ID = `${SITE}/#founder`;
 
 export function breadcrumb(items: Array<{ name: string; path: string }>) {
   return {
@@ -55,11 +57,7 @@ export function organizationNode() {
     },
     areaServed: ["Coimbatore", "Tamil Nadu", "India"],
     sameAs: [COMPANY.linkedinUrl, COMPANY.instagramUrl, COMPANY.facebookUrl],
-    founder: {
-      "@type": "Person",
-      name: COMPANY.founder.name,
-      jobTitle: COMPANY.founder.title,
-    },
+    founder: { "@id": FOUNDER_ID },
     contactPoint: [
       {
         "@type": "ContactPoint",
@@ -89,6 +87,36 @@ export function websiteNode() {
       },
       "query-input": "required name=search_term_string",
     },
+  };
+}
+
+export function founderNode() {
+  return {
+    "@type": "Person",
+    "@id": FOUNDER_ID,
+    name: FOUNDER.fullName,
+    alternateName: FOUNDER.shortName,
+    jobTitle: FOUNDER.title,
+    url: FOUNDER.links.portfolio,
+    image: {
+      "@type": "ImageObject",
+      url: `${SITE}${FOUNDER.images.profile}`,
+      contentUrl: `${SITE}${FOUNDER.images.profile}`,
+      caption: FOUNDER.images.alt,
+    },
+    worksFor: { "@id": ORG_ID },
+    alumniOf: {
+      "@type": "EducationalOrganization",
+      name: FOUNDER.education.institution,
+    },
+    knowsAbout: [...FOUNDER.specializations],
+    sameAs: [
+      FOUNDER.links.portfolio,
+      FOUNDER.links.linkedin,
+      FOUNDER.links.github,
+      FOUNDER.links.instagram,
+    ],
+    description: FOUNDER.shortBio,
   };
 }
 
@@ -148,123 +176,10 @@ export const JOB_SEATS = [
     description:
       "Own the Next.js, FastAPI, and AI delivery stack. Ship production systems with the founder.",
   },
-  {
-    title: "Director of Sales & Growth",
-    slug: "director-sales",
-    description:
-      "Own pipeline from Logic AI and Discovery through signed scopes. Coimbatore HQ.",
-  },
-  {
-    title: "Director of AI & Product",
-    slug: "director-ai",
-    description:
-      "Own Logic AI, RAG quality, and the product surface that converts visitors into scoped work.",
-  },
-] as const;
-
-export function jobPostings() {
-  return JOB_SEATS.map((seat) => ({
-    "@type": "JobPosting",
-    title: seat.title,
-    description: seat.description,
-    datePosted: "2026-09-12",
-    validThrough: "2026-12-31",
-    employmentType: "FULL_TIME",
-    hiringOrganization: {
-      "@id": ORG_ID,
-      name: COMPANY.displayName,
-      sameAs: SITE,
-      logo: LOGO_192,
-    },
-    jobLocation: {
-      "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Coimbatore",
-        addressRegion: "Tamil Nadu",
-        addressCountry: "IN",
-      },
-    },
-    applicantLocationRequirements: {
-      "@type": "Country",
-      name: "India",
-    },
-    directApply: true,
-    url: `${SITE}/jobs#${seat.slug}`,
-  }));
-}
-
-export const PACKAGES_FAQ = [
-  {
-    q: "What does a website cost at Logic Intelligence Technologies?",
-    a: "Digital Launch Pack starts at ₹8,999. Business Pro Pack starts at ₹18,999. Custom / Enterprise work starts from ₹50,000 after a scoped brief.",
-  },
-  {
-    q: "Do I pay before I see a demo?",
-    a: "No. Book a free demo first. You pay after you see the proposed build and agree the 31-point scope.",
-  },
-  {
-    q: "Who owns the source code?",
-    a: "You own the source on full payment. Hosting credentials and the repository are handed over at close.",
-  },
-  {
-    q: "How long does Digital Launch take?",
-    a: "Typically 5–7 working days after content and photos are provided.",
-  },
 ];
 
-export const AI_FAQ = [
-  {
-    q: "What is Logic AI?",
-    a: "Logic AI is the studio assistant on logicintelligencetechnologies.in/ai. It answers from company packages and, when documents are attached, from that context. Grok is the primary model.",
-  },
-  {
-    q: "Does Logic AI invent prices?",
-    a: "Prices are constrained facts: Digital Launch from ₹8,999, Business Pro from ₹18,999, custom from ₹50,000. Ask in Company mode for package answers.",
-  },
-  {
-    q: "Can I book a demo from the chat?",
-    a: "Yes. After a pricing or build question, use Book free demo or WhatsApp handoff with the last turns attached.",
-  },
-];
-
-export const JOBS_FAQ = [
-  {
-    q: "Are these partnership roles?",
-    a: "No. Seats are employment offers or letters of intent. Titles are not for sale and there is no unpaid partnership programme.",
-  },
-  {
-    q: "Where is the role based?",
-    a: "Coimbatore headquarters. Hybrid may be discussed after the first 90 days if you have already shipped in the room.",
-  },
-  {
-    q: "How do I apply?",
-    a: "Use the confidential application form on /jobs. You receive a confirmation email. We reply within 24 hours.",
-  },
-];
-
-export const DEMO_FAQ = [
-  {
-    q: "Is the demo actually free?",
-    a: "Yes. No retainer is required to see a scoped prototype or walkthrough of how we would build your site or system.",
-  },
-  {
-    q: "What happens after I submit the form?",
-    a: "The submission is stored in our CRM and you receive a confirmation email. We follow up on WhatsApp or email within one business day.",
-  },
-  {
-    q: "Which pack should I pick?",
-    a: "First site or brochure: Digital Launch from ₹8,999. Lead-gen and richer modules: Business Pro from ₹18,999. Custom platforms: Enterprise from ₹50,000.",
-  },
-];
-
-export const HOWTO_STEPS = [
-  { name: "Write the business goal", text: "State the outcome: leads, bookings, or operations — not a page count." },
-  { name: "List pages and modules", text: "Home, About, Services, Contact, plus any booking, shop, or portal." },
-  { name: "Collect brand assets", text: "Logo, colours, type, and photos you already own." },
-  { name: "Prepare copy", text: "Service names, prices you will publish, and a short about paragraph." },
-  { name: "Confirm integrations", text: "WhatsApp, payments, maps, forms, and any third-party tools." },
-  { name: "Agree the 31-point scope", text: "Lock inclusions so the brief does not drift mid-build." },
+export const HOW_TO_STEPS = [
+  { name: "Book a free consultation", text: "Share goals, constraints, and timeline." },
   { name: "Review the free demo", text: "See the proposed structure before you pay." },
   { name: "Go live and hand over source", text: "DNS, SSL, Search Console, and repository on full payment." },
 ];
