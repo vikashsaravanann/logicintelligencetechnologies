@@ -183,3 +183,60 @@ export const HOW_TO_STEPS = [
   { name: "Review the free demo", text: "See the proposed structure before you pay." },
   { name: "Go live and hand over source", text: "DNS, SSL, Search Console, and repository on full payment." },
 ];
+
+
+export const PACKAGES_FAQ: Array<{ q: string; a: string }> = [
+  {
+    q: "What is included in the Digital Launch Pack?",
+    a: "A production-ready marketing site with core pages, contact forms, SEO basics, and deployment to Vercel. Starting from ₹8,999.",
+  },
+  {
+    q: "Can packages be customized?",
+    a: "Yes. Fixed-scope packs set a clear floor; Enterprise and custom SOWs expand scope after a discovery call.",
+  },
+  {
+    q: "Do you hand over source code?",
+    a: "Yes. On full payment you receive repository access, DNS/SSL guidance, and Search Console setup.",
+  },
+];
+
+export const JOBS_FAQ: Array<{ q: string; a: string }> = [
+  {
+    q: "Are these partnership seats or employment roles?",
+    a: "Employment and leadership seats. Titles are not for sale. Equity, if any, follows entity formation and performance.",
+  },
+  {
+    q: "Where is the team based?",
+    a: "Primary base is Coimbatore / Tamil Nadu, India. Early roles expect in-person collaboration with the founder.",
+  },
+  {
+    q: "How do I apply?",
+    a: "Use the application form on the Jobs page or email careers through the company contact channels with a short portfolio and CV.",
+  },
+];
+
+export function jobPostings() {
+  return JOB_SEATS.map((seat) => ({
+    "@type": "JobPosting",
+    title: seat.title,
+    description: seat.description,
+    identifier: {
+      "@type": "PropertyValue",
+      name: "Logic Intelligence Technologies",
+      value: seat.slug,
+    },
+    datePosted: "2026-01-15",
+    employmentType: "FULL_TIME",
+    hiringOrganization: { "@id": ORG_ID },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Coimbatore",
+        addressRegion: "Tamil Nadu",
+        addressCountry: "IN",
+      },
+    },
+    url: `${SITE}/jobs`,
+  }));
+}
