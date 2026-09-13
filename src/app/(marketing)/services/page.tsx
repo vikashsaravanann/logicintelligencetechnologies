@@ -3,6 +3,8 @@ import Link from "next/link";
 import { servicesData } from "@/data/servicesData";
 import { ArrowRight, CheckCircle2, Sparkles, Layers, ShieldCheck, Zap, Code, Hotel, Plane, Terminal, Gamepad, ShoppingCart, Smartphone, Search, Palette, Brush, Layout, UploadCloud, Building, Users, GraduationCap, Receipt, CodeSquare, Cloud } from "lucide-react";
 import SafeImage from "@/components/ui/safe-image";
+import PageHero from "@/components/ui/page-hero";
+import BrandMesh from "@/components/ui/brand-mesh";
 
 export const metadata: Metadata = {
   title: "Enterprise Engineering & AI Services | Logic Intelligence Technologies",
@@ -44,26 +46,28 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 export default function ServicesPage() {
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
-      {/* Background Gradients */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 right-0 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[160px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-widest uppercase mb-6">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Full-Stack &amp; Intelligent Systems</span>
-          </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 uppercase">
-            ENGINEERING EXCELLENCE FOR <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">ENTERPRISE GROWTH</span>
-          </h1>
-          <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
-            From bespoke full-stack applications and AI-driven workflows to high-throughput cloud infrastructure—we architect software that scales without limits.
-          </p>
-        </div>
+        <PageHero
+          eyebrow="Full-Stack & Intelligent Systems"
+          eyebrowIcon={<Sparkles className="w-3.5 h-3.5" />}
+          title={
+            <>
+              ENGINEERING EXCELLENCE FOR{" "}
+              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                ENTERPRISE GROWTH
+              </span>
+            </>
+          }
+          description="From bespoke full-stack applications and AI-driven workflows to high-throughput cloud infrastructure—we architect software that scales without limits."
+          primaryCta={{ label: "Start a project", href: "/contact" }}
+          secondaryCta={{ label: "View packages", href: "/packages" }}
+          breadcrumbs={[{ label: "Services", href: "/services" }]}
+          visual={<BrandMesh seed="services" label="Services" />}
+        />
 
-        {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {servicesData.map((svc) => {
             const accent = SERVICE_ACCENT[svc.slug] ?? "#00BFFF";
@@ -73,7 +77,6 @@ export default function ServicesPage() {
                 key={svc.slug}
                 className="group relative flex flex-col justify-between rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)] overflow-hidden"
               >
-                {/* Service Card Visual Header */}
                 <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/40">
                   <SafeImage
                     src={`/images/services/${svc.slug}.svg`}
@@ -134,7 +137,6 @@ export default function ServicesPage() {
           })}
         </div>
 
-        {/* Global CTA Banner */}
         <div className="mt-24 rounded-3xl border border-primary/30 bg-gradient-to-r from-primary/10 via-white/[0.02] to-accent/10 p-10 lg:p-16 text-center relative overflow-hidden">
           <h2 className="text-3xl lg:text-4xl font-black text-white uppercase tracking-tight mb-4">
             Need a Custom Architecture or Scalable System?
