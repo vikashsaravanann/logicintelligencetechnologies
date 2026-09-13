@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import BackToHome from "@/components/ui/back-to-home";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Plus, Trash2, Loader2, Check } from "lucide-react";
@@ -92,6 +93,7 @@ export default function NewProposalPage() {
 
   return (
     <div className="container mx-auto p-4 py-8 max-w-4xl">
+      <BackToHome href="/admin/proposals" label="Back to Proposals" inline />
       <Link
         href="/admin/proposals"
         className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors mb-6"

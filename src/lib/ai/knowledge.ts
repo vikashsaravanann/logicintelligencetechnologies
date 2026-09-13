@@ -1,4 +1,5 @@
 import { COMPANY } from "@/config/company";
+import { FOUNDER } from "@/config/founder";
 import { packagesData } from "@/data/packagesData";
 import { servicesData } from "@/data/servicesData";
 import { portfolioProjects } from "@/data/portfolioData";
@@ -59,7 +60,11 @@ CONTACT:
 - Free demo: ${COMPANY.websiteUrl}/free-demo
 - Contact form: ${COMPANY.websiteUrl}/contact
 - Location: Coimbatore, Tamil Nadu, India
-- Founder: ${COMPANY.founder?.name || "Vikash Saravanan"} (${COMPANY.founder?.title || "Founder"})
+- Founder: ${FOUNDER.name} (${FOUNDER.title})
+
+FOUNDER & EXPERTISE:
+- ${FOUNDER.shortBio}
+- Key Project: ${FOUNDER.projects[0].name} - ${FOUNDER.projects[0].description}
 
 PAYMENT & PROCESS (summary):
 - Launch & Pro packs: typically 50% advance, 50% on delivery

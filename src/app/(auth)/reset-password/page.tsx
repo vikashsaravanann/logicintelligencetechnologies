@@ -1,18 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import BackToHome from "@/components/ui/back-to-home";
 import { Lock, Eye, EyeOff, ArrowRight, Shield } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { getClientSupabase } from "@/lib/supabase/client";
 import { env } from "@/config/env";
 import { COMPANY } from "@/config/company";
 
 export default function ResetPasswordPage() {
-  const supabase = createClientComponentClient({
-    supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
-    supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  });
+  const supabase = getClientSupabase();
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -44,6 +42,7 @@ export default function ResetPasswordPage() {
 
   return (
     <main className="min-h-[100dvh] bg-[#0A0F1E] text-white flex items-center justify-center px-5">
+      <BackToHome href="/login" label="Back to Sign In" />
       <form onSubmit={onSubmit} className="w-full max-w-md space-y-4">
         <Link href="/" className="text-[11px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white">
           {COMPANY.displayName}

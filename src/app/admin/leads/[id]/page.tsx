@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Mail, Phone, Building2, Calendar, FileText, ArrowRight, CheckCircle2, ShieldCheck, Plus } from "lucide-react";
@@ -36,6 +37,7 @@ export default async function AdminLeadDetailPage({ params }: Props) {
 
   return (
     <div className="container mx-auto p-4 py-8 max-w-5xl space-y-8">
+      <BackToHome href="/admin/leads" label="Back to Leads Ledger" inline />
       <Link
         href="/admin/leads"
         className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"

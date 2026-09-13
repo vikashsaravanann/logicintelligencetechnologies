@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackButton from "@/components/navigation/BackButton";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, Clock, HelpCircle, MessageSquare, ShieldCheck } from "lucide-react";
@@ -29,13 +30,9 @@ export default async function TicketDetailPage({ params }: Props) {
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20">
       <div className="max-w-4xl mx-auto px-6 space-y-8">
-        <Link
-          href="/support"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Support Hub</span>
-        </Link>
+        <div>
+          <BackButton fallbackHref="/support" label="Back to Support" inline />
+        </div>
 
         <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">

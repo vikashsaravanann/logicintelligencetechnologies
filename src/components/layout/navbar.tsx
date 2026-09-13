@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, LogIn } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -89,13 +89,14 @@ export default function Navbar() {
   }, [moreOpen]);
 
   return (
-    <>
+    <header id="header" className="fixed top-0 left-0 right-0 w-full z-50">
       <motion.div
         className="fixed top-0 left-0 right-0 h-[2px] bg-primary z-[60] origin-left"
         style={{ scaleX }}
       />
       <nav
-        className={`fixed w-full z-50 transition-all duration-300 ${
+        aria-label="Main navigation"
+        className={`w-full transition-all duration-300 ${
           scrolled
             ? "bg-[rgba(10,15,30,0.85)] backdrop-blur-[20px] border-b border-white/[0.08] py-2.5"
             : "bg-transparent py-3"
@@ -185,14 +186,21 @@ export default function Navbar() {
 
             <div className="ml-auto flex items-center gap-2 shrink-0">
               <Link
+                href="/login"
+                className="hidden lg:inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full text-[10px] font-bold text-zinc-200 hover:text-white uppercase tracking-[0.14em] border border-white/15 bg-white/5 hover:bg-white/10 hover:border-cyan-400/40 transition-all shadow-sm"
+              >
+                <LogIn className="w-3 h-3 text-cyan-400" />
+                Login
+              </Link>
+              <Link
                 href={PRIMARY_CTA.href}
-                className="hidden lg:inline-flex h-8 px-4 rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
+                className="hidden lg:inline-flex h-8 px-4 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
               >
                 Book Call
               </Link>
               <Link
                 href="/contact"
-                className="hidden lg:inline-flex h-8 px-4 rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-90 transition-opacity"
+                className="hidden lg:inline-flex h-8 px-4 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-90 transition-opacity"
               >
                 Start Project
               </Link>
@@ -288,9 +296,17 @@ export default function Navbar() {
                 })}
 
                 <Link
+                  href="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="mt-6 px-6 py-3.5 text-center rounded-xl font-bold text-white border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 min-h-[44px] flex items-center justify-center gap-2 tracking-wider uppercase text-xs transition-colors"
+                >
+                  <LogIn className="w-4 h-4 text-cyan-400" />
+                  Client & Team Login
+                </Link>
+                <Link
                   href="/contact"
                   onClick={() => setIsOpen(false)}
-                  className="mt-8 px-6 py-4 text-center rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-cyan-500 min-h-[48px] flex items-center justify-center"
+                  className="mt-3 px-6 py-4 text-center rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-cyan-500 min-h-[48px] flex items-center justify-center"
                 >
                   Start Project
                 </Link>
@@ -319,6 +335,6 @@ export default function Navbar() {
           )}
         </AnimatePresence>
       </nav>
-    </>
+    </header>
   );
 }

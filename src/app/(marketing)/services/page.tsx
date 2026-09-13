@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 import Link from "next/link";
 import { servicesData } from "@/data/servicesData";
 import { ArrowRight, CheckCircle2, Sparkles, Layers, ShieldCheck, Zap, Code, Hotel, Plane, Terminal, Gamepad, ShoppingCart, Smartphone, Search, Palette, Brush, Layout, UploadCloud, Building, Users, GraduationCap, Receipt, CodeSquare, Cloud } from "lucide-react";
@@ -46,6 +47,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 export default function ServicesPage() {
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+      <BackToHome href="/" label="Back to Home" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 right-0 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[160px] pointer-events-none" />
 

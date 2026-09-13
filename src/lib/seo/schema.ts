@@ -94,29 +94,40 @@ export function founderNode() {
   return {
     "@type": "Person",
     "@id": FOUNDER_ID,
-    name: FOUNDER.fullName,
-    alternateName: FOUNDER.shortName,
+    name: FOUNDER.name,
+    alternateName: FOUNDER.alternateNames,
+    url: FOUNDER.portfolioUrl,
     jobTitle: FOUNDER.title,
-    url: FOUNDER.links.portfolio,
+    description: FOUNDER.shortBio,
     image: {
       "@type": "ImageObject",
-      url: `${SITE}${FOUNDER.images.profile}`,
-      contentUrl: `${SITE}${FOUNDER.images.profile}`,
-      caption: FOUNDER.images.alt,
+      url: FOUNDER.imageUrl,
     },
     worksFor: { "@id": ORG_ID },
     alumniOf: {
-      "@type": "EducationalOrganization",
+      "@type": "CollegeOrUniversity",
       name: FOUNDER.education.institution,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Coimbatore",
+        addressRegion: "Tamil Nadu",
+        addressCountry: "IN",
+      },
     },
-    knowsAbout: [...FOUNDER.specializations],
-    sameAs: [
-      FOUNDER.links.portfolio,
-      FOUNDER.links.linkedin,
-      FOUNDER.links.github,
-      FOUNDER.links.instagram,
+    knowsAbout: [
+      ...FOUNDER.expertise.programmingLanguages,
+      ...FOUNDER.expertise.backendAndApiEngineering,
+      ...FOUNDER.expertise.frontendEngineering,
+      ...FOUNDER.expertise.databaseAndCloudInfrastructure,
+      ...FOUNDER.expertise.automationAndAi,
     ],
-    description: FOUNDER.shortBio,
+    sameAs: [
+      FOUNDER.portfolioUrl,
+      FOUNDER.linkedinUrl,
+      FOUNDER.githubUrl,
+      FOUNDER.instagramUrl,
+      FOUNDER.companyUrl,
+    ],
   };
 }
 

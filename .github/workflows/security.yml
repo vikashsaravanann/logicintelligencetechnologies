@@ -1,0 +1,39 @@
+name: Security Audit
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Run nightly at 2 AM
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: NPM Audit
+        run: npm audit --audit-level=high
+
+      - name: Secret Scanning
+        run: |
+          # Fails if any common secrets (AWS, private keys, stripe) are found in code
+          # In a real enterprise setup, use gitleaks or trufflehog action here
+          # We use a basic grep for demonstration
+          if grep -rE "sk_live_|pk_live_|STRIPE_SECRET|xoxb-|ghp_|AKIA|-----BEGIN PRIVATE KEY-----" src/; then
+            echo "❌ Hardcoded secrets detected in source code!"
+            exit 1
+          fi
+          echo "✅ No hardcoded secrets detected in source code."

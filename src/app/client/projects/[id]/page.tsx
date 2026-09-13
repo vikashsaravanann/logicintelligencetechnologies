@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackButton from "@/components/navigation/BackButton";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, Clock, Layers, ShieldCheck, User } from "lucide-react";
@@ -27,13 +28,9 @@ export default async function ClientProjectDetailPage({ params }: Props) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <Link
-        href="/client/projects"
-        className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>Back to Projects</span>
-      </Link>
+      <div>
+        <BackButton fallbackHref="/client/projects" label="Back to Projects" inline />
+      </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>

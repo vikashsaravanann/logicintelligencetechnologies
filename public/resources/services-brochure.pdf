@@ -1,1 +1,81 @@
-PDF Placeholder
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 1474 >>
+stream
+BT
+/F1 22 Tf
+50 740 Td
+(Engineering Services Brochure) Tj
+/F1 12 Tf
+0 -24 Td
+(Comprehensive Services Catalog & Engagement Models) Tj
+/F1 10 Tf
+0 -30 Td
+(Logic Intelligence Technologies — Official Corporate Publication) Tj
+0 -20 Td
+(----------------------------------------------------------------------------------------------------) Tj
+0 -22 Td
+/F1 13 Tf
+(1. Custom Software Engineering) Tj
+/F1 10 Tf
+0 -22 Td
+(End-to-end bespoke software systems built for resilience, horizontal scalability, and) Tj
+0 -14 Td
+(maintainability. Full-stack TypeScript, React, Next.js, Node.js, and cloud native) Tj
+0 -14 Td
+(infrastructure.) Tj
+0 -22 Td
+/F1 13 Tf
+(2. Intelligent Process & Workflow Automation) Tj
+/F1 10 Tf
+0 -22 Td
+(High-throughput robotic process automation and autonomous worker pipelines that) Tj
+0 -14 Td
+(eliminate repetitive operational overhead and human error.) Tj
+0 -22 Td
+/F1 13 Tf
+(3. Artificial Intelligence & Applied Machine Learning) Tj
+/F1 10 Tf
+0 -22 Td
+(Bespoke AI solutions grounded in private organizational knowledge, structured output) Tj
+0 -14 Td
+(schemas, and low-latency inference pipelines.) Tj
+0 -22 Td
+/F1 13 Tf
+(4. Cloud Infrastructure & Security Auditing) Tj
+/F1 10 Tf
+0 -22 Td
+(Database hardening, Row Level Security auditing, CI/CD pipeline automation, and) Tj
+0 -14 Td
+(multi-tenant cloud isolation.) Tj
+0 -35 Td
+/F1 9 Tf
+(Confidential & Proprietary — Logic Intelligence Technologies | https://www.logicintelligencetechnologies.in) Tj
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000000311 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1837
+%%EOF

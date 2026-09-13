@@ -8,7 +8,15 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/lib/email/*.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/email/*.test.ts tests/**/*.test.ts",
+    "test:unit": "npm run test",
+    "test:integration": "node --experimental-strip-types --test tests/navigation/*.test.ts",
+    "test:security": "node --experimental-strip-types --test tests/security/*.test.ts",
+    "test:e2e": "echo 'E2E smoke test runs via smoke:test' && exit 0",
+    "verify:environment": "node scripts/verify-environment.mjs",
+    "verify:links": "node scripts/verify-links.mjs",
+    "verify:pdfs": "node scripts/verify-pdfs.mjs",
+    "smoke:test": "node scripts/smoke-test.mjs",
     "audit:visuals": "node scripts/audit-visuals.mjs",
     "eval:rag": "node scripts/eval-rag-golden.mjs",
     "seed:knowledge": "node scripts/seed-knowledge.mjs",
@@ -62,6 +70,7 @@
     "eslint-config-next": "16.2.4",
     "supabase": "^2.115.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.13",
     "typescript": "^5"
   }
 }

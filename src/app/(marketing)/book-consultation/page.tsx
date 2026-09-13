@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import BackToHome from "@/components/ui/back-to-home";
 import { useRouter } from "next/navigation";
 import { Calendar as CalendarIcon, Clock, Globe, CheckCircle2, ShieldCheck, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
@@ -112,6 +113,7 @@ export default function BookConsultationPage() {
 
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+      <BackToHome href="/" label="Back to Home" />
       {/* Background Lighting */}
       <div className="absolute top-10 left-1/3 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 

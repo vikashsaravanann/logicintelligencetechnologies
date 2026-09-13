@@ -1,0 +1,66 @@
+name: Production Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: production
+  cancel-in-progress: false # Never cancel an active production deploy
+
+permissions:
+  contents: read
+
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Verify Environment
+        run: npm run verify:environment
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Vercel Production Deployment
+        id: vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "VERCEL_TOKEN is not set. Assuming native Vercel integration handles deployment."
+            echo "url=https://www.logicintelligencetechnologies.in" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          vercel env pull .env.production --environment=production --token=$VERCEL_TOKEN
+          URL=$(vercel --prod --token=$VERCEL_TOKEN --yes)
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+      - name: Wait for DNS / Propagation
+        run: sleep 30
+
+      - name: Production Smoke Tests
+        env:
+          VERCEL_URL: logicintelligencetechnologies.in # Canonical domain testing
+        run: npm run smoke:test
+
+      - name: Generate Release Report
+        if: always()
+        run: |
+          echo "# Production Release Report" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Canonical URL:** https://www.logicintelligencetechnologies.in" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,29 @@
+name: Rollback Assistance
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for rollback'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  rollback-info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Display Rollback Instructions
+        run: |
+          echo "# 🚨 ROLLBACK INITIATED 🚨" >> $GITHUB_STEP_SUMMARY
+          echo "## Reason: ${{ github.event.inputs.reason }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Steps to safely rollback:" >> $GITHUB_STEP_SUMMARY
+          echo "1. **Instant Revert:** Go to [Vercel Deployments](https://vercel.com) and promote the last safe build to production." >> $GITHUB_STEP_SUMMARY
+          echo "2. **Git Revert:** Locally, run \`git revert HEAD\` on \`main\` and push, or open a PR." >> $GITHUB_STEP_SUMMARY
+          echo "3. **Database:** If a migration failed, revert it manually via Supabase Dashboard." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Read \`docs/rollback-procedure.md\` for detailed instructions." >> $GITHUB_STEP_SUMMARY
+          echo "Do not force push to main." >> $GITHUB_STEP_SUMMARY

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import BackButton from "@/components/navigation/BackButton";
 import { Briefcase, ArrowRight, CheckCircle2 } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -17,6 +18,9 @@ export default async function ClientProjectsPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
+      <div>
+        <BackButton fallbackHref="/client/dashboard" label="Back to Dashboard" inline />
+      </div>
       <div className="pb-6 border-b border-white/10">
         <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">
           Assigned Projects

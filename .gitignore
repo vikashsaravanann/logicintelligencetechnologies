@@ -59,7 +59,6 @@ debug_*
 proxy_*
 *_output.*
 *_response.*
-scripts/
 
 # Large stray media files at root
 

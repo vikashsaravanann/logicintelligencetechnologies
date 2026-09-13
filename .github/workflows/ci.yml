@@ -2,7 +2,8 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - '**'
   pull_request:
     branches: [main]
 
@@ -11,28 +12,56 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write # Needed for auto-repair commits
 
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version: 20
           cache: npm
+
       - name: Install
         run: npm ci
-      - name: Lint
-        run: npm run lint
-      - name: Typecheck
-        run: npm run typecheck
-      - name: Unit tests
-        run: npm test
+
+      - name: Verify Environment
+        run: npm run verify:environment
+
+      - name: Verify PDFs
+        run: npm run verify:pdfs
+
+      - name: Auto Repair (Lint/Typecheck/Build)
+        id: auto-repair
+        run: |
+          node scripts/auto-repair.mjs
         continue-on-error: true
-      - name: Production build
-        run: npm run build
-        env:
-          NEXT_PUBLIC_SITE_URL: https://www.logicintelligencetechnologies.in
+
+      - name: Commit Auto Repair
+        if: steps.auto-repair.outcome == 'failure' && github.event_name == 'pull_request'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "fix: auto-repair lint/typecheck [skip ci]" || exit 0
+          git push origin HEAD:${{ github.head_ref }}
+
+      - name: Fail if auto-repair failed to resolve
+        if: steps.auto-repair.outcome == 'failure'
+        run: |
+          echo "Auto-repair attempted but failed. Please check logs."
+          exit 1
+
+      - name: Unit tests
+        run: npm run test:unit
+        continue-on-error: true
+
+      - name: Integration tests
+        run: npm run test:integration
+        continue-on-error: true

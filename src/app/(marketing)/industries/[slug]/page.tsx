@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { industriesData } from "@/data/industriesData";
@@ -47,6 +48,7 @@ export default async function IndustryDetailPage({ params }: Props) {
 
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-28 pb-20 overflow-hidden">
+      <BackToHome href="/industries" label="Back to Industries" />
       {/* Background Accent Glow */}
       <div className="absolute top-0 right-1/3 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 

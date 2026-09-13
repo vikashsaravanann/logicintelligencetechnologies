@@ -21,7 +21,7 @@ const ITEMS = [
   },
   {
     href: "/jobs",
-    image: "/assets/founder.jpg",
+    image: "/assets/jobs/ceo-desk.jpg",
     kicker: "Leadership",
     title: "Jobs — CEO / Directors",
     body: "Employment offers. Not a cheque-for-title.",

@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 import Link from "next/link";
 import { PDF_RESOURCES } from "@/config/pdfs";
 import { ArrowRight, Download, FileText, Sparkles, BookOpen, Code2, Brain, BarChart3, Briefcase, FileCheck, Archive } from "lucide-react";
@@ -28,6 +29,7 @@ const CATEGORY_STYLES: Record<string, { color: string; bg: string; border: strin
 export default function ResourcesPage() {
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+      <BackToHome href="/" label="Back to Home" />
       {/* Background glow */}
       <div className="absolute top-10 right-1/4 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 

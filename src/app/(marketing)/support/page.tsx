@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 import Link from "next/link";
 import { HelpCircle, Plus, ShieldCheck, Clock, MessageSquare, ArrowRight, Zap, CheckCircle2 } from "lucide-react";
 import { COMPANY } from "@/config/company";
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 export default function SupportHubPage() {
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+      <BackToHome href="/" label="Back to Home" />
       {/* Glow */}
       <div className="absolute top-10 left-1/3 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 

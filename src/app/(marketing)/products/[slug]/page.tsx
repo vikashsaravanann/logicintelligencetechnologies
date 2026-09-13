@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import BackButton from "@/components/navigation/BackButton";
 import { productsData } from "@/data/productsData";
 import { ArrowLeft, Box, CheckCircle2, Cpu, ArrowRight, Sparkles } from "lucide-react";
 import SafeImage from "@/components/ui/safe-image";
@@ -47,6 +48,7 @@ export default async function ProductDetailPage({ params }: Props) {
 
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-28 pb-20 overflow-hidden">
+      <BackButton fallbackHref="/products" label="Back to Products" />
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         <div className="mb-8">
           <Breadcrumbs

@@ -14,6 +14,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "scripts/**",
     "coverage/**",
+    "ml-from-scratch/**",
   ]),
   {
     rules: {

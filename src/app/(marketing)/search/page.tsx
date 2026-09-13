@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 import Link from "next/link";
 import { blogPosts } from "@/data/blogData";
 import { packagesData } from "@/data/packagesData";
@@ -32,6 +33,7 @@ export default async function SearchPage({
 
   return (
     <main className="min-h-screen bg-[#0A0F1E] text-white pt-32 pb-24 px-6">
+      <BackToHome href="/" label="Back to Home" />
       <JsonLd data={breadcrumb([{ name: "Home", path: "/" }, { name: "Search", path: "/search" }])} />
       <div className="max-w-3xl mx-auto">
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300 mb-3">Search</p>

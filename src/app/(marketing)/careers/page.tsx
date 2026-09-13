@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 import Link from "next/link";
 import { ArrowRight, Briefcase, CheckCircle2, Heart, Sparkles, Target, Users } from "lucide-react";
 import SafeImage from "@/components/ui/safe-image";
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
 export default function CareersPage() {
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+      <BackToHome href="/" label="Back to Home" />
       {/* Ambient background */}
       <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 

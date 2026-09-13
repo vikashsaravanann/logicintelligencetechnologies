@@ -4,6 +4,7 @@ import FloatingElements from "@/components/motion/floating-elements";
 import BackToHome from "@/components/ui/back-to-home";
 import PageBackdrop from "@/components/ui/page-backdrop";
 import { COMPANY } from "@/config/company";
+import { FOUNDER } from "@/config/founder";
 import {
   ExternalLink,
   Mail,
@@ -18,6 +19,7 @@ import {
   Code2,
   Target,
   Users,
+  ArrowRight,
 } from "lucide-react";
 
 import { SafeImage } from "@/components/ui/safe-image";
@@ -120,10 +122,7 @@ export default function AboutPage() {
           </span>
         </h1>
         <p className="text-base sm:text-lg text-zinc-400 max-w-3xl mx-auto leading-relaxed">
-          {COMPANY.displayName} is a technology startup based in Coimbatore,
-          Tamil Nadu. We design and build production websites, e-commerce
-          platforms, and AI-integrated systems for teams that want modern
-          software without traditional agency overhead.
+          {FOUNDER.companyOverview}
         </p>
         </div>
       </section>
@@ -166,10 +165,10 @@ export default function AboutPage() {
               </div>
               <div className="text-center lg:text-left">
                 <h2 className="text-2xl sm:text-3xl font-black text-white">
-                  {COMPANY.founder.name}
+                  {FOUNDER.name}
                 </h2>
                 <p className="text-primary font-bold text-sm uppercase tracking-widest mt-1">
-                  {COMPANY.founder.title} · {COMPANY.entityLabel}
+                  {FOUNDER.title}
                 </p>
                 <p className="text-zinc-500 text-xs mt-2 flex items-center justify-center lg:justify-start gap-1.5">
                   <MapPin className="w-3.5 h-3.5" />
@@ -178,7 +177,7 @@ export default function AboutPage() {
               </div>
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2">
                 <a
-                  href={COMPANY.linkedinUrl}
+                  href={FOUNDER.linkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 text-xs text-zinc-400 hover:text-white hover:border-white/30 transition-all"
@@ -186,7 +185,7 @@ export default function AboutPage() {
                   <ExternalLink className="w-3 h-3" /> LinkedIn
                 </a>
                 <a
-                  href={COMPANY.instagramUrl}
+                  href={FOUNDER.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 text-xs text-zinc-400 hover:text-[#e1306c] hover:border-[#e1306c]/30 transition-all"
@@ -204,43 +203,25 @@ export default function AboutPage() {
 
             <div className="space-y-6">
               <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-primary bg-primary/10 border border-primary/20">
-                Founder's note
+                Founder
               </span>
-              <blockquote className="text-base sm:text-lg text-zinc-200 leading-relaxed border-l-2 border-primary/40 pl-4">
-                I started Logic Intelligence Technologies to close the gap between
-                classroom AI and software that businesses can actually run —
-                priced in the open, demoed before payment, and built to last after
-                launch.
-              </blockquote>
               <div className="space-y-4 text-sm sm:text-[15px] text-zinc-400 leading-relaxed">
-                <p>
-                  I am a B.Tech student in Artificial Intelligence and Data Science
-                  at Rathinam Technical Campus, Coimbatore, and a Microsoft Student
-                  Campus Ambassador. Day to day I lead LIT as a technology startup:
-                  full-stack product work (React, Next.js, FastAPI, Python) and
-                  production AI — LoRA / QLoRA fine-tuning, local RAG pipelines,
-                  and assistants that sit on real company data instead of generic
-                  chat.
-                </p>
-                <p>
-                  The studio exists for founders and operators who need dependable
-                  engineering, not slide decks. Every engagement starts with a
-                  written scope, an honest timeline, and a path to a working
-                  product. Clients see direction in a free demo before they pay.
-                </p>
-                <p>
-                  We ship Digital Launch, Business Pro, and Enterprise packs from
-                  Coimbatore to teams across India — websites, commerce, internal
-                  tools, and AI systems — with source-code ownership on full
-                  payment and support that continues after go-live.
-                </p>
+                <p>{FOUNDER.shortBio}</p>
+              </div>
+              <div className="pt-2">
+                <Link
+                  href="/about/founder"
+                  className="inline-flex items-center gap-2 text-primary font-bold hover:underline"
+                >
+                  Read full profile <ArrowRight className="w-4 h-4" />
+                </Link>
               </div>
               <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {[
-                  ["Education", "B.Tech AI & Data Science, Rathinam Technical Campus"],
-                  ["Role", "Founder, Logic Intelligence Technologies"],
-                  ["Campus", "Microsoft Student Campus Ambassador"],
-                  ["Focus", "Full-stack products · RAG · LLM fine-tuning"],
+                  ["Education", FOUNDER.education.degree],
+                  ["Institution", FOUNDER.education.institution],
+                  ["Location", FOUNDER.location],
+                  ["Focus", "Systems architecture · RPA · Automation"],
                 ].map(([k, v]) => (
                   <div
                     key={k}

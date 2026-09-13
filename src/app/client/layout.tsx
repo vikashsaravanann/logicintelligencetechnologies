@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { label: "Invoices & Billing", href: "/client/invoices", icon: Receipt },
   { label: "Messages", href: "/client/messages", icon: MessageSquare },
   { label: "Support Tickets", href: "/client/support", icon: HelpCircle },
-  { label: "Profile", href: "/client/profile", icon: User },
+  { label: "Account Profile", href: "/profile", icon: User },
 ];
 
 export default function ClientPortalLayout({

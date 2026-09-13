@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 import Link from "next/link";
 import { COMPANY } from "@/config/company";
 import { Download, FileText, Mail, Newspaper, ArrowRight, ShieldCheck } from "lucide-react";
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 export default function PressPage() {
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+      <BackToHome href="/" label="Back to Home" />
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-20">

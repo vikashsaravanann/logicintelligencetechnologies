@@ -1,13 +1,16 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect, Suspense } from "react";
+import BackToHome from "@/components/ui/back-to-home";
 import { Lock, Mail, Eye, EyeOff, ArrowRight, Shield, User, CheckCircle2, Zap, Cpu, Globe, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Outfit } from "next/font/google";
 import { COMPANY } from "@/config/company";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { getClientSupabase } from "@/lib/supabase/client";
 import { env } from "@/config/env";
 
 const display = Outfit({
@@ -52,10 +55,7 @@ function postLoginPath(email: string | undefined) {
 }
 
 function AuthContent() {
-  const supabase = createClientComponentClient({
-    supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
-    supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  });
+  const supabase = typeof window !== "undefined" ? getClientSupabase() : null as unknown as ReturnType<typeof getClientSupabase>;
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -243,6 +243,7 @@ function AuthContent() {
 
   return (
     <main className={`${display.className} h-[100dvh] max-h-[100dvh] w-full max-w-[100vw] bg-[#050814] text-white relative overflow-hidden`}>
+      <BackToHome href="/" label="Back to Home" />
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 left-1/4 w-[520px] h-[520px] rounded-full bg-cyan-500/12 blur-[140px]" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[480px] h-[480px] rounded-full bg-blue-700/20 blur-[130px]" />

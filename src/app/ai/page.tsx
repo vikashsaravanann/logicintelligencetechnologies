@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ArrowUp, Check, Copy, Download, Loader2, Menu, MessageSquarePlus, Mic, Paperclip, Quote, RefreshCw, Search, Share2, Sparkles, Square, Ticket, Trash2, Volume2, WifiOff, X } from "lucide-react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { getClientSupabase } from "@/lib/supabase/client";
 import { COMPANY } from "@/config/company";
 import { env } from "@/config/env";
 import { MarkdownMessage } from "@/components/ai/markdown-message";
@@ -105,6 +105,8 @@ function readFile(file: File): Promise<AttachFile> {
   });
 }
 
+export const dynamic = "force-dynamic";
+
 export default function AiChatPage() {
   const [landed, setLanded] = useState(true);
   const [landMenu, setLandMenu] = useState(false);
@@ -145,10 +147,7 @@ export default function AiChatPage() {
   const activeIdRef = useRef<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const recRef = useRef<BrowserSpeechRec | null>(null);
-  const supabase = createClientComponentClient({
-    supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
-    supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  });
+  const supabase = typeof window !== "undefined" ? getClientSupabase() : null as unknown as ReturnType<typeof getClientSupabase>;
 
   useEffect(() => {
     const on = () => setOnline(true);

@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { servicesData } from "@/data/servicesData";
@@ -60,6 +61,7 @@ export default async function ServiceDetailPage({ params }: Props) {
 
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-28 pb-20 overflow-hidden">
+      <BackToHome href="/services" label="Back to Solutions" />
       {/* Ambient Lighting */}
       <div className="absolute top-0 right-1/4 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 

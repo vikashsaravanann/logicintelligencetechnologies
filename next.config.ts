@@ -8,12 +8,12 @@ const nextConfig: NextConfig = {
       { source: '/vikashs-portfolio/:path*', destination: '/about', permanent: true },
       { source: '/vikash-portfolio', destination: '/about', permanent: true },
       { source: '/vikash-portfolio/:path*', destination: '/about', permanent: true },
+      { source: '/client/profile', destination: '/profile', permanent: true },
+      { source: '/client/login', destination: '/login', permanent: true },
     ];
   },
   serverExternalPackages: ['pdf-parse'],
-  turbopack: {
-    root: path.resolve(process.cwd()),
-  },
+
   images: {
     unoptimized: true,
     remotePatterns: [

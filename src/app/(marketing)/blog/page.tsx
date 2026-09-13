@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 import Link from "next/link";
 import { ArrowRight, Clock, User, Calendar } from "lucide-react";
 import PageBackdrop from "@/components/ui/page-backdrop";
@@ -22,7 +23,8 @@ export default function BlogListPage() {
 
   return (
     <main className="min-h-screen bg-[#0A0F1E] text-white pt-32 pb-24 relative overflow-hidden">
-      <PageBackdrop src="/assets/backdrops/work-hero.jpg" />
+      <BackToHome href="/" label="Back to Home" />
+      <PageBackdrop src="/assets/jobs/ceo-desk.jpg" />
       
       <section className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="mb-16 md:mb-20 text-center md:text-left">

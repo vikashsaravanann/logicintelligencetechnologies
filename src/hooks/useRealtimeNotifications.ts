@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { getClientSupabase } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
 
 export function useRealtimeNotifications(userId?: string) {
-  const supabase = createClientComponentClient();
+  const supabase = getClientSupabase();
 
   useEffect(() => {
     if (!userId) return;

@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackButton from "@/components/navigation/BackButton";
 import { Download, FileText, Lock, ShieldCheck, Upload } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -16,6 +17,9 @@ export default async function ClientDocumentsPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
+      <div>
+        <BackButton fallbackHref="/client/dashboard" label="Back to Dashboard" inline />
+      </div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">

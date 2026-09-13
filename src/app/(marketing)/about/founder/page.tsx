@@ -5,27 +5,27 @@ import {
   ExternalLink, GraduationCap, MapPin,
   Code2, Cpu, Workflow, Bot, ArrowRight, Mail,
 } from "lucide-react";
-import BackToHome from "@/components/ui/back-to-home";
+import BackButton from "@/components/navigation/BackButton";
 import { COMPANY } from "@/config/company";
 import { FOUNDER } from "@/config/founder";
 import { SITE, FOUNDER_ID, breadcrumb, founderNode, organizationNode } from "@/lib/seo/schema";
 
 export const metadata: Metadata = {
-  title: "Vikash Saravanan — Founder & Lead Systems Engineer",
-  description: FOUNDER.oneLine,
+  title: `${FOUNDER.name} — ${FOUNDER.title}`,
+  description: FOUNDER.executiveOverview,
   alternates: { canonical: "/about/founder" },
   openGraph: {
-    title: "Vikash Saravanan | Founder of Logic Intelligence Technologies",
+    title: `${FOUNDER.name} | Founder of ${FOUNDER.company}`,
     description: FOUNDER.shortBio,
     url: `${SITE}/about/founder`,
     type: "profile",
-    images: [{ url: FOUNDER.images.og, width: 1200, height: 630, alt: FOUNDER.images.alt }],
+    images: [{ url: FOUNDER.ogImageUrl, width: 1200, height: 630, alt: `${FOUNDER.name}, ${FOUNDER.title}` }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vikash Saravanan | Founder of Logic Intelligence Technologies",
+    title: `${FOUNDER.name} | Founder of ${FOUNDER.company}`,
     description: FOUNDER.shortBio,
-    images: [FOUNDER.images.og],
+    images: [FOUNDER.ogImageUrl],
   },
 };
 
@@ -46,11 +46,11 @@ export default function FounderPage() {
         "@type": "WebPage",
         "@id": `${SITE}/about/founder#webpage`,
         url: `${SITE}/about/founder`,
-        name: "Vikash Saravanan — Founder & Lead Systems Engineer",
+        name: `${FOUNDER.name} — ${FOUNDER.title}`,
         description: FOUNDER.shortBio,
         isPartOf: { "@id": `${SITE}/#website` },
         about: { "@id": FOUNDER_ID },
-        primaryImageOfPage: { "@type": "ImageObject", url: `${SITE}${FOUNDER.images.profile}` },
+        primaryImageOfPage: { "@type": "ImageObject", url: FOUNDER.imageUrl },
         breadcrumb: breadcrumb([
           { name: "Home", path: "/" },
           { name: "About", path: "/about" },
@@ -63,18 +63,18 @@ export default function FounderPage() {
   return (
     <main className="min-h-screen bg-[#0A0F1E] text-white pt-28 sm:pt-32">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <BackToHome />
+      <BackButton fallbackHref="/about" label="Back to About" />
       <section className="relative px-6 lg:px-8 pb-12 sm:pb-16">
         <div className="max-w-6xl mx-auto grid lg:grid-cols-[minmax(0,320px)_1fr] gap-10 lg:gap-14 items-start">
           <div className="relative mx-auto lg:mx-0 w-full max-w-[320px]">
             <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] shadow-2xl shadow-black/40">
-              <Image src={FOUNDER.images.profile} alt={FOUNDER.images.alt} fill priority className="object-cover object-top" sizes="(max-width: 768px) 280px, 320px" />
+              <Image src="/images/founder/vikash-saravanan-profile.webp" alt={`${FOUNDER.name} Profile`} fill priority className="object-cover object-top" sizes="(max-width: 768px) 280px, 320px" />
             </div>
-            <p className="mt-3 text-center text-xs text-zinc-500">Founder & Lead Systems Engineer</p>
+            <p className="mt-3 text-center text-xs text-zinc-500">{FOUNDER.title}</p>
           </div>
           <div className="text-center lg:text-left">
             <p className="text-primary text-xs font-bold tracking-[0.2em] uppercase mb-3">Leadership</p>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-2">{FOUNDER.fullName}</h1>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-2">{FOUNDER.name}</h1>
             <p className="text-lg sm:text-xl text-zinc-300 font-medium mb-6">{FOUNDER.title}</p>
             <p className="text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto lg:mx-0 mb-6">{FOUNDER.shortBio}</p>
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 text-sm text-zinc-400 mb-8">
@@ -82,10 +82,10 @@ export default function FounderPage() {
               <span className="inline-flex items-center gap-1.5"><GraduationCap className="w-4 h-4 text-primary" />{FOUNDER.education.institution}</span>
             </div>
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
-              <a href={FOUNDER.links.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"> LinkedIn</a>
-              <a href={FOUNDER.links.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"> GitHub</a>
-              <a href={FOUNDER.links.portfolio} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"><ExternalLink className="w-4 h-4" /> Portfolio</a>
-              <a href={FOUNDER.links.instagram} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"> Instagram</a>
+              <a href={FOUNDER.linkedinUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"> LinkedIn</a>
+              <a href={FOUNDER.githubUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"> GitHub</a>
+              <a href={FOUNDER.portfolioUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"><ExternalLink className="w-4 h-4" /> Portfolio</a>
+              <a href={FOUNDER.instagramUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"> Instagram</a>
             </div>
           </div>
         </div>
@@ -93,7 +93,7 @@ export default function FounderPage() {
       <section className="px-6 lg:px-8 py-12 sm:py-16 border-t border-white/5">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6">About Vikash</h2>
-          {FOUNDER.extendedBio.split("\n\n").map((para, i) => (
+          {FOUNDER.longBio.split("\n\n").map((para, i) => (
             <p key={i} className="text-zinc-400 leading-relaxed mb-4 text-base sm:text-lg">{para}</p>
           ))}
         </div>
@@ -101,7 +101,7 @@ export default function FounderPage() {
       <section className="px-6 lg:px-8 py-12 sm:py-16 bg-white/[0.02]">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 text-center">Technical focus</h2>
-          <p className="text-zinc-500 text-center mb-10 max-w-2xl mx-auto">Core specializations applied across client platforms and internal systems at {COMPANY.displayName}.</p>
+          <p className="text-zinc-500 text-center mb-10 max-w-2xl mx-auto">Core specializations applied across client platforms and internal systems at {FOUNDER.company}.</p>
           <div className="grid sm:grid-cols-2 gap-5">
             {expertise.map((item) => (
               <div key={item.title} className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
@@ -115,22 +115,22 @@ export default function FounderPage() {
       </section>
       <section className="px-6 lg:px-8 py-12 sm:py-16">
         <div className="max-w-3xl mx-auto rounded-2xl border border-white/10 bg-white/[0.03] p-8">
-          <div className="flex items-start gap-4">
+          <div className="flex flex-col sm:flex-row items-start gap-4">
             <GraduationCap className="w-8 h-8 text-primary shrink-0 mt-1" />
             <div>
               <h2 className="text-xl font-bold text-white mb-2">Education</h2>
               <p className="text-zinc-200 font-medium">{FOUNDER.education.degree}</p>
               <p className="text-zinc-400 mt-1">{FOUNDER.education.institution}</p>
-              <p className="text-zinc-500 text-sm mt-1">{FOUNDER.education.location} · Expected graduation {FOUNDER.education.expectedGraduation}</p>
+              <p className="text-zinc-500 text-sm mt-1">{FOUNDER.education.location} · {FOUNDER.education.timeline}</p>
             </div>
           </div>
         </div>
       </section>
       <section className="px-6 lg:px-8 py-12 sm:py-16 border-t border-white/5">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-white mb-6">Selected engineering initiative</h2>
+          <h2 className="text-2xl font-bold text-white mb-6">Selected engineering initiatives</h2>
           {FOUNDER.projects.map((project) => (
-            <div key={project.name} className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+            <div key={project.name} className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 mb-6">
               <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">{project.name}</h3>
               <p className="text-zinc-400 mb-4 leading-relaxed">{project.description}</p>
               <div className="flex flex-wrap gap-2 mb-5">
@@ -141,11 +141,18 @@ export default function FounderPage() {
               <a href={project.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-primary text-sm font-semibold hover:underline">View on GitHub <ExternalLink className="w-3.5 h-3.5" /></a>
             </div>
           ))}
+          {FOUNDER.initiatives.map((initiative) => (
+            <div key={initiative.project} className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">{initiative.project}</h3>
+              <p className="text-zinc-400 font-medium mb-2">{initiative.role} at {initiative.organization}</p>
+              <p className="text-zinc-400 leading-relaxed">{initiative.description}</p>
+            </div>
+          ))}
         </div>
       </section>
       <section className="px-6 lg:px-8 py-14 sm:py-20 bg-gradient-to-b from-primary/5 to-transparent">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Building with Logic Intelligence Technologies</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Building with {FOUNDER.company}</h2>
           <p className="text-zinc-400 leading-relaxed mb-8">As Founder and Lead Systems Engineer, Vikash leads product architecture, delivery quality, and client engagement. Every engagement is engineering-first: clear scope, production code, and systems designed to last.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link href="/book-consultation" className="inline-flex items-center gap-2 rounded-full bg-primary text-black font-semibold px-6 py-3 hover:opacity-90 transition-opacity">Book a consultation <ArrowRight className="w-4 h-4" /></Link>

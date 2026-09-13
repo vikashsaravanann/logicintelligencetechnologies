@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import BackButton from "@/components/navigation/BackButton";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, HelpCircle, Loader2, Send } from "lucide-react";
@@ -51,13 +52,9 @@ export default function NewSupportTicketPage() {
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20">
       <div className="max-w-3xl mx-auto px-6">
-        <Link
-          href="/support"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors mb-8"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Support Hub</span>
-        </Link>
+        <div className="mb-8">
+          <BackButton fallbackHref="/support" label="Back to Support" inline />
+        </div>
 
         <div className="mb-8">
           <h1 className="text-3xl font-black text-white uppercase tracking-tight mb-2">

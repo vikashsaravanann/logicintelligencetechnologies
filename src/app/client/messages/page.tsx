@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import BackButton from "@/components/navigation/BackButton";
 import { MessageSquare, Send, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -8,6 +9,9 @@ export const metadata: Metadata = {
 export default function ClientMessagesPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      <div>
+        <BackButton fallbackHref="/client/dashboard" label="Back to Dashboard" inline />
+      </div>
       <div className="pb-6 border-b border-white/10">
         <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">
           Direct Communications

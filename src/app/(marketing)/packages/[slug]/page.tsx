@@ -58,6 +58,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
   if (pkg) {
     return (
       <main className="min-h-screen bg-[#0A0F1E] text-white pt-28 pb-20">
+      <BackToHome href="/packages" label="Back to Packages" />
         <div className="max-w-5xl mx-auto px-6 mb-8">
           <Breadcrumbs
             items={[

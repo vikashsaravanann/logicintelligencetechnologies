@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import BackButton from "@/components/navigation/BackButton";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ExternalLink, CheckCircle2 } from "lucide-react";
@@ -52,14 +53,9 @@ export default function CaseStudyContent({
 
       <article className="px-6 lg:px-8 max-w-5xl mx-auto relative z-10">
         <motion.div variants={staggerContainer} initial="hidden" animate="show" className="max-w-3xl mx-auto">
-          <motion.div variants={fadeInUp}>
-            <Link
-              href="/work"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-400 hover:text-primary transition-colors mb-12 group"
-            >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back to Portfolio
-            </Link>
-          </motion.div>
+            <div className="mb-12">
+              <BackButton fallbackHref="/work" label="Back to Work" inline />
+            </div>
 
           <motion.div variants={fadeInUp} className="mb-8">
             <span className="inline-block px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase mb-6">

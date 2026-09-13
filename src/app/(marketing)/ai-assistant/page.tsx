@@ -54,7 +54,7 @@ export default function AiAssistantPage() {
       <BackToHome />
 
       <section className="relative px-6 lg:px-8 overflow-hidden">
-        <PageBackdrop src="/assets/backdrops/work-hero.jpg" />
+        <PageBackdrop src="/assets/jobs/ai-lab.jpg" />
         <div className="relative z-10 max-w-5xl mx-auto text-center pb-12">
         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-4">
           LIT Knowledge Assistant

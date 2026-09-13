@@ -66,7 +66,8 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
     items: [
       { href: '/contact', label: 'Contact', description: 'Reach the team' },
       { href: '/support', label: 'Customer Support', description: 'Tickets and help' },
-      { href: '/client/login', label: 'Client Portal', description: 'Existing client access' },
+      { href: '/login', label: 'Client Sign In', description: 'Client & Team authentication' },
+      { href: '/profile', label: 'Account Profile', description: 'Client portal & settings' },
     ],
   },
   {
