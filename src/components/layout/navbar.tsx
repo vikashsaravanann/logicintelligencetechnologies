@@ -167,11 +167,11 @@ export default function Navbar() {
                                   onClick={() => setMoreOpen(false)}
                                   className="block rounded-lg px-2 py-2 hover:bg-white/[0.06] transition-colors group"
                                 >
-                                  <span className="block text-[12px] font-semibold tracking-wide text-zinc-200 group-hover:text-white">
+                                  <span className="block text-[12px] font-semibold tracking-wide text-zinc-200 group-hover:text-white uppercase">
                                     {item.label}
                                   </span>
                                   {item.description && (
-                                    <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-400 mt-0.5 leading-snug">
+                                    <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-400 mt-0.5 leading-snug uppercase tracking-wider">
                                       {item.description}
                                     </span>
                                   )}
@@ -279,11 +279,11 @@ export default function Navbar() {
                                     onClick={() => setIsOpen(false)}
                                     className="block rounded-lg px-2 py-2.5 hover:bg-white/[0.05] min-h-[44px]"
                                   >
-                                    <span className="block text-sm font-semibold text-zinc-200">
+                                    <span className="block text-sm font-semibold text-zinc-200 uppercase">
                                       {item.label}
                                     </span>
                                     {item.description && (
-                                      <span className="block text-xs text-zinc-500 mt-0.5">
+                                      <span className="block text-xs text-zinc-500 mt-0.5 uppercase tracking-wider">
                                         {item.description}
                                       </span>
                                     )}

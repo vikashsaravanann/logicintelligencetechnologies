@@ -68,3 +68,4 @@ proxy_*
 !public/**/*.jpeg
 .ipynb_checkpoints/
 .vscode/
+*.pid

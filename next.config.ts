@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
     ];
   },
   serverExternalPackages: ['pdf-parse'],
+  turbopack: {
+    root: path.resolve(__dirname),
+  },
 
   images: {
     unoptimized: true,

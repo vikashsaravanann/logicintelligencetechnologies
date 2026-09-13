@@ -94,11 +94,11 @@ export function MoreMenu({
                         }}
                         className="block rounded-lg px-2.5 py-2 hover:bg-white/[0.06] hover:border hover:border-white/10 transition-all group"
                       >
-                        <span className="block text-[12px] font-bold tracking-wide text-zinc-200 group-hover:text-cyan-300">
+                        <span className="block text-[12px] font-bold tracking-wide text-zinc-200 group-hover:text-cyan-300 uppercase">
                           {item.label}
                         </span>
                         {item.description && (
-                          <span className="block text-[11px] text-zinc-400 group-hover:text-zinc-300 mt-0.5 leading-snug">
+                          <span className="block text-[11px] text-zinc-400 group-hover:text-zinc-300 mt-0.5 leading-snug uppercase tracking-wider">
                             {item.description}
                           </span>
                         )}

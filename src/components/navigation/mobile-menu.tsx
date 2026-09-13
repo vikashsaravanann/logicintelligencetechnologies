@@ -139,9 +139,9 @@ export function MobileMenu({
                                     onClick={onClose}
                                     className="block py-2 text-xs font-semibold text-zinc-300 hover:text-cyan-400 transition-colors"
                                   >
-                                    <div>{item.label}</div>
+                                    <div className="uppercase">{item.label}</div>
                                     {item.description && (
-                                      <div className="text-[10px] text-zinc-500 mt-0.5">
+                                      <div className="text-[10px] text-zinc-500 mt-0.5 uppercase tracking-wider">
                                         {item.description}
                                       </div>
                                     )}

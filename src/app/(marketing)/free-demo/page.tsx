@@ -6,7 +6,7 @@ import PageBackdrop from "@/components/ui/page-backdrop";
 import { useState, useEffect } from "react";
 import { Send, CheckCircle2, MessageSquare, ShieldCheck, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { CHECKLIST_ITEMS_31_50 } from "@/data/websiteChecklist";
+
 
 export default function FreeDemoPage() {
   const [sent, setSent] = useState(false);
@@ -146,22 +146,6 @@ export default function FreeDemoPage() {
                </div>
              </motion.div>
           ) : (
-            <>
-            <div className="bg-[#12172b] p-6 md:p-8 rounded-[2rem] border border-white/10 mb-8">
-              <h2 className="text-lg font-bold text-white mb-2">Website readiness checklist — items 31–50</h2>
-              <p className="text-sm text-zinc-400 mb-6">
-                Current 2026 delivery standards we use when scoping demos and production builds.
-                Full 50-point list is available on the checklist page.
-              </p>
-              <ul className="grid sm:grid-cols-2 gap-2">
-                {CHECKLIST_ITEMS_31_50.map((item) => (
-                  <li key={item.id} className="flex gap-2 text-xs sm:text-sm text-zinc-300 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/5">
-                    <span className="text-primary font-bold shrink-0 w-6">{item.id}</span>
-                    <span><span className="text-zinc-500 text-[10px] uppercase tracking-wide">{item.category}</span><br/>{item.title}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
 
             <form onSubmit={handleSubmit} className="space-y-12">
               <div className="bg-[#12172b] p-8 md:p-6 md:p-10 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden">
@@ -391,7 +375,7 @@ export default function FreeDemoPage() {
                 </div>
               </div>
             </form>
-            </>
+
           )}
         </div>
       </section>

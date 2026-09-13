@@ -20,7 +20,20 @@ const envSchema = z.object({
     .string()
     .optional()
     .default("https://www.logicintelligencetechnologies.in"),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
+  SUPABASE_SERVICE_ROLE_KEY: z
+    .string()
+    .optional()
+    .refine(
+      (v) => {
+        if (process.env.NODE_ENV === "production" && process.env.VERCEL_ENV === "production") {
+          return Boolean(v) && v !== "placeholder" && v !== "placeholder_key";
+        }
+        return true;
+      },
+      {
+        message: "SUPABASE_SERVICE_ROLE_KEY is required in production environments",
+      }
+    ),
   SUPABASE_WEBHOOK_SECRET: z.string().optional(),
   LEAD_NOTIFICATION_EMAIL: z
     .string()
