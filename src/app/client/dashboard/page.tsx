@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Briefcase, FileText, Receipt, HelpCircle, ArrowRight, CheckCircle2, Clock, DollarSign } from "lucide-react";
+import { Briefcase, FileText, Receipt, HelpCircle } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import BackButton from "@/components/navigation/BackButton";
+import BackButton from "@/components/navigation/back-button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, HelpCircle, Loader2, Send } from "lucide-react";

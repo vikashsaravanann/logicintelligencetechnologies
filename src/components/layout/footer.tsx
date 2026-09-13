@@ -1,5 +1,5 @@
 "use client";
-import { Mail, Phone, MapPin, Send, ArrowRight, Heart } from "lucide-react";
+import { Mail, Phone, Send, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { COMPANY } from "@/config/company";
 import { useState } from "react";

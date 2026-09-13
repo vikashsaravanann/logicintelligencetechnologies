@@ -5,7 +5,7 @@ import Link from "next/link";
 import AutonomousCalendar, {
   type CalendarPost,
   type OmniChannel,
-} from "@/components/omni/AutonomousCalendar";
+} from "@/components/omni/autonomous-calendar";
 
 const ALL_CHANNELS: OmniChannel[] = [
   "instagram",

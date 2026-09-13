@@ -23,6 +23,8 @@ export const FOUNDER = {
       'Designing headless automation systems that interact with dynamic web interfaces to execute structured data-entry and workflow tasks.',
     intelligentApiOrchestration:
       'Embedding custom AI logic into existing enterprise backends to support automated decision-making, structured processing, and workflow execution.',
+    dataAndSystemsEngineering:
+      'Leveraging raw data to engineer scalable, real-world solutions that address complex systemic challenges. Technical execution spans Python, SQL, advanced web frameworks, and robust network infrastructure.',
   },
   education: {
     degree: 'Bachelor of Technology in Artificial Intelligence and Data Science',
@@ -34,7 +36,7 @@ export const FOUNDER = {
   credentials: [
     {
       title: 'Data Analytics Professional Internship',
-      institution: 'Edu Tantr',
+      issuingOrganization: 'Edu Tantr',
       type: 'Internship',
     },
     {
@@ -42,18 +44,117 @@ export const FOUNDER = {
       issuingOrganization: 'NPTEL',
       type: 'Certification',
     },
+    {
+      title: 'Data Analysis',
+      issuingOrganization: 'Microsoft & LinkedIn',
+      type: 'Certification',
+      image: '/images/certifications/data-analysis-microsoft.webp',
+    },
+    {
+      title: 'Coding Essentials',
+      issuingOrganization: 'Scaler',
+      type: 'Certification',
+      image: '/images/certifications/coding-essentials-scaler.webp',
+    },
+    {
+      title: 'Full-Stack Development',
+      issuingOrganization: 'Rathinam Workshop',
+      type: 'Certification',
+      image: '/images/certifications/full-stack-development-rathinam.webp',
+    },
+    {
+      title: 'Data Analytics 1',
+      issuingOrganization: 'LinkedIn',
+      type: 'Certification',
+      image: '/images/certifications/data-analytics-1-linkedin.webp',
+    },
+    {
+      title: 'Data Analytics 2',
+      issuingOrganization: 'LinkedIn',
+      type: 'Certification',
+      image: '/images/certifications/data-analytics-2-linkedin.webp',
+    },
+    {
+      title: 'Data Analysis with Python',
+      issuingOrganization: 'freeCodeCamp',
+      type: 'Certification',
+      image: '/images/certifications/data-analysis-python-freecodecamp.webp',
+    },
+    {
+      title: 'Networking Basics & Troubleshooting',
+      issuingOrganization: 'Cisco Academy',
+      type: 'Certification',
+      image: '/images/certifications/networking-basics-cisco.webp',
+    },
+    {
+      title: 'Design Thinking',
+      issuingOrganization: 'IIT Bombay',
+      type: 'Certification',
+      image: '/images/certifications/design-thinking-iit-bombay.webp',
+    },
+    {
+      title: 'Career Essentials in Data Analysis',
+      issuingOrganization: 'LinkedIn',
+      type: 'Certification',
+      image: '/images/certifications/career-essentials-data-analysis-linkedin.webp',
+    },
+    {
+      title: 'Applied Machine Learning: Ensemble Learning',
+      issuingOrganization: 'LinkedIn Learning',
+      type: 'Certification',
+      image: '/images/certifications/applied-machine-learning-ensemble-linkedin.webp',
+    },
+    {
+      title: 'Generative AI vs. Traditional AI',
+      issuingOrganization: 'LinkedIn Learning',
+      type: 'Certification',
+      image: '/images/certifications/gen-ai-vs-traditional-ai-linkedin.webp',
+    },
+    {
+      title: 'Generative AI vs. Traditional AI (NASBA)',
+      issuingOrganization: 'LinkedIn Learning',
+      type: 'Certification',
+      image: '/images/certifications/gen-ai-vs-traditional-ai-nasba-linkedin.webp',
+    },
+    {
+      title: 'Hands-On Data Annotation: Applied Machine Learning',
+      issuingOrganization: 'LinkedIn Learning',
+      type: 'Certification',
+      image: '/images/certifications/data-annotation-machine-learning-linkedin.webp',
+    },
+    {
+      title: 'Certified Ethical Hacker (CEH)',
+      issuingOrganization: 'LinkedIn Learning',
+      type: 'Certification',
+      image: '/images/certifications/certified-ethical-hacker-ceh-linkedin.webp',
+    },
+    {
+      title: 'The Cybersecurity Threat Landscape',
+      issuingOrganization: 'LinkedIn Learning',
+      type: 'Certification',
+      image: '/images/certifications/cybersecurity-threat-landscape-linkedin.webp',
+    },
   ],
   expertise: {
     programmingLanguages: ['Python', 'JavaScript', 'TypeScript', 'SQL', 'HTML5', 'CSS3'],
-    backendAndApiEngineering: ['FastAPI', 'Node.js', 'REST API design', 'Structured backend architecture'],
-    frontendEngineering: ['React.js', 'Next.js', 'Tailwind CSS'],
-    databaseAndCloudInfrastructure: ['Supabase', 'PostgreSQL', 'Vercel', 'Git', 'GitHub'],
+    backendAndApiEngineering: ['FastAPI', 'Node.js', 'REST API design', 'Structured backend architecture', 'Supabase', 'PostgreSQL', 'Offline-first asynchronous data queues', 'Advanced RLS implementation'],
+    frontendEngineering: ['React.js', 'Next.js', 'Tailwind CSS', 'Vite', 'shadcn/ui'],
+    databaseAndCloudInfrastructure: ['Vercel', 'Git', 'GitHub', 'Netlify', 'Vitest'],
     automationAndAi: [
       'Playwright',
       'Headless browser orchestration',
       'Robotic Process Automation',
       'LLM API integration',
+      'Basic ML modeling',
+      'Computer Vision pipelines (YOLOv8)',
+      'Automated Dataset Annotation',
+      'n8n Automation workflows'
     ],
+    networkAndSystems: [
+      'Cisco Routers configuration',
+      'Network & Systems Troubleshooting',
+      'Offline-first architectures logic'
+    ]
   },
   projects: [
     {

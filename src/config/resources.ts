@@ -1,5 +1,7 @@
 import { PDF_RESOURCES, type PdfResource } from './pdfs';
 
+export type { PdfResource };
+
 export interface ResourceCategory {
   id: string;
   name: string;

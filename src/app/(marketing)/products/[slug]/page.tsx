@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import BackButton from "@/components/navigation/BackButton";
+import BackButton from "@/components/navigation/back-button";
 import { productsData } from "@/data/productsData";
 import { ArrowLeft, Box, CheckCircle2, Cpu, ArrowRight, Sparkles } from "lucide-react";
 import SafeImage from "@/components/ui/safe-image";

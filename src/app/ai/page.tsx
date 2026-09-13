@@ -152,7 +152,7 @@ export default function AiChatPage() {
   useEffect(() => {
     const on = () => setOnline(true);
     const off = () => setOnline(false);
-    setOnline(navigator.onLine);
+    const handle = requestAnimationFrame(() => setOnline(navigator.onLine));
     window.addEventListener("online", on);
     window.addEventListener("offline", off);
     const vv = window.visualViewport;
@@ -683,7 +683,7 @@ export default function AiChatPage() {
             <div className="w-full max-w-[48rem] mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-6">
               {(!active || active.messages.length === 0) && (
                 <div className="text-center pt-6 sm:pt-8">
-                  <img src={COMPANY.logoIconPath} alt="" width={72} height={72} className="mx-auto mb-4 h-[72px] w-[72px] rounded-full object-cover border border-white/15 outline outline-1 -outline-offset-1 outline-white/10" />
+                  <Image src={COMPANY.logoIconPath} alt="Logic AI" width={72} height={72} className="mx-auto mb-4 h-[72px] w-[72px] rounded-full object-cover border border-white/15 outline outline-1 -outline-offset-1 outline-white/10" />
                   <p className="text-base sm:text-xl font-semibold tracking-tight mb-1.5">How can Logic AI help?</p>
                   <p className="text-[12px] sm:text-sm text-zinc-400 mb-5">Packages, scoping, or general engineering questions.</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -699,7 +699,7 @@ export default function AiChatPage() {
               {active?.messages.map((m, i) => (
                 <div key={m.id} className={`flex gap-2 sm:gap-3 items-end ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                   {m.role === "assistant" && (
-                    <img src={COMPANY.logoIconPath} alt="" width={32} height={32} className="w-8 h-8 rounded-full object-cover border border-orange-400/30 shrink-0 mb-1 outline outline-1 -outline-offset-1 outline-white/10" />
+                    <Image src={COMPANY.logoIconPath} alt="Logic AI" width={32} height={32} className="w-8 h-8 rounded-full object-cover border border-orange-400/30 shrink-0 mb-1 outline outline-1 -outline-offset-1 outline-white/10" />
                   )}
                   <div className={`rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-[14px] sm:text-[15px] leading-relaxed min-w-0 ${m.role === "user" ? "bg-[#E8651C] text-white max-w-[min(100%,34rem)]" : "bg-black/35 border border-white/10 w-full"}`}>
                     {m.role === "assistant" ? (

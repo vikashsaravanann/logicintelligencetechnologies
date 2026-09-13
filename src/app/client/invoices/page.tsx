@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import BackButton from "@/components/navigation/BackButton";
-import { Receipt, CheckCircle2, Clock, CreditCard, ArrowRight } from "lucide-react";
+import BackButton from "@/components/navigation/back-button";
+import { CreditCard } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {

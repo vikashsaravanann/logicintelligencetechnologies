@@ -4,7 +4,7 @@ import './globals.css';
 import { COMPANY } from '@/config/company';
 import { organizationNode, websiteNode } from '@/lib/seo/schema';
 import { Toaster } from 'react-hot-toast';
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from '@/components/theme/theme-provider';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 

@@ -28,7 +28,11 @@ export function MobileMenu({
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
-      setOpenGroup(null);
+      const handle = requestAnimationFrame(() => setOpenGroup(null));
+      return () => {
+        cancelAnimationFrame(handle);
+        document.body.style.overflow = "";
+      };
     }
     return () => {
       document.body.style.overflow = "";

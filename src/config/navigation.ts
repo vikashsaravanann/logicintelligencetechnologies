@@ -35,6 +35,7 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
     items: [
       { href: '/about', label: 'About', description: 'Mission, vision, and approach' },
       { href: '/about/founder', label: 'Founder', description: 'Vikash Saravanan profile' },
+      { href: '/expertise', label: 'Technical Expertise', description: 'Engineering capabilities' },
       { href: '/careers', label: 'Careers', description: 'Open roles' },
       { href: '/press', label: 'Press', description: 'Media and brand assets' },
       { href: '/investors', label: 'Investors', description: 'Partnership overview' },
@@ -44,6 +45,7 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
     id: 'resources',
     label: 'Resources',
     items: [
+      { href: '/certifications', label: 'Certifications', description: 'Verified credentials' },
       { href: '/blog', label: 'Blog', description: 'Engineering and product notes' },
       { href: '/resources', label: 'Resource Center', description: 'Guides and PDF downloads' },
       { href: '/work', label: 'Case Studies', description: 'Selected work' },

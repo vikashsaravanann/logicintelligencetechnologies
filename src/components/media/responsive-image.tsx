@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image, { ImageProps } from "next/image";
 import { cn } from "@/lib/utils";
-import ImageFallback from "./ImageFallback";
+import ImageFallback from "./image-fallback";
 
 export interface ResponsiveImageProps extends Omit<ImageProps, "onError"> {
   fallbackLabel?: string;

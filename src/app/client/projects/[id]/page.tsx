@@ -1,8 +1,6 @@
 import { Metadata } from "next";
-import BackButton from "@/components/navigation/BackButton";
+import BackButton from "@/components/navigation/back-button";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Clock, Layers, ShieldCheck, User } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 interface Props {

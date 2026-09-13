@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, Briefcase, FileText, Receipt, MessageSquare, HelpCircle, User, ShieldCheck, LogOut } from "lucide-react";
+import { LayoutDashboard, Briefcase, FileText, Receipt, MessageSquare, HelpCircle, User } from "lucide-react";
 import { COMPANY } from "@/config/company";
 
 const NAV_ITEMS = [

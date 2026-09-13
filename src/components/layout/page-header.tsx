@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import Breadcrumbs, { BreadcrumbItem } from "@/components/navigation/Breadcrumbs";
-import BackButton from "@/components/navigation/BackButton";
+import Breadcrumbs, { BreadcrumbItem } from "@/components/ui/breadcrumbs";
+import BackButton from "@/components/navigation/back-button";
 
 export interface PageHeaderProps {
   title: string;

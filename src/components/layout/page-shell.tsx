@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import RouteAnnouncer from "@/components/navigation/RouteAnnouncer";
+import RouteAnnouncer from "@/components/navigation/route-announcer";
 
 export interface PageShellProps {
   children: React.ReactNode;

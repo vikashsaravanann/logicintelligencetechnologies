@@ -18,6 +18,8 @@ export const APP_ROUTES: Record<string, AppRoute> = {
   home: { path: "/", label: "Home", isProtected: false, category: "marketing" },
   about: { path: "/about", label: "About", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
   founder: { path: "/about/founder", label: "Founder Profile", isProtected: false, category: "marketing", backTarget: { label: "Back to About", href: "/about" } },
+  certifications: { path: "/certifications", label: "Certifications", isProtected: false, category: "marketing", backTarget: { label: "Back to About", href: "/about" } },
+  expertise: { path: "/expertise", label: "Technical Expertise", isProtected: false, category: "marketing", backTarget: { label: "Back to About", href: "/about" } },
   services: { path: "/services", label: "Solutions", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
   industries: { path: "/industries", label: "Industries", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
   products: { path: "/products", label: "Products", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },

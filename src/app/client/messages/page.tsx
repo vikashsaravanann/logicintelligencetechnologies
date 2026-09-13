@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import BackButton from "@/components/navigation/BackButton";
-import { MessageSquare, Send, Sparkles } from "lucide-react";
+import BackButton from "@/components/navigation/back-button";
+import { Send } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Team Communications | Client Portal",

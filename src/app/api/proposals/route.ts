@@ -17,7 +17,7 @@ const proposalSchema = z.object({
   terms: z.string().optional(),
 });
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const { data: proposals, error } = await supabaseAdmin
       .from("proposals")

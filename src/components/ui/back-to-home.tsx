@@ -1,10 +1,10 @@
 "use client";
 
-import BackButton, { BackButtonProps } from "@/components/navigation/BackButton";
+import BackButton, { BackButtonProps } from "@/components/navigation/back-button";
 
 /**
  * Enterprise back navigation pill button.
- * Backwards compatibility wrapper for @/components/navigation/BackButton.
+ * Backwards compatibility wrapper for @/components/navigation/back-button.
  */
 export default function BackToHome({
   href = "/",

@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { COMPANY } from "@/config/company";
 import { ExternalLink } from "lucide-react";
 
@@ -22,28 +23,14 @@ const InstagramIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-/**
- * INSTAGRAM POSTS DATA SOURCE
- * ─────────────────────────────────────────────────────────────────────────────
- * Add/edit posts here. Each entry needs:
- *   image   – relative path under /public (e.g. "/instagram-post1.jpg")
- *             OR an absolute URL to an externally-hosted image.
- *   caption – Short caption text shown on hover.
- *   href    – Full URL of the Instagram post to open in a new tab.
- *
- * FUTURE: For automatic updates, this array can be replaced with a call to the
- * Instagram Graph API (GET /{user-id}/media?fields=id,caption,media_url,permalink)
- * using a long-lived access token. At that point, convert this component to a
- * Server Component that fetches on the server (or use an ISR route).
- */
 const instagramPosts = [
   {
-    image: "/instagram-post1.jpg",
+    image: "/instagram-post1.webp",
     caption: "How we work — our process from idea to launch 🚀",
     href: COMPANY.instagramUrl,
   },
   {
-    image: "/instagram-post2.jpg",
+    image: "/instagram-post2.webp",
     caption: "Behind the scenes at Logic Intelligence Technologies ✨",
     href: COMPANY.instagramUrl,
   },
@@ -90,24 +77,15 @@ export default function InstagramFeedSection() {
               className="group relative aspect-[4/5] rounded-2xl border border-white/10 overflow-hidden bg-black shadow-[0_4px_24px_rgba(0,0,0,0.3)] hover:border-pink-500/30 transition-all duration-300"
             >
               {/* Post image */}
-              <img
-                src={post.image}
-                alt={post.caption}
-                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
-                onError={(e) => {
-                  // Fallback if image fails to load
-                  e.currentTarget.style.display = "none";
-                  e.currentTarget.parentElement!.classList.add(
-                    "flex",
-                    "items-center",
-                    "justify-center"
-                  );
-                  const fallback = document.createElement("div");
-                  fallback.innerHTML =
-                    '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>';
-                  e.currentTarget.parentElement!.appendChild(fallback);
-                }}
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src={post.image}
+                  alt={post.caption}
+                  fill
+                  sizes="(max-width: 640px) 100vw, 320px"
+                  className="object-contain group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
 
               {/* Hover overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">

@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import BackButton from "@/components/navigation/BackButton";
-import { Download, FileText, Lock, ShieldCheck, Upload } from "lucide-react";
+import BackButton from "@/components/navigation/back-button";
+import { Download, FileText, ShieldCheck } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {

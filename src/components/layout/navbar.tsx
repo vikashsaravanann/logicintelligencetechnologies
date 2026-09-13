@@ -56,9 +56,12 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    setIsOpen(false);
-    setMoreOpen(false);
-    setMobileGroupOpen(null);
+    const handle = requestAnimationFrame(() => {
+      setIsOpen(false);
+      setMoreOpen(false);
+      setMobileGroupOpen(null);
+    });
+    return () => cancelAnimationFrame(handle);
   }, [pathname]);
 
   useEffect(() => {

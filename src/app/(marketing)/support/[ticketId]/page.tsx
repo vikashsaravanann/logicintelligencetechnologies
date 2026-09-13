@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import BackButton from "@/components/navigation/BackButton";
+import BackButton from "@/components/navigation/back-button";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, Clock, HelpCircle, MessageSquare, ShieldCheck } from "lucide-react";

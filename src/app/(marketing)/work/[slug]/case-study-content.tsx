@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import BackButton from "@/components/navigation/BackButton";
+import BackButton from "@/components/navigation/back-button";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ExternalLink, CheckCircle2 } from "lucide-react";

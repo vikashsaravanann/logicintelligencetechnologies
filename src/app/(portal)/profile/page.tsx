@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { redirect } from "next/navigation";
-import BackToHome from "@/components/ui/back-to-home";
+import Image from "next/image";
+import BackButton from "@/components/navigation/back-button";
 import { env } from "@/config/env";
 import { getUserPortalData } from "./actions/portal";
 import { PortalTabs } from "./components/portal-tabs";
@@ -79,16 +80,18 @@ export default async function ProfilePage() {
 
       <div className="relative z-10 portal-shell pt-24 sm:pt-28 pb-20">
         <div className="mb-4">
-          <BackToHome inline />
+          <BackButton fallbackHref="/" label="Back to Home" inline />
         </div>
 
         <div className="rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-[24px] p-5 sm:p-8 mb-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_20px_60px_rgba(0,0,0,0.35)]">
           <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-white/20 bg-white shrink-0 mx-auto sm:mx-0">
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-white/20 bg-white shrink-0 mx-auto sm:mx-0 relative">
               {avatarUrl ? (
-                <img
+                <Image
                   src={avatarUrl}
                   alt={fullName || "Profile"}
+                  width={112}
+                  height={112}
                   className="w-full h-full object-cover object-center"
                 />
               ) : (

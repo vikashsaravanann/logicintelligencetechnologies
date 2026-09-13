@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { COMPANY } from "@/config/company";
@@ -215,10 +216,12 @@ export default function SupportChatWidget() {
           <X className="w-6 h-6" />
         ) : (
           <>
-            <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white p-0 flex items-center justify-center shrink-0 shadow-md overflow-hidden border border-white/20">
-              <img
+            <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white p-0 flex items-center justify-center shrink-0 shadow-md overflow-hidden border border-white/20 relative">
+              <Image
                 src={COMPANY.logoIconPath}
                 alt="Logic Intelligence Logo"
+                width={44}
+                height={44}
                 className="w-full h-full object-contain rounded-full"
               />
             </div>
@@ -242,10 +245,12 @@ export default function SupportChatWidget() {
             className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 z-50 w-[min(92vw,360px)] h-[min(70dvh,560px)] sm:max-h-[600px] rounded-2xl border border-white/10 bg-[#060B18]/95 backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden pb-safe"
           >
             <div className="relative px-4 py-3 bg-gradient-to-r from-[#0A0F1E] to-[#12172B] border-b border-white/10 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 overflow-hidden border border-white/30">
-                <img
+              <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 overflow-hidden border border-white/30 relative">
+                <Image
                   src="/assets/image.png"
                   alt="Logic Intelligence Technologies"
+                  width={40}
+                  height={40}
                   className="w-full h-full object-contain"
                 />
               </div>

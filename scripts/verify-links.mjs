@@ -9,6 +9,8 @@ const VALID_STATIC_ROUTES = new Set([
   '/',
   '/about',
   '/about/founder',
+  '/certifications',
+  '/expertise',
   '/services',
   '/industries',
   '/products',

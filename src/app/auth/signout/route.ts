@@ -5,7 +5,6 @@ import { NextResponse } from 'next/server';
 import { env } from "@/config/env";
 
 export async function POST(request: Request) {
-  const requestUrl = new URL(request.url);
   const cookieStore = await cookies();
   const supabase = createRouteHandlerClient(
     { cookies: () => cookieStore as any },

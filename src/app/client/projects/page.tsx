@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import BackButton from "@/components/navigation/BackButton";
-import { Briefcase, ArrowRight, CheckCircle2 } from "lucide-react";
+import BackButton from "@/components/navigation/back-button";
+import { ArrowRight } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {

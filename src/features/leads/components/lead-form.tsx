@@ -207,6 +207,12 @@ export default function LeadForm() {
                       "SEO setup"
                     ].map(feature => (
                       <label key={feature} className="flex items-center gap-3 p-3 rounded-lg border border-white/5 bg-white/[0.02] cursor-pointer hover:bg-white/[0.04] transition-colors">
+                        <input
+                          type="checkbox"
+                          className="sr-only"
+                          checked={form.features.includes(feature)}
+                          onChange={() => handleFeatureToggle(feature)}
+                        />
                         <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${form.features.includes(feature) ? 'bg-primary border-primary' : 'border-zinc-600'}`}>
                           {form.features.includes(feature) && <CheckCircle2 className="w-3 h-3 text-black" />}
                         </div>

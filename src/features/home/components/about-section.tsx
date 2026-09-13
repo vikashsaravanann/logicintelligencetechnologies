@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { COMPANY } from "@/config/company";
 
 export default function AboutSection() {
@@ -81,8 +82,14 @@ export default function AboutSection() {
             
             <div className="absolute bottom-8 left-8 right-8 p-6 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-black p-[2px] border border-primary/30 shadow-[0_0_15px_rgba(0,191,255,0.2)]">
-                  <img src={COMPANY.logoIconPath} alt="Company Logo" className="w-full h-full object-cover rounded-full" />
+                <div className="w-12 h-12 rounded-full overflow-hidden bg-black p-[2px] border border-primary/30 shadow-[0_0_15px_rgba(0,191,255,0.2)] relative">
+                  <Image
+                    src={COMPANY.logoIconPath}
+                    alt="Logic Intelligence Technologies Logo"
+                    width={48}
+                    height={48}
+                    className="w-full h-full object-cover rounded-full"
+                  />
                 </div>
                 <div>
                   <h4 className="text-white font-bold text-lg">Logic Intelligence Technologies</h4>

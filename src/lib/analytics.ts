@@ -59,7 +59,7 @@ export function trackEvent(eventName: PlatformEvent, properties?: EventPropertie
     if (process.env.NODE_ENV === 'development') {
       console.log(`[Analytics] ${eventName}:`, properties);
     }
-  } catch (err) {
+  } catch {
     // Analytics failures should never crash application
   }
 }

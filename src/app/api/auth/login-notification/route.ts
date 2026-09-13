@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     }
 
     let body: any = {};
-    try { body = await request.json(); } catch(e) {}
+    try { body = await request.json(); } catch {}
 
     const emailResult = await sendLoginNotification(session.user.email, request.headers, body);
     

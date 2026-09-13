@@ -5,7 +5,7 @@ import {
   ExternalLink, GraduationCap, MapPin,
   Code2, Cpu, Workflow, Bot, ArrowRight, Mail,
 } from "lucide-react";
-import BackButton from "@/components/navigation/BackButton";
+import BackButton from "@/components/navigation/back-button";
 import { COMPANY } from "@/config/company";
 import { FOUNDER } from "@/config/founder";
 import { SITE, FOUNDER_ID, breadcrumb, founderNode, organizationNode } from "@/lib/seo/schema";
