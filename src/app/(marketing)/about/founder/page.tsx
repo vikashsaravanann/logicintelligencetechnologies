@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   ExternalLink, GraduationCap, MapPin,
-  Code2, Cpu, Workflow, Bot, ArrowRight, Mail,
+  Code2, Cpu, Workflow, Bot, ArrowRight, Mail, Award,
 } from "lucide-react";
 import BackButton from "@/components/navigation/back-button";
 import { COMPANY } from "@/config/company";
@@ -11,12 +11,12 @@ import { FOUNDER } from "@/config/founder";
 import { SITE, FOUNDER_ID, breadcrumb, founderNode, organizationNode } from "@/lib/seo/schema";
 
 export const metadata: Metadata = {
-  title: `${FOUNDER.name} — ${FOUNDER.title}`,
-  description: FOUNDER.executiveOverview,
+  title: `${FOUNDER.name} — ${FOUNDER.title} | ${FOUNDER.company}`,
+  description: `Learn about ${FOUNDER.name}, ${FOUNDER.title} at ${FOUNDER.company}, specializing in AI systems, full-stack software, and autonomous workflow automation.`,
   alternates: { canonical: "/about/founder" },
   openGraph: {
-    title: `${FOUNDER.name} | Founder of ${FOUNDER.company}`,
-    description: FOUNDER.shortBio,
+    title: `${FOUNDER.name} — ${FOUNDER.title} | ${FOUNDER.company}`,
+    description: `Meet ${FOUNDER.name}, ${FOUNDER.title} at ${FOUNDER.company}, working across AI systems, full-stack software engineering, intelligent automation, and autonomous workflows.`,
     url: `${SITE}/about/founder`,
     type: "profile",
     images: [{ url: FOUNDER.ogImageUrl, width: 1200, height: 630, alt: `${FOUNDER.name}, ${FOUNDER.title}` }],
@@ -114,14 +114,40 @@ export default function FounderPage() {
         </div>
       </section>
       <section className="px-6 lg:px-8 py-12 sm:py-16">
-        <div className="max-w-3xl mx-auto rounded-2xl border border-white/10 bg-white/[0.03] p-8">
-          <div className="flex flex-col sm:flex-row items-start gap-4">
-            <GraduationCap className="w-8 h-8 text-primary shrink-0 mt-1" />
-            <div>
-              <h2 className="text-xl font-bold text-white mb-2">Education</h2>
-              <p className="text-zinc-200 font-medium">{FOUNDER.education.degree}</p>
-              <p className="text-zinc-400 mt-1">{FOUNDER.education.institution}</p>
-              <p className="text-zinc-500 text-sm mt-1">{FOUNDER.education.location} · {FOUNDER.education.timeline}</p>
+        <div className="max-w-3xl mx-auto space-y-6">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8">
+            <div className="flex flex-col sm:flex-row items-start gap-4">
+              <GraduationCap className="w-8 h-8 text-primary shrink-0 mt-1" />
+              <div>
+                <h2 className="text-xl font-bold text-white mb-2">Education</h2>
+                <p className="text-zinc-200 font-medium">{FOUNDER.education.degree}</p>
+                <p className="text-zinc-400 mt-1">{FOUNDER.education.institution}</p>
+                <p className="text-zinc-500 text-sm mt-1">{FOUNDER.education.location} · {FOUNDER.education.timeline}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8">
+            <div className="flex flex-col sm:flex-row items-start gap-4">
+              <Award className="w-8 h-8 text-primary shrink-0 mt-1" />
+              <div className="w-full">
+                <div className="flex items-center justify-between gap-4 mb-2">
+                  <h2 className="text-xl font-bold text-white">Credentials & Professional Training</h2>
+                  <Link href="/certifications" className="text-xs text-primary font-bold hover:underline">
+                    View All Certifications →
+                  </Link>
+                </div>
+                <div className="space-y-3 mt-4">
+                  <div className="border-b border-white/5 pb-3">
+                    <p className="text-sm font-semibold text-zinc-200">Data Analytics Professional Internship</p>
+                    <p className="text-xs text-zinc-400">Edu Tantr · Professional Internship</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-zinc-200">The Joy of Computing using Python</p>
+                    <p className="text-xs text-zinc-400">NPTEL · Technical Certification</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

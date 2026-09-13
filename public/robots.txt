@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://vikashsaravanann.github.io/Logic-Intelligence/sitemap.xml
+Sitemap: https://www.logicintelligencetechnologies.in/sitemap.xml
