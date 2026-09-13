@@ -168,7 +168,7 @@ export default function DashboardClient({
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-2 text-xs text-zinc-400">
                         <Calendar className="w-4 h-4 text-zinc-500" />
-                        <span>Due in {Math.floor(Math.random() * 14) + 1} days</span>
+                        <span>Due in {(Number(p.id?.toString().replace(/\D/g, "") || p.progress || 7) % 14) + 1} days</span>
                       </div>
                     </td>
                     <td className="px-6 py-5 text-right">
