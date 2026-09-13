@@ -31,12 +31,13 @@ export const FOUNDER = {
   oneLine:
     'AI systems engineer, full-stack developer, and Founder of Logic Intelligence Technologies, specializing in intelligent automation and production software systems.',
   images: {
-    profile: '/images/founder/vikash-saravanan-profile.webp',
-    profileJpg: '/images/founder/vikash-saravanan-profile.jpg',
-    square: '/images/founder/vikash-saravanan-profile-square.webp',
-    squareJpg: '/images/founder/vikash-saravanan-profile-square.jpg',
-    banner: '/images/founder/vikash-saravanan-banner.webp',
-    og: '/images/founder/vikash-saravanan-og.jpg',
+    // Production paths: use assets already on main until public/images/founder/* binaries are pushed.
+    profile: '/assets/founder.jpg',
+    profileJpg: '/assets/founder.jpg',
+    square: '/assets/founder.jpg',
+    squareJpg: '/assets/founder.jpg',
+    banner: '/assets/og-banner.jpg',
+    og: '/assets/og-banner.jpg',
     alt: 'Vikash Saravanan, Founder and Lead Systems Engineer at Logic Intelligence Technologies.',
   },
   links: {
