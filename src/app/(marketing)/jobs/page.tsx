@@ -53,29 +53,29 @@ export default function JobsPage() {
             </span>
           </h1>
 
-          <p className="text-zinc-200 text-base sm:text-lg max-w-2xl leading-relaxed mb-10 font-normal">
+          <p className="text-zinc-200 text-base sm:text-lg max-w-2xl leading-relaxed mb-10 font-normal uppercase">
             Four leadership seats are open next to the founder. Bootstrapped studio shipping
             production web, mobile systems, and Logic AI. Modest cash until revenue. Real equity after the entity.
             If you need a cheque for a visiting card, this page is not for you.
           </p>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-6 border-t border-white/10">
-            <div className="bg-white/[0.03] backdrop-blur-md border border-white/8 rounded-xl p-3.5">
+            <div className="bg-white/[0.03] backdrop-blur-md border border-white/8 rounded-xl p-3.5 uppercase">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-400">Seats Open</p>
               <p className="text-base sm:text-lg font-black text-white mt-0.5">CEO + 3 Directors</p>
               <p className="text-[11px] text-zinc-400 mt-0.5">Operations, Eng, Sales, AI</p>
             </div>
-            <div className="bg-white/[0.03] backdrop-blur-md border border-white/8 rounded-xl p-3.5">
+            <div className="bg-white/[0.03] backdrop-blur-md border border-white/8 rounded-xl p-3.5 uppercase">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-400">Headquarters</p>
               <p className="text-base sm:text-lg font-black text-white mt-0.5">Coimbatore, TN</p>
               <p className="text-[11px] text-zinc-400 mt-0.5">First 90 days in the room</p>
             </div>
-            <div className="bg-white/[0.03] backdrop-blur-md border border-white/8 rounded-xl p-3.5">
+            <div className="bg-white/[0.03] backdrop-blur-md border border-white/8 rounded-xl p-3.5 uppercase">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-400">Leadership</p>
               <p className="text-base sm:text-lg font-black text-white mt-0.5">Beside Founder</p>
               <p className="text-[11px] text-zinc-400 mt-0.5">Direct partnership with Vikash</p>
             </div>
-            <div className="bg-white/[0.03] backdrop-blur-md border border-white/8 rounded-xl p-3.5">
+            <div className="bg-white/[0.03] backdrop-blur-md border border-white/8 rounded-xl p-3.5 uppercase">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-400">Governance</p>
               <p className="text-base sm:text-lg font-black text-white mt-0.5">Letter of Intent</p>
               <p className="text-[11px] text-zinc-400 mt-0.5">Formal 6-month trial terms</p>

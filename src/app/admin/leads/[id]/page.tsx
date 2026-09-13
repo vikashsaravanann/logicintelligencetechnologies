@@ -38,13 +38,7 @@ export default async function AdminLeadDetailPage({ params }: Props) {
   return (
     <div className="container mx-auto p-4 py-8 max-w-5xl space-y-8">
       <BackToHome href="/admin/leads" label="Back to Leads Ledger" inline />
-      <Link
-        href="/admin/leads"
-        className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>Back to Leads Ledger</span>
-      </Link>
+
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-800">
