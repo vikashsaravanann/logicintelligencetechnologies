@@ -19,7 +19,6 @@ const iconMap: Record<string, any> = {
 };
 
 import SafeImage from "@/components/ui/safe-image";
-import Breadcrumbs from "@/components/ui/breadcrumbs";
 
 export function generateStaticParams() {
   const pkgParams = packagesData.map((pkg) => ({ slug: pkg.slug }));

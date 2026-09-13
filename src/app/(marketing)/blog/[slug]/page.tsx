@@ -6,7 +6,6 @@ import { ArrowLeft, Clock, Tag, Calendar, User, ArrowRight } from "lucide-react"
 import { blogPosts, getPostBySlug } from "@/data/blogData";
 import ShareButton from "@/components/ui/share-button";
 import SafeImage from "@/components/ui/safe-image";
-import Breadcrumbs from "@/components/ui/breadcrumbs";
 import CTASection from "@/components/ui/cta-section";
 
 export function generateStaticParams() {

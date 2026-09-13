@@ -5,7 +5,6 @@ import BackButton from "@/components/navigation/back-button";
 import { productsData } from "@/data/productsData";
 import { ArrowLeft, Box, CheckCircle2, Cpu, ArrowRight, Sparkles } from "lucide-react";
 import SafeImage from "@/components/ui/safe-image";
-import Breadcrumbs from "@/components/ui/breadcrumbs";
 import CTASection from "@/components/ui/cta-section";
 
 interface Props {

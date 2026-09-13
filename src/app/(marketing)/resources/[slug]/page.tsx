@@ -6,7 +6,6 @@ import { PDF_RESOURCES } from "@/config/pdfs";
 import { ArrowLeft, Download, FileText, CheckCircle2, ShieldCheck, ArrowRight, Sparkles } from "lucide-react";
 import ResourceDownloadForm from "./components/ResourceDownloadForm";
 import SafeImage from "@/components/ui/safe-image";
-import Breadcrumbs from "@/components/ui/breadcrumbs";
 
 interface Props {
   params: Promise<{ slug: string }>;

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { servicesData } from "@/data/servicesData";
 import { ArrowLeft, CheckCircle2, Layers, Cpu, ShieldCheck, Zap, ArrowRight, HelpCircle, Sparkles } from "lucide-react";
 import SafeImage from "@/components/ui/safe-image";
-import Breadcrumbs from "@/components/ui/breadcrumbs";
 import ProcessTimeline from "@/components/ui/process-timeline";
 import FAQAccordion from "@/components/ui/faq-accordion";
 import CTASection from "@/components/ui/cta-section";
@@ -66,15 +65,6 @@ export default async function ServiceDetailPage({ params }: Props) {
       <div className="absolute top-0 right-1/4 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-        {/* Navigation Breadcrumb */}
-        <div className="mb-8">
-          <Breadcrumbs
-            items={[
-              { name: "Services", url: "/services" },
-              { name: service.title, url: `/services/${service.slug}` },
-            ]}
-          />
-        </div>
 
         {/* Hero Visual Banner */}
         <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden mb-12 border border-white/10 shadow-2xl bg-black/50">

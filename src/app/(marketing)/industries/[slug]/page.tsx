@@ -5,7 +5,6 @@ import Link from "next/link";
 import { industriesData } from "@/data/industriesData";
 import { ArrowLeft, CheckCircle2, AlertTriangle, ShieldCheck, ArrowRight, Building2, Layers, Sparkles } from "lucide-react";
 import SafeImage from "@/components/ui/safe-image";
-import Breadcrumbs from "@/components/ui/breadcrumbs";
 import CTASection from "@/components/ui/cta-section";
 
 interface Props {
@@ -53,15 +52,6 @@ export default async function IndustryDetailPage({ params }: Props) {
       <div className="absolute top-0 right-1/3 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-        {/* Navigation Breadcrumb */}
-        <div className="mb-8">
-          <Breadcrumbs
-            items={[
-              { name: "Industries", url: "/industries" },
-              { name: ind.title, url: `/industries/${ind.slug}` },
-            ]}
-          />
-        </div>
 
         {/* Visual Architecture Hero */}
         <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden mb-12 border border-white/10 shadow-2xl bg-black/50">
