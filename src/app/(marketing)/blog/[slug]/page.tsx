@@ -47,15 +47,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     <main className="min-h-screen bg-[#0A0F1E] text-white pb-24 relative selection:bg-primary/30 pt-28">
       <BackToHome href="/blog" label="Back to Blog" />
       <div className="max-w-4xl mx-auto px-6 lg:px-8 relative z-10">
-        {/* Breadcrumb navigation */}
-        <div className="mb-8">
-          <Breadcrumbs
-            items={[
-              { name: "Blog", url: "/blog" },
-              { name: post.title, url: `/blog/${post.slug}` },
-            ]}
-          />
-        </div>
 
         {/* Article Meta Bar */}
         <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-400 mb-6">

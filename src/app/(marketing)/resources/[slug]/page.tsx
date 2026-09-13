@@ -50,14 +50,6 @@ export default async function ResourceDetailPage({ params }: Props) {
       <div className="absolute top-10 right-1/4 w-[500px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <div className="mb-8">
-          <Breadcrumbs
-            items={[
-              { name: "Resources", url: "/resources" },
-              { name: res.title, url: `/resources/${res.slug}` },
-            ]}
-          />
-        </div>
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">

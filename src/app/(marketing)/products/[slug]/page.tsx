@@ -49,14 +49,6 @@ export default async function ProductDetailPage({ params }: Props) {
     <div className="relative min-h-screen bg-[#060B18] text-white pt-28 pb-20 overflow-hidden">
       <BackButton fallbackHref="/products" label="Back to Products" />
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <div className="mb-8">
-          <Breadcrumbs
-            items={[
-              { name: "Products", url: "/products" },
-              { name: prod.name, url: `/products/${prod.slug}` },
-            ]}
-          />
-        </div>
 
         {/* Product Visual Banner */}
         <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden mb-12 border border-white/10 shadow-2xl bg-black/50">

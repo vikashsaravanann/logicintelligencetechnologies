@@ -58,14 +58,6 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
     return (
       <main className="min-h-screen bg-[#0A0F1E] text-white pt-28 pb-20">
       <BackToHome href="/packages" label="Back to Packages" />
-        <div className="max-w-5xl mx-auto px-6 mb-8">
-          <Breadcrumbs
-            items={[
-              { name: "Packages", url: "/packages" },
-              { name: pkg.title, url: `/packages/${pkg.slug}` },
-            ]}
-          />
-        </div>
 
         <section className="px-6 lg:px-8 max-w-5xl mx-auto text-center relative">
           {/* Visual Banner */}
@@ -144,14 +136,6 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
     
     return (
       <main className="min-h-screen bg-[#0A0F1E] text-white pt-28 pb-20">
-        <div className="max-w-6xl mx-auto px-6 mb-8">
-          <Breadcrumbs
-            items={[
-              { name: "Services", url: "/services" },
-              { name: srv.title, url: `/packages/${srv.slug}` },
-            ]}
-          />
-        </div>
 
         {/* Visual Banner */}
         <div className="max-w-6xl mx-auto px-6 mb-12">

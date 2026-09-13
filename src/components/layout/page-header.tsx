@@ -1,13 +1,11 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import Breadcrumbs, { BreadcrumbItem } from "@/components/ui/breadcrumbs";
 import BackButton from "@/components/navigation/back-button";
 
 export interface PageHeaderProps {
   title: string;
   subtitle?: string;
   badge?: string;
-  breadcrumbs?: BreadcrumbItem[];
   backButton?: {
     fallbackHref: string;
     label: string;
@@ -21,7 +19,6 @@ export function PageHeader({
   title,
   subtitle,
   badge,
-  breadcrumbs,
   backButton,
   actions,
   align = "left",
@@ -37,7 +34,6 @@ export function PageHeader({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Navigation row */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
           {backButton && (
             <BackButton
               fallbackHref={backButton.fallbackHref}
