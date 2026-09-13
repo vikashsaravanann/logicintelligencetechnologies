@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, ArrowUp, Check, Copy, Download, Loader2, Menu, MessageSquarePlus, Mic, Paperclip, Quote, RefreshCw, Search, Share2, Sparkles, Square, Ticket, Trash2, Volume2, WifiOff, X } from "lucide-react";
+import { ArrowRight, ArrowUp, Check, Copy, Loader2, Menu, Mic, Paperclip, Quote, RefreshCw, Search, Share2, Sparkles, Trash2, Volume2, WifiOff, X } from "lucide-react";
 import { getClientSupabase } from "@/lib/supabase/client";
 import { COMPANY } from "@/config/company";
 import { env } from "@/config/env";
@@ -108,6 +109,7 @@ function readFile(file: File): Promise<AttachFile> {
 export const dynamic = "force-dynamic";
 
 export default function AiChatPage() {
+  const router = useRouter();
   const [landed, setLanded] = useState(true);
   const [landMenu, setLandMenu] = useState(false);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -574,7 +576,21 @@ export default function AiChatPage() {
           <h1 className="max-w-5xl font-serif text-[1.7rem] sm:text-6xl lg:text-7xl leading-[1.12] tracking-tight text-[color:var(--ai-ink)]">The fastest way<br /> to Build and Grow<br /> your Website.</h1>
           <p className="mt-4 sm:mt-6 max-w-xl text-[13px] sm:text-base text-[color:var(--ai-muted)] leading-relaxed px-1">Logic Intelligence Technologies helps businesses build stunning websites and scale their online presence with AI-powered tools for design, automation, and growth.</p>
           <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row w-full max-w-xs sm:max-w-none items-stretch sm:items-center justify-center gap-2.5 sm:gap-3">
-            <button type="button" onClick={() => setLanded(false)} className="inline-flex items-center justify-center gap-2 rounded-full bg-[#E8651C] px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(232,101,28,0.35)] hover:brightness-110">Get Started <ArrowRight className="w-4 h-4" /></button>
+            <button
+              type="button"
+              onClick={async () => {
+                // Require auth before entering the chat workspace
+                const { data } = await supabase.auth.getUser();
+                if (!data.user) {
+                  router.push("/login?next=/ai");
+                  return;
+                }
+                setLanded(false);
+              }}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#E8651C] px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(232,101,28,0.35)] hover:brightness-110"
+            >
+              Get Started <ArrowRight className="w-4 h-4" />
+            </button>
             <Link href="/ai-assistant" className="rounded-full border border-white/15 bg-black/25 px-5 py-3 text-sm text-center">Learn More</Link>
           </div>
         </main>

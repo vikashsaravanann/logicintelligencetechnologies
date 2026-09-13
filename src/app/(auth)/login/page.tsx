@@ -49,7 +49,8 @@ function friendlyAuthError(message: string) {
   return message || "Authentication failed.";
 }
 
-function postLoginPath(email: string | undefined) {
+function postLoginPath(email: string | undefined, next?: string | null): string {
+  if (next && next.startsWith("/") && !next.startsWith("//")) return next;
   if (email?.endsWith("@logicintelligencetechnologies.in")) return "/dashboard";
   return "/profile";
 }
@@ -94,6 +95,8 @@ function AuthContent() {
     };
   }, []);
 
+  const nextParam = searchParams.get("next");
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -101,13 +104,13 @@ function AuthContent() {
         data: { session },
       } = await supabase.auth.getSession();
       if (!cancelled && session) {
-        router.replace(postLoginPath(session.user.email));
+        router.replace(postLoginPath(session.user.email, nextParam));
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [router, supabase.auth]);
+  }, [router, supabase.auth, nextParam]);
 
   const handleOAuthLogin = async (provider: "google" | "github") => {
     try {
@@ -205,7 +208,7 @@ function AuthContent() {
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           }),
         }).catch(() => {});
-        router.push(postLoginPath(data.user?.email));
+        router.push(postLoginPath(data.user?.email, nextParam));
         router.refresh();
       }
     } catch (err: unknown) {
