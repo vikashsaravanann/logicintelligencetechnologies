@@ -240,3 +240,34 @@ export function jobPostings() {
     url: `${SITE}/jobs`,
   }));
 }
+
+
+/** Alias used by checklist layout */
+export const HOWTO_STEPS = HOW_TO_STEPS;
+
+export const DEMO_FAQ: Array<{ q: string; a: string }> = [
+  {
+    q: "Is the free demo really free?",
+    a: "Yes. We scope and, when it fits, share a working direction before any payment.",
+  },
+  {
+    q: "How long until a reply?",
+    a: "Typically 48–72 hours with next steps after you submit the form.",
+  },
+  {
+    q: "What happens after the demo?",
+    a: "If you approve the direction, we move to a fixed-scope package or custom SOW. Source and go-live handoff follow full payment.",
+  },
+];
+
+export const AI_FAQ: Array<{ q: string; a: string }> = [
+  {
+    q: "What is the Logic AI assistant?",
+    a: "A company knowledge workspace for product, packages, and process questions grounded in official company materials.",
+  },
+  {
+    q: "Does it replace human support?",
+    a: "No. It accelerates answers; complex delivery and sales still go through the team.",
+  },
+];
+

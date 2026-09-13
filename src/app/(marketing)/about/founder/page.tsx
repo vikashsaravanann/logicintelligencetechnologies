@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  ExternalLink, Github, LinkedIn, Instagram, GraduationCap, MapPin,
+  ExternalLink, GraduationCap, MapPin,
   Code2, Cpu, Workflow, Bot, ArrowRight, Mail,
 } from "lucide-react";
 import BackToHome from "@/components/ui/back-to-home";
@@ -82,10 +82,10 @@ export default function FounderPage() {
               <span className="inline-flex items-center gap-1.5"><GraduationCap className="w-4 h-4 text-primary" />{FOUNDER.education.institution}</span>
             </div>
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
-              <a href={FOUNDER.links.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"><LinkedIn className="w-4 h-4" /> LinkedIn</a>
-              <a href={FOUNDER.links.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"><Github className="w-4 h-4" /> GitHub</a>
+              <a href={FOUNDER.links.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"> LinkedIn</a>
+              <a href={FOUNDER.links.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"> GitHub</a>
               <a href={FOUNDER.links.portfolio} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"><ExternalLink className="w-4 h-4" /> Portfolio</a>
-              <a href={FOUNDER.links.instagram} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"><Instagram className="w-4 h-4" /> Instagram</a>
+              <a href={FOUNDER.links.instagram} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm text-zinc-200 hover:border-primary/40 hover:bg-primary/10 transition-colors"> Instagram</a>
             </div>
           </div>
         </div>
