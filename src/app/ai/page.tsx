@@ -672,6 +672,40 @@ export default function AiChatPage() {
             <Link href="/" className="inline-flex items-center justify-center h-9 min-w-[3.25rem] px-3 rounded-full border border-white/15 text-[10px] font-bold uppercase tracking-wider text-white shrink-0">HOME</Link>
             <button type="button" onClick={newChat} className="h-9 min-w-[3.25rem] px-3.5 rounded-full bg-[#E8651C] text-[10px] font-bold uppercase tracking-wider text-white shrink-0">NEW</button>
             <span className="hidden sm:inline-flex"><ThemeToggle /></span>
+            {userEmail ? (
+              <>
+                <Link
+                  href="/profile"
+                  title={userEmail}
+                  className="shrink-0 hidden sm:flex"
+                >
+                  {userAvatar ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={userAvatar} alt="" className="w-8 h-8 rounded-full object-cover border border-white/25 hover:ring-2 hover:ring-orange-400/50" />
+                  ) : (
+                    <span className="w-8 h-8 rounded-full bg-[#E8651C] text-white text-[11px] font-bold grid place-items-center border border-white/20 hover:ring-2 hover:ring-orange-400/50">{initials(userEmail)}</span>
+                  )}
+                </Link>
+                <button
+                  type="button"
+                  aria-label="Sign out"
+                  title="Sign out"
+                  className="hidden sm:flex h-8 w-8 items-center justify-center rounded-full border border-white/12 text-zinc-400 hover:text-red-300 hover:border-red-400/30 shrink-0"
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    router.push("/");
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                </button>
+              </>
+            ) : (
+              <Link href="/login?next=/ai" className="hidden sm:inline-flex h-9 px-3.5 rounded-full border border-white/15 text-[10px] font-bold uppercase tracking-wider text-white items-center justify-center shrink-0">Sign In</Link>
+            )}
           </div>
         </div>
         {!online && <div className="bg-amber-500/15 text-amber-200 text-xs px-4 py-2 flex items-center justify-center gap-2 uppercase tracking-wider"><WifiOff className="w-3.5 h-3.5" /> Offline</div>}
