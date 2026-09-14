@@ -83,5 +83,5 @@ export const packagesData = [
 ];
 
 export function getPackageVisual(slug: string): string {
-  return `/images/packages/${slug}.svg`;
+  return `/images/packages/${slug}.jpg`;
 }

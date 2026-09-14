@@ -22,7 +22,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "Full-stack food ordering with real-time order tracking, secure payments, and a multi-location admin dashboard for restaurant operators.",
     category: "E-Commerce",
     tags: ["Next.js", "Stripe", "Supabase", "Tailwind CSS"],
-    image: "/images/work/work-freshbite.svg",
+    image: "/images/work/work-freshbite.jpg",
     client: "FreshBite Restaurants",
     problem:
       "Phone and WhatsApp orders were error-prone during peak hours. Staff juggled handwritten tickets, payment confirmation lagged, and kitchen throughput stalled when volume spiked.",
@@ -43,7 +43,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "Cloud HR platform covering onboarding, leave, attendance, and payroll workflows for growing teams that outgrew spreadsheets.",
     category: "SaaS",
     tags: ["React", "Node.js", "PostgreSQL", "AWS"],
-    image: "/images/work/work-vaulthr.svg",
+    image: "/images/work/work-vaulthr.jpg",
     client: "Mid-market services firm",
     problem:
       "HR data lived in disconnected sheets. Leave requests stalled in email threads, onboarding checklists were incomplete, and payroll prep consumed days each cycle.",
@@ -64,7 +64,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "High-conversion portfolio for an interior design studio: project storytelling, image-led galleries, and a structured inquiry path for qualified leads.",
     category: "Corporate",
     tags: ["Next.js", "Framer Motion", "Vercel"],
-    image: "/images/work/work-luxe-interiors.svg",
+    image: "/images/work/work-luxe-interiors.jpg",
     client: "Luxe Interiors Studio",
     problem:
       "The previous site buried strong project photography behind slow pages and a generic contact form. Serious clients could not quickly assess fit or start a project conversation.",
@@ -85,7 +85,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "Appointment scheduling, patient-facing booking, and automated reminders designed for clinics that still relied on phone-only booking.",
     category: "Web App",
     tags: ["Next.js", "Supabase", "Twilio", "Tailwind CSS"],
-    image: "/images/work/work-mediconnect.svg",
+    image: "/images/work/work-mediconnect.jpg",
     client: "Multi-doctor clinic group",
     problem:
       "Front desk was overwhelmed by inbound calls. No-shows were high because reminders were manual, and doctors could not see a reliable day view of the schedule.",
@@ -106,7 +106,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "Direct-to-consumer storefront for organic products: subscriptions, inventory-aware catalog, and delivery status for repeat customers.",
     category: "E-Commerce",
     tags: ["Next.js", "Stripe", "Sanity CMS", "Vercel"],
-    image: "/images/work/work-greenleaf.svg",
+    image: "/images/work/work-greenleaf.jpg",
     client: "GreenLeaf Organics",
     problem:
       "Marketplace commissions eroded margin, and the brand lacked a owned channel for subscriptions and product storytelling.",
@@ -127,7 +127,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "Memberships, class schedules, trainer profiles, and local payment rails for fitness centers that needed more than a static brochure site.",
     category: "SaaS",
     tags: ["React", "FastAPI", "PostgreSQL", "Razorpay"],
-    image: "/images/work/work-urbanfit.svg",
+    image: "/images/work/work-urbanfit.jpg",
     client: "UrbanFit Gyms",
     problem:
       "Memberships were tracked offline; class capacity was oversold; payments did not reconcile cleanly with attendance.",

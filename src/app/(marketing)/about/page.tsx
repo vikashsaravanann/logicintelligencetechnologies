@@ -269,7 +269,7 @@ export default function AboutPage() {
             </div>
             <div className="relative h-[260px] sm:h-[320px] rounded-3xl overflow-hidden border border-white/10 order-1 md:order-2 shadow-[0_20px_50px_rgba(0,0,0,0.35)] bg-zinc-950">
               <SafeImage
-                src="/images/company/company-story-01.svg"
+                src="/images/company/company-story-01.jpg"
                 alt="Modern engineering studio architecture in Coimbatore"
                 fill
                 className="object-cover object-center"
@@ -286,7 +286,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="relative h-[260px] sm:h-[320px] rounded-3xl overflow-hidden border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.35)] bg-zinc-950">
               <SafeImage
-                src="/images/company/company-story-02.svg"
+                src="/images/company/company-story-02.jpg"
                 alt="Collaborative product team engineering culture"
                 fill
                 className="object-cover object-center"
@@ -330,7 +330,7 @@ export default function AboutPage() {
             </div>
             <div className="relative h-[260px] sm:h-[320px] rounded-3xl overflow-hidden border border-white/10 order-1 md:order-2 shadow-[0_20px_50px_rgba(0,0,0,0.35)] bg-zinc-950">
               <SafeImage
-                src="/images/company/company-story-03.svg"
+                src="/images/company/company-story-03.jpg"
                 alt="Intelligent interface and AI product development"
                 fill
                 className="object-cover object-center"

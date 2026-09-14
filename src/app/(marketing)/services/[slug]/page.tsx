@@ -56,7 +56,7 @@ export default async function ServiceDetailPage({ params }: Props) {
     notFound();
   }
 
-  const serviceVisualSrc = `/images/services/${canonicalSlug}.svg`;
+  const serviceVisualSrc = `/images/services/${canonicalSlug}.jpg`;
 
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-28 pb-20 overflow-hidden">

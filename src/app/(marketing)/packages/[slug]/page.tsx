@@ -63,7 +63,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
           {/* Visual Banner */}
           <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden mb-10 border border-white/10 shadow-2xl bg-black/50">
             <SafeImage
-              src={`/images/packages/${pkg.slug}.svg`}
+              src={`/images/packages/${pkg.slug}.jpg`}
               alt={`${pkg.title} Architecture Visual`}
               fill
               priority
@@ -141,7 +141,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
         <div className="max-w-6xl mx-auto px-6 mb-12">
           <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black/50">
             <SafeImage
-              src={`/images/services/${srv.slug}.svg`}
+              src={`/images/services/${srv.slug}.jpg`}
               alt={`${srv.title} Architecture Visual`}
               fill
               priority

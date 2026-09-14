@@ -28,7 +28,7 @@ export const blogPosts: BlogPost[] = [
     category: "Guides",
     publishedAt: "2026-08-28",
     readingTime: "6 min read",
-    image: "/images/blog/website-pricing-breakdown.svg",
+    image: "/images/blog/website-pricing-breakdown.jpg",
     author: {
       name: "Vikash Saravanan",
       role: "Founder & Lead Architect",
@@ -76,7 +76,7 @@ export const blogPosts: BlogPost[] = [
     category: "Guides",
     publishedAt: "2026-08-28",
     readingTime: "5 min read",
-    image: "/images/blog/saas-vs-custom-software.svg",
+    image: "/images/blog/saas-vs-custom-software.jpg",
     author: {
       name: "Vikash Saravanan",
       role: "Founder & Lead Architect",

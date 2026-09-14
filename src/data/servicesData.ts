@@ -475,7 +475,7 @@ export const servicesData = [
 ];
 
 export function getServiceVisual(slug: string): string {
-  return `/images/services/${slug}.svg`;
+  return `/images/services/${slug}.jpg`;
 }
 
 export function getServiceBySlug(slug: string) {

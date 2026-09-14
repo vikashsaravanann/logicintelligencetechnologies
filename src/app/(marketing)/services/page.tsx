@@ -81,7 +81,7 @@ export default function ServicesPage() {
               >
                 <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/40">
                   <SafeImage
-                    src={`/images/services/${svc.slug}.svg`}
+                    src={`/images/services/${svc.slug}.jpg`}
                     alt={`${svc.title} Visual Architecture`}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
