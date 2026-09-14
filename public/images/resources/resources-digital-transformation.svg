@@ -1,1 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-label="Business technology resource"><rect width="960" height="720" fill="#070B16"/><rect x="140" y="140" width="680" height="70" rx="10" fill="#38BDF8" fill-opacity="0.2"/><rect x="160" y="240" width="680" height="70" rx="10" fill="#7B2FBE" fill-opacity="0.2"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="g_9aafa21f" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A0F1E"/>
+      <stop offset="55%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0A0F1E"/>
+    </linearGradient>
+    <linearGradient id="g_4a58f786" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366F1" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#6366F1" stop-opacity="0.12"/>
+    </linearGradient>
+    <radialGradient id="r_g_9aafa21f" cx="70%" cy="25%" r="55%">
+      <stop offset="0%" stop-color="#6366F1" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#0A0F1E" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft_g_9aafa21f" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+  <rect width="640" height="480" fill="url(#g_9aafa21f)"/>
+  <rect width="640" height="480" fill="url(#g_4a58f786)"/>
+  <ellipse cx="460" cy="105" rx="224" ry="134" fill="url(#r_g_9aafa21f)"/>
+  <rect x="80" y="140" width="180" height="200" rx="12" fill="rgba(30,41,59,0.7)" opacity="0.9"/>
+  <rect x="380" y="140" width="180" height="200" rx="12" fill="rgba(14,165,233,0.15)" opacity="0.95"/>
+  <line x1="280" y1="240" x2="360" y2="240" stroke="#6366F1" stroke-width="3" opacity="0.7" stroke-linecap="round"/>
+  <polygon points="360,230 380,240 360,250" fill="#6366F1" opacity="0.9"/>
+  <rect x="100" y="170" width="140" height="16" rx="3" fill="rgba(148,163,184,0.25)" opacity="0.5"/>
+  <rect x="400" y="170" width="140" height="16" rx="3" fill="#6366F1" opacity="0.45"/>
+  <rect x="100" y="210" width="140" height="16" rx="3" fill="rgba(148,163,184,0.25)" opacity="0.5"/>
+  <rect x="400" y="210" width="140" height="16" rx="3" fill="#6366F1" opacity="0.45"/>
+  <rect x="100" y="250" width="140" height="16" rx="3" fill="rgba(148,163,184,0.25)" opacity="0.5"/>
+  <rect x="400" y="250" width="140" height="16" rx="3" fill="#6366F1" opacity="0.45"/>
+</svg>

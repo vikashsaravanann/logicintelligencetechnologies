@@ -1,1 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" role="img" aria-label="Clinic booking concept"><rect width="1280" height="800" fill="#081018"/><circle cx="640" cy="400" r="140" fill="none" stroke="#10B981" stroke-width="2"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="g_3a09591e" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A0F1E"/>
+      <stop offset="55%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0A0F1E"/>
+    </linearGradient>
+    <linearGradient id="g_1ebc31f8" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#14B8A6" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#6366F1" stop-opacity="0.12"/>
+    </linearGradient>
+    <radialGradient id="r_g_3a09591e" cx="70%" cy="25%" r="55%">
+      <stop offset="0%" stop-color="#14B8A6" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#0A0F1E" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft_g_3a09591e" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+  <rect width="640" height="480" fill="url(#g_3a09591e)"/>
+  <rect width="640" height="480" fill="url(#g_1ebc31f8)"/>
+  <ellipse cx="460" cy="105" rx="224" ry="134" fill="url(#r_g_3a09591e)"/>
+  <rect x="180" y="80" width="140" height="280" rx="22" fill="rgba(15,23,42,0.9)" opacity="1"/>
+  <rect x="188" y="100" width="124" height="230" rx="12" fill="rgba(30,41,59,0.8)" opacity="0.9"/>
+  <rect x="210" y="90" width="80" height="6" rx="3" fill="rgba(148,163,184,0.4)" opacity="0.7"/>
+  <circle cx="250" cy="340" r="8" fill="#14B8A6" opacity="0.5"/>
+  <rect x="200" y="120" width="100" height="36" rx="8" fill="#14B8A6" opacity="0.4"/>
+  <rect x="200" y="170" width="100" height="36" rx="8" fill="rgba(148,163,184,0.15)" opacity="0.5"/>
+  <rect x="200" y="220" width="100" height="36" rx="8" fill="rgba(148,163,184,0.15)" opacity="0.6000000000000001"/>
+  <rect x="280" y="92" width="140" height="280" rx="22" fill="rgba(15,23,42,0.9)" opacity="0.85"/>
+  <rect x="288" y="112" width="124" height="230" rx="12" fill="rgba(30,41,59,0.8)" opacity="0.765"/>
+  <rect x="310" y="102" width="80" height="6" rx="3" fill="rgba(148,163,184,0.4)" opacity="0.7"/>
+  <circle cx="350" cy="352" r="8" fill="#14B8A6" opacity="0.425"/>
+  <rect x="300" y="132" width="100" height="36" rx="8" fill="#14B8A6" opacity="0.4"/>
+  <rect x="300" y="182" width="100" height="36" rx="8" fill="rgba(148,163,184,0.15)" opacity="0.5"/>
+  <rect x="300" y="232" width="100" height="36" rx="8" fill="rgba(148,163,184,0.15)" opacity="0.6000000000000001"/>
+  <rect x="380" y="104" width="140" height="280" rx="22" fill="rgba(15,23,42,0.9)" opacity="0.7"/>
+  <rect x="388" y="124" width="124" height="230" rx="12" fill="rgba(30,41,59,0.8)" opacity="0.63"/>
+  <rect x="410" y="114" width="80" height="6" rx="3" fill="rgba(148,163,184,0.4)" opacity="0.7"/>
+  <circle cx="450" cy="364" r="8" fill="#14B8A6" opacity="0.35"/>
+  <rect x="400" y="144" width="100" height="36" rx="8" fill="#14B8A6" opacity="0.4"/>
+  <rect x="400" y="194" width="100" height="36" rx="8" fill="rgba(148,163,184,0.15)" opacity="0.5"/>
+  <rect x="400" y="244" width="100" height="36" rx="8" fill="rgba(148,163,184,0.15)" opacity="0.6000000000000001"/>
+</svg>

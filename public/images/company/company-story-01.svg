@@ -1,1 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" role="img" aria-label="Company origin concept"><rect width="1280" height="800" fill="#0A0F1E"/><rect x="220" y="180" width="840" height="400" rx="18" fill="#0B1220" stroke="#00BFFF" stroke-width="2"/><rect x="280" y="230" width="720" height="260" rx="8" fill="#00BFFF" fill-opacity="0.12"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="g_e6d01d2b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A0F1E"/>
+      <stop offset="55%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0A0F1E"/>
+    </linearGradient>
+    <linearGradient id="g_76e42a25" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0EA5E9" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#6366F1" stop-opacity="0.12"/>
+    </linearGradient>
+    <radialGradient id="r_g_e6d01d2b" cx="70%" cy="25%" r="55%">
+      <stop offset="0%" stop-color="#0EA5E9" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#0A0F1E" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft_g_e6d01d2b" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+  <rect width="640" height="400" fill="url(#g_e6d01d2b)"/>
+  <rect width="640" height="400" fill="url(#g_76e42a25)"/>
+  <ellipse cx="460" cy="88" rx="224" ry="112" fill="url(#r_g_e6d01d2b)"/>
+  <circle cx="200" cy="220" r="8" fill="#0EA5E9" opacity="0.9"/>
+  <line x1="200" y1="220" x2="420" y2="220" stroke="#0EA5E9" stroke-width="2" opacity="0.4" stroke-linecap="round"/>
+  <circle cx="420" cy="220" r="40" fill="none" stroke="#0EA5E9" stroke-width="2" opacity="0.6"/>
+  <circle cx="420" cy="220" r="12" fill="#0EA5E9" opacity="0.9"/>
+  <rect x="100" y="280" width="140" height="60" rx="10" fill="rgba(15,23,42,0.9)" opacity="0.95"/>
+  <rect x="380" y="280" width="140" height="60" rx="10" fill="rgba(15,23,42,0.9)" opacity="0.95"/>
+</svg>

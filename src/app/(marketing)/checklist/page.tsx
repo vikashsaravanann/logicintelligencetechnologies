@@ -80,7 +80,7 @@ export default function ChecklistLeadMagnet() {
               <div className="mb-8">
                 <div className="w-full aspect-[16/9] relative rounded-2xl overflow-hidden mb-6 border border-white/10 shadow-xl bg-black/40">
                   <SafeImage
-                    src="/images/resources/website-development-checklist.svg"
+                    src="/images/checklist/checklist-business-readiness.svg"
                     alt="Website Development Checklist Preview"
                     fill
                     priority
