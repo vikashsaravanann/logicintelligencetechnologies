@@ -68,12 +68,14 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     images: [COMPANY.bannerPath],
   },
-  // App Router icon.tsx / apple-icon.tsx generate circular brand marks.
-  // Keep explicit links as progressive enhancement for older clients.
   icons: {
-    icon: [{ url: '/icon', type: 'image/png' }],
-    apple: [{ url: '/apple-icon', type: 'image/png' }],
-    shortcut: '/icon',
+    icon: [
+      { url: '/icon-48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/assets/logo-icon.jpg', type: 'image/jpeg' },
+    ],
+    apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
+    shortcut: '/favicon.ico',
   },
   manifest: '/site.webmanifest',
   verification: {
@@ -90,8 +92,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
-        <link rel="icon" href="/icon" type="image/png" />
-        <link rel="apple-touch-icon" href="/apple-icon" />
+        <link rel="icon" href="/icon-48.png" type="image/png" sizes="48x48" />
+        <link rel="icon" href="/assets/logo-icon.jpg" type="image/jpeg" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" sizes="180x180" />
+        <link rel="shortcut icon" href="/favicon.ico" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
