@@ -66,7 +66,7 @@ const seats: Seat[] = [
     equity: "Small option after entity",
     d: "Pipeline, Discovery, and conversion. Prices stay on the site. You never invent a pack on a call. WhatsApp and Logic AI already warm the lead — you close it.",
     who: "Closer who can run a 45-minute Discovery without discounting the floor.",
-    extra: "Digital Launch from ₹8,999. Business Pro from ₹18,999. You protect the floor. Commission follows signed work, not meetings booked.",
+    extra: "Published packages and transparent scoping. You protect the floor. Commission follows signed work, not meetings booked.",
     days: ["Build a 30-lead pipeline", "Run demos that do not invent prices", "Convert two Discovery calls"],
   },
   {
@@ -124,7 +124,7 @@ const steps = [
 ];
 
 const why = [
-  { icon: Rocket, t: "Live product, not a deck", d: "Logic AI, packages from ₹8,999, and a public 31-point scoping framework. You join a studio that already ships." },
+  { icon: Rocket, t: "Live product, not a deck", d: "Logic AI, live packages, and a public 31-point scoping framework. You join a studio that already ships." },
   { icon: ShieldCheck, t: "Honest economics", d: "Cash is modest until revenue. Equity vests. The title is not for sale. You will know the deal before you say yes." },
   { icon: MapPin, t: "Coimbatore HQ", d: "Work next to the founder. Hybrid after the first 90 days if you have already shipped in the room." },
   { icon: Clock, t: "Ninety-day ownership", d: "Each seat has three outcomes on the card. Miss them and the trial ends. Hit them and you write the next quarter." },
@@ -175,6 +175,7 @@ export default function JobsClient() {
     try {
       const res = await fetch("/api/jobs/apply", {
         method: "POST",
+        signal: AbortSignal.timeout(25000),
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,

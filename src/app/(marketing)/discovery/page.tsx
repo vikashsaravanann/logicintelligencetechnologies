@@ -56,7 +56,7 @@ export default function DiscoveryPage() {
     "Any specific technical requirements or existing systems to integrate with?",
     
     // Section 6: Budget & Timeline
-    "What is your expected budget range?",
+    "What scale of project are you planning?",
     "What is your ideal launch date?",
     "Is there anything else important we should know?"
   ];

@@ -111,7 +111,7 @@ export default function FreeDemoPage() {
     brand_ready: "",
     content_ready: "",
     inspiration: "",
-    budget: "Digital Launch Pack (from ₹8,999)",
+    budget: "Prefer a custom quote",
     timeline: "As soon as possible",
     details: "",
     consent_general: false,
@@ -123,9 +123,9 @@ export default function FreeDemoPage() {
     const pack = new URLSearchParams(window.location.search).get("pack");
     if (!pack) return;
     const map: Record<string, string> = {
-      "digital-launch-pack": "Digital Launch Pack (from ₹8,999)",
-      "business-pro-pack": "Business Pro Pack (from ₹18,999)",
-      "enterprise-pack": "Enterprise Pack (custom, from ₹50,000)",
+      "digital-launch-pack": "Starter website project",
+      "business-pro-pack": "Growth / multi-page project",
+      "enterprise-pack": "Enterprise / multi-system build",
     };
     if (map[pack]) setForm((f) => ({ ...f, budget: map[pack] }));
   }, []);
@@ -149,6 +149,7 @@ export default function FreeDemoPage() {
       const res = await fetch("/api/free-demo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: AbortSignal.timeout(25000),
         body: JSON.stringify({
           ...form,
           requirements: [
@@ -606,21 +607,21 @@ export default function FreeDemoPage() {
                 <span className={sectionNumClass}>5</span> Budget & timeline
               </h2>
               <p className="text-sm text-zinc-500 mb-6">
-                Published starting rates. Custom chatbot and multi-channel work is scoped after the
-                free brief.
+                We scope every project after the free brief. No prices are shown here — you receive a clear quote before any commitment.
               </p>
               <div className="grid sm:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className={labelClass}>Expected budget range</label>
+                  <label className={labelClass}>Project scale</label>
                   <select
                     value={form.budget}
                     onChange={(e) => setForm({ ...form, budget: e.target.value })}
                     className={inputClass + " appearance-none"}
                   >
-                    <option className="bg-[#0A0F1E]">Digital Launch Pack (from ₹8,999)</option>
-                    <option className="bg-[#0A0F1E]">Business Pro Pack (from ₹18,999)</option>
-                    <option className="bg-[#0A0F1E]">Enterprise Pack (₹50,000+)</option>
-                    <option className="bg-[#0A0F1E]">Chatbot / automation only — please quote</option>
+                    <option className="bg-[#0A0F1E]">Starter website project</option>
+                    <option className="bg-[#0A0F1E]">Growth / multi-page project</option>
+                    <option className="bg-[#0A0F1E]">Enterprise / multi-system build</option>
+                    <option className="bg-[#0A0F1E]">Chatbot / automation only</option>
+                    <option className="bg-[#0A0F1E]">Prefer a custom quote</option>
                     <option className="bg-[#0A0F1E]">Not sure — please advise</option>
                   </select>
                 </div>

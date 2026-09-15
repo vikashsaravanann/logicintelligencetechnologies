@@ -6,7 +6,7 @@ function isCompanyEmail(email: string): boolean {
   return email.toLowerCase().endsWith("@logicintelligencetechnologies.in");
 }
 
-/** Routes reachable without a session (auth flows + critical infrastructure). */
+/** Routes reachable without a session (auth + form APIs + static). */
 function isPublicPath(path: string): boolean {
   if (
     path === "/login" ||
@@ -16,14 +16,33 @@ function isPublicPath(path: string): boolean {
     path === "/robots.txt" ||
     path === "/sitemap.xml" ||
     path === "/site.webmanifest" ||
-    path.startsWith("/.well-known/")
+    path.startsWith("/.well-known/") ||
+    path === "/unsubscribe" ||
+    path.startsWith("/api/unsubscribe") ||
+    path === "/api/health"
   ) {
     return true;
   }
-  // Static public assets under /assets, /images, icons
+
+  // Public lead / form APIs — must not redirect to HTML login (breaks fetch JSON)
+  const publicApis = [
+    "/api/contact",
+    "/api/free-demo",
+    "/api/checklist",
+    "/api/jobs",
+    "/api/newsletter",
+    "/api/booking",
+    "/api/support",
+    "/api/ai/lead",
+  ];
+  if (publicApis.some((p) => path === p || path.startsWith(p + "/"))) {
+    return true;
+  }
+
   if (
     path.startsWith("/assets/") ||
     path.startsWith("/images/") ||
+    path.startsWith("/resources/") ||
     path.startsWith("/icon") ||
     path.startsWith("/favicon") ||
     path.startsWith("/apple-") ||
@@ -36,15 +55,25 @@ function isPublicPath(path: string): boolean {
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
+  const path = req.nextUrl.pathname;
 
+  // Fast path: static + public APIs skip session lookup for speed
+  if (
+    path.startsWith("/_next/") ||
+    path.startsWith("/assets/") ||
+    path.startsWith("/images/") ||
+    path.startsWith("/resources/") ||
+    path.startsWith("/favicon") ||
+    path.startsWith("/icon")
+  ) {
+    return res;
+  }
+
+  const supabase = createMiddlewareClient({ req, res });
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
-  const path = req.nextUrl.pathname;
-
-  // Authenticated users hitting login → home (or safe next)
   if (session && (path === "/login" || path === "/reset-password")) {
     const next = req.nextUrl.searchParams.get("next");
     const dest =
@@ -52,10 +81,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(dest, req.url));
   }
 
-  // Everything else requires a session
   if (!session && !isPublicPath(path)) {
     const loginUrl = new URL("/login", req.url);
-    // Preserve intended destination after login
     const nextPath = `${path}${req.nextUrl.search || ""}`;
     if (nextPath && nextPath !== "/") {
       loginUrl.searchParams.set("next", nextPath);
@@ -63,7 +90,6 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Company-only admin / dashboard
   if (session && (path.startsWith("/dashboard") || path.startsWith("/admin"))) {
     const email = session.user.email || "";
     if (!isCompanyEmail(email)) {
@@ -76,9 +102,6 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Run on all routes except Next internals and common static file extensions.
-     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|map|txt|xml|woff2?)$).*)",
   ],
 };

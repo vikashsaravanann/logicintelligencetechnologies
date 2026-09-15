@@ -45,6 +45,7 @@ export default function Footer() {
     setError(null);
     try {
       const res = await fetch("/api/newsletter", {
+        signal: AbortSignal.timeout(20000),
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

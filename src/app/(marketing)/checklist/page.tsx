@@ -23,6 +23,7 @@ export default function ChecklistLeadMagnet() {
     try {
       const res = await fetch("/api/checklist", {
         method: "POST",
+        signal: AbortSignal.timeout(25000),
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, type: "lead_magnet" }),
       });

@@ -272,12 +272,13 @@ export default function ContactPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <label className={labelClass}>Estimated Budget Range *</label>
-                          <select value={form.budget} onChange={(e) => update("budget", e.target.value)} className={inputClass("budget")}>
-                            <option value="" disabled>Select Budget</option>
-                            <option className="bg-zinc-900">Under ₹10,000</option>
-                            <option className="bg-zinc-900">₹10,000 - ₹25,000</option>
-                            <option className="bg-zinc-900">₹25,000 - ₹50,000</option>
-                            <option className="bg-zinc-900">₹50,000+</option>
+                          <select value={form.budget} onChange={(e) =>
+                            <option className="bg-zinc-900" value="">Select scale</option>
+                            <option className="bg-zinc-900">Exploring options</option>
+                            <option className="bg-zinc-900">Starter project</option>
+                            <option className="bg-zinc-900">Growth project</option>
+                            <option className="bg-zinc-900">Enterprise / multi-system</option>
+                            <option className="bg-zinc-900">Prefer not to say</option>
                           </select>
                           {fieldErrors.budget && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.budget}</p>}
                         </div>

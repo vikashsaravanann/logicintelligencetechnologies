@@ -26,6 +26,7 @@ export default function NewSupportTicketPage() {
     try {
       const res = await fetch("/api/support", {
         method: "POST",
+        signal: AbortSignal.timeout(25000),
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
