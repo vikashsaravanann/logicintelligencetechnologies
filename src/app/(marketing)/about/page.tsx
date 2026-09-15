@@ -156,11 +156,11 @@ export default function AboutPage() {
         <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 p-6 sm:p-10 md:p-12">
           <div className="grid lg:grid-cols-[minmax(220px,340px)_1fr] gap-10 lg:gap-14 items-start">
             <div className="flex flex-col items-center lg:items-stretch gap-5">
-              <div className="w-full max-w-[340px] rounded-3xl overflow-hidden border-2 border-primary/30 bg-[#070b16] shadow-[0_0_40px_rgba(0,191,255,0.12)]">
+              <div className="w-full max-w-[340px] aspect-[3/4] rounded-3xl overflow-hidden border-2 border-primary/30 bg-[#070b16] shadow-[0_0_40px_rgba(0,191,255,0.12)]">
                 <img
                   src={COMPANY.founder.photoPath}
                   alt={`${COMPANY.founder.name} — ${COMPANY.founder.title}`}
-                  className="w-full h-auto object-contain object-top block"
+                  className="w-full h-full min-h-[380px] object-cover object-[center_18%] block"
                 />
               </div>
               <div className="text-center lg:text-left">

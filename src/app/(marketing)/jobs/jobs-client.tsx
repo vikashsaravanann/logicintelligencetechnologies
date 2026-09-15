@@ -84,17 +84,16 @@ const seats: Seat[] = [
 ];
 
 const red = [
-  { t: "Unpaid CEO with no trial", d: "If there is no six-month letter of intent and no cash path after first revenue, it is not a seat. It is volunteer theatre." },
-  { t: "Unvested co-founder with no cliff", d: "Equity without a one-year cliff and a four-year vest is a gift, not a partnership. We do not gift titles." },
-  { t: "Director in exchange for a cheque", d: "Cash does not buy a visiting card. Investment is not on this page. Employment is." },
-  { t: "Partnership programme", d: "We are not selling a franchise, a reseller badge, or a co-branded slide. Apply for a function or do not apply." },
-  { t: "A priced funding round here", d: "This page is hiring. The investor briefing is a separate operating update. It is not a priced round." },
+  { t: "Unpaid CEO, no trial", d: "No six-month letter of intent and no cash path after first revenue is not a seat." },
+  { t: "Equity without a cliff", d: "Four-year vest, one-year cliff. We do not gift titles." },
+  { t: "Director for a cheque", d: "Investment is not employment. This page is for operators." },
+  { t: "Partnership theatre", d: "No franchise, reseller badge, or co-branded slide. Apply for a function." },
 ];
 
 const offer = [
-  { t: "Letter of intent", d: "Until the company is incorporated. You work. We write the terms. Nothing is verbal." },
-  { t: "Four-year vest, one-year cliff", d: "After the registered entity exists. Leave in month eleven and you take no equity. Stay and it vests monthly." },
-  { t: "Cash after first revenue", d: "Modest salary once signed work is in the bank. Sales is commission-first. Nobody is paid to sit on a deck." },
+  { t: "Letter of intent", d: "Written terms while you work. Nothing verbal." },
+  { t: "Four-year vest, one-year cliff", d: "Monthly vest after the entity exists. Leave early, take no equity." },
+  { t: "Cash after first revenue", d: "Modest salary once signed work lands. Sales is commission-first." },
 ];
 
 const steps = [
