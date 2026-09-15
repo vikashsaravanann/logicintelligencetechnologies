@@ -8,7 +8,7 @@ import { EMAIL } from "./components/email-styles";
 
 interface Props { fullName?: string; actionUrl?: string; detail?: string; }
 
-export default function WeeklyRecognitionEmail({ fullName = "there", actionUrl, detail }: Props) {
+export function WeeklyRecognitionEmail({ fullName = "there", actionUrl, detail }: Props) {
   return (
     <EmailLayout preview="Weekly recognition">
       <EmailHeader />
@@ -24,3 +24,5 @@ export default function WeeklyRecognitionEmail({ fullName = "there", actionUrl, 
     </EmailLayout>
   );
 }
+
+export default WeeklyRecognitionEmail;
