@@ -91,7 +91,7 @@ export default function BookConsultationPage() {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Failed to schedule booking.");
+        throw new Error(data.message || data.error || "Failed to schedule booking.");
       }
 
       trackEvent("consultation_booked", {
@@ -115,11 +115,9 @@ export default function BookConsultationPage() {
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
       <BackToHome href="/" label="Back to Home" />
-      {/* Background Lighting */}
       <div className="absolute top-10 left-1/3 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-        {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-widest uppercase mb-4">
             <CalendarIcon className="w-3.5 h-3.5" />
@@ -140,9 +138,7 @@ export default function BookConsultationPage() {
         )}
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* Left Column: Select Session & Date/Time */}
           <div className="lg:col-span-7 space-y-8">
-            {/* Step 1: Session Type */}
             <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-8">
               <h2 className="text-sm font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-primary" />
@@ -171,7 +167,6 @@ export default function BookConsultationPage() {
               </div>
             </div>
 
-            {/* Step 2: Date, Timezone & Slot Picker */}
             <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-8">
               <h2 className="text-sm font-bold uppercase tracking-wider text-white mb-6 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-primary" />
@@ -236,7 +231,6 @@ export default function BookConsultationPage() {
             </div>
           </div>
 
-          {/* Right Column: Contact Details & Submit */}
           <div className="lg:col-span-5">
             <div className="sticky top-28 rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 backdrop-blur-sm shadow-2xl">
               <h2 className="text-lg font-bold text-white mb-2">3. Your Contact Details</h2>
@@ -315,7 +309,6 @@ export default function BookConsultationPage() {
                 </div>
               </div>
 
-              {/* Selected Summary Badge */}
               <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 mb-6 text-xs text-primary flex items-center justify-between">
                 <span>{selectedDate} at {selectedSlot}</span>
                 <span className="font-bold">{selectedType.duration}</span>
