@@ -61,7 +61,7 @@ export function PageHeader({
             </div>
           )}
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1]">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] uppercase">
             {title}
           </h1>
 

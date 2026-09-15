@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, ChevronDown, LogIn } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { COMPANY } from "@/config/company";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { PRIMARY_NAV, MORE_NAV_GROUPS, PRIMARY_CTA } from "@/config/navigation";
+import AuthNavControl from "@/components/layout/auth-nav-control";
 
 const NavLink = ({
   href,
@@ -188,18 +189,12 @@ export default function Navbar() {
             </div>
 
             <div className="ml-auto flex items-center gap-2 shrink-0">
-              <Link
-                href="/login"
-                className="hidden lg:inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full text-[10px] font-bold text-zinc-200 hover:text-white uppercase tracking-[0.14em] border border-white/15 bg-white/5 hover:bg-white/10 hover:border-cyan-400/40 transition-all shadow-sm"
-              >
-                <LogIn className="w-3 h-3 text-cyan-400" />
-                Login
-              </Link>
+              <AuthNavControl />
               <Link
                 href={PRIMARY_CTA.href}
                 className="hidden lg:inline-flex h-8 px-4 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
               >
-                Book Call
+                Book Consultation
               </Link>
               <Link
                 href="/contact"
@@ -298,14 +293,7 @@ export default function Navbar() {
                   );
                 })}
 
-                <Link
-                  href="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="mt-6 px-6 py-3.5 text-center rounded-xl font-bold text-white border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 min-h-[44px] flex items-center justify-center gap-2 tracking-wider uppercase text-xs transition-colors"
-                >
-                  <LogIn className="w-4 h-4 text-cyan-400" />
-                  Client & Team Login
-                </Link>
+                <div onClick={() => setIsOpen(false)} className="mb-3"><AuthNavControl mobile /></div>
                 <Link
                   href="/contact"
                   onClick={() => setIsOpen(false)}

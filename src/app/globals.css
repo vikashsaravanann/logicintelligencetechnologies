@@ -688,3 +688,96 @@ p, h1, h2, h3, h4, h5, h6, li, span, a, td, th {
   background: linear-gradient(180deg, transparent, rgba(10, 15, 30, 0.92) 28%);
   backdrop-filter: blur(12px);
 }
+
+
+/* LIT Design System tokens */
+:root {
+  --lit-bg: #0A0F1E;
+  --lit-surface: #12172b;
+  --lit-surface-2: rgba(255, 255, 255, 0.04);
+  --lit-border: rgba(255, 255, 255, 0.1);
+  --lit-text: #ffffff;
+  --lit-text-secondary: #a1a1aa;
+  --lit-text-muted: #71717a;
+  --lit-accent: #0ea5e9;
+  --lit-radius-card: 1rem;
+  --lit-radius-btn: 9999px;
+  --lit-container: 72rem; /* max-w-6xl */
+  --lit-section-y: 5rem;
+}
+
+.lit-container {
+  width: 100%;
+  max-width: var(--lit-container);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .lit-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.lit-section {
+  padding-top: var(--lit-section-y);
+  padding-bottom: var(--lit-section-y);
+}
+
+.lit-card {
+  border-radius: var(--lit-radius-card);
+  border: 1px solid var(--lit-border);
+  background: var(--lit-surface-2);
+}
+
+.lit-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border-radius: var(--lit-radius-btn);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #000;
+  background: var(--lit-accent);
+  transition: filter 0.2s ease, box-shadow 0.2s ease;
+}
+.lit-btn-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 24px rgba(14, 165, 233, 0.25);
+}
+
+.lit-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border-radius: var(--lit-radius-btn);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  border: 1px solid var(--lit-border);
+  background: rgba(255, 255, 255, 0.05);
+  transition: background 0.2s ease;
+}
+.lit-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lit-btn-primary,
+  .lit-btn-secondary {
+    transition: none;
+  }
+}

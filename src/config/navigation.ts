@@ -14,18 +14,18 @@ export type NavGroup = {
 };
 
 export const PRIMARY_NAV: NavItem[] = [
-  { href: '/', label: 'Home' },
-  { href: '/services', label: 'Solutions' },
-  { href: '/industries', label: 'Industries' },
-  { href: '/work', label: 'Work' },
-  { href: '/resources', label: 'Resources' },
-  { href: '/about', label: 'Company' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/', label: 'HOME' },
+  { href: '/services', label: 'SOLUTIONS' },
+  { href: '/industries', label: 'INDUSTRIES' },
+  { href: '/work', label: 'WORK' },
+  { href: '/resources', label: 'RESOURCES' },
+  { href: '/about', label: 'COMPANY' },
+  { href: '/contact', label: 'CONTACT' },
 ];
 
 export const PRIMARY_CTA: NavItem = {
   href: '/book-consultation',
-  label: 'Book a Consultation',
+  label: 'BOOK A CONSULTATION',
 };
 
 export const MORE_NAV_GROUPS: NavGroup[] = [
