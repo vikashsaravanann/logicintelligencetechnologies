@@ -87,7 +87,7 @@ export async function POST(req: Request) {
         fromAddress = "noReply";
         subject = "Welcome to Logic Intelligence Technologies";
         reactComponent = React.createElement(WelcomeEmail, {
-          email: fullName || email,
+          fullName: fullName || email,
         });
         break;
       case "invoice":
