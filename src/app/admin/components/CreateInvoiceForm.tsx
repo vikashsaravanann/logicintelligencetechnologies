@@ -62,7 +62,7 @@ export function CreateInvoiceForm() {
   return (
     <div className="mt-12 rounded-xl border border-neutral-800 bg-neutral-900/50 p-6 shadow-sm backdrop-blur-sm">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-white mb-2">Create Stripe Invoice</h2>
+        <h2 className="text-xl font-bold text-white mb-2">Create Invoice</h2>
         <p className="text-sm text-neutral-400">Generate a new invoice and email it to the client.</p>
       </div>
 

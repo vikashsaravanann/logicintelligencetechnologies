@@ -43,7 +43,7 @@ export const productsData: ProductItem[] = [
       "Contract & Proposal Digital Acceptance",
       "Interactive Financial Forecasting Dashboards"
     ],
-    techStack: ["PostgreSQL", "React 19", "Node.js", "Serverless Vercel", "Stripe"],
+    techStack: ["PostgreSQL", "React 19", "Node.js", "Serverless Vercel", "Payments"],
     status: "Live",
     metrics: [
       { label: "Lead Response Time", value: "< 2 mins" },

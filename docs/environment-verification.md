@@ -14,8 +14,6 @@ This document audits all environment variables required for the Logic Intelligen
 | `NEXT_PUBLIC_SUPABASE_URL` | Client-safe | VERIFIED | Sourced securely from Supabase integration. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Client-safe | VERIFIED | Safe for client usage per RLS policies. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-only | VERIFIED | Used securely in admin/webhook routes only. |
-| `STRIPE_SECRET_KEY` | Server-only | IMPLEMENTED_NOT_VERIFIED | Required for billing webhook logic. |
-| `STRIPE_WEBHOOK_SECRET` | Server-only | IMPLEMENTED_NOT_VERIFIED | Required for secure Stripe callbacks. |
 | `CRON_SECRET` | Server-only | VERIFIED | Secures the email processing worker. |
 | `SMTP_PASSWORD` / Provider Keys | Server-only | IMPLEMENTED_NOT_VERIFIED | Email provider integration requires live keys. |
 

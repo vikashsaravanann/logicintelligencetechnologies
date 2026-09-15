@@ -100,13 +100,13 @@ export default async function FinancesPage() {
                     <td className="px-6 py-4 text-zinc-400">{inv.due_date ? new Date(inv.due_date).toLocaleDateString("en-IN") : "—"}</td>
                     <td className="px-6 py-4"><StatusBadge status={inv.status ?? "pending"} /></td>
                     <td className="px-6 py-4">
-                      {inv.status === "pending" && inv.stripe_checkout_url ? (
-                        <a href={inv.stripe_checkout_url} target="_blank" rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-black text-xs font-bold hover:opacity-90 transition-opacity">
-                          Pay Now <ExternalLink className="w-3 h-3" />
-                        </a>
-                      ) : inv.status === "paid" ? (
+                      {inv.status === "paid" || inv.status === "Paid" ? (
                         <span className="text-zinc-600 text-xs">Complete</span>
+                      ) : inv.status === "pending" || inv.status === "Pending" ? (
+                        <a href="/contact"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-black text-xs font-bold hover:opacity-90 transition-opacity">
+                          Arrange payment
+                        </a>
                       ) : <span className="text-zinc-600 text-xs">—</span>}
                     </td>
                   </tr>

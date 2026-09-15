@@ -13,7 +13,6 @@ function isPublicPath(path: string): boolean {
     path === "/reset-password" ||
     path.startsWith("/auth/") ||
     path.startsWith("/api/auth/") ||
-    path.startsWith("/api/webhooks/") ||
     path === "/robots.txt" ||
     path === "/sitemap.xml" ||
     path === "/site.webmanifest" ||

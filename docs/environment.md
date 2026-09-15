@@ -17,8 +17,6 @@
 | `SMTP_PORT` | Server | Server Only | Optional | Default: `465` (SSL) |
 | `SMTP_USER` | Server | Server Only | Optional | Zoho Mail sender account (e.g. `no-reply@logicintelligencetechnologies.in`) |
 | `SMTP_PASSWORD` | Server | Server Only | Optional | Application-specific secure password |
-| `STRIPE_SECRET_KEY` | Server | Server Only | Optional | Stripe billing secret (when payments active) |
-| `STRIPE_WEBHOOK_SECRET` | Server | Server Only | Optional | Stripe webhook signature verification |
 | `XAI_API_KEY` | Server | Server Only | Optional | Grok/xAI inference API key for `/ai` assistant |
 | `CRON_SECRET` | Server | Server Only | Optional | Bearer token required to trigger `/api/cron/*` endpoints |
 

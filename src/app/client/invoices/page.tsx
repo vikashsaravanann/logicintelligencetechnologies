@@ -73,13 +73,10 @@ export default async function ClientInvoicesPage() {
                         <span className="text-xs text-zinc-500 font-semibold">Settled</span>
                       ) : (
                         <a
-                          href="https://buy.stripe.com/test_placeholder"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary text-black font-bold text-xs hover:bg-primary/90 transition-all shadow-[0_0_10px_rgba(0,191,255,0.3)]"
+                          href="/contact"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary text-black font-bold text-xs hover:bg-primary/90 transition-all"
                         >
-                          <CreditCard className="w-3.5 h-3.5" />
-                          <span>Pay Now</span>
+                          <span>Contact to pay</span>
                         </a>
                       )}
                     </td>

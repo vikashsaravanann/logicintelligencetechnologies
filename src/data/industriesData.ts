@@ -121,7 +121,7 @@ export const industriesData: IndustryData[] = [
     solutions: [
       "Double-entry bookkeeping database architecture with immutable audit logs",
       "Automated KYC/AML verification with document scanning OCR",
-      "Instant bank payout integration via NPCI / IMPS / Stripe Connect"
+      "Instant bank payout integration via NPCI / IMPS / bank payout rails"
     ],
     features: [
       "Automated Invoicing & Collections Engine",

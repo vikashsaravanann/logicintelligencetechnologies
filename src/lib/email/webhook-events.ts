@@ -10,7 +10,7 @@ import crypto from "crypto";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { isSupabaseLive } from "./config";
 
-export type WebhookProvider = "stripe" | "zoho" | "other";
+export type WebhookProvider = "zoho" | "other";
 
 export type WebhookRecordResult =
   | { ok: true; id: string; duplicate: false }

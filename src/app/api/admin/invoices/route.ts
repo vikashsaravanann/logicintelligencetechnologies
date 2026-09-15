@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import Stripe from "stripe";
 import { sendEmail } from "@/lib/email/send-email";
 import InvoiceEmail from "@/emails/invoice-email";
 import * as React from "react";
@@ -11,24 +10,12 @@ import { COMPANY } from "@/config/company";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-function getStripe() {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) {
-    throw new Error("STRIPE_SECRET_KEY is not configured");
-  }
-  return new Stripe(key, {
-    apiVersion: "2026-08-26.dahlia" as any,
-  });
-}
-
 export async function POST(req: NextRequest) {
   try {
     const auth = await requireAdminApi(req);
     if (!auth.ok) {
       return NextResponse.json({ error: auth.message }, { status: auth.status });
     }
-
-    const stripe = getStripe();
 
     const body = await req.json();
     const clientName = sanitizePersonName(String(body.clientName || ""), 120);
@@ -49,26 +36,6 @@ export async function POST(req: NextRequest) {
       process.env.NEXT_PUBLIC_APP_URL ||
       COMPANY.websiteUrl;
 
-    const session = await stripe.checkout.sessions.create({
-      line_items: [
-        {
-          price_data: {
-            currency: "inr",
-            product_data: {
-              name: "Invoice",
-              description,
-            },
-            unit_amount: Math.round(amount * 100),
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: `${origin}/dashboard?payment=success`,
-      cancel_url: `${origin}/dashboard?payment=cancelled`,
-      customer_email: clientEmail,
-    });
-
     const { data: invoice, error: dbError } = await supabaseAdmin
       .from("invoices")
       .insert({
@@ -78,7 +45,6 @@ export async function POST(req: NextRequest) {
         description,
         due_date: dueDate,
         status: "pending",
-        stripe_session_id: session.id,
       })
       .select()
       .single();
@@ -88,7 +54,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to save invoice" }, { status: 500 });
     }
 
-    const invoiceNumber = `INV-${invoice.id.slice(0, 8).toUpperCase()}`;
+    const invoiceNumber = `INV-${String(invoice.id).slice(0, 8).toUpperCase()}`;
 
     await sendEmail({
       to: clientEmail,
@@ -103,7 +69,7 @@ export async function POST(req: NextRequest) {
         invoiceNumber,
         amount: `₹${amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`,
         dueDate,
-        paymentLink: session.url || origin,
+        paymentLink: `${origin}/contact?invoice=${invoiceNumber}`,
       }),
     });
 

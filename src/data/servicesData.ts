@@ -224,7 +224,7 @@ export const servicesData = [
       "Multi-Vendor Marketplace"
     ],
     techStack: {
-      tools: ["React", "Node.js", "MongoDB", "WordPress", "WooCommerce", "Razorpay", "Stripe", "UPI"]
+      tools: ["React", "Node.js", "MongoDB", "WordPress", "WooCommerce", "Razorpay", "Payments", "UPI"]
     },
     process: [],
     whyUs: [],

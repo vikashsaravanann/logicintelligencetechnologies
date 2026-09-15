@@ -21,16 +21,16 @@ export const portfolioProjects: PortfolioProject[] = [
     description:
       "Full-stack food ordering with real-time order tracking, secure payments, and a multi-location admin dashboard for restaurant operators.",
     category: "E-Commerce",
-    tags: ["Next.js", "Stripe", "Supabase", "Tailwind CSS"],
+    tags: ["Next.js", "Payments", "Supabase", "Tailwind CSS"],
     image: "/images/work/work-freshbite.jpg",
     client: "FreshBite Restaurants",
     problem:
       "Phone and WhatsApp orders were error-prone during peak hours. Staff juggled handwritten tickets, payment confirmation lagged, and kitchen throughput stalled when volume spiked.",
     solution:
-      "We shipped a customer-facing ordering web app with cart, location-aware menus, Stripe checkout, and live order status. Operators manage outlets, menus, and fulfillment from a single admin console backed by Supabase realtime.",
+      "We shipped a customer-facing ordering web app with cart, location-aware menus, payment gateway checkout, and live order status. Operators manage outlets, menus, and fulfillment from a single admin console backed by Supabase realtime.",
     metrics: [
       { label: "Order capture", value: "Phone → digital in 1 sprint" },
-      { label: "Payment", value: "Card + UPI via Stripe" },
+      { label: "Payment", value: "Card + UPI" },
       { label: "Ops", value: "Multi-outlet dashboard" },
     ],
     results:
@@ -105,13 +105,13 @@ export const portfolioProjects: PortfolioProject[] = [
     description:
       "Direct-to-consumer storefront for organic products: subscriptions, inventory-aware catalog, and delivery status for repeat customers.",
     category: "E-Commerce",
-    tags: ["Next.js", "Stripe", "Sanity CMS", "Vercel"],
+    tags: ["Next.js", "Payments", "Sanity CMS", "Vercel"],
     image: "/images/work/work-greenleaf.jpg",
     client: "GreenLeaf Organics",
     problem:
       "Marketplace commissions eroded margin, and the brand lacked a owned channel for subscriptions and product storytelling.",
     solution:
-      "Headless commerce on Next.js with Sanity-managed content, Stripe Checkout and subscriptions, and inventory signals so customers never order out-of-stock SKUs.",
+      "Headless commerce on Next.js with Sanity-managed content, secure checkout and subscriptions, and inventory signals so customers never order out-of-stock SKUs.",
     metrics: [
       { label: "Channel", value: "Owned D2C store" },
       { label: "Recurring", value: "Subscription SKUs" },

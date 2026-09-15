@@ -36,7 +36,7 @@ export const WEBSITE_CHECKLIST: { id: number; title: string; category: string }[
   { id: 33, title: "Accessibility: meaningful alt text on content images", category: "A11y" },
   { id: 34, title: "Contrast ratios meet WCAG AA for body text", category: "A11y" },
   { id: 35, title: "Payment flows tested on UPI / cards if e-commerce", category: "Commerce" },
-  { id: 36, title: "Razorpay/Stripe webhooks verified in production", category: "Commerce" },
+  { id: 36, title: "Payment webhooks verified in production", category: "Commerce" },
   { id: 37, title: "Booking or enquiry confirmations are idempotent", category: "Ops" },
   { id: 38, title: "Backup / restore process documented", category: "Ops" },
   { id: 39, title: "Environment secrets not exposed in client bundles", category: "Security" },
