@@ -1,69 +1,24 @@
-import * as React from 'react';
-import { Section, Text } from '@react-email/components';
-import { EmailLayout } from './components/email-layout';
-import { EmailHeader } from './components/email-header';
-import { EmailFooter } from './components/email-footer';
-import { EmailButton } from './components/email-button';
+import * as React from "react";
+import { EmailLayout } from "./components/email-layout";
+import { EmailHeader } from "./components/email-header";
+import { EmailFooter } from "./components/email-footer";
+import { EmailButton } from "./components/email-button";
+import { EmailContent, EmailGreeting, EmailTitle, EmailBody, EmailMuted } from "./components/email-content";
 
-interface Props {
-  fullName: string;
-  demoUrl: string;
-}
+interface Props { fullName?: string; demoUrl?: string; }
 
-export default function DemoReadyEmail({ fullName = 'Valued Client', demoUrl = '#' }: Props) {
+export default function DemoReadyEmail({ fullName = "there", demoUrl = "https://www.logicintelligencetechnologies.in" }: Props) {
   return (
-    <EmailLayout preview="Your prototype is ready for review">
+    <EmailLayout preview="Your demo is ready">
       <EmailHeader />
-      <Section style={contentSection}>
-        <Text style={heading}>Prototype Ready</Text>
-        <Text style={paragraph}>Hello {fullName},</Text>
-        <Text style={paragraph}>
-          We are pleased to inform you that your prototype is now ready for review. Our team has carefully crafted the designs according to the requirements discussed.
-        </Text>
-        <Text style={paragraph}>
-          Please take a moment to review the prototype and let us know your thoughts. You can access it securely using the link below:
-        </Text>
-        <Section style={buttonContainer}>
-          <EmailButton href={demoUrl}>View Prototype</EmailButton>
-        </Section>
-        <Text style={paragraph}>
-          We are available to schedule a walkthrough at your convenience.
-        </Text>
-        <Text style={signature}>
-          Best regards,<br />
-          The Logic Intelligence Technologies Team
-        </Text>
-      </Section>
+      <EmailContent>
+        <EmailTitle>Your demo is ready</EmailTitle>
+        <EmailGreeting name={fullName} />
+        <EmailBody>The demo you requested from Logic Intelligence Technologies is available.</EmailBody>
+        <EmailButton href={demoUrl}>Open demo</EmailButton>
+        <EmailMuted>If you have questions, reply to this email.</EmailMuted>
+      </EmailContent>
       <EmailFooter />
     </EmailLayout>
   );
 }
-
-const contentSection = {
-  padding: '40px 40px 32px 40px',
-};
-
-const heading = {
-  fontSize: '20px',
-  fontWeight: '600',
-  color: '#111827',
-  margin: '0 0 24px 0',
-};
-
-const paragraph = {
-  fontSize: '15px',
-  lineHeight: '24px',
-  color: '#374151',
-  margin: '0 0 16px 0',
-};
-
-const buttonContainer = {
-  margin: '24px 0',
-};
-
-const signature = {
-  fontSize: '15px',
-  lineHeight: '24px',
-  color: '#374151',
-  margin: '24px 0 0 0',
-};

@@ -1,43 +1,23 @@
 import * as React from "react";
-import { Text, Section } from "@react-email/components";
 import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
-import { EmailButton } from "./components/email-button";
+import { EmailContent, EmailTitle, EmailBody, EmailMuted } from "./components/email-content";
 
-export default function NewsletterConfirmationEmail({
-  email,
-  unsubscribeUrl,
-}: {
-  email: string;
-  unsubscribeUrl?: string;
-}) {
+interface Props { unsubscribeUrl?: string; }
+
+export default function NewsletterConfirmationEmail({ unsubscribeUrl }: Props) {
   return (
-    <EmailLayout preview="You're subscribed to LIT updates. Unsubscribe any time.">
+    <EmailLayout preview="You're subscribed to Logic Intelligence Technologies">
       <EmailHeader />
-      <Section style={{ padding: "24px 32px" }}>
-        <Text
-          style={{
-            color: "#0A0F1E",
-            fontSize: "22px",
-            fontWeight: 800,
-            margin: "0 0 12px",
-          }}
-        >
-          You're on the list
-        </Text>
-        <Text style={{ color: "#334155", fontSize: "15px", lineHeight: "1.6" }}>
-          Thanks for subscribing{email ? ` (${email})` : ""}. You'll receive
-          practical updates on web, AI, and product delivery from Logic
-          Intelligence Technologies.
-        </Text>
-        <Text style={{ color: "#334155", fontSize: "15px", lineHeight: "1.6" }}>
-          Prefer a free demo or project chat? Reply to this email or book below.
-        </Text>
-        <EmailButton href="https://www.logicintelligencetechnologies.in/free-demo">
-          Book a free demo
-        </EmailButton>
-      </Section>
+      <EmailContent>
+        <EmailTitle>Subscription confirmed</EmailTitle>
+        <EmailBody>
+          You're on the list for updates from Logic Intelligence Technologies.
+          We'll only send relevant product and company news.
+        </EmailBody>
+        <EmailMuted>You can unsubscribe at any time using the link below.</EmailMuted>
+      </EmailContent>
       <EmailFooter unsubscribeUrl={unsubscribeUrl} />
     </EmailLayout>
   );

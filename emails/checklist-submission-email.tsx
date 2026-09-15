@@ -1,147 +1,35 @@
-import { Text, Section, Hr } from '@react-email/components';
-import * as React from 'react';
-import { EmailLayout } from './components/email-layout';
-import { EmailHeader } from './components/email-header';
-import { EmailFooter } from './components/email-footer';
+import { Text, Section, Row, Column } from "@react-email/components";
+import * as React from "react";
+import { EmailLayout } from "./components/email-layout";
+import { EmailHeader } from "./components/email-header";
+import { EmailFooter } from "./components/email-footer";
+import { EmailContent, EmailTitle, EmailBody, softBoxStyle } from "./components/email-content";
+import { EMAIL } from "./components/email-styles";
 
-interface ChecklistSubmissionEmailProps {
+interface Props {
   email: string;
-  submissionDate: string;
-  answers: string[];
+  type?: string;
+  answers?: string[];
+  submissionDate?: string;
 }
 
-export const ChecklistSubmissionEmail = ({ 
-  email, 
-  submissionDate, 
-  answers 
-}: ChecklistSubmissionEmailProps) => {
+export default function ChecklistSubmissionEmail({ email, type, answers, submissionDate }: Props) {
   return (
-    <EmailLayout preview={`New Checklist Submission from ${email}`}>
+    <EmailLayout preview={`Checklist request: ${email}`}>
       <EmailHeader />
-      <Section style={content}>
-        <Text style={alertBannerText}>📋 NEW CHECKLIST SUBMISSION</Text>
-
-        <Section style={detailsCard}>
-          <Section style={detailRow}>
-            <Text style={detailLabel}>Email</Text>
-            <Text style={detailValueHighlight}>{email}</Text>
-          </Section>
-          <Hr style={rowDivider} />
-          <Section style={detailRow}>
-            <Text style={detailLabel}>Submitted</Text>
-            <Text style={detailValue}>
-              {new Date(submissionDate).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
-            </Text>
-          </Section>
+      <EmailContent>
+        <EmailTitle>New checklist request</EmailTitle>
+        <EmailBody>Someone submitted the checklist form.</EmailBody>
+        <Section style={softBoxStyle}>
+          <Row><Column style={{ width: "100px" }}><Text style={label}>Email</Text></Column><Column><Text style={value}>{email}</Text></Column></Row>
+          {type ? <Row><Column style={{ width: "100px" }}><Text style={label}>Type</Text></Column><Column><Text style={value}>{type}</Text></Column></Row> : null}
+          {submissionDate ? <Row><Column style={{ width: "100px" }}><Text style={label}>When</Text></Column><Column><Text style={value}>{submissionDate}</Text></Column></Row> : null}
+          {answers && answers.length > 0 ? <Row><Column style={{ width: "100px" }}><Text style={label}>Answers</Text></Column><Column><Text style={value}>{answers.join(" · ")}</Text></Column></Row> : null}
         </Section>
-        
-        <Text style={subheading}>Answers</Text>
-        <Section style={answersCard}>
-          {answers.map((answer, index) => (
-            <React.Fragment key={index}>
-              {index > 0 && <Hr style={rowDivider} />}
-              <Section style={answerRow}>
-                <Text style={questionNumber}>Question {index + 1}</Text>
-                <Text style={answerText}>{answer || 'Skipped'}</Text>
-              </Section>
-            </React.Fragment>
-          ))}
-        </Section>
-      </Section>
+      </EmailContent>
       <EmailFooter />
     </EmailLayout>
   );
-};
-
-export default ChecklistSubmissionEmail;
-
-const content = {
-  padding: '32px 40px 36px 40px',
-};
-
-const alertBannerText = {
-  color: '#111827',
-  fontSize: '14px',
-  fontWeight: '700' as const,
-  letterSpacing: '1px',
-  margin: '0 0 20px 0',
-  textTransform: 'uppercase' as const,
-};
-
-const subheading = {
-  color: '#374151',
-  fontSize: '14px',
-  fontWeight: '700' as const,
-  margin: '24px 0 8px 0',
-};
-
-const detailsCard = {
-  backgroundColor: '#f9fafb',
-  borderRadius: '6px',
-  border: '1px solid #e5e7eb',
-  padding: '4px 20px',
-  margin: '0 0 8px 0',
-};
-
-const detailRow = {
-  padding: '4px 0',
-};
-
-const rowDivider = {
-  borderTop: '1px solid #e5e7eb',
-  margin: '0',
-};
-
-const detailLabel = {
-  color: '#6b7280',
-  fontSize: '12px',
-  fontWeight: '600' as const,
-  textTransform: 'uppercase' as const,
-  letterSpacing: '0.5px',
-  margin: '0 0 2px 0',
-  lineHeight: '16px',
-};
-
-const detailValue = {
-  color: '#111827',
-  fontSize: '15px',
-  fontWeight: '500' as const,
-  margin: '0',
-  lineHeight: '22px',
-};
-
-const detailValueHighlight = {
-  color: '#1d4ed8',
-  fontSize: '15px',
-  fontWeight: '600' as const,
-  margin: '0',
-  lineHeight: '22px',
-};
-
-const answersCard = {
-  backgroundColor: '#f9fafb',
-  borderRadius: '6px',
-  border: '1px solid #e5e7eb',
-  padding: '4px 20px',
-};
-
-const answerRow = {
-  padding: '4px 0',
-};
-
-const questionNumber = {
-  color: '#6b7280',
-  fontSize: '11px',
-  fontWeight: '700' as const,
-  textTransform: 'uppercase' as const,
-  letterSpacing: '0.5px',
-  margin: '0 0 2px 0',
-  lineHeight: '14px',
-};
-
-const answerText = {
-  color: '#111827',
-  fontSize: '14px',
-  margin: '0',
-  lineHeight: '22px',
-};
+}
+const label = { color: EMAIL.colors.muted, fontSize: "13px", margin: "0 0 6px 0" };
+const value = { color: EMAIL.colors.text, fontSize: "13px", margin: "0 0 6px 0", wordBreak: "break-word" as const };
