@@ -1,163 +1,85 @@
-import { Text, Section, Hr } from '@react-email/components';
-import * as React from 'react';
-import { EmailLayout } from './components/email-layout';
-import { EmailHeader } from './components/email-header';
-import { EmailFooter } from './components/email-footer';
+import { Text, Section, Row, Column } from "@react-email/components";
+import * as React from "react";
+import { EmailLayout } from "./components/email-layout";
+import { EmailHeader } from "./components/email-header";
+import { EmailFooter } from "./components/email-footer";
+import { EmailButton } from "./components/email-button";
+import {
+  EmailContent,
+  EmailTitle,
+  EmailBody,
+  EmailMuted,
+  softBoxStyle,
+} from "./components/email-content";
+import { EMAIL } from "./components/email-styles";
 
 interface NewLeadNotificationEmailProps {
   fullName: string;
-  companyName: string;
+  companyName?: string;
   email: string;
-  phone: string;
-  service: string;
-  requirements: string;
-  submissionDate: string;
+  phone?: string;
+  service?: string;
+  requirements?: string;
+  submissionDate?: string;
 }
 
-export const NewLeadNotificationEmail = ({ 
-  fullName, 
-  companyName, 
-  email, 
-  phone, 
-  service, 
-  requirements, 
-  submissionDate 
+export const NewLeadNotificationEmail = ({
+  fullName,
+  companyName,
+  email,
+  phone,
+  service,
+  requirements,
+  submissionDate,
 }: NewLeadNotificationEmailProps) => {
   return (
-    <EmailLayout preview={`New Enquiry from ${fullName} — ${service}`}>
+    <EmailLayout preview={`New lead: ${fullName}${service ? ` — ${service}` : ""}`}>
       <EmailHeader />
-      <Section style={content}>
-        <Text style={alertBannerText}>🔔 NEW WEBSITE ENQUIRY</Text>
-
-        <Text style={heading}>Lead Details</Text>
-
-        <Section style={detailsCard}>
-          <Section style={detailRow}>
-            <Text style={detailLabel}>Name</Text>
-            <Text style={detailValue}>{fullName}</Text>
-          </Section>
-          <Hr style={rowDivider} />
-          <Section style={detailRow}>
-            <Text style={detailLabel}>Company</Text>
-            <Text style={detailValue}>{companyName || 'Not provided'}</Text>
-          </Section>
-          <Hr style={rowDivider} />
-          <Section style={detailRow}>
-            <Text style={detailLabel}>Email</Text>
-            <Text style={detailValueHighlight}>{email}</Text>
-          </Section>
-          <Hr style={rowDivider} />
-          <Section style={detailRow}>
-            <Text style={detailLabel}>Phone</Text>
-            <Text style={detailValue}>{phone || 'Not provided'}</Text>
-          </Section>
-          <Hr style={rowDivider} />
-          <Section style={detailRow}>
-            <Text style={detailLabel}>Service</Text>
-            <Text style={detailValueHighlight}>{service}</Text>
-          </Section>
-          <Hr style={rowDivider} />
-          <Section style={detailRow}>
-            <Text style={detailLabel}>Submitted</Text>
-            <Text style={detailValue}>{new Date(submissionDate).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</Text>
-          </Section>
+      <EmailContent>
+        <EmailTitle>New website enquiry</EmailTitle>
+        <EmailBody>A new lead was submitted on the website.</EmailBody>
+        <Section style={softBoxStyle}>
+          <InfoRow label="Name" value={fullName} />
+          <InfoRow label="Email" value={email} />
+          {phone ? <InfoRow label="Phone" value={phone} /> : null}
+          {companyName ? <InfoRow label="Company" value={companyName} /> : null}
+          {service ? <InfoRow label="Service" value={service} /> : null}
+          {submissionDate ? <InfoRow label="Submitted" value={submissionDate} /> : null}
+          {requirements ? <InfoRow label="Details" value={requirements} /> : null}
         </Section>
-        
-        <Text style={subheading}>📝 Project Description &amp; Requirements</Text>
-        <Section style={requirementsBox}>
-          <Text style={requirementsText}>{requirements || 'No additional details provided.'}</Text>
-        </Section>
-      </Section>
+        <EmailButton href={`${EMAIL.siteUrl}/admin/leads`}>Open leads</EmailButton>
+        <EmailMuted>Reply-To is set to the customer email when available.</EmailMuted>
+      </EmailContent>
       <EmailFooter />
     </EmailLayout>
   );
 };
 
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <Row style={{ marginBottom: "8px" }}>
+      <Column style={{ width: "110px", verticalAlign: "top" as const }}>
+        <Text style={labelText}>{label}</Text>
+      </Column>
+      <Column>
+        <Text style={valueText}>{value}</Text>
+      </Column>
+    </Row>
+  );
+}
+
+const labelText = {
+  color: EMAIL.colors.muted,
+  fontSize: "13px",
+  margin: "0",
+  fontFamily: EMAIL.font,
+};
+const valueText = {
+  color: EMAIL.colors.text,
+  fontSize: "13px",
+  margin: "0",
+  fontFamily: EMAIL.font,
+  wordBreak: "break-word" as const,
+};
+
 export default NewLeadNotificationEmail;
-
-const content = {
-  padding: '32px 40px 36px 40px',
-};
-
-const alertBannerText = {
-  color: '#111827',
-  fontSize: '14px',
-  fontWeight: '700' as const,
-  letterSpacing: '1px',
-  margin: '0 0 16px 0',
-  textTransform: 'uppercase' as const,
-};
-
-const heading = {
-  color: '#111827',
-  fontSize: '20px',
-  fontWeight: '700' as const,
-  margin: '0 0 16px 0',
-  lineHeight: '28px',
-};
-
-const subheading = {
-  color: '#374151',
-  fontSize: '14px',
-  fontWeight: '700' as const,
-  margin: '24px 0 8px 0',
-};
-
-const detailsCard = {
-  backgroundColor: '#f9fafb',
-  borderRadius: '6px',
-  border: '1px solid #e5e7eb',
-  padding: '4px 20px',
-  margin: '0 0 8px 0',
-};
-
-const detailRow = {
-  padding: '4px 0',
-};
-
-const rowDivider = {
-  borderTop: '1px solid #e5e7eb',
-  margin: '0',
-};
-
-const detailLabel = {
-  color: '#6b7280',
-  fontSize: '12px',
-  fontWeight: '600' as const,
-  textTransform: 'uppercase' as const,
-  letterSpacing: '0.5px',
-  margin: '0 0 2px 0',
-  lineHeight: '16px',
-};
-
-const detailValue = {
-  color: '#111827',
-  fontSize: '15px',
-  fontWeight: '500' as const,
-  margin: '0',
-  lineHeight: '22px',
-};
-
-const detailValueHighlight = {
-  color: '#1d4ed8',
-  fontSize: '15px',
-  fontWeight: '600' as const,
-  margin: '0',
-  lineHeight: '22px',
-};
-
-const requirementsBox = {
-  backgroundColor: '#f9fafb',
-  borderLeft: '3px solid #6b7280',
-  padding: '12px 16px',
-  borderRadius: '4px',
-  margin: '0',
-};
-
-const requirementsText = {
-  color: '#374151',
-  fontSize: '14px',
-  lineHeight: '24px',
-  whiteSpace: 'pre-wrap' as const,
-  margin: '0',
-};
