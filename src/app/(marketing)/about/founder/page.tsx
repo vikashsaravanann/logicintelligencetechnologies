@@ -12,10 +12,7 @@ import {
   ArrowRight,
   Mail,
   Award,
-  Linkedin,
-  Github,
-  Instagram,
-} from "lucide-react";
+  } from "lucide-react";
 import BackButton from "@/components/navigation/back-button";
 import { COMPANY } from "@/config/company";
 import { FOUNDER } from "@/config/founder";
@@ -196,7 +193,7 @@ export default function FounderPage() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 text-xs font-semibold uppercase tracking-wide text-zinc-300 hover:text-white hover:border-white/25 transition-colors"
                 >
-                  <Linkedin className="w-3.5 h-3.5" /> LinkedIn
+                  <ExternalLink className="w-3.5 h-3.5" /> LinkedIn
                 </a>
                 <a
                   href={FOUNDER.githubUrl}
@@ -204,7 +201,7 @@ export default function FounderPage() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 text-xs font-semibold uppercase tracking-wide text-zinc-300 hover:text-white hover:border-white/25 transition-colors"
                 >
-                  <Github className="w-3.5 h-3.5" /> GitHub
+                  <ExternalLink className="w-3.5 h-3.5" /> GitHub
                 </a>
                 <a
                   href={FOUNDER.instagramUrl}
@@ -212,7 +209,7 @@ export default function FounderPage() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 text-xs font-semibold uppercase tracking-wide text-zinc-300 hover:text-white hover:border-white/25 transition-colors"
                 >
-                  <Instagram className="w-3.5 h-3.5" /> Instagram
+                  <ExternalLink className="w-3.5 h-3.5" /> Instagram
                 </a>
                 <a
                   href={`mailto:${COMPANY.email}`}
