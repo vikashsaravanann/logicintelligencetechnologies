@@ -13,7 +13,7 @@ import {
   Mail,
   Award,
   } from "lucide-react";
-import BackButton from "@/components/navigation/back-button";
+import { BackButton } from "@/components/navigation/back-button";
 import { COMPANY } from "@/config/company";
 import { FOUNDER } from "@/config/founder";
 import { SITE, breadcrumb, founderNode, organizationNode } from "@/lib/seo/schema";
@@ -142,7 +142,7 @@ export default function FounderPage() {
 
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-28 pb-16 md:pt-32 md:pb-20">
           <div className="mb-8">
-            <BackButton href="/about" label="COMPANY" />
+            <BackButton fallbackHref="/about" label="Back to Company" parentLabel="Company" inline forceFallback />
           </div>
 
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
