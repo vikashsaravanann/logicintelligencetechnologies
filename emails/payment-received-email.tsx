@@ -3,35 +3,43 @@ import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
 import { EmailButton } from "./components/email-button";
-import { EmailContent, EmailGreeting, EmailTitle, EmailBody, EmailMuted } from "./components/email-content";
+import {
+  EmailContent,
+  EmailGreeting,
+  EmailTitle,
+  EmailBody,
+  EmailMuted,
+} from "./components/email-content";
 import { EMAIL } from "./components/email-styles";
 
-interface Props {
+export interface PaymentReceivedEmailProps {
   fullName?: string;
   amount?: string;
   invoiceNumber?: string;
-  actionUrl?: string;
-  detail?: string;
 }
 
 export default function PaymentReceivedEmail({
   fullName = "there",
-  amount,
-  invoiceNumber,
-  actionUrl,
-  detail,
-}: Props) {
+  amount = "—",
+  invoiceNumber = "—",
+}: PaymentReceivedEmailProps) {
   return (
-    <EmailLayout preview="Payment received">
+    <EmailLayout preview="Payment received — thank you">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Payment received</EmailTitle>
         <EmailGreeting name={fullName} />
-        <EmailBody>We've received your payment. Thank you.</EmailBody>
-        {invoiceNumber ? <EmailBody>Invoice: {invoiceNumber}</EmailBody> : null}
-        {amount ? <EmailBody>Amount: {amount}</EmailBody> : null}
-        {detail ? <EmailBody>{detail}</EmailBody> : null}
-        <EmailButton href={actionUrl || EMAIL.siteUrl}>View receipt</EmailButton>
+        <EmailBody>
+          We received your payment of <strong>{amount}</strong>
+          {invoiceNumber !== "—" ? (
+            <>
+              {" "}
+              for invoice <strong>{invoiceNumber}</strong>
+            </>
+          ) : null}
+          . Thank you.
+        </EmailBody>
+        <EmailButton href={`${EMAIL.siteUrl}/dashboard`}>View dashboard</EmailButton>
         <EmailMuted>— Logic Intelligence Technologies</EmailMuted>
       </EmailContent>
       <EmailFooter />

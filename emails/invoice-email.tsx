@@ -3,41 +3,41 @@ import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
 import { EmailButton } from "./components/email-button";
-import { EmailContent, EmailGreeting, EmailTitle, EmailBody, EmailMuted } from "./components/email-content";
+import {
+  EmailContent,
+  EmailGreeting,
+  EmailTitle,
+  EmailBody,
+  EmailMuted,
+} from "./components/email-content";
 import { EMAIL } from "./components/email-styles";
 
-interface Props {
+export interface InvoiceEmailProps {
   fullName?: string;
   invoiceNumber?: string;
   amount?: string;
   dueDate?: string;
   paymentLink?: string;
-  actionUrl?: string;
-  detail?: string;
 }
 
 export default function InvoiceEmail({
   fullName = "there",
-  invoiceNumber,
-  amount,
-  dueDate,
+  invoiceNumber = "INV-000",
+  amount = "—",
+  dueDate = "Upon receipt",
   paymentLink,
-  actionUrl,
-  detail,
-}: Props) {
-  const href = paymentLink || actionUrl || EMAIL.siteUrl;
+}: InvoiceEmailProps) {
   return (
-    <EmailLayout preview="Your invoice from Logic Intelligence Technologies">
+    <EmailLayout preview={`Invoice ${invoiceNumber} from Logic Intelligence Technologies`}>
       <EmailHeader />
       <EmailContent>
-        <EmailTitle>Invoice</EmailTitle>
+        <EmailTitle>Invoice {invoiceNumber}</EmailTitle>
         <EmailGreeting name={fullName} />
-        <EmailBody>Please find your invoice details below.</EmailBody>
-        {invoiceNumber ? <EmailBody>Invoice: <strong>{invoiceNumber}</strong></EmailBody> : null}
-        {amount ? <EmailBody>Amount: <strong>{amount}</strong></EmailBody> : null}
-        {dueDate ? <EmailBody>Due: {dueDate}</EmailBody> : null}
-        {detail ? <EmailBody>{detail}</EmailBody> : null}
-        <EmailButton href={href}>View invoice</EmailButton>
+        <EmailBody>
+          Invoice <strong>{invoiceNumber}</strong> for <strong>{amount}</strong> is ready.
+          Payment is due by <strong>{dueDate}</strong>.
+        </EmailBody>
+        <EmailButton href={paymentLink || EMAIL.siteUrl}>Pay invoice</EmailButton>
         <EmailMuted>— Logic Intelligence Technologies</EmailMuted>
       </EmailContent>
       <EmailFooter />

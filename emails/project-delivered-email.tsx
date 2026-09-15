@@ -3,36 +3,37 @@ import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
 import { EmailButton } from "./components/email-button";
-import { EmailContent, EmailGreeting, EmailTitle, EmailBody, EmailMuted } from "./components/email-content";
+import {
+  EmailContent,
+  EmailGreeting,
+  EmailTitle,
+  EmailBody,
+  EmailMuted,
+} from "./components/email-content";
 import { EMAIL } from "./components/email-styles";
 
-interface Props {
+export interface ProjectDeliveredEmailProps {
   fullName?: string;
   projectName?: string;
   liveUrl?: string;
-  actionUrl?: string;
-  detail?: string;
 }
 
 export default function ProjectDeliveredEmail({
   fullName = "there",
-  projectName,
+  projectName = "Your Project",
   liveUrl,
-  actionUrl,
-  detail,
-}: Props) {
-  const href = liveUrl || actionUrl || EMAIL.siteUrl;
+}: ProjectDeliveredEmailProps) {
   return (
-    <EmailLayout preview="Project delivered">
+    <EmailLayout preview={`Project delivered: ${projectName}`}>
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Project delivered</EmailTitle>
         <EmailGreeting name={fullName} />
         <EmailBody>
-          Your project deliverables{projectName ? <> for <strong>{projectName}</strong></> : null} are ready for review.
+          <strong>{projectName}</strong> is live. Review the delivery and share
+          any feedback with our team.
         </EmailBody>
-        {detail ? <EmailBody>{detail}</EmailBody> : null}
-        <EmailButton href={href}>View delivery</EmailButton>
+        <EmailButton href={liveUrl || EMAIL.siteUrl}>View live project</EmailButton>
         <EmailMuted>— Logic Intelligence Technologies</EmailMuted>
       </EmailContent>
       <EmailFooter />
