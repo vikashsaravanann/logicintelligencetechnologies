@@ -13,74 +13,75 @@ export type NavGroup = {
   items: NavItem[];
 };
 
+/** Always-visible desktop primary links. */
 export const PRIMARY_NAV: NavItem[] = [
-  { href: '/', label: 'HOME' },
-  { href: '/services', label: 'SOLUTIONS' },
-  { href: '/industries', label: 'INDUSTRIES' },
-  { href: '/work', label: 'WORK' },
-  { href: '/resources', label: 'RESOURCES' },
-  { href: '/about', label: 'COMPANY' },
-  { href: '/contact', label: 'CONTACT' },
+  { href: "/", label: "HOME" },
+  { href: "/services", label: "SOLUTIONS" },
+  { href: "/industries", label: "INDUSTRIES" },
+  { href: "/work", label: "WORK" },
+  { href: "/resources", label: "RESOURCES" },
+  { href: "/about", label: "COMPANY" },
+  { href: "/contact", label: "CONTACT" },
 ];
 
 export const PRIMARY_CTA: NavItem = {
-  href: '/book-consultation',
-  label: 'BOOK A CONSULTATION',
+  href: "/book-consultation",
+  label: "BOOK A CONSULTATION",
 };
 
+/**
+ * More menu — secondary destinations only.
+ * Do NOT repeat PRIMARY_NAV hrefs (/about, /work, /resources, /contact).
+ * Do NOT repeat header auth (login / profile) — handled by AuthNavControl.
+ */
 export const MORE_NAV_GROUPS: NavGroup[] = [
   {
-    id: 'company',
-    label: 'COMPANY',
+    id: "company",
+    label: "COMPANY",
     items: [
-      { href: '/about', label: 'ABOUT', description: 'MISSION, VISION, AND APPROACH' },
-      { href: '/about/founder', label: 'FOUNDER', description: 'VIKASH SARAVANAN PROFILE' },
-      { href: '/expertise', label: 'TECHNICAL EXPERTISE', description: 'ENGINEERING CAPABILITIES' },
-      { href: '/careers', label: 'CAREERS', description: 'OPEN ROLES' },
-      { href: '/press', label: 'PRESS', description: 'MEDIA AND BRAND ASSETS' },
-      { href: '/investors', label: 'INVESTORS', description: 'PARTNERSHIP OVERVIEW' },
+      { href: "/about/founder", label: "FOUNDER", description: "VIKASH SARAVANAN PROFILE" },
+      { href: "/expertise", label: "TECHNICAL EXPERTISE", description: "ENGINEERING CAPABILITIES" },
+      { href: "/careers", label: "CAREERS", description: "CULTURE AND OPEN PATHS" },
+      { href: "/jobs", label: "LEADERSHIP JOBS", description: "CEO AND DIRECTOR SEATS" },
+      { href: "/press", label: "PRESS", description: "MEDIA AND BRAND ASSETS" },
+      { href: "/investors", label: "INVESTORS", description: "PARTNERSHIP OVERVIEW" },
     ],
   },
   {
-    id: 'resources',
-    label: 'RESOURCES',
+    id: "resources",
+    label: "RESOURCES",
     items: [
-      { href: '/certifications', label: 'CERTIFICATIONS', description: 'VERIFIED CREDENTIALS' },
-      { href: '/blog', label: 'BLOG', description: 'ENGINEERING AND PRODUCT NOTES' },
-      { href: '/resources', label: 'RESOURCE CENTER', description: 'GUIDES AND PDF DOWNLOADS' },
-      { href: '/work', label: 'CASE STUDIES', description: 'SELECTED WORK' },
-      { href: '/checklist', label: 'WEBSITE CHECKLIST', description: 'PRODUCTION QA FRAMEWORK' },
+      { href: "/blog", label: "BLOG", description: "ENGINEERING AND PRODUCT NOTES" },
+      { href: "/certifications", label: "CERTIFICATIONS", description: "VERIFIED CREDENTIALS" },
+      { href: "/checklist", label: "WEBSITE CHECKLIST", description: "PRODUCTION QA FRAMEWORK" },
+      { href: "/packages", label: "PACKAGES", description: "FIXED-SCOPE OFFERINGS" },
     ],
   },
   {
-    id: 'tools',
-    label: 'TOOLS',
+    id: "tools",
+    label: "TOOLS",
     items: [
-      { href: '/ai', label: 'AI ASSISTANT', description: 'COMPANY KNOWLEDGE WORKSPACE' },
-      { href: '/discovery', label: 'DISCOVERY', description: 'START A STRUCTURED DISCOVERY' },
-      { href: '/free-demo', label: 'FREE DEMO', description: 'REQUEST A WORKING DIRECTION' },
-      { href: '/packages', label: 'PACKAGES', description: 'FIXED-SCOPE OFFERINGS' },
+      { href: "/ai", label: "AI ASSISTANT", description: "COMPANY KNOWLEDGE WORKSPACE" },
+      { href: "/discovery", label: "DISCOVERY", description: "START A STRUCTURED DISCOVERY" },
+      { href: "/free-demo", label: "FREE DEMO", description: "REQUEST A WORKING DIRECTION" },
     ],
   },
   {
-    id: 'support',
-    label: 'SUPPORT',
+    id: "support",
+    label: "SUPPORT",
     items: [
-      { href: '/contact', label: 'CONTACT', description: 'REACH THE TEAM' },
-      { href: '/support', label: 'CUSTOMER SUPPORT', description: 'TICKETS AND HELP' },
-      { href: '/login', label: 'CLIENT SIGN IN', description: 'CLIENT & TEAM AUTHENTICATION' },
-      { href: '/profile', label: 'ACCOUNT PROFILE', description: 'CLIENT PORTAL & SETTINGS' },
+      { href: "/support", label: "CUSTOMER SUPPORT", description: "TICKETS AND HELP" },
     ],
   },
   {
-    id: 'legal',
-    label: 'LEGAL',
+    id: "legal",
+    label: "LEGAL",
     items: [
-      { href: '/privacy', label: 'PRIVACY' },
-      { href: '/terms', label: 'TERMS' },
-      { href: '/refund-policy', label: 'REFUND POLICY' },
-      { href: '/cookie-policy', label: 'COOKIE POLICY' },
-      { href: '/accessibility', label: 'ACCESSIBILITY' },
+      { href: "/privacy", label: "PRIVACY" },
+      { href: "/terms", label: "TERMS" },
+      { href: "/refund-policy", label: "REFUND POLICY" },
+      { href: "/cookie-policy", label: "COOKIE POLICY" },
+      { href: "/accessibility", label: "ACCESSIBILITY" },
     ],
   },
 ];
