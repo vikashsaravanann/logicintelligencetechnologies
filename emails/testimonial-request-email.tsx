@@ -1,74 +1,26 @@
-import * as React from 'react';
-import { Section, Text, Heading } from '@react-email/components';
-import { EmailLayout } from './components/email-layout';
-import { EmailHeader } from './components/email-header';
-import { EmailFooter } from './components/email-footer';
-import { EmailButton } from './components/email-button';
+import * as React from "react";
+import { EmailLayout } from "./components/email-layout";
+import { EmailHeader } from "./components/email-header";
+import { EmailFooter } from "./components/email-footer";
+import { EmailButton } from "./components/email-button";
+import { EmailContent, EmailGreeting, EmailTitle, EmailBody, EmailMuted } from "./components/email-content";
+import { EMAIL } from "./components/email-styles";
 
-interface TestimonialRequestEmailProps {
-  fullName: string;
-  reviewLink: string;
-}
+interface Props { fullName?: string; actionUrl?: string; detail?: string; }
 
-export default function TestimonialRequestEmail({
-  fullName = 'Client Name',
-  reviewLink = 'https://example.com/review',
-}: TestimonialRequestEmailProps) {
+export default function TestimonialRequestEmail({ fullName = "there", actionUrl, detail }: Props) {
   return (
-    <EmailLayout preview="We value your feedback">
+    <EmailLayout preview="Would you share feedback?">
       <EmailHeader />
-      <Section style={contentContainer}>
-        <Heading style={heading}>We Value Your Feedback</Heading>
-        <Text style={text}>Hi {fullName},</Text>
-        <Text style={text}>
-          Following the successful launch of your project, we would greatly appreciate it if you could take a few moments to share your experience working with Logic Intelligence Technologies.
-        </Text>
-        <Text style={text}>
-          Client feedback is essential to our continuous improvement and helps us maintain the high standards we strive for.
-        </Text>
-        <Section style={buttonContainer}>
-          <EmailButton href={reviewLink}>
-            Leave a Review
-          </EmailButton>
-        </Section>
-        <Text style={text}>
-          Thank you once again for choosing us as your technology partner.
-        </Text>
-        <Text style={signature}>
-          Best regards,<br />
-          Logic Intelligence Technologies
-        </Text>
-      </Section>
+      <EmailContent>
+        <EmailTitle>Share your feedback</EmailTitle>
+        <EmailGreeting name={fullName} />
+        <EmailBody>If you have a moment, we'd appreciate a short note about working with us.</EmailBody>
+        {detail ? <EmailBody>{detail}</EmailBody> : null}
+        <EmailButton href={actionUrl || EMAIL.siteUrl}>Share feedback</EmailButton>
+        <EmailMuted>— Logic Intelligence Technologies</EmailMuted>
+      </EmailContent>
       <EmailFooter />
     </EmailLayout>
   );
 }
-
-const contentContainer = {
-  padding: '40px',
-};
-
-const heading = {
-  fontSize: '24px',
-  fontWeight: '600',
-  color: '#111827',
-  margin: '0 0 24px 0',
-};
-
-const text = {
-  fontSize: '15px',
-  color: '#374151',
-  lineHeight: '24px',
-  margin: '0 0 16px 0',
-};
-
-const buttonContainer = {
-  margin: '32px 0',
-};
-
-const signature = {
-  fontSize: '15px',
-  color: '#374151',
-  lineHeight: '24px',
-  margin: '32px 0 0 0',
-};
