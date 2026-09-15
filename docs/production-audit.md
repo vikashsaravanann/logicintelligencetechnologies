@@ -1,86 +1,86 @@
-# Production Baseline Audit — Logic Intelligence Technologies
+# LIT production audit
 
-**Date:** March 2026  
-**Company:** Logic Intelligence Technologies  
-**Official URL:** https://www.logicintelligencetechnologies.in/  
-**Repository:** https://github.com/vikashsaravanann/logicintelligencetechnologies.git  
-**Runtime:** Node.js 20 / Next.js 16 (App Router)  
+**Commit:** `361e09e` (+ local: dashboard Back to Home, test:e2e → smoke:test)  
+**Date:** 2026-09-15  
+**Canonical:** https://www.logicintelligencetechnologies.in/
 
----
+## Classification legend
 
-## 1. Executive Summary
+WORKING | PARTIALLY WORKING | BROKEN | DUPLICATED | OBSOLETE | INSECURE | MISWIRED | NEEDS TESTING
 
-This audit establishes the production baseline for the Logic Intelligence Technologies enterprise web platform. The platform connects public marketing, verified founder authority, intelligent automation resources, 12 official enterprise PDF deliverables, contact and lead scoring pipelines, calendar booking, authenticated client portal, and multi-tenant isolation under Supabase PostgreSQL with strict Row Level Security (RLS).
+## Architecture (WORKING)
 
----
+- Next.js 16 App Router + TypeScript
+- Supabase Postgres + Auth (Google + GitHub OAuth enabled)
+- Zoho SMTP via centralized `sendEmail` + `email_outbox`
+- Vercel production; CI typecheck/lint/build on main
+- Middleware: `/` public; all other page routes require session; `/api/*` open at edge with route-level rules
 
-## 2. Architecture & Tech Stack
+## Forms (WORKING)
 
-| Layer | Component | Status | Notes |
-|---|---|---|---|
-| **Framework** | Next.js 16.2.4 (App Router) | Verified | React 19, TypeScript strict mode |
-| **Styling** | Tailwind CSS v4 | Verified | Custom theme, glassmorphism surfaces, solid fallbacks |
-| **Authentication** | Supabase Auth | Verified | Unified /login and /profile routes, JWT session rotation |
-| **Database** | Supabase PostgreSQL | Verified | Row Level Security (RLS) active on all exposed tables |
-| **Email Infrastructure** | Zoho SMTP / Nodemailer / React Email | Verified | SSRF protected, header injection sanitized, retries with backoff |
-| **Asset Delivery** | Next.js Image Optimization / Public CDN | Verified | WebP/AVIF formats, descriptive accessibility labels |
-| **Hosting & CI/CD** | Vercel & GitHub Actions | Verified | Automated linting, typechecking, PDF verification, smoke tests |
+| Form | Path | Table | DB-first | Idempotency | Rate limit |
+|---|---|---|---|---|---|
+| Contact | POST /api/contact | contact_leads | yes → 503 | contact:{id}:* | 8/15m |
+| Free demo | POST /api/free-demo | demo_leads | yes | demo:{id}:* | 8/15m |
+| Checklist | POST /api/checklist | checklist_leads | yes | resource/discovery | 10/15m |
+| Newsletter | POST /api/newsletter | newsletter_subscribers | yes | DOI | 8/15m |
+| Jobs | POST /api/jobs/apply | contact_leads | yes | career:{id}:* | 5/15m |
+| Booking | POST /api/booking | bookings | yes | outbox | 8/15m |
+| Support | POST /api/support | support_tickets | yes | support:{id}:* | 8/15m |
+| AI handoff | POST /api/ai/lead | capture | yes | existing | 8/10m |
 
----
+Fake success on DB failure: **fixed** (architecture). Email failure keeps lead: **WORKING**.
 
-## 3. Verified Route Inventory
+## Auth (WORKING / NEEDS TESTING)
 
-### Public Pages (Verified 200 OK)
-- `/` — Corporate Homepage (Hero, core solutions, value propositions, client trust indicators)
-- `/about` — About Logic Intelligence Technologies (Mission, vision, engineering philosophy)
-- `/about/founder` — Vikash Saravanan (Founder & Lead Systems Engineer profile, verified credentials, education)
-- `/services` & `/services/[slug]` — Solutions catalog and individual capability briefs
-- `/industries` & `/industries/[slug]` — Industry verticals (Healthcare, Education, Retail, Manufacturing, Finance, Startups)
-- `/products` & `/products/[slug]` — Proprietary software solutions (Omni-Apply, workflow engines)
-- `/work` & `/work/[slug]` — Case studies and portfolio deliverables
-- `/packages` & `/packages/[slug]` — Scoped digital launch, business pro, and enterprise packages
-- `/blog` & `/blog/[slug]` — Engineering insights and technical guides
-- `/resources` & `/resources/[slug]` — Enterprise resource center and 12 official PDFs
-- `/contact` — Secure inquiry intake with real-time lead ingestion
-- `/book-consultation` — Calendar consultation scheduling
-- `/free-demo` — Prototype and demo requests
-- `/discovery` — Architectural discovery intake
-- `/checklist` — 50-point production engineering launch checklist
-- `/support`, `/support/new`, `/support/[ticketId]` — Customer service ticket hub
-- `/ai` — Conversational knowledge assistant grounded in verified company facts
-- `/privacy`, `/terms`, `/refund-policy`, `/cookie-policy`, `/accessibility` — Legal and compliance frameworks
+- Homepage public; marketing + AI protected — **live HTTP PASS**
+- `safeNextPath` — WORKING
+- Name/avatar resolution priority profiles → metadata → email — WORKING (code)
+- Google OAuth config on Supabase — **PASS (API)**; interactive browser round-trip — **NEEDS TESTING** (human)
 
-### Authentication & Portal Routes
-- `/login` — Canonical authentication entry point (Sign in, Sign up, Password reset, Magic link)
-- `/reset-password` — Password recovery flow
-- `/profile` — Unified canonical account management (Personal details, security settings, encrypted vault, billing, projects)
-- `/client/dashboard`, `/client/projects`, `/client/documents`, `/client/invoices`, `/client/messages`, `/client/support` — Tenant-isolated client collaboration suite
-- `/client/profile` — Permanently redirected (301) to canonical `/profile`
-- `/client/login` — Permanently redirected (301) to canonical `/login`
+## Domain (WORKING)
 
----
+- www + apex verified on Vercel; apex → www 301
+- DNS: www CNAME vercel-dns; apex A Vercel
+- Supabase site_url + redirect allow-list = www (and apex callback)
+- /api/health: database ok, smtp ok, production delivery mode
 
-## 4. Resource & PDF System Verification
+## AI (WORKING / PARTIALLY WORKING)
 
-All 12 official company publication documents are verified in `public/resources/` with valid `%PDF-1.4` binary headers, explicit metadata mapping in `src/config/pdfs.ts`, and CI test enforcement:
-1. `company-profile.pdf`
-2. `services-brochure.pdf`
-3. `capability-statement.pdf`
-4. `website-development-checklist.pdf`
-5. `ai-readiness-assessment.pdf`
-6. `business-automation-guide.pdf`
-7. `technology-roadmap-template.pdf`
-8. `project-proposal-template.pdf`
-9. `statement-of-work.pdf`
-10. `case-study.pdf`
-11. `press-kit.pdf`
-12. `investor-partnership-information-memorandum.pdf`
+- Home `/api/chat` vs Full `/api/ai` separated
+- RAG + company knowledge block
+- Server-only provider keys
+- Live model reply: **NEEDS TESTING** (human)
 
----
+## UI (WORKING / minor fixes)
 
-## 5. Security & Compliance Baseline
+- Login horizontal `lg:grid-cols-2` + Back to Home — WORKING
+- Industries 6 JPGs 16:9 — WORKING
+- Breadcrumbs component unused on marketing pages (no Solutions breadcrumb) — WORKING
+- Primary h1 uppercase on major pages — WORKING
+- Dashboard nav "Back to Website" → **fixed to "Back to Home"** this pass
+- CHECKLIST_ITEMS_31_50 is data export only; not dumped as raw UI on free-demo
 
-- **Zero Client-Side Secret Leakage:** No service role keys, SMTP credentials, or webhook secrets bundled in client code.
-- **SSRF & Injection Defenses:** Tested in `src/lib/email/*.test.ts` (67 unit tests covering private IP blocklists, header injection, and retry limits).
-- **Tenant Isolation:** Client portal data is partitioned by `user_id` at the database level using PostgreSQL RLS policies.
-- **Accessibility:** Skip-to-content links, `RouteAnnouncer` for screen reader live region announcements, visible keyboard focus rings (`:focus-visible`), and accessible touch target sizes.
+## Email (WORKING / NEEDS TESTING)
+
+- Outbox + attempts + idempotency + suppression
+- /api/health/email operational, queue 0
+- Live inbox delivery: **NEEDS TESTING** (human one-shot)
+
+## Tests / CI (WORKING)
+
+- CI on 361e09e: typecheck, lint, build **success**
+- test:e2e was placeholder → **now runs `npm run smoke:test`**
+- Full Playwright suite still not present (smoke is production HTTP)
+
+## Security (WORKING)
+
+- No NEXT_PUBLIC service-role / SMTP / AI keys in client patterns
+- RLS company-read policies on contact_leads
+- Rate limits on public forms
+
+## Remaining manual
+
+1. Google login in browser once
+2. One contact form → confirm email + admin lead row
+3. One homepage AI message
