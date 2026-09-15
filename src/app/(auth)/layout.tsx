@@ -4,7 +4,9 @@ import { COMPANY } from "@/config/company";
 export const metadata: Metadata = {
   title: `Sign in | ${COMPANY.displayName}`,
   description: `Sign in to the ${COMPANY.displayName} client portal to track projects, files, and support.`,
-  robots: { index: false, follow: false },
+  // Login must not appear in Google — intentional. Score homepage for SEO, not /login.
+  robots: { index: false, follow: false, googleBot: { index: false, follow: false } },
+  alternates: { canonical: "/login" },
 };
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
