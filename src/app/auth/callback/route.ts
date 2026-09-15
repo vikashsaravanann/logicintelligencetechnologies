@@ -7,7 +7,7 @@ import { env } from "@/config/env";
 
 function safeNext(raw: string | null): string {
   if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
-  return "/dashboard";
+  return "/";
 }
 
 export async function GET(request: Request) {
@@ -50,12 +50,7 @@ export async function GET(request: Request) {
           console.error("[Email Error] Login notification failed:", emailResult.message);
         }
 
-        const email = session.user.email;
-        const dest =
-          next === "/dashboard" && !email.endsWith("@logicintelligencetechnologies.in")
-            ? "/profile"
-            : next;
-        return NextResponse.redirect(new URL(dest, request.url));
+        return NextResponse.redirect(new URL(next, request.url));
       }
     } catch (error: any) {
       console.error('Auth callback error:', error);

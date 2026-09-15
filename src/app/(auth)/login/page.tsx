@@ -51,8 +51,8 @@ function friendlyAuthError(message: string) {
 
 function postLoginPath(email: string | undefined, next?: string | null): string {
   if (next && next.startsWith("/") && !next.startsWith("//")) return next;
-  if (email?.endsWith("@logicintelligencetechnologies.in")) return "/dashboard";
-  return "/profile";
+  // Site-wide gate: after login, land on the homepage unless a safe next was provided.
+  return "/";
 }
 
 function AuthContent() {
