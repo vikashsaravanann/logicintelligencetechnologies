@@ -1,66 +1,56 @@
-import { Section, Img, Text, Row, Column } from "@react-email/components";
+import { Section, Img, Text, Hr } from "@react-email/components";
 import * as React from "react";
+import { EMAIL } from "./email-styles";
 
-const LOGO_URL =
-  "https://www.logicintelligencetechnologies.in/assets/logo.jpg";
-
+/** Centered circular logo + single-line company name. No banner. */
 export const EmailHeader = () => {
   return (
     <Section style={header}>
-      <Row>
-        <Column style={logoColumn}>
-          <Img
-            src={LOGO_URL}
-            alt="Logic Intelligence Technologies Logo"
-            width="44"
-            height="44"
-            style={logo}
-          />
-        </Column>
-        <Column style={textColumn}>
-          <Text style={brandTitle}>LOGIC INTELLIGENCE TECHNOLOGIES</Text>
-          <Text style={brandSubtitle}>Enterprise Software &amp; AI Systems</Text>
-        </Column>
-      </Row>
+      <Img
+        src={EMAIL.logoUrl}
+        alt="Logic Intelligence Technologies"
+        width="64"
+        height="64"
+        style={logo}
+      />
+      <Text style={brand}>{EMAIL.company}</Text>
+      <Hr style={divider} />
     </Section>
   );
 };
 
 const header = {
-  padding: "24px 28px 20px 28px",
-  backgroundColor: "#0A0F1E",
-  borderBottom: "1px solid rgba(0,191,255,0.25)",
-};
-
-const logoColumn = {
-  width: "52px",
-  verticalAlign: "middle" as const,
+  padding: "32px 32px 8px 32px",
+  textAlign: "center" as const,
+  backgroundColor: EMAIL.colors.cardBg,
 };
 
 const logo = {
   display: "block",
-  borderRadius: "8px",
-  border: "1px solid rgba(0,191,255,0.45)",
+  margin: "0 auto 16px auto",
+  borderRadius: "50%",
+  border: `1px solid ${EMAIL.colors.border}`,
+  width: "64px",
+  height: "64px",
+  objectFit: "cover" as const,
 };
 
-const textColumn = {
-  verticalAlign: "middle" as const,
-  paddingLeft: "12px",
-};
-
-const brandTitle = {
-  margin: "0",
-  color: "#ffffff",
-  fontSize: "14px",
+const brand = {
+  color: EMAIL.colors.text,
+  fontSize: "16px",
   fontWeight: "700" as const,
-  letterSpacing: "0.06em",
-  lineHeight: "1.2",
+  lineHeight: "22px",
+  margin: "0 0 20px 0",
+  letterSpacing: "0.01em",
+  whiteSpace: "nowrap" as const,
+  fontFamily: EMAIL.font,
 };
 
-const brandSubtitle = {
-  margin: "3px 0 0 0",
-  color: "#94a3b8",
-  fontSize: "11px",
-  letterSpacing: "0.03em",
-  lineHeight: "1.2",
+const divider = {
+  borderColor: EMAIL.colors.divider,
+  borderTop: `1px solid ${EMAIL.colors.divider}`,
+  margin: "0",
+  width: "100%",
 };
+
+export default EmailHeader;
