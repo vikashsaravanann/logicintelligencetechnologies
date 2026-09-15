@@ -186,8 +186,8 @@ export const FOUNDER = {
   linkedinUrl: 'https://www.linkedin.com/in/vikash-saravanan-j7528/',
   githubUrl: 'https://github.com/vikashsaravanann',
   instagramUrl: 'https://www.instagram.com/vikash.saravanann',
-  imageUrl: 'https://www.logicintelligencetechnologies.in/images/founder/vikash-primary-v2.jpg',
-  ogImageUrl: 'https://www.logicintelligencetechnologies.in/images/founder/vikash-primary-v2.jpg',
+  imageUrl: 'https://www.logicintelligencetechnologies.in/images/founder/founder-about-main.jpg',
+  ogImageUrl: 'https://www.logicintelligencetechnologies.in/images/founder/founder-about-main.jpg',
   schemaId: 'https://www.logicintelligencetechnologies.in/#founder',
 } as const;
 

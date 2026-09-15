@@ -158,7 +158,7 @@ export default function AboutPage() {
             <div className="flex flex-col items-center lg:items-stretch gap-5">
               <div className="w-full max-w-[340px] aspect-[3/4] rounded-3xl overflow-hidden border-2 border-primary/30 bg-[#070b16] shadow-[0_0_40px_rgba(0,191,255,0.12)]">
                 <img
-                  src={COMPANY.founder.photoPath}
+                  src="/images/founder/founder-about-card.jpg"
                   alt={`${COMPANY.founder.name} — ${COMPANY.founder.title}`}
                   className="w-full h-full min-h-[380px] object-cover object-[center_18%] block"
                 />

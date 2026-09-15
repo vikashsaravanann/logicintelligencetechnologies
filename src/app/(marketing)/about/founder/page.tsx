@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     type: "profile",
     images: [
       {
-        url: "/images/founder/vikash-primary-v2.jpg",
+        url: "/images/founder/founder-about-main.jpg",
         width: 1200,
         height: 1200,
         alt: `${FOUNDER.name}, ${FOUNDER.title}`,
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${FOUNDER.name} | Founder of ${FOUNDER.company}`,
     description: FOUNDER.shortBio,
-    images: ["/images/founder/vikash-primary-v2.jpg"],
+    images: ["/images/founder/founder-about-main.jpg"],
   },
 };
 
@@ -69,22 +69,22 @@ const expertise = [
 
 const gallery = [
   {
-    src: "/images/founder/vikash-primary-v2.jpg",
+    src: "/images/founder/founder-about-main.jpg",
     alt: `${FOUNDER.name} — studio portrait`,
     caption: "Studio",
   },
   {
-    src: "/images/founder/vikash-portrait-alt-v2.jpg",
+    src: "/images/founder/founder-portrait-dessert.jpg",
     alt: `${FOUNDER.name} — portrait`,
     caption: "Portrait",
   },
   {
-    src: "/images/founder/vikash-lounge-v2.jpg",
+    src: "/images/founder/founder-portrait-lounge.jpg",
     alt: `${FOUNDER.name} — Coimbatore`,
     caption: "Coimbatore",
   },
   {
-    src: "/images/founder/vikash-outdoors-v2.jpg",
+    src: "/images/founder/founder-portrait-forest.jpg",
     alt: `${FOUNDER.name} — outdoors`,
     caption: "Outdoors",
   },
@@ -120,7 +120,7 @@ export default function FounderPage() {
         isPartOf: { "@id": `${SITE}/#website` },
         primaryImageOfPage: {
           "@type": "ImageObject",
-          url: `${SITE}/images/founder/vikash-primary-v2.jpg`,
+          url: `${SITE}/images/founder/founder-about-main.jpg`,
         },
         breadcrumb: breadcrumb([
           { name: "Home", path: "/" },
@@ -228,7 +228,7 @@ export default function FounderPage() {
             <div className="lg:col-span-7 order-1 lg:order-2">
               <div className="relative aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5] max-h-[560px] w-full mx-auto rounded-3xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(0,191,255,0.12)]">
                 <Image
-                  src="/images/founder/vikash-primary-v2.jpg"
+                  src="/images/founder/founder-about-main.jpg"
                   alt={`${FOUNDER.name} — Founder of ${FOUNDER.company}`}
                   fill
                   priority
