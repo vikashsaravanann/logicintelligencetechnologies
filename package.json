@@ -12,7 +12,7 @@
     "test:unit": "npm run test",
     "test:integration": "node --experimental-strip-types --test tests/navigation/*.test.ts",
     "test:security": "node --experimental-strip-types --test tests/security/*.test.ts",
-    "test:e2e": "echo 'E2E smoke test runs via smoke:test' && exit 0",
+    "test:e2e": "npm run smoke:test",
     "verify:environment": "node scripts/verify-environment.mjs",
     "verify:links": "node scripts/verify-links.mjs",
     "verify:pdfs": "node scripts/verify-pdfs.mjs",
