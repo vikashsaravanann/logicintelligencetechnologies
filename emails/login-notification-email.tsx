@@ -1,29 +1,23 @@
-import { Text, Section, Row, Column } from "@react-email/components";
 import * as React from "react";
+import { Text, Section, Row, Column } from "@react-email/components";
 import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
-import {
-  EmailContent,
-  EmailTitle,
-  EmailBody,
-  EmailMuted,
-  softBoxStyle,
-} from "./components/email-content";
+import { EmailContent, EmailTitle, EmailBody, EmailMuted } from "./components/email-content";
 import { EMAIL } from "./components/email-styles";
 
-export interface LoginNotificationEmailProps {
+interface Props {
   email?: string;
   ip?: string;
   ipAddress?: string;
   userAgent?: string;
   when?: string;
   loginTimestamp?: string;
-  timeZone?: string;
-  timezone?: string;
   location?: string;
   parsedDevice?: string;
   screenSize?: string;
+  timezone?: string;
+  timeZone?: string;
 }
 
 export default function LoginNotificationEmail({
@@ -38,10 +32,10 @@ export default function LoginNotificationEmail({
   screenSize,
   timezone,
   timeZone,
-}: LoginNotificationEmailProps) {
-  const resolvedIp = ipAddress || ip || "—";
-  const resolvedWhen = loginTimestamp || when;
-  const device = parsedDevice || userAgent || "—";
+}: Props) {
+  const ipVal = ipAddress || ip || "—";
+  const whenVal = loginTimestamp || when;
+  const deviceVal = parsedDevice || userAgent || "—";
   const tz = timezone || timeZone;
 
   return (
@@ -49,9 +43,7 @@ export default function LoginNotificationEmail({
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Login activity</EmailTitle>
-        <EmailBody>
-          A sign-in was recorded for a Logic Intelligence Technologies account.
-        </EmailBody>
+        <EmailBody>A sign-in was recorded for a Logic Intelligence Technologies account.</EmailBody>
         <Section style={softBoxStyle}>
           <Row>
             <Column style={{ width: "100px" }}>
@@ -66,15 +58,7 @@ export default function LoginNotificationEmail({
               <Text style={label}>IP</Text>
             </Column>
             <Column>
-              <Text style={value}>{resolvedIp}</Text>
-            </Column>
-          </Row>
-          <Row>
-            <Column style={{ width: "100px" }}>
-              <Text style={label}>Device</Text>
-            </Column>
-            <Column>
-              <Text style={value}>{device}</Text>
+              <Text style={value}>{ipVal}</Text>
             </Column>
           </Row>
           {location ? (
@@ -87,13 +71,21 @@ export default function LoginNotificationEmail({
               </Column>
             </Row>
           ) : null}
-          {resolvedWhen ? (
+          <Row>
+            <Column style={{ width: "100px" }}>
+              <Text style={label}>Device</Text>
+            </Column>
+            <Column>
+              <Text style={value}>{deviceVal}</Text>
+            </Column>
+          </Row>
+          {screenSize ? (
             <Row>
               <Column style={{ width: "100px" }}>
-                <Text style={label}>When</Text>
+                <Text style={label}>Screen</Text>
               </Column>
               <Column>
-                <Text style={value}>{resolvedWhen}</Text>
+                <Text style={value}>{screenSize}</Text>
               </Column>
             </Row>
           ) : null}
@@ -107,31 +99,31 @@ export default function LoginNotificationEmail({
               </Column>
             </Row>
           ) : null}
-          {screenSize ? (
+          {whenVal ? (
             <Row>
               <Column style={{ width: "100px" }}>
-                <Text style={label}>Screen</Text>
+                <Text style={label}>When</Text>
               </Column>
               <Column>
-                <Text style={value}>{screenSize}</Text>
+                <Text style={value}>{whenVal}</Text>
               </Column>
             </Row>
           ) : null}
         </Section>
-        <EmailMuted>
-          If this was not you, reset your password and contact support.
-        </EmailMuted>
+        <EmailMuted>If this was not you, reset your password and contact support.</EmailMuted>
       </EmailContent>
       <EmailFooter />
     </EmailLayout>
   );
 }
 
-const label = {
-  color: EMAIL.colors.muted,
-  fontSize: "13px",
-  margin: "0 0 6px 0",
+const softBoxStyle = {
+  backgroundColor: EMAIL.colors.softBg,
+  borderRadius: "8px",
+  padding: "16px",
+  margin: "16px 0",
 };
+const label = { color: EMAIL.colors.muted, fontSize: "13px", margin: "0 0 6px 0" };
 const value = {
   color: EMAIL.colors.text,
   fontSize: "13px",

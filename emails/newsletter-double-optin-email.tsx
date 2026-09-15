@@ -9,13 +9,19 @@ import {
   EmailBody,
   EmailMuted,
 } from "./components/email-content";
+import { EMAIL } from "./components/email-styles";
 
 interface Props {
+  email?: string;
   confirmUrl: string;
   requestedAt?: string;
 }
 
-export default function NewsletterDoubleOptinEmail({ confirmUrl, requestedAt }: Props) {
+export default function NewsletterDoubleOptinEmail({
+  email,
+  confirmUrl,
+  requestedAt,
+}: Props) {
   return (
     <EmailLayout preview="Confirm your subscription">
       <EmailHeader />
@@ -23,9 +29,10 @@ export default function NewsletterDoubleOptinEmail({ confirmUrl, requestedAt }: 
         <EmailTitle>Confirm your subscription</EmailTitle>
         <EmailBody>
           Please confirm that you want to receive updates from Logic Intelligence
-          Technologies.
+          Technologies{email ? <> for <strong>{email}</strong></> : null}.
         </EmailBody>
-        <EmailButton href={confirmUrl}>Confirm subscription</EmailButton>
+        {requestedAt ? <EmailMuted>Request time: {requestedAt}</EmailMuted> : null}
+        <EmailButton href={confirmUrl || EMAIL.siteUrl}>Confirm subscription</EmailButton>
         <EmailMuted>
           If you did not request this, you can ignore this email.
         </EmailMuted>
