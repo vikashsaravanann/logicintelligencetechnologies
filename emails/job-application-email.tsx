@@ -13,12 +13,15 @@ import {
 interface Props {
   fullName?: string;
   role?: string;
+  seat?: string;
 }
 
 export default function JobApplicationEmail({
   fullName = "there",
-  role = "the role",
+  role,
+  seat,
 }: Props) {
+  const position = role || seat || "the role";
   return (
     <EmailLayout preview="We've received your application">
       <EmailHeader />
@@ -26,7 +29,7 @@ export default function JobApplicationEmail({
         <EmailTitle>Application received</EmailTitle>
         <EmailGreeting name={fullName} />
         <EmailBody>
-          Thank you for applying for <strong>{role}</strong> at Logic Intelligence
+          Thank you for applying for <strong>{position}</strong> at Logic Intelligence
           Technologies. Our team will review your application and contact you if
           there is a match.
         </EmailBody>
