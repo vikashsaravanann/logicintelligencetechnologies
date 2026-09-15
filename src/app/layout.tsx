@@ -8,7 +8,13 @@ import { ThemeProvider } from '@/components/theme/theme-provider';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  adjustFontFallback: true,
+  variable: '--font-inter',
+});
 
 export const viewport: Viewport = {
   width: "device-width",
