@@ -12,9 +12,10 @@ import {
 
 interface Props {
   confirmUrl: string;
+  requestedAt?: string;
 }
 
-export default function NewsletterDoubleOptinEmail({ confirmUrl }: Props) {
+export default function NewsletterDoubleOptinEmail({ confirmUrl, requestedAt }: Props) {
   return (
     <EmailLayout preview="Confirm your subscription">
       <EmailHeader />

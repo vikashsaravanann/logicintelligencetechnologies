@@ -14,13 +14,15 @@ import {
 import { EMAIL } from "./components/email-styles";
 
 interface NewLeadNotificationEmailProps {
-  fullName: string;
+  fullName?: string;
   companyName?: string;
-  email: string;
+  email?: string;
   phone?: string;
   service?: string;
   requirements?: string;
   submissionDate?: string;
+  Budget?: string;
+  budget?: string;
 }
 
 export const NewLeadNotificationEmail = ({
@@ -31,9 +33,11 @@ export const NewLeadNotificationEmail = ({
   service,
   requirements,
   submissionDate,
+  Budget,
+  budget,
 }: NewLeadNotificationEmailProps) => {
   return (
-    <EmailLayout preview={`New lead: ${fullName}${service ? ` — ${service}` : ""}`}>
+    <EmailLayout preview={`New lead: ${fullName || "unknown"}${service ? ` — ${service}` : ""}`}>
       <EmailHeader />
       <EmailContent>
         <EmailTitle>New website enquiry</EmailTitle>
@@ -46,6 +50,7 @@ export const NewLeadNotificationEmail = ({
           {service ? <InfoRow label="Service" value={service} /> : null}
           {submissionDate ? <InfoRow label="Submitted" value={submissionDate} /> : null}
           {requirements ? <InfoRow label="Details" value={requirements} /> : null}
+          {(Budget || budget) ? <InfoRow label="Budget" value={Budget || budget} /> : null}
         </Section>
         <EmailButton href={`${EMAIL.siteUrl}/admin/leads`}>Open leads</EmailButton>
         <EmailMuted>Reply-To is set to the customer email when available.</EmailMuted>
@@ -55,14 +60,14 @@ export const NewLeadNotificationEmail = ({
   );
 };
 
-function InfoRow({ label, value }: { label: string; value: string }) {
+function InfoRow({ label, value }: { label: string; value?: string }) {
   return (
     <Row style={{ marginBottom: "8px" }}>
       <Column style={{ width: "110px", verticalAlign: "top" as const }}>
         <Text style={labelText}>{label}</Text>
       </Column>
       <Column>
-        <Text style={valueText}>{value}</Text>
+        <Text style={valueText}>{value ?? "—"}</Text>
       </Column>
     </Row>
   );
