@@ -31,5 +31,14 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "**/*.test.ts", "scripts", "ml-from-scratch"]
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "tests/e2e",
+    "playwright.config.ts",
+    "scripts",
+    "ml-from-scratch",
+    ".next"
+  ]
 }
