@@ -74,6 +74,11 @@ const gallery = [
     caption: "Studio",
   },
   {
+    src: "/images/founder/vikash-dessert-portrait.jpg",
+    alt: `${FOUNDER.name} — portrait`,
+    caption: "Portrait",
+  },
+  {
     src: "/images/founder/vikash-lion-lounge.jpg",
     alt: `${FOUNDER.name} — Coimbatore`,
     caption: "Coimbatore",
@@ -262,7 +267,7 @@ export default function FounderPage() {
               photographs of {FOUNDER.name}.
             </p>
           </div>
-          <div className="grid sm:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {gallery.map((g) => (
               <figure
                 key={g.src}
