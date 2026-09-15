@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
 import Link from "next/link";
-import { industriesData } from "@/data/industriesData";
+import { industriesData, getIndustryVisual } from "@/data/industriesData";
 import { ArrowRight, Building2, CheckCircle2, ShieldCheck, Sparkles } from "lucide-react";
+import SafeImage from "@/components/ui/safe-image";
 
 export const metadata: Metadata = {
   title: "Industry Solutions & Vertical Architecture | Logic Intelligence Technologies",
@@ -39,8 +40,14 @@ export default function IndustriesPage() {
               className="group rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)]"
             >
               <div>
-                <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
-                  <Building2 className="w-6 h-6" />
+                <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-6 border border-white/10 bg-black/40">
+                  <SafeImage
+                    src={getIndustryVisual(ind.slug)}
+                    alt={`${ind.title} — professional industry visual`}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">
                   {ind.title}

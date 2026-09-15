@@ -4,12 +4,11 @@ import * as React from "react";
 import { sendEmail } from "@/lib/email/send-email";
 import NewLeadNotificationEmail from "@/emails/new-lead-notification-email";
 import JobApplicationEmail from "@/emails/job-application-email";
-import { supabaseAdmin } from "@/lib/supabase/admin";
 import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
 import { getLeadNotificationRecipients } from "@/lib/email/recipients";
 import { preparePdfAttachment } from "@/lib/email/attachments";
-import { isSupabaseLive } from "@/lib/email/config";
 import { sanitizeMultilineText, sanitizePersonName } from "@/lib/email/validation";
+import { insertLead } from "@/lib/forms/persist";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -47,13 +46,13 @@ const schema = z.object({
 export async function POST(req: Request) {
   try {
     if (!rateLimit(`jobs:${clientIp(req)}`, 5, 15 * 60_000)) {
-      return NextResponse.json({ ok: false, error: "Too many requests." }, { status: 429 });
+      return NextResponse.json({ ok: false, success: false, error: "Too many requests." }, { status: 429 });
     }
 
     const body = await req.json();
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ ok: false, error: parsed.error.issues[0]?.message || "Invalid input" }, { status: 400 });
+      return NextResponse.json({ ok: false, success: false, error: parsed.error.issues[0]?.message || "Invalid input" }, { status: 400 });
     }
     const d = parsed.data;
     const name = sanitizePersonName(d.name);
@@ -81,18 +80,18 @@ export async function POST(req: Request) {
       sanitizeMultilineText(d.why),
     ].filter((line) => line !== "").join("\n");
 
-    let leadId: string | null = null;
-    if (isSupabaseLive()) {
-      try {
-        const { data } = await supabaseAdmin
-          .from("contact_leads")
-          .insert([{ name, email, company: seat, message }])
-          .select("id")
-          .maybeSingle();
-        leadId = data?.id || null;
-      } catch (e) {
-        console.error("[jobs] lead insert", e);
-      }
+    const stored = await insertLead("contact_leads", {
+      name,
+      email,
+      company: seat,
+      phone: sanitizePersonName(d.phone, 40),
+      source: "careers",
+      project_type: `Jobs — ${seat}`,
+      message,
+    });
+
+    if (!stored.ok) {
+      return NextResponse.json({ ok: false, success: false, error: stored.message }, { status: 503 });
     }
 
     let attachments: Array<{ filename: string; content: Buffer; contentType: string }> | undefined;
@@ -102,13 +101,13 @@ export async function POST(req: Request) {
         attachments = [preparePdfAttachment(d.cvName, raw)];
       } catch (err) {
         return NextResponse.json(
-          { ok: false, error: err instanceof Error ? err.message : "Invalid CV file." },
+          { ok: false, success: false, error: err instanceof Error ? err.message : "Invalid CV file." },
           { status: 400 }
         );
       }
     }
 
-    const idemBase = leadId || `${email}:${seat}:${new Date().toISOString().slice(0, 13)}`;
+    const idemBase = stored.id;
 
     await sendEmail({
       to: getLeadNotificationRecipients(),
@@ -118,7 +117,7 @@ export async function POST(req: Request) {
       category: "transactional",
       eventType: "career-internal",
       templateKey: "new-lead-notification-email",
-      idempotencyKey: `career-internal:${idemBase}`,
+      idempotencyKey: `career:${idemBase}:internal`,
       react: React.createElement(NewLeadNotificationEmail, {
         fullName: name,
         companyName: seat,
@@ -138,16 +137,16 @@ export async function POST(req: Request) {
       category: "transactional",
       eventType: "career-confirmation",
       templateKey: "job-application-email",
-      idempotencyKey: `career-confirmation:${idemBase}`,
+      idempotencyKey: `career:${idemBase}:customer`,
       react: React.createElement(JobApplicationEmail, {
         fullName: name,
         seat,
       }),
     });
 
-    return NextResponse.json({ ok: true, message: "Application received" });
+    return NextResponse.json({ ok: true, success: true, message: "Application received" });
   } catch (e) {
     console.error("[jobs] apply", e);
-    return NextResponse.json({ ok: false, error: "Could not send application." }, { status: 500 });
+    return NextResponse.json({ ok: false, success: false, error: "Could not send application." }, { status: 500 });
   }
 }

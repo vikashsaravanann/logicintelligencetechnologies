@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email/send-email";
 import NewLeadNotificationEmail from "@/emails/new-lead-notification-email";
 import LeadConfirmationEmail from "@/emails/lead-confirmation-email";
@@ -7,8 +6,8 @@ import * as React from "react";
 import { z } from "zod";
 import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
 import { getLeadNotificationRecipients } from "@/lib/email/recipients";
-import { isSupabaseLive } from "@/lib/email/config";
 import { sanitizePersonName, sanitizeMultilineText } from "@/lib/email/validation";
+import { insertLead } from "@/lib/forms/persist";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -22,6 +21,7 @@ const schema = z.object({
   budgetRange: z.string().max(80).optional(),
   timeline: z.string().max(80).optional(),
   description: z.string().max(5000).optional().default(""),
+  pageUrl: z.string().max(500).optional(),
 });
 
 export async function POST(req: Request) {
@@ -37,10 +37,7 @@ export async function POST(req: Request) {
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        {
-          success: false,
-          message: parsed.error.issues[0]?.message || "Invalid input",
-        },
+        { success: false, message: parsed.error.issues[0]?.message || "Invalid input" },
         { status: 400 }
       );
     }
@@ -60,37 +57,32 @@ export async function POST(req: Request) {
       : "";
     const description = sanitizeMultilineText(parsed.data.description || "", 5000);
 
-    let leadId: string | null = null;
-    if (isSupabaseLive()) {
-      try {
-        const { data, error: dbError } = await supabaseAdmin
-          .from("contact_leads")
-          .insert([
-            {
-              name: fullName,
-              email,
-              company: companyName || null,
-              message: [
-                description || "",
-                phone ? `Phone: ${phone}` : "",
-                budgetRange ? `Budget: ${budgetRange}` : "",
-                timeline ? `Timeline: ${timeline}` : "",
-                projectType ? `Type: ${projectType}` : "",
-              ]
-                .filter(Boolean)
-                .join("\n"),
-            },
-          ])
-          .select("id")
-          .maybeSingle();
-        if (dbError) console.error("[DB Error] Contact lead insert:", dbError);
-        leadId = data?.id || null;
-      } catch (dbErr) {
-        console.error("[DB Error] Contact lead insert exception:", dbErr);
-      }
+    const stored = await insertLead("contact_leads", {
+      name: fullName,
+      email,
+      company: companyName || null,
+      phone: phone || null,
+      project_type: projectType,
+      budget: budgetRange || null,
+      timeline: timeline || null,
+      source: "contact-form",
+      page_url: parsed.data.pageUrl || "/contact",
+      message: [
+        description || "",
+        phone ? `Phone: ${phone}` : "",
+        budgetRange ? `Budget: ${budgetRange}` : "",
+        timeline ? `Timeline: ${timeline}` : "",
+        projectType ? `Type: ${projectType}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    });
+
+    if (!stored.ok) {
+      return NextResponse.json({ success: false, message: stored.message }, { status: 503 });
     }
 
-    const idemBase = leadId || `${email}:${new Date().toISOString().slice(0, 13)}`;
+    const idemBase = stored.id;
 
     try {
       const emailResult = await sendEmail({
@@ -101,7 +93,7 @@ export async function POST(req: Request) {
         category: "transactional",
         eventType: "contact-internal",
         templateKey: "new-lead-notification-email",
-        idempotencyKey: `contact-internal:${idemBase}`,
+        idempotencyKey: `contact:${idemBase}:internal`,
         react: React.createElement(NewLeadNotificationEmail, {
           fullName,
           email,
@@ -127,7 +119,7 @@ export async function POST(req: Request) {
         category: "transactional",
         eventType: "contact-confirmation",
         templateKey: "lead-confirmation-email",
-        idempotencyKey: `contact-confirmation:${idemBase}`,
+        idempotencyKey: `contact:${idemBase}:customer`,
         react: React.createElement(LeadConfirmationEmail, {
           fullName,
           service: projectType,
@@ -143,6 +135,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       message: "Request received",
+      leadId: stored.id,
     });
   } catch (error) {
     console.error("Contact API Error:", error);

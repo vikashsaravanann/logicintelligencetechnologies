@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email/send-email";
 import ChecklistSubmissionEmail from "@/emails/checklist-submission-email";
 import LeadConfirmationEmail from "@/emails/lead-confirmation-email";
@@ -11,8 +10,8 @@ import path from "path";
 import fs from "fs";
 import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
 import { getLeadNotificationRecipients } from "@/lib/email/recipients";
-import { isSupabaseLive } from "@/lib/email/config";
 import { sanitizeMultilineText, sanitizePersonName } from "@/lib/email/validation";
+import { insertLead } from "@/lib/forms/persist";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -47,32 +46,25 @@ export async function POST(req: Request) {
     const isLeadMagnet = parsed.data.type === "lead_magnet";
     const displayName = email ? sanitizePersonName(email.split("@")[0], 80) : "there";
 
-    let leadId: string | null = null;
-    if (isSupabaseLive()) {
-      try {
-        const { data, error: dbError } = await supabaseAdmin
-          .from("checklist_leads")
-          .insert([
-            {
-              name: "Anonymous",
-              email: email || "unknown@example.com",
-              company: isLeadMagnet ? "Lead Magnet" : answers[1] || "",
-              role: isLeadMagnet ? "Downloaded Checklist" : answers[2] || "",
-            },
-          ])
-          .select("id")
-          .maybeSingle();
-
-        if (dbError) {
-          console.error("[DB Error] Failed to insert checklist submission:", dbError);
-        }
-        leadId = data?.id || null;
-      } catch (dbErr) {
-        console.error("[DB Error] Checklist insert exception:", dbErr);
-      }
+    if (isLeadMagnet && !email) {
+      return NextResponse.json(
+        { success: false, message: "Email is required to receive the checklist." },
+        { status: 400 }
+      );
     }
 
-    const idemBase = leadId || `${email || "anon"}:${isLeadMagnet ? "magnet" : "discovery"}:${new Date().toISOString().slice(0, 13)}`;
+    const stored = await insertLead("checklist_leads", {
+      name: displayName === "there" ? "Anonymous" : displayName,
+      email: email || "unknown@example.com",
+      company: isLeadMagnet ? "Lead Magnet" : answers[1] || "",
+      role: isLeadMagnet ? "Downloaded Checklist" : answers[2] || "",
+    });
+
+    if (!stored.ok) {
+      return NextResponse.json({ success: false, message: stored.message }, { status: 503 });
+    }
+
+    const idemBase = stored.id;
 
     if (email) {
       try {
@@ -96,7 +88,7 @@ export async function POST(req: Request) {
           category: "transactional",
           eventType: isLeadMagnet ? "resource-delivery" : "discovery-confirmation",
           templateKey: isLeadMagnet ? "checklist-download-email" : "lead-confirmation-email",
-          idempotencyKey: `${isLeadMagnet ? "resource" : "discovery"}-confirmation:${idemBase}`,
+          idempotencyKey: `${isLeadMagnet ? "resource" : "discovery"}:${idemBase}:customer`,
           react: isLeadMagnet
             ? React.createElement(ChecklistDownloadEmail, { fullName: displayName })
             : React.createElement(LeadConfirmationEmail, {
@@ -124,7 +116,7 @@ export async function POST(req: Request) {
         category: "transactional",
         eventType: isLeadMagnet ? "resource-internal" : "discovery-internal",
         templateKey: isLeadMagnet ? "new-lead-notification-email" : "checklist-submission-email",
-        idempotencyKey: `${isLeadMagnet ? "resource" : "discovery"}-internal:${idemBase}`,
+        idempotencyKey: `${isLeadMagnet ? "resource" : "discovery"}:${idemBase}:internal`,
         react: isLeadMagnet
           ? React.createElement(NewLeadNotificationEmail, {
               fullName: displayName,
@@ -149,7 +141,7 @@ export async function POST(req: Request) {
       console.error("[Email Error] Checklist internal notification failed:", emailErr);
     }
 
-    return NextResponse.json({ success: true, message: "Request received" });
+    return NextResponse.json({ success: true, message: "Request received", leadId: stored.id });
   } catch (error) {
     console.error("Checklist API Error:", error);
     return NextResponse.json(

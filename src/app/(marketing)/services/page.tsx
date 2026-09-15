@@ -66,7 +66,6 @@ export default function ServicesPage() {
           description="From bespoke full-stack applications and AI-driven workflows to high-throughput cloud infrastructure—we architect software that scales without limits."
           primaryCta={{ label: "Start a project", href: "/contact" }}
           secondaryCta={{ label: "View packages", href: "/packages" }}
-          breadcrumbs={[{ label: "Services", href: "/services" }]}
           visual={<BrandMesh seed="services" label="Services" />}
         />
 

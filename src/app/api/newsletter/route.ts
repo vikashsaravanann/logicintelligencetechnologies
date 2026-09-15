@@ -7,7 +7,7 @@ import * as React from "react";
 import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
 import { canSubscribe } from "@/lib/email/suppression";
 import { buildOptinConfirmUrl } from "@/lib/email/double-optin";
-import { isSupabaseLive } from "@/lib/email/config";
+import { requireDatabase } from "@/lib/forms/persist";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -35,10 +35,14 @@ export async function POST(req: Request) {
       );
     }
 
+    const missing = requireDatabase();
+    if (missing) {
+      return NextResponse.json({ success: false, message: missing.message }, { status: 503 });
+    }
+
     const email = parsed.data.email.trim().toLowerCase();
     const consentPage = parsed.data.consentPage ?? "/";
 
-    // Check suppression (bounce/complaint blocks re-subscribe)
     const allowed = await canSubscribe(email);
     if (!allowed.ok) {
       return NextResponse.json(
@@ -47,59 +51,42 @@ export async function POST(req: Request) {
       );
     }
 
-    // Build the double opt-in confirmation URL
     const confirmUrl = buildOptinConfirmUrl(email);
     if (!confirmUrl) {
-      // Secret not configured — degrade to confirmed flow so the site
-      // still works, but log the misconfiguration clearly.
       console.error(
         "[newsletter] EMAIL_UNSUBSCRIBE_SECRET / CRON_SECRET not set; " +
           "double opt-in token cannot be generated. Falling back to confirmed subscription."
       );
     }
 
-    if (isSupabaseLive()) {
-      // Upsert as pending (or re-activate if already confirmed).
-      // If the email already exists and is confirmed, we don't downgrade it.
-      const { error } = await supabaseAdmin.from("newsletter_subscribers").upsert(
-        {
-          email,
-          unsubscribed_at: null,
-          consent_source: "website-newsletter",
-          consent_page: consentPage,
-          policy_version: "2026-09",
-          subscribed_at: new Date().toISOString(),
-          // Only set pending + token when we can generate a confirmation URL.
-          // If confirmUrl is null (secret missing), subscribe as confirmed.
-          double_opt_in_status: confirmUrl ? "pending" : "confirmed",
-          confirmation_token: confirmUrl ? email : null, // token identity; real token in email link
-          token_expires_at: confirmUrl
-            ? new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString()
-            : null,
-          confirmed_at: confirmUrl ? null : new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        {
-          onConflict: "email",
-          // Don't overwrite a confirmed subscriber back to pending
-          ignoreDuplicates: false,
-        }
-      );
+    const { error } = await supabaseAdmin.from("newsletter_subscribers").upsert(
+      {
+        email,
+        unsubscribed_at: null,
+        consent_source: "website-newsletter",
+        consent_page: consentPage,
+        policy_version: "2026-09",
+        subscribed_at: new Date().toISOString(),
+        double_opt_in_status: confirmUrl ? "pending" : "confirmed",
+        confirmation_token: confirmUrl ? email : null,
+        token_expires_at: confirmUrl
+          ? new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString()
+          : null,
+        confirmed_at: confirmUrl ? null : new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "email", ignoreDuplicates: false }
+    );
 
-      if (error) {
-        console.error("[newsletter] upsert failed:", error);
-        // Fallback: record in contact_leads so the lead is never lost
-        await supabaseAdmin.from("contact_leads").insert({
-          name: "Newsletter subscriber",
-          email,
-          company: "Newsletter",
-          message: "Footer newsletter subscription (fallback)",
-        });
-      }
+    if (error) {
+      console.error("[newsletter] upsert failed:", error);
+      return NextResponse.json(
+        { success: false, message: "We could not save your subscription. Please try again." },
+        { status: 503 }
+      );
     }
 
     if (confirmUrl) {
-      // Send the double opt-in confirmation email
       await sendEmail({
         to: email,
         from: "hello",
@@ -107,8 +94,6 @@ export async function POST(req: Request) {
         category: "transactional",
         eventType: "newsletter-double-optin",
         templateKey: "newsletter-double-optin-email",
-        // Daily-unique: prevents re-sending the confirmation to the same address
-        // more than once per day if the user submits the form multiple times.
         idempotencyKey: `newsletter-doi:${email}:${new Date().toISOString().slice(0, 10)}`,
         react: React.createElement(NewsletterDoubleOptinEmail, {
           email,

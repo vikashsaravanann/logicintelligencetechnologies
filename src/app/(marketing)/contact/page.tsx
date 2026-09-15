@@ -113,6 +113,10 @@ export default function ContactPage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.message || "Submission failed. Please try again.");
       }
+      const data = await res.json().catch(() => ({}));
+      if (data?.success === false) {
+        throw new Error(data?.message || "Submission failed. Please try again.");
+      }
       setSent(true);
     } catch (err: unknown) {
       setServerError(

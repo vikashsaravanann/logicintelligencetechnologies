@@ -5,15 +5,12 @@ import { sendLoginNotification } from "@/lib/email/send-login-notification";
 import { ensureWelcomeEmail } from "@/lib/email/send-welcome";
 import { env } from "@/config/env";
 
-function safeNext(raw: string | null): string {
-  if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
-  return "/";
-}
+import { safeNextPath } from "@/lib/auth/safe-next";
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
-  const next = safeNext(requestUrl.searchParams.get("next"));
+  const next = safeNextPath(requestUrl.searchParams.get("next"));
 
   if (code) {
     const cookieStore = await cookies();

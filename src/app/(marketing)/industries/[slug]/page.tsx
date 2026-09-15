@@ -43,7 +43,7 @@ export default async function IndustryDetailPage({ params }: Props) {
     notFound();
   }
 
-  const visualSrc = `/images/industries/${slug}.svg`;
+  const visualSrc = `/images/industries/${slug}.jpg`;
 
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-28 pb-20 overflow-hidden">

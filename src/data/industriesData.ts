@@ -158,7 +158,7 @@ export const industriesData: IndustryData[] = [
 ];
 
 export function getIndustryVisual(slug: string): string {
-  return `/images/industries/${slug}.svg`;
+  return `/images/industries/${slug}.jpg`;
 }
 
 export function getIndustryBySlug(slug: string) {

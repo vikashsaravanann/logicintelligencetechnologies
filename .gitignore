@@ -69,3 +69,4 @@ proxy_*
 .ipynb_checkpoints/
 .vscode/
 *.pid
+.supabase/

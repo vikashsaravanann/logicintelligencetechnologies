@@ -54,10 +54,10 @@ export default function LeadForm() {
         }),
       });
 
-      if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data?.success !== false) {
         setSent(true);
       } else {
-        const data = await res.json().catch(() => ({}));
         setError(data?.message || "Submission failed. Please try again or reach us on WhatsApp.");
       }
     } catch (err) {

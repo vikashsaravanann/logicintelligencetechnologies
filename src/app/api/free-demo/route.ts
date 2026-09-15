@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email/send-email";
 import FreeDemoConfirmationEmail from "@/emails/free-demo-confirmation-email";
 import NewLeadNotificationEmail from "@/emails/new-lead-notification-email";
@@ -7,9 +6,9 @@ import { z } from "zod";
 import * as React from "react";
 import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
 import { getLeadNotificationRecipients } from "@/lib/email/recipients";
-import { isSupabaseLive } from "@/lib/email/config";
 import { COMPANY } from "@/config/company";
 import { sanitizeMultilineText, sanitizePersonName } from "@/lib/email/validation";
+import { insertLead } from "@/lib/forms/persist";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -51,36 +50,22 @@ export async function POST(req: Request) {
     const budget = parsed.data.budget ? sanitizePersonName(parsed.data.budget, 80) : "";
     const requirements = sanitizeMultilineText(parsed.data.requirements || "", 5000);
 
-    let leadId: string | null = null;
-    if (isSupabaseLive()) {
-      try {
-        const { data, error: dbError } = await supabaseAdmin
-          .from("demo_leads")
-          .insert([
-            {
-              first_name: name.split(" ")[0] || name,
-              last_name: name.split(" ").slice(1).join(" ") || "",
-              email,
-              phone: phone || "",
-              company_name: business || "",
-              job_title: "",
-              interests: [service_type],
-              budget: budget || "",
-            },
-          ])
-          .select("id")
-          .maybeSingle();
+    const stored = await insertLead("demo_leads", {
+      first_name: name.split(" ")[0] || name,
+      last_name: name.split(" ").slice(1).join(" ") || "",
+      email,
+      phone: phone || "",
+      company_name: business || "",
+      job_title: "",
+      interests: [service_type],
+      budget: budget || "",
+    });
 
-        if (dbError) {
-          console.error("[DB Error] Failed to insert lead:", dbError);
-        }
-        leadId = data?.id || null;
-      } catch (dbErr) {
-        console.error("[DB Error] Demo lead insert exception:", dbErr);
-      }
+    if (!stored.ok) {
+      return NextResponse.json({ success: false, message: stored.message }, { status: 503 });
     }
 
-    const idemBase = leadId || `${email}:${new Date().toISOString().slice(0, 13)}`;
+    const idemBase = stored.id;
 
     try {
       const emailResult = await sendEmail({
@@ -91,7 +76,7 @@ export async function POST(req: Request) {
         category: "transactional",
         eventType: "demo-confirmation",
         templateKey: "free-demo-confirmation-email",
-        idempotencyKey: `demo-confirmation:${idemBase}`,
+        idempotencyKey: `demo:${idemBase}:customer`,
         react: React.createElement(FreeDemoConfirmationEmail, { fullName: name }),
       });
       if (!emailResult.success) {
@@ -110,7 +95,7 @@ export async function POST(req: Request) {
         category: "transactional",
         eventType: "demo-internal",
         templateKey: "new-lead-notification-email",
-        idempotencyKey: `demo-internal:${idemBase}`,
+        idempotencyKey: `demo:${idemBase}:internal`,
         react: React.createElement(NewLeadNotificationEmail, {
           fullName: name,
           companyName: business || "",
@@ -128,7 +113,7 @@ export async function POST(req: Request) {
       console.error("[Email Error] Internal notification failed:", emailErr);
     }
 
-    return NextResponse.json({ success: true, message: "Request received" });
+    return NextResponse.json({ success: true, message: "Request received", leadId: stored.id });
   } catch (error) {
     console.error("Free Demo API Error:", error);
     return NextResponse.json(
