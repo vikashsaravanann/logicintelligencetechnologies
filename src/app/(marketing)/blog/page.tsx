@@ -31,8 +31,8 @@ export default function BlogListPage() {
           <span className="inline-block text-primary font-bold tracking-widest uppercase text-xs sm:text-sm mb-4 bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20">
             Insights &amp; Architecture Guides
           </span>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tight">
-            ENGINEERING &amp; BUSINESS BLOG
+          <h1 className="uppercase text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tight">
+            ENGINEERING & BUSINESS BLOG
           </h1>
           <p className="text-zinc-400 text-base sm:text-lg max-w-2xl leading-relaxed mx-auto md:mx-0">
             Unbiased architectural breakdowns on software economics, build vs buy frameworks, and modern web systems.

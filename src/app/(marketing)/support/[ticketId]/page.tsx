@@ -40,7 +40,7 @@ export default async function TicketDetailPage({ params }: Props) {
               <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest block mb-1">
                 Ticket ID: {ticket.id}
               </span>
-              <h1 className="text-2xl font-bold text-white">{ticket.subject}</h1>
+              <h1 className="uppercase text-2xl font-bold text-white">{ticket.subject}</h1>
             </div>
             <span
               className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider self-start sm:self-auto ${

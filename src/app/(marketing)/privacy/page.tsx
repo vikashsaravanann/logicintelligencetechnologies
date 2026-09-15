@@ -16,7 +16,7 @@ export default function PrivacyPage() {
       <div className="absolute top-0 right-1/4 w-[800px] h-[600px] bg-blue-500/5 blur-[150px] rounded-full pointer-events-none" />
       <BackToHome />
       <section className="py-20 px-6 lg:px-8 max-w-4xl mx-auto relative z-10">
-        <h1 className="text-3xl md:text-4xl lg:text-6xl font-black text-white mb-6 tracking-tight">Privacy Policy</h1>
+        <h1 className="uppercase text-3xl md:text-4xl lg:text-6xl font-black text-white mb-6 tracking-tight">PRIVACY POLICY</h1>
         <p className="text-zinc-400 mb-12">Last updated: {LEGAL_LAST_UPDATED}</p>
         
         <div className="prose prose-invert prose-zinc max-w-none prose-headings:text-white prose-a:text-primary hover:prose-a:text-primary/80">

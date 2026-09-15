@@ -573,7 +573,7 @@ export default function AiChatPage() {
         )}
         <main className="relative z-10 flex flex-col items-center text-center px-4 sm:px-6 pt-10 sm:pt-24 pb-24">
           <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/35 px-3 py-1 text-[11px] sm:text-xs mb-6 sm:mb-8"><Sparkles className="w-3.5 h-3.5 text-orange-300" /> Logic AI</p>
-          <h1 className="max-w-5xl font-serif text-[1.7rem] sm:text-6xl lg:text-7xl leading-[1.12] tracking-tight text-[color:var(--ai-ink)]">The fastest way<br /> to Build and Grow<br /> your Website.</h1>
+          <h1 className="uppercase max-w-5xl font-serif text-[1.7rem] sm:text-6xl lg:text-7xl leading-[1.12] tracking-tight text-[color:var(--ai-ink)]">The fastest way<br /> to Build and Grow<br /> your Website.</h1>
           <p className="mt-4 sm:mt-6 max-w-xl text-[13px] sm:text-base text-[color:var(--ai-muted)] leading-relaxed px-1">Logic Intelligence Technologies helps businesses build stunning websites and scale their online presence with AI-powered tools for design, automation, and growth.</p>
           <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row w-full max-w-xs sm:max-w-none items-stretch sm:items-center justify-center gap-2.5 sm:gap-3">
             <button

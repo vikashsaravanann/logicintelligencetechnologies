@@ -58,7 +58,7 @@ export default function NewSupportTicketPage() {
 
         <div className="mb-8">
           <h1 className="text-3xl font-black text-white uppercase tracking-tight mb-2">
-            Submit Support Ticket
+            SUBMIT SUPPORT TICKET
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400">
             Our engineering team will triage your issue according to selected priority.

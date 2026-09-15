@@ -151,13 +151,13 @@ export default function ServicesPage() {
               href="/book-consultation"
               className="px-8 py-4 rounded-xl bg-primary text-black font-bold hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.4)]"
             >
-              Schedule Consultation
+              Book Consultation
             </Link>
             <Link
               href="/contact"
               className="px-8 py-4 rounded-xl border border-white/20 bg-white/5 text-white font-bold hover:bg-white/10 transition-all"
             >
-              Submit Project Inquiry
+              Start Project
             </Link>
           </div>
         </div>

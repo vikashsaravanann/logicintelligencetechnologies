@@ -29,7 +29,7 @@ export default function WorkPage() {
           <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">
             Our Portfolio
           </span>
-          <h1 className="text-3xl md:text-4xl lg:text-6xl font-black text-white mb-6">Featured Projects</h1>
+          <h1 className="uppercase text-3xl md:text-4xl lg:text-6xl font-black text-white mb-6">OUR WORK</h1>
           <p className="text-lg text-zinc-400 leading-relaxed">
             Explore our curated selection of high-performance web applications, scalable enterprise platforms, and bespoke digital solutions designed to drive business growth and operational excellence.
           </p>

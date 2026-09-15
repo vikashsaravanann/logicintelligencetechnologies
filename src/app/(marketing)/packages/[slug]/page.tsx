@@ -72,12 +72,12 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
           </div>
 
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-[300px] opacity-[0.1] blur-[100px] bg-gradient-to-r from-primary to-accent pointer-events-none" />
-          <h1 className="text-3xl md:text-4xl lg:text-6xl font-black text-white mb-4 relative z-10">{pkg.title}</h1>
+          <h1 className="uppercase text-3xl md:text-4xl lg:text-6xl font-black text-white mb-4 relative z-10">{pkg.title}</h1>
           <p className="text-xl text-zinc-300 max-w-3xl mx-auto mb-6 relative z-10">{pkg.subtitle}</p>
           <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent mb-10 relative z-10">{pkg.price}</p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
-            <Link href="/contact" className="px-8 py-4 rounded-xl font-bold text-black bg-primary neon-btn w-full sm:w-auto">Get Started</Link>
+            <Link href="/contact" className="px-8 py-4 rounded-xl font-bold text-black bg-primary neon-btn w-full sm:w-auto">Start Project</Link>
             <a href="https://wa.me/919342877474" target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-xl font-bold text-white bg-white/10 hover:bg-white/20 transition-colors w-full sm:w-auto border border-white/10">WhatsApp Us</a>
           </div>
         </section>
@@ -158,10 +158,10 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
               <div className="bg-white/5 p-4 rounded-2xl w-fit mb-6 border border-white/10">
                 <Icon className="w-10 h-10 text-primary" />
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">{srv.title}</h1>
+              <h1 className="uppercase text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">{srv.title}</h1>
               <p className="text-xl text-zinc-300 mb-8 max-w-2xl">{srv.subtitle}</p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/contact" className="px-8 py-4 rounded-xl font-bold text-black bg-primary neon-btn w-full sm:w-auto text-center">Request Quote</Link>
+                <Link href="/contact" className="px-8 py-4 rounded-xl font-bold text-black bg-primary neon-btn w-full sm:w-auto text-center">Start Project</Link>
                 <a href="https://wa.me/919342877474" target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-xl font-bold text-white bg-white/10 hover:bg-white/20 transition-colors w-full sm:w-auto border border-white/10 text-center">Chat on WhatsApp</a>
               </div>
             </div>

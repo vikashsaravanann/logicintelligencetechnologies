@@ -83,7 +83,7 @@ export default function ExpertisePage() {
           <Cpu className="w-4 h-4" />
           Technical Capabilities
         </span>
-        <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-[1.1] tracking-tight">
+        <h1 className="uppercase text-3xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-[1.1] tracking-tight">
           Engineering <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Expertise</span>
         </h1>
         <p className="text-base sm:text-lg text-zinc-400 max-w-3xl mx-auto leading-relaxed">

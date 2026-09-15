@@ -82,7 +82,7 @@ export default async function ServiceDetailPage({ params }: Props) {
           <div className="inline-block px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-widest uppercase mb-4">
             {service.subtitle}
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight mb-6">
+          <h1 className="uppercase text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight mb-6">
             {service.title}
           </h1>
           <p className="text-base sm:text-lg text-zinc-300 max-w-4xl leading-relaxed whitespace-pre-line mb-8">

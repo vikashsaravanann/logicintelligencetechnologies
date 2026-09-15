@@ -138,7 +138,7 @@ export default function ContactPage() {
 
         <div className="max-w-3xl mx-auto w-full relative z-10">
           <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">Start Your Project</h1>
+            <h1 className="uppercase text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">START YOUR PROJECT</h1>
             <p className="text-zinc-400">Tell us about your requirements and we'll get back to you within 24 hours.</p>
           </div>
 

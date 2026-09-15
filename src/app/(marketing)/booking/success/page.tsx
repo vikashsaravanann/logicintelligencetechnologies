@@ -29,7 +29,7 @@ export default async function BookingSuccessPage({ searchParams }: Props) {
         </div>
 
         <h1 className="text-3xl font-black text-white uppercase tracking-tight mb-2">
-          Consultation Confirmed!
+          CONSULTATION CONFIRMED
         </h1>
         <p className="text-sm text-zinc-400 mb-8">
           Thank you{name ? `, ${name}` : ""}. A confirmation email with calendar invites (.ics) and video conference links has been sent to your inbox.

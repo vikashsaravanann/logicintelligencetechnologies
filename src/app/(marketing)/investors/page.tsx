@@ -30,8 +30,8 @@ export default function InvestorsPage() {
         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-4">
           LOGIC INTELLIGENCE TECHNOLOGIES
         </p>
-        <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.1] mb-5">
-          Investor Briefing
+        <h1 className="uppercase text-3xl sm:text-5xl font-black tracking-tight leading-[1.1] mb-5">
+          INVESTOR BRIEFING
         </h1>
         <p className="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
           Q3/Q4 2026. Coimbatore technology startup. Founder Vikash Saravanan.

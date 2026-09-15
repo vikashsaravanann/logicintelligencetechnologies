@@ -62,7 +62,7 @@ export default function CaseStudyContent({
               {project.category}
               {project.client ? ` · ${project.client}` : ""}
             </span>
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-white leading-[1.1] mb-6 tracking-tight">
+            <h1 className="uppercase text-4xl md:text-5xl lg:text-7xl font-black text-white leading-[1.1] mb-6 tracking-tight">
               {project.title}
             </h1>
             <p className="text-xl md:text-2xl text-zinc-300 leading-relaxed font-light">

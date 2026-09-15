@@ -1,114 +1,134 @@
 # UI/UX Refinement Report — Logic Intelligence Technologies
 
 **Date:** 2026-09-15  
-**Repo:** `vikashsaravanann/logicintelligencetechnologies` (`main`)
+**Branch:** `main`  
+**Baseline commit before this pass:** `cd37a74`
 
-## 1. Current repository review
+## 1. Repository audit
 
-Inspected:
-
-- `src/app` (marketing, auth, portal, admin, ai, client)
-- `src/components/layout` (navbar, page-header)
-- `src/components/ui` (button, section-header)
-- `src/config/navigation.ts`, `company`, `pdfs`
-- `src/app/globals.css`
-- `next.config.ts` redirects
-- Recent git history (jobs redesign, uppercase nav, breadcrumb removal, visual assets, resources photos)
-
-## 2. Recently created / modified pages (last ~2 days)
-
-- Jobs redesign
-- Navigation uppercase / More menu
-- Breadcrumb removal + Back-to-Home
-- Visual asset system (services, work, packages, resources)
-- Resources photo covers
-- About story images
-- AI header actions (profile/logout on AI page)
-
-## 3. Design system changes
-
-| Token / pattern | Implementation |
+### Already complete (left in place)
+| System | Status |
 | --- | --- |
-| Color | `--lit-bg`, `--lit-surface`, `--lit-accent` (#0ea5e9), text hierarchy in `:root` |
-| Container | `.lit-container` (max 72rem) |
-| Section rhythm | `.lit-section` |
-| Cards | `.lit-card` |
-| Buttons | `.lit-btn-primary` / `.lit-btn-secondary` (uppercase, 44px min height) |
-| Page H1 | `PageHeader` → uppercase |
-| Section H2 | `SectionHeader` → uppercase |
-| Nav labels | `PRIMARY_NAV` fully uppercase |
-| CTA labels | BOOK A CONSULTATION / START PROJECT |
-| Reduced motion | Respected on new button tokens |
+| Design tokens (`.lit-*`, `--lit-*`) | ALREADY COMPLETE |
+| AuthNavControl (name, avatar, menu, mobile, logout) | ALREADY COMPLETE |
+| Navbar PRIMARY_NAV uppercase + CTA pair | ALREADY COMPLETE |
+| PageHeader / SectionHeader uppercase | ALREADY COMPLETE |
+| Resources JPG covers | ALREADY COMPLETE |
+| Legacy redirects (portfolio, client login/profile) | ALREADY COMPLETE |
+| Breadcrumb removal / Back-to-Home | ALREADY COMPLETE |
+| Founder image | UNCHANGED |
 
-## 4. Content improvements
-
-- Normalized CTA wording in global navbar (desktop + mobile).
-- No invented business facts.
-
-## 5. Duplicate pages
-
-| Route | Action |
+### Gaps addressed this pass
+| Gap | Action |
 | --- | --- |
-| `/vikashs-portfolio`, `/vikash-portfolio` | Already permanent redirect → `/about` |
-| `/client/login` → `/login` | Already redirect |
-| `/client/profile` → `/profile` | Already redirect |
-| `/jobs` vs `/careers` | **Kept both** — jobs = leadership seats; careers = culture/overview with link to jobs |
+| Marketing H1s missing `uppercase` | Added across ~25 page files + PageHero + home hero + motion.h1 pages |
+| Static H1 wording | Polished (OUR WORK, START YOUR PROJECT, legal titles, etc.) |
+| CTA wording drift | Services/packages: Book Consultation / Start Project |
+| packages/[slug] dual H1 | VERIFIED exclusive branches (pkg vs srv) — one H1 per render |
 
-## 6. Duplicate buttons
+## 2. Pages reviewed
 
-- Navbar: single auth control (no parallel Login + user chip).
-- Desktop CTA pair retained with clear hierarchy: secondary Book Consultation + primary Start Project.
+Home (hero), About, Founder, Services list + slug, Industries, Work list + slug, Resources list + slug, Packages slug, Checklist, Blog list + slug, Careers, Jobs, Contact, Free Demo, Discovery, AI Assistant, AI page, Investors, Expertise, Certifications, Press, Products, Support, legal pages, Search, Booking success/cancel.
 
-## 7. Auth header implementation
+## 3. Pages modified
 
-| Concern | Detail |
+- `src/features/home/components/hero-section.tsx`
+- `src/components/ui/page-hero.tsx`
+- `src/app/(marketing)/checklist|free-demo|discovery/page.tsx`
+- `src/app/(marketing)/services/page.tsx`
+- `src/app/(marketing)/packages/[slug]/page.tsx`
+- ~20 additional marketing pages for H1 `uppercase` + title polish
+- `src/app/ai/page.tsx`, `src/app/ai/error.tsx`
+
+## 4. H1 / H2 / H3 audit
+
+- Marketing static and dynamic H1 elements now include `uppercase` where they act as primary page titles.
+- Dynamic titles (service/package/post names) keep content from data; display is uppercase via CSS class.
+- packages/[slug]: **not** a dual-H1 bug — mutually exclusive returns.
+- Admin/portal H1s intentionally left title-case (internal tools, not marketing).
+
+## 5. Content improvements
+
+- OUR WORK, START YOUR PROJECT, legal page titles uppercased in content where static.
+- Hero CTA: EXPLORE SOLUTIONS.
+- Services footer CTAs: Book Consultation / Start Project.
+
+## 6. Duplicate pages
+
+| Route | Classification |
 | --- | --- |
-| Component | `src/components/layout/auth-nav-control.tsx` |
-| Session | `getClientSupabase()` + `onAuthStateChange` |
-| Name order | `profiles.full_name` → `user_metadata.full_name` → `name` → `given_name` → email local-part |
-| Avatar | Google `avatar_url` / `picture`; else initials |
-| Logged out | LOGIN → `/login` |
-| Logged in | Avatar + first name + menu: Profile, AI Assistant, Sign Out |
-| Mobile | “Signed in as” block in drawer |
-| Loading | Pulse skeleton (no LOGIN→NAME flash) |
-| Logout | `signOut()` + clear local state + `router.refresh()` |
-| Images | `lh3.googleusercontent.com` allowed in `next.config.ts` |
+| /jobs vs /careers | INTENTIONAL (leadership seats vs culture) |
+| /vikash*-portfolio | LEGACY REDIRECT → /about |
+| /client/login, /client/profile | LEGACY REDIRECT → /login, /profile |
 
-## 8. Responsive QA
+No additional routes deleted this pass.
 
-Not full device lab in CI. Layout uses existing responsive navbar patterns (drawer &lt; lg, 44px targets). Recommend manual check at 375 / 768 / 1280 after deploy.
+## 7. Duplicate buttons
 
-## 9. Accessibility
+- No new dual LOGIN controls introduced.
+- Services page CTA labels normalized.
+- Navbar retains intentional dual conversion paths (Book Consultation + Start Project).
 
-- Menu `aria-expanded` / `role="menu"`
-- Auth control keyboard Escape to close
-- Focusable links/buttons retained
-- Decorative avatar `alt=""`
+## 8. Navigation changes
 
-## 10. Build verification
+None beyond prior commit (already uppercase PRIMARY_NAV).
 
-Run after deploy on Vercel (production). Local full build not completed in this pass due to environment time limits; TypeScript surface of new component is standard React/Next patterns.
+## 9–11. Auth / Google name / avatar
 
-## 11. Browser QA checklist (manual)
+**Code review only — browser Google OAuth NOT executed in this environment.**
 
-- [ ] Logged out: header shows LOGIN
-- [ ] Google login → name + avatar
-- [ ] Refresh keeps name
-- [ ] Profile / AI links work
-- [ ] Sign out restores LOGIN
-- [ ] `/resources` photo covers
-- [ ] Mobile drawer account section
+| Item | Status |
+| --- | --- |
+| AuthNavControl present on desktop + mobile | VERIFIED (code) |
+| Name resolution order | VERIFIED (code) |
+| Avatar + initials fallback | VERIFIED (code) |
+| Loading skeleton | VERIFIED (code) |
+| Live Google login | NOT VERIFIED (requires interactive OAuth) |
+| Refresh/logout in browser | NOT VERIFIED |
 
-## 12. Remaining issues
+## 12–16. Responsive / animation / a11y / SEO / console
 
-- Full page-by-page content rewrite of every marketing route not done in this pass (scope prioritised auth header + shared system tokens + nav/CTA consistency).
-- Some page-level H1s outside `PageHeader` may still be mixed case; gradual adoption of `PageHeader` / `SectionHeader` continues.
-- Founder image unchanged (as required).
+| Area | Status |
+| --- | --- |
+| Responsive matrix 320–1920 | NOT VERIFIED (no device lab this pass) |
+| Animation language | NOT fully re-audited; prior reduced-motion tokens retained |
+| Accessibility | Partial (semantic H1 fixes); full audit NOT VERIFIED |
+| SEO metadata | NOT fully re-audited this pass |
+| Console/network in browser | NOT VERIFIED |
 
-## Status
+## 17. Build results
 
-```
-COMPLETED — auth header, design tokens, nav/CTA/heading system, resources images prior
-REQUIRES MANUAL REVIEW — full browser QA matrix, every page H1 audit
-VERIFIED — push to main expected; Vercel auto-deploy
-```
+| Command | Result |
+| --- | --- |
+| `npm install` (sandbox registry) | FAILED / incomplete (E502 / empty install) |
+| `npm run typecheck` | NOT VERIFIED (no local typescript binary) |
+| `npm run lint` | NOT VERIFIED |
+| `npm run build` | NOT VERIFIED locally — deferred to Vercel |
+
+## 18. Production verification
+
+After push, Vercel production deploy must be confirmed READY.
+
+| Check | Status |
+| --- | --- |
+| Prior production deploy `cd37a74` | Was READY |
+| This commit | Pending push |
+
+## 19. Remaining issues
+
+1. Full interactive Google auth QA still required on production.
+2. Viewport matrix and Lighthouse not run this pass.
+3. Local typecheck/build blocked by sandbox npm registry failures.
+4. Some long marketing H1s remain multi-line with mixed visual weight (gradient spans) — intentional design, not a defect.
+5. Free-demo / discovery form section H2s not all uppercase labels — form UX left readable.
+
+## Acceptance (honest)
+
+- [x] H1 uppercase pass on marketing routes
+- [x] CTA terminology normalized on key pages
+- [x] Auth systems not rebuilt
+- [x] Founder image unchanged
+- [ ] Browser Google auth VERIFIED
+- [ ] Local typecheck/build VERIFIED
+- [ ] Full responsive matrix VERIFIED
+

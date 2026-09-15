@@ -37,7 +37,7 @@ export default async function SearchPage({
       <JsonLd data={breadcrumb([{ name: "Home", path: "/" }, { name: "Search", path: "/search" }])} />
       <div className="max-w-3xl mx-auto">
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300 mb-3">Search</p>
-        <h1 className="text-3xl font-black mb-6">
+        <h1 className="uppercase text-3xl font-black mb-6">
           {query ? `Results for “${q.trim()}”` : "Search the studio"}
         </h1>
         <form action="/search" method="get" className="mb-10">

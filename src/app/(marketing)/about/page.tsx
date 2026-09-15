@@ -114,7 +114,7 @@ export default function AboutPage() {
           <Rocket className="w-3.5 h-3.5" />
           Coimbatore technology startup
         </span>
-        <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-[1.1] tracking-tight">
+        <h1 className="uppercase text-3xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-[1.1] tracking-tight">
           A startup built to ship
           <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">

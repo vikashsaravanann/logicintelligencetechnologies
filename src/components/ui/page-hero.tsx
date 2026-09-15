@@ -84,7 +84,7 @@ export default function PageHero({
               </div>
             )}
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] mb-6">
+            <h1 className="uppercase text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] mb-6">
               {title}
             </h1>
 

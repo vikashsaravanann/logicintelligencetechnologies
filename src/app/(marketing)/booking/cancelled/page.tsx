@@ -16,7 +16,7 @@ export default function BookingCancelledPage() {
         </div>
 
         <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight mb-2">
-          Consultation Cancelled
+          CONSULTATION CANCELLED
         </h1>
         <p className="text-sm text-zinc-400 mb-8 leading-relaxed">
           Your reservation has been released. If your schedule changes or you need to discuss a project at a later date, you can rebook anytime.

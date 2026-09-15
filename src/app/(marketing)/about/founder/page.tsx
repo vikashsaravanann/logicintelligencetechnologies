@@ -74,7 +74,7 @@ export default function FounderPage() {
           </div>
           <div className="text-center lg:text-left">
             <p className="text-primary text-xs font-bold tracking-[0.2em] uppercase mb-3">Leadership</p>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-2">{FOUNDER.name}</h1>
+            <h1 className="uppercase text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-2">{FOUNDER.name}</h1>
             <p className="text-lg sm:text-xl text-zinc-300 font-medium mb-6">{FOUNDER.title}</p>
             <p className="text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto lg:mx-0 mb-6">{FOUNDER.shortBio}</p>
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 text-sm text-zinc-400 mb-8">
