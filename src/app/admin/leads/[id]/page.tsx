@@ -88,6 +88,59 @@ export default async function AdminLeadDetailPage({ params }: Props) {
         </div>
       </div>
 
+      {/* Structured contact attributes (mapped form fields) */}
+      <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 sm:p-8 space-y-4">
+        <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+          <Building2 className="w-4 h-4 text-primary" />
+          <span>Contact & Project Attributes</span>
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+          <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800 flex items-start gap-3">
+            <Mail className="w-4 h-4 text-zinc-500 shrink-0 mt-0.5" />
+            <div>
+              <span className="text-[10px] uppercase tracking-wider text-zinc-500 block">Email</span>
+              <a href={`mailto:${lead.email}`} className="text-zinc-200 hover:text-primary break-all">
+                {lead.email}
+              </a>
+            </div>
+          </div>
+          <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800 flex items-start gap-3">
+            <Phone className="w-4 h-4 text-zinc-500 shrink-0 mt-0.5" />
+            <div>
+              <span className="text-[10px] uppercase tracking-wider text-zinc-500 block">Phone</span>
+              <span className="text-zinc-200">{lead.phone || "—"}</span>
+            </div>
+          </div>
+          <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800 flex items-start gap-3">
+            <Building2 className="w-4 h-4 text-zinc-500 shrink-0 mt-0.5" />
+            <div>
+              <span className="text-[10px] uppercase tracking-wider text-zinc-500 block">Company</span>
+              <span className="text-zinc-200">{lead.company || "—"}</span>
+            </div>
+          </div>
+          <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+            <span className="text-[10px] uppercase tracking-wider text-zinc-500 block">Project type</span>
+            <span className="text-zinc-200">{lead.project_type || "—"}</span>
+          </div>
+          <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+            <span className="text-[10px] uppercase tracking-wider text-zinc-500 block">Budget</span>
+            <span className="text-zinc-200">{lead.budget || "—"}</span>
+          </div>
+          <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+            <span className="text-[10px] uppercase tracking-wider text-zinc-500 block">Timeline</span>
+            <span className="text-zinc-200">{lead.timeline || "—"}</span>
+          </div>
+          <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+            <span className="text-[10px] uppercase tracking-wider text-zinc-500 block">Source</span>
+            <span className="text-zinc-200">{lead.source || "—"}</span>
+          </div>
+          <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-800">
+            <span className="text-[10px] uppercase tracking-wider text-zinc-500 block">Page URL</span>
+            <span className="text-zinc-200 break-all">{lead.page_url || "—"}</span>
+          </div>
+        </div>
+      </div>
+
       {/* Lead Message and Requirements */}
       <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 sm:p-8 space-y-4">
         <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
@@ -99,7 +152,7 @@ export default async function AdminLeadDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Scoring Breakdown Breakdown */}
+      {/* Scoring Breakdown */}
       <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 sm:p-8 space-y-4">
         <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
