@@ -29,7 +29,6 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-[#030712] text-zinc-100 font-sans flex overflow-x-hidden">
-      {/* Animated Sidebar */}
       {mobileNav && (
         <button type="button" aria-label="Close navigation" className="lg:hidden fixed inset-0 z-30 bg-black/60" onClick={() => setMobileNav(false)} />
       )}
@@ -57,7 +56,7 @@ export default function DashboardLayout({
 
         <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
           {[
-            { icon: Globe, label: 'Back to Website', href: '/' },
+            { icon: Globe, label: 'Back to Home', href: '/' },
             { icon: Home, label: 'Overview', href: '/dashboard' },
             { icon: Users, label: 'Leads Pipeline', href: '/dashboard/leads' },
             { icon: Briefcase, label: 'Active Projects', href: '/dashboard/projects' },
@@ -114,9 +113,7 @@ export default function DashboardLayout({
         </div>
       </motion.aside>
 
-      {/* Main Content Area */}
       <main className="flex-1 h-screen overflow-y-auto bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/10 via-[#030712] to-[#030712]">
-        {/* Sleek Header */}
         <header className="h-16 sm:h-20 border-b border-white/5 flex items-center justify-between px-3 sm:px-6 md:px-10 bg-[#030712]/50 backdrop-blur-md sticky top-0 z-10">
           <div className="flex items-center gap-3 min-w-0">
             <button type="button" className="lg:hidden h-10 w-10 rounded-xl border border-white/10 grid place-items-center shrink-0" onClick={() => setMobileNav(true)} aria-label="Open menu">
