@@ -11,13 +11,13 @@ import {
 } from "./components/email-content";
 
 interface LeadConfirmationEmailProps {
-  fullName: string;
-  service: string;
+  fullName?: string;
+  service?: string;
 }
 
 export const LeadConfirmationEmail = ({
-  fullName,
-  service,
+  fullName = "there",
+  service = "your enquiry",
 }: LeadConfirmationEmailProps) => {
   return (
     <EmailLayout preview="We've received your request — Logic Intelligence Technologies">
