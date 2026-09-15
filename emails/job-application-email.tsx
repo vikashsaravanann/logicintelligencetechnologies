@@ -10,9 +10,10 @@ import {
   EmailMuted,
 } from "./components/email-content";
 
-interface Props {
+export interface JobApplicationEmailProps {
   fullName?: string;
   role?: string;
+  /** Alias used by careers apply route */
   seat?: string;
 }
 
@@ -20,8 +21,8 @@ export default function JobApplicationEmail({
   fullName = "there",
   role,
   seat,
-}: Props) {
-  const position = role || seat || "the role";
+}: JobApplicationEmailProps) {
+  const appliedRole = role || seat || "the role";
   return (
     <EmailLayout preview="We've received your application">
       <EmailHeader />
@@ -29,9 +30,9 @@ export default function JobApplicationEmail({
         <EmailTitle>Application received</EmailTitle>
         <EmailGreeting name={fullName} />
         <EmailBody>
-          Thank you for applying for <strong>{position}</strong> at Logic Intelligence
-          Technologies. Our team will review your application and contact you if
-          there is a match.
+          Thank you for applying for <strong>{appliedRole}</strong> at Logic
+          Intelligence Technologies. Our team will review your application and
+          contact you if there is a match.
         </EmailBody>
         <EmailMuted>— Careers, Logic Intelligence Technologies</EmailMuted>
       </EmailContent>
