@@ -12,7 +12,9 @@
     "test:unit": "npm run test",
     "test:integration": "node --experimental-strip-types --test tests/navigation/*.test.ts",
     "test:security": "node --experimental-strip-types --test tests/security/*.test.ts",
-    "test:e2e": "npm run smoke:test",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
     "verify:environment": "node scripts/verify-environment.mjs",
     "verify:links": "node scripts/verify-links.mjs",
     "verify:pdfs": "node scripts/verify-pdfs.mjs",
@@ -57,6 +59,7 @@
     "zod": "^4.4.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.49.0",
     "@tailwindcss/postcss": "^4",
     "@tailwindcss/typography": "^0.5.20",
     "@types/node": "^20",
