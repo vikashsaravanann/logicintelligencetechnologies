@@ -268,12 +268,12 @@ export default function ContactPage() {
                   {/* Step 3 */}
                   {step === 3 && (
                     <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
-                      <h3 className="text-xl font-bold text-white mb-6">3. Budget &amp; Contact</h3>
+                      <h3 className="text-xl font-bold text-white mb-6">3. Scale &amp; Contact</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <label className={labelClass}>Estimated Budget Range *</label>
-                          <select value={form.budget} onChange={(e) =>
-                            <option className="bg-zinc-900" value="">Select scale</option>
+                          <label className={labelClass}>Project scale *</label>
+                          <select value={form.budget} onChange={(e) => update("budget", e.target.value)} className={inputClass("budget")}>
+                            <option value="" disabled className="bg-zinc-900">Select scale</option>
                             <option className="bg-zinc-900">Exploring options</option>
                             <option className="bg-zinc-900">Starter project</option>
                             <option className="bg-zinc-900">Growth project</option>

@@ -30,6 +30,7 @@ function isPublicPath(path: string): boolean {
     "/api/free-demo",
     "/api/checklist",
     "/api/jobs",
+    "/api/jobs/apply",
     "/api/newsletter",
     "/api/booking",
     "/api/support",
