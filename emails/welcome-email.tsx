@@ -14,15 +14,17 @@ import { EMAIL } from "./components/email-styles";
 
 interface WelcomeEmailProps {
   fullName?: string;
+  email?: string;
 }
 
-export const WelcomeEmail = ({ fullName = "there" }: WelcomeEmailProps) => {
+export const WelcomeEmail = ({ fullName, email }: WelcomeEmailProps) => {
+  const name = fullName || (email ? email.split("@")[0] : undefined);
   return (
     <EmailLayout preview="Welcome to Logic Intelligence Technologies">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Welcome</EmailTitle>
-        <EmailGreeting name={fullName} />
+        <EmailGreeting name={name} />
         <EmailBody>
           Your account with Logic Intelligence Technologies is ready. You can
           sign in anytime to explore our services and AI workspace.
