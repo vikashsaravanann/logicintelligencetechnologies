@@ -6,9 +6,21 @@ import { EmailButton } from "./components/email-button";
 import { EmailContent, EmailGreeting, EmailTitle, EmailBody, EmailMuted } from "./components/email-content";
 import { EMAIL } from "./components/email-styles";
 
-interface Props { fullName?: string; actionUrl?: string; detail?: string; }
+interface Props {
+  fullName?: string;
+  expiryDate?: string;
+  renewLink?: string;
+  actionUrl?: string;
+  detail?: string;
+}
 
-export default function MaintenanceRenewalEmail({ fullName = "there", actionUrl, detail }: Props) {
+export default function MaintenanceRenewalEmail({
+  fullName = "there",
+  expiryDate,
+  renewLink,
+  actionUrl,
+  detail,
+}: Props) {
   return (
     <EmailLayout preview="Maintenance renewal reminder">
       <EmailHeader />
@@ -16,8 +28,9 @@ export default function MaintenanceRenewalEmail({ fullName = "there", actionUrl,
         <EmailTitle>Maintenance renewal</EmailTitle>
         <EmailGreeting name={fullName} />
         <EmailBody>A maintenance plan is due for renewal.</EmailBody>
+        {expiryDate ? <EmailBody>Renewal date: {expiryDate}</EmailBody> : null}
         {detail ? <EmailBody>{detail}</EmailBody> : null}
-        <EmailButton href={actionUrl || EMAIL.siteUrl}>Review plan</EmailButton>
+        <EmailButton href={renewLink || actionUrl || EMAIL.siteUrl}>Review plan</EmailButton>
         <EmailMuted>— Logic Intelligence Technologies</EmailMuted>
       </EmailContent>
       <EmailFooter />

@@ -6,9 +6,21 @@ import { EmailButton } from "./components/email-button";
 import { EmailContent, EmailGreeting, EmailTitle, EmailBody, EmailMuted } from "./components/email-content";
 import { EMAIL } from "./components/email-styles";
 
-interface Props { fullName?: string; actionUrl?: string; detail?: string; }
+interface Props {
+  fullName?: string;
+  amount?: string;
+  invoiceNumber?: string;
+  actionUrl?: string;
+  detail?: string;
+}
 
-export default function PaymentReceivedEmail({ fullName = "there", actionUrl, detail }: Props) {
+export default function PaymentReceivedEmail({
+  fullName = "there",
+  amount,
+  invoiceNumber,
+  actionUrl,
+  detail,
+}: Props) {
   return (
     <EmailLayout preview="Payment received">
       <EmailHeader />
@@ -16,6 +28,8 @@ export default function PaymentReceivedEmail({ fullName = "there", actionUrl, de
         <EmailTitle>Payment received</EmailTitle>
         <EmailGreeting name={fullName} />
         <EmailBody>We've received your payment. Thank you.</EmailBody>
+        {invoiceNumber ? <EmailBody>Invoice: {invoiceNumber}</EmailBody> : null}
+        {amount ? <EmailBody>Amount: {amount}</EmailBody> : null}
         {detail ? <EmailBody>{detail}</EmailBody> : null}
         <EmailButton href={actionUrl || EMAIL.siteUrl}>View receipt</EmailButton>
         <EmailMuted>— Logic Intelligence Technologies</EmailMuted>
