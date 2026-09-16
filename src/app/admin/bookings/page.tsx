@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Calendar, Clock, Globe, User, ArrowRight } from "lucide-react";
+import { AdminBackLink } from "../components/AdminBackLink";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
@@ -19,7 +19,8 @@ export default async function AdminBookingsPage() {
     <div className="container mx-auto p-4 py-8 max-w-6xl space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-800">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-1">
+          <AdminBackLink />
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-white mb-1">
             Consultation Bookings Ledger
           </h1>
           <p className="text-zinc-400 text-sm">
@@ -54,15 +55,21 @@ export default async function AdminBookingsPage() {
                   <tr key={b.id} className="hover:bg-white/[0.02] transition-colors">
                     <td className="p-4">
                       <div className="font-bold text-white text-sm">{b.name}</div>
-                      <div className="text-xs text-zinc-400">{b.email} {b.phone ? `· ${b.phone}` : ""}</div>
-                      {b.company && <div className="text-[10px] text-zinc-500">{b.company}</div>}
+                      <div className="text-xs text-zinc-400">
+                        {b.email} {b.phone ? `· ${b.phone}` : ""}
+                      </div>
+                      {b.company && (
+                        <div className="text-[10px] text-zinc-500">{b.company}</div>
+                      )}
                     </td>
                     <td className="p-4 text-xs font-semibold text-primary">
                       {b.consultation_type}
                     </td>
                     <td className="p-4 text-xs text-zinc-300">
                       <div>{new Date(b.slot_time).toLocaleDateString()}</div>
-                      <div className="text-zinc-500 text-[10px]">{new Date(b.slot_time).toLocaleTimeString()} ({b.timezone})</div>
+                      <div className="text-zinc-500 text-[10px]">
+                        {new Date(b.slot_time).toLocaleTimeString()} ({b.timezone})
+                      </div>
                     </td>
                     <td className="p-4">
                       <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
