@@ -12,12 +12,19 @@ type Payload = {
 };
 
 function secret(): string {
-  return (
+  const s =
     process.env.RESOURCE_ACCESS_SECRET ||
     process.env.CRON_SECRET ||
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    "lit-resource-dev-only-change-me"
-  );
+    "";
+  if (!s) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("RESOURCE_ACCESS_SECRET (or CRON_SECRET) must be configured");
+    }
+    // Local/dev only — never used when production env is set
+    return "lit-resource-dev-only-change-me";
+  }
+  return s;
 }
 
 function b64url(buf: Buffer | string): string {
