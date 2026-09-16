@@ -31,6 +31,19 @@ export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const requested = `${path}${req.nextUrl.search}`;
 
+  // Block direct access to gated Resource Center PDFs (static public/ paths).
+  // Press kit remains intentionally public.
+  if (
+    path.startsWith("/resources/") &&
+    path.toLowerCase().endsWith(".pdf") &&
+    !path.toLowerCase().endsWith("/press-kit.pdf")
+  ) {
+    return new NextResponse("Not Found", { status: 404 });
+  }
+  if (path === "/checklist.pdf" || path === "/resources/website-development-checklist.pdf") {
+    return new NextResponse("Not Found", { status: 404 });
+  }
+
   if (isPublicPath(path)) {
     if (path === "/login" || path === "/reset-password") {
       try {
