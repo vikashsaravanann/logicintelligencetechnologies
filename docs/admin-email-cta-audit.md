@@ -1,10 +1,11 @@
 # Admin Email CTA Audit
 
-| Email | Primary CTA | Destination |
-|-------|-------------|-------------|
-| New Lead (`new-lead-notification-email`) | Open Admin Dashboard | `/admin/command-center` |
-| New Lead | Open Leads (secondary) | `/admin/leads` |
+Canonical dashboard: `/admin/command-center`
+Site URL: `EMAIL.siteUrl` → production domain
 
-Canonical site URL: `EMAIL.siteUrl` → `https://www.logicintelligencetechnologies.in`
+| Email | Audience | Primary CTA | Destination | Secondary |
+|-------|----------|-------------|-------------|-----------|
+| new-lead-notification-email | Internal | Open Admin Dashboard | /admin/command-center | Open Leads |
+| checklist-submission-email | Internal | Open Admin Dashboard | /admin/command-center | Open Leads |
 
-Client transactional emails (invoice, payment, kickoff) continue to use client portal URLs (`/client/dashboard` or `/dashboard` where intentional for customers). Admin internal notifications use `/admin/*` only.
+Admin emails do not use `/dashboard` or `/client/dashboard` as primary CTAs.
