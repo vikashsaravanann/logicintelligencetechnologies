@@ -67,6 +67,7 @@ export const APP_ROUTES: Record<string, AppRoute> = {
   adminBookings: { path: "/admin/bookings", label: "Bookings Ledger", isProtected: true, category: "admin", backTarget: { label: "Back to Command Center", href: "/admin/command-center" } },
   adminProposals: { path: "/admin/proposals", label: "Proposals", isProtected: true, category: "admin", backTarget: { label: "Back to Command Center", href: "/admin/command-center" } },
   adminProposalNew: { path: "/admin/proposals/new", label: "Create Proposal", isProtected: true, category: "admin", backTarget: { label: "Back to Proposals", href: "/admin/proposals" } },
+  adminProposalDetail: { path: "/admin/proposals/[id]", label: "Proposal Detail", isProtected: true, category: "admin", backTarget: { label: "Back to Proposals", href: "/admin/proposals" } },
   adminSupport: { path: "/admin/support", label: "Admin Support", isProtected: true, category: "admin", backTarget: { label: "Back to Command Center", href: "/admin/command-center" } },
 };
 
