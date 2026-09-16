@@ -36,6 +36,11 @@ export const ADMIN_NAV_ITEMS = [
     href: "/admin/support",
     match: (pathname: string) => pathname.startsWith("/admin/support"),
   },
+  {
+    label: "Outreach",
+    href: "/admin/outreach",
+    match: (pathname: string) => pathname.startsWith("/admin/outreach"),
+  },
 ] as const;
 
 export const ADMIN_QUICK_ACTIONS = [
@@ -45,4 +50,6 @@ export const ADMIN_QUICK_ACTIONS = [
   { label: "View Proposals", href: "/admin/proposals" },
   { label: "Create Proposal", href: "/admin/proposals/new" },
   { label: "View Support", href: "/admin/support" },
+  { label: "Outreach", href: "/admin/outreach" },
+  { label: "Create Campaign", href: "/admin/outreach" },
 ] as const;
