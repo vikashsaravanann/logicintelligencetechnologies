@@ -1,3 +1,5 @@
+export type ResourceAccessType = "gated" | "public";
+
 export interface PdfResource {
   id: string;
   slug: string;
@@ -5,10 +7,13 @@ export interface PdfResource {
   description: string;
   category: string;
   filename: string;
+  /** Legacy public URL — must not be used for gated downloads. */
   publicPath: string;
   coverImage: string;
   version: string;
   publishedAt: string;
+  /** gated = form + token required; public = intentionally open (e.g. press kit) */
+  accessType: ResourceAccessType;
 }
 
 export const PDF_RESOURCES: PdfResource[] = [
@@ -23,6 +28,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     coverImage: "/images/resources/company-profile.jpg",
     version: "2026.1",
     publishedAt: "2026-01-15",
+    accessType: "gated",
   },
   {
     id: "pdf-services-brochure",
@@ -35,6 +41,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     coverImage: "/images/resources/services-brochure.jpg",
     version: "2026.1",
     publishedAt: "2026-01-15",
+    accessType: "gated",
   },
   {
     id: "pdf-capability-statement",
@@ -47,6 +54,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     coverImage: "/images/resources/capability-statement.jpg",
     version: "2026.1",
     publishedAt: "2026-01-20",
+    accessType: "gated",
   },
   {
     id: "pdf-website-checklist",
@@ -59,6 +67,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     coverImage: "/images/resources/website-development-checklist.jpg",
     version: "2026.2",
     publishedAt: "2026-02-01",
+    accessType: "gated",
   },
   {
     id: "pdf-ai-readiness",
@@ -71,6 +80,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     coverImage: "/images/resources/ai-readiness-assessment.jpg",
     version: "2026.1",
     publishedAt: "2026-02-10",
+    accessType: "gated",
   },
   {
     id: "pdf-automation-guide",
@@ -83,6 +93,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     coverImage: "/images/resources/business-automation-guide.jpg",
     version: "2026.1",
     publishedAt: "2026-02-15",
+    accessType: "gated",
   },
   {
     id: "pdf-tech-roadmap",
@@ -95,6 +106,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     coverImage: "/images/resources/technology-roadmap-template.jpg",
     version: "2026.1",
     publishedAt: "2026-02-20",
+    accessType: "gated",
   },
   {
     id: "pdf-proposal-template",
@@ -107,6 +119,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     coverImage: "/images/resources/project-proposal-template.jpg",
     version: "2026.1",
     publishedAt: "2026-02-25",
+    accessType: "gated",
   },
   {
     id: "pdf-statement-of-work",
@@ -119,6 +132,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     coverImage: "/images/resources/statement-of-work.jpg",
     version: "2026.1",
     publishedAt: "2026-03-01",
+    accessType: "gated",
   },
   {
     id: "pdf-case-study",
@@ -131,6 +145,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     coverImage: "/images/resources/case-study.jpg",
     version: "2026.1",
     publishedAt: "2026-03-05",
+    accessType: "gated",
   },
   {
     id: "pdf-press-kit",
@@ -143,6 +158,7 @@ export const PDF_RESOURCES: PdfResource[] = [
     coverImage: "/images/resources/press-kit.jpg",
     version: "2026.1",
     publishedAt: "2026-03-10",
+    accessType: "public",
   },
   {
     id: "pdf-investor-memo",
@@ -155,5 +171,20 @@ export const PDF_RESOURCES: PdfResource[] = [
     coverImage: "/images/resources/investor-partnership-information-memorandum.jpg",
     version: "2026.1",
     publishedAt: "2026-03-15",
+    accessType: "gated",
   },
 ];
+
+export function getPdfResourceBySlug(slug: string): PdfResource | undefined {
+  return PDF_RESOURCES.find((r) => r.slug === slug);
+}
+
+export function isGatedResource(slug: string): boolean {
+  const r = getPdfResourceBySlug(slug);
+  return !r || r.accessType === "gated";
+}
+
+/** Filenames that must never be served as static public assets */
+export const GATED_PDF_FILENAMES: string[] = PDF_RESOURCES.filter(
+  (r) => r.accessType === "gated"
+).map((r) => r.filename);
