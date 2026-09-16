@@ -7,10 +7,10 @@ import SafeImage from "@/components/ui/safe-image";
 
 export const metadata: Metadata = {
   title: "Engineering Resources, Guides & Architecture Whitepapers | Logic Intelligence Technologies",
-  description: "Download enterprise technical guides, architecture checklists, business automation playbooks, and corporate capability profiles.",
+  description: "Enterprise technical guides, architecture checklists, business automation playbooks, and corporate capability profiles.",
   openGraph: {
     title: "Resources & Downloads | Logic Intelligence Technologies",
-    description: "Free enterprise guides, technical checklists, AI readiness frameworks, and project templates from Logic Intelligence Technologies.",
+    description: "Enterprise guides, technical checklists, AI readiness frameworks, and project templates from Logic Intelligence Technologies.",
     images: [{ url: "/api/og?title=Technical+Resources+%26+Whitepapers&category=Executive+Briefs", width: 1200, height: 630, alt: "LIT Resources" }],
   },
 };
@@ -30,25 +30,22 @@ export default function ResourcesPage() {
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
       <BackToHome href="/" label="Back to Home" />
-      {/* Background glow */}
       <div className="absolute top-10 right-1/4 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-widest uppercase mb-6">
             <BookOpen className="w-3.5 h-3.5" />
-            <span>Executive &amp; Technical Knowledge Hub</span>
+            <span>Executive & Technical Knowledge Hub</span>
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 uppercase">
-            RESOURCES, FRAMEWORKS &amp; <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TECHNICAL BRIEFS</span>
+            RESOURCES, FRAMEWORKS & <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TECHNICAL BRIEFS</span>
           </h1>
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
-            Curated blueprints, checklists, and templates developed from our real-world enterprise deployments. Available for direct download.
+            Curated blueprints, checklists, and templates from real-world enterprise deployments. Complete the access form to receive each resource.
           </p>
         </div>
 
-        {/* Resources Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {PDF_RESOURCES.map((res) => {
             const catStyle = CATEGORY_STYLES[res.category] ?? {
@@ -62,7 +59,6 @@ export default function ResourcesPage() {
                 key={res.id}
                 className="group rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.12)] overflow-hidden"
               >
-                {/* Visual Cover Thumbnail */}
                 <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/40">
                   <SafeImage
                     src={res.coverImage}
@@ -93,18 +89,17 @@ export default function ResourcesPage() {
                       href={`/resources/${res.slug}`}
                       className="inline-flex items-center gap-2 text-sm font-bold text-white group-hover:text-primary transition-colors"
                     >
-                      <span>View Details</span>
+                      <span>View resource</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
-                    <a
-                      href={res.publicPath}
-                      download={res.filename}
+                    <Link
+                      href={`/resources/${res.slug}`}
                       className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all border text-zinc-300 hover:text-black hover:bg-primary"
                       style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }}
                     >
                       <Download className="w-3.5 h-3.5" />
-                      <span>PDF</span>
-                    </a>
+                      <span>{res.accessType === "public" ? "Open" : "Get access"}</span>
+                    </Link>
                   </div>
                 </div>
               </div>
