@@ -60,10 +60,13 @@ export const APP_ROUTES: Record<string, AppRoute> = {
   clientSupport: { path: "/client/support", label: "Client Support", isProtected: true, category: "portal", backTarget: { label: "Back to Dashboard", href: "/client/dashboard" } },
 
   // Admin Routes (Strict Staff / Admin Protected)
+  adminRoot: { path: "/admin", label: "Admin", isProtected: true, category: "admin" },
   adminCommandCenter: { path: "/admin/command-center", label: "Command Center", isProtected: true, category: "admin" },
   adminLeads: { path: "/admin/leads", label: "Leads Management", isProtected: true, category: "admin", backTarget: { label: "Back to Command Center", href: "/admin/command-center" } },
+  adminAiLeads: { path: "/admin/ai-leads", label: "AI Leads", isProtected: true, category: "admin", backTarget: { label: "Back to Command Center", href: "/admin/command-center" } },
   adminBookings: { path: "/admin/bookings", label: "Bookings Ledger", isProtected: true, category: "admin", backTarget: { label: "Back to Command Center", href: "/admin/command-center" } },
   adminProposals: { path: "/admin/proposals", label: "Proposals", isProtected: true, category: "admin", backTarget: { label: "Back to Command Center", href: "/admin/command-center" } },
+  adminProposalNew: { path: "/admin/proposals/new", label: "Create Proposal", isProtected: true, category: "admin", backTarget: { label: "Back to Proposals", href: "/admin/proposals" } },
   adminSupport: { path: "/admin/support", label: "Admin Support", isProtected: true, category: "admin", backTarget: { label: "Back to Command Center", href: "/admin/command-center" } },
 };
 
