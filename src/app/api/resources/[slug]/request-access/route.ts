@@ -102,6 +102,7 @@ export async function POST(
     try {
       await sendEmail({
         to: email,
+        from: "noReply",
         subject: `Your resource: ${resource.title}`,
         react: React.createElement(ResourceAccessEmail, {
           fullName,
@@ -122,6 +123,7 @@ export async function POST(
       if (recipients.length) {
         await sendEmail({
           to: recipients,
+          from: "noReply",
           subject: `Resource request: ${resource.title} — ${fullName}`,
           react: React.createElement(NewLeadNotificationEmail, {
             fullName,
