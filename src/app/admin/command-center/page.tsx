@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { DollarSign, Briefcase, Users, Calendar, Ticket, ArrowRight, TrendingUp, ShieldCheck, Plus } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { AdminTriggers } from "../components/AdminTriggers";
+import { CreateInvoiceForm } from "../components/CreateInvoiceForm";
 
 export const metadata: Metadata = {
   title: "Executive Command Center | Logic Intelligence Technologies",
@@ -28,8 +30,7 @@ export default async function AdminCommandCenterPage() {
     invoices?.filter((i) => i.status === "Paid").reduce((sum, inv) => sum + (Number(inv.amount) || 0), 0) || 0;
 
   return (
-    <div className="container mx-auto p-4 py-8 max-w-6xl space-y-8">
-      {/* Header */}
+    <div className="mx-auto max-w-6xl space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-800">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white mb-1">
@@ -57,7 +58,6 @@ export default async function AdminCommandCenterPage() {
         </div>
       </div>
 
-      {/* KPI Grid */}
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6">
           <div className="flex items-center justify-between pb-3">
@@ -98,13 +98,19 @@ export default async function AdminCommandCenterPage() {
         </div>
       </div>
 
-      {/* Navigation Quick Shortcuts */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <Link
           href="/admin/leads"
           className="p-4 rounded-xl border border-neutral-800 bg-neutral-900/30 hover:bg-neutral-900/60 transition-colors flex items-center justify-between text-xs font-bold text-white"
         >
           <span>CRM Leads Ledger</span>
+          <ArrowRight className="w-4 h-4 text-primary" />
+        </Link>
+        <Link
+          href="/admin/ai-leads"
+          className="p-4 rounded-xl border border-neutral-800 bg-neutral-900/30 hover:bg-neutral-900/60 transition-colors flex items-center justify-between text-xs font-bold text-white"
+        >
+          <span>AI Leads</span>
           <ArrowRight className="w-4 h-4 text-primary" />
         </Link>
         <Link
@@ -130,7 +136,11 @@ export default async function AdminCommandCenterPage() {
         </Link>
       </div>
 
-      {/* Recent Leads Feed */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <CreateInvoiceForm />
+        <AdminTriggers />
+      </div>
+
       <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
