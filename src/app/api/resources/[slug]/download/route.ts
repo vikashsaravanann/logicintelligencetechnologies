@@ -29,7 +29,8 @@ export async function GET(
     const url = new URL(req.url);
     const token = url.searchParams.get("token") || "";
 
-    if (resource.accessType === "gated") {
+    // Default gated when accessType unset
+    if (resource.accessType !== "public") {
       const verified = verifyResourceAccessToken(token, resource.slug);
       if (!verified.ok) {
         const status =
