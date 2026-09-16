@@ -4,8 +4,8 @@
 |----------|--------|--------|
 | New lead email | Open Admin Dashboard | /admin/command-center |
 | New lead email | Open Leads | /admin/leads |
-| AdminNav | Module links | ADMIN_NAV_ITEMS |
-| Command Center | Draft Proposal | /admin/proposals/new |
-| Command Center | Module cards | /admin/* |
-| Command Center | Invoice / Triggers | /api/admin/* session auth |
-| Support | (no public ticket deep-link) | In-table |
+| AdminNav | Modules + Exit | ADMIN_NAV_ITEMS |
+| Command Center | Module cards + Draft Proposal | /admin/* |
+| Command Center | Invoice / Triggers | /api/admin/* session |
+| Nested modules | Admin Dashboard | AdminBackLink |
+| Outreach | Create / Activate / Pause | /api/admin/outreach/campaigns |
