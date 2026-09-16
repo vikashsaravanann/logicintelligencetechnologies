@@ -23,6 +23,14 @@ function isPublicPath(path: string): boolean {
   if (path.startsWith("/sitemap")) return true;
   if (path.startsWith("/robots")) return true;
   if (path.startsWith("/manifest")) return true;
+  const marketing = [
+    "/about", "/services", "/industries", "/products", "/work", "/packages",
+    "/blog", "/resources", "/careers", "/press", "/investors", "/contact",
+    "/book-consultation", "/free-demo", "/discovery", "/checklist", "/support",
+    "/search", "/ai", "/privacy", "/terms", "/refund-policy", "/cookie-policy",
+    "/accessibility", "/certifications", "/expertise",
+  ];
+  if (marketing.some((p) => path === p || path.startsWith(p + "/"))) return true;
   return false;
 }
 
@@ -31,8 +39,6 @@ export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const requested = `${path}${req.nextUrl.search}`;
 
-  // Block direct access to gated Resource Center PDFs (static public/ paths).
-  // Press kit remains intentionally public.
   if (
     path.startsWith("/resources/") &&
     path.toLowerCase().endsWith(".pdf") &&
