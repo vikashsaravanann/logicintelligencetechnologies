@@ -150,7 +150,7 @@ export async function GET(request: Request) {
         results.push({
           enrollment: row.id,
           ok: false,
-          reason: sendResult.error || "send_failed",
+          reason: sendResult.message || "send_failed",
         });
         continue;
       }
