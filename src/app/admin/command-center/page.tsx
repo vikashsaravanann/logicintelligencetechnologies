@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { DollarSign, Briefcase, Users, Calendar, Ticket, ArrowRight, TrendingUp, ShieldCheck, Plus } from "lucide-react";
+import { DollarSign, Briefcase, Users, Calendar, Ticket, ArrowRight, Plus } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { AdminTriggers } from "../components/AdminTriggers";
 import { CreateInvoiceForm } from "../components/CreateInvoiceForm";
@@ -98,7 +98,7 @@ export default async function AdminCommandCenterPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         <Link
           href="/admin/leads"
           className="p-4 rounded-xl border border-neutral-800 bg-neutral-900/30 hover:bg-neutral-900/60 transition-colors flex items-center justify-between text-xs font-bold text-white"
@@ -125,6 +125,13 @@ export default async function AdminCommandCenterPage() {
           className="p-4 rounded-xl border border-neutral-800 bg-neutral-900/30 hover:bg-neutral-900/60 transition-colors flex items-center justify-between text-xs font-bold text-white"
         >
           <span>Proposals & SOWs</span>
+          <ArrowRight className="w-4 h-4 text-primary" />
+        </Link>
+        <Link
+          href="/admin/outreach"
+          className="p-4 rounded-xl border border-neutral-800 bg-neutral-900/30 hover:bg-neutral-900/60 transition-colors flex items-center justify-between text-xs font-bold text-white"
+        >
+          <span>Outreach Pipeline</span>
           <ArrowRight className="w-4 h-4 text-primary" />
         </Link>
         <Link
@@ -160,7 +167,9 @@ export default async function AdminCommandCenterPage() {
                   <Link href={`/admin/leads/${l.id}`} className="font-bold text-white hover:underline text-sm block">
                     {l.name}
                   </Link>
-                  <p className="text-zinc-400 text-[11px]">{l.email} {l.company ? `· ${l.company}` : ""}</p>
+                  <p className="text-zinc-400 text-[11px]">
+                    {l.email} {l.company ? `· ${l.company}` : ""}
+                  </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-primary/10 text-primary border border-primary/20">
