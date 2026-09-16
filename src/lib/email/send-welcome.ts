@@ -64,7 +64,8 @@ export async function ensureWelcomeEmail({
       templateKey: "welcome-email",
       idempotencyKey: userId ? `welcome:${userId}` : `welcome-email:${cleanEmail}`,
       react: React.createElement(WelcomeEmail, {
-        email: safeName || cleanEmail,
+        fullName: safeName || undefined,
+        email: cleanEmail,
       }),
     });
 
