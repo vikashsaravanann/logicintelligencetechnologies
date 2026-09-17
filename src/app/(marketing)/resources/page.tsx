@@ -1,0 +1,112 @@
+import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
+import Link from "next/link";
+import { PDF_RESOURCES } from "@/config/pdfs";
+import { ArrowRight, Download, FileText, Sparkles, BookOpen, Code2, Brain, BarChart3, Briefcase, FileCheck, Archive } from "lucide-react";
+import SafeImage from "@/components/ui/safe-image";
+
+export const metadata: Metadata = {
+  title: "Engineering Resources, Guides & Architecture Whitepapers | Logic Intelligence Technologies",
+  description: "Enterprise technical guides, architecture checklists, business automation playbooks, and corporate capability profiles.",
+  openGraph: {
+    title: "Resources & Downloads | Logic Intelligence Technologies",
+    description: "Enterprise guides, technical checklists, AI readiness frameworks, and project templates from Logic Intelligence Technologies.",
+    images: [{ url: "/api/og?title=Technical+Resources+%26+Whitepapers&category=Executive+Briefs", width: 1200, height: 630, alt: "LIT Resources" }],
+  },
+};
+
+const CATEGORY_STYLES: Record<string, { color: string; bg: string; border: string; Icon: React.ComponentType<{ className?: string }> }> = {
+  "Corporate":       { color: "#00BFFF", bg: "rgba(0,191,255,0.08)",  border: "rgba(0,191,255,0.2)",  Icon: Briefcase },
+  "Services":        { color: "#8B5CF6", bg: "rgba(139,92,246,0.08)", border: "rgba(139,92,246,0.2)", Icon: Code2 },
+  "Technical Guide": { color: "#10B981", bg: "rgba(16,185,129,0.08)", border: "rgba(16,185,129,0.2)", Icon: FileCheck },
+  "AI & Data":       { color: "#F59E0B", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)", Icon: Brain },
+  "Strategy":        { color: "#EC4899", bg: "rgba(236,72,153,0.08)", border: "rgba(236,72,153,0.2)", Icon: BarChart3 },
+  "Templates":       { color: "#6366F1", bg: "rgba(99,102,241,0.08)", border: "rgba(99,102,241,0.2)", Icon: Archive },
+  "Legal & Contracts": { color: "#F97316", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.2)", Icon: FileText },
+  "Case Studies":    { color: "#22C55E", bg: "rgba(34,197,94,0.08)",  border: "rgba(34,197,94,0.2)",  Icon: BookOpen },
+};
+
+export default function ResourcesPage() {
+  return (
+    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+      <BackToHome href="/" label="Back to Home" />
+      <div className="absolute top-10 right-1/4 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-widest uppercase mb-6">
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Executive & Technical Knowledge Hub</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 uppercase">
+            RESOURCES, FRAMEWORKS & <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TECHNICAL BRIEFS</span>
+          </h1>
+          <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
+            Curated blueprints, checklists, and templates from real-world enterprise deployments. Complete the access form to receive each resource.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {PDF_RESOURCES.map((res) => {
+            const catStyle = CATEGORY_STYLES[res.category] ?? {
+              color: "#00BFFF",
+              bg: "rgba(0,191,255,0.08)",
+              border: "rgba(0,191,255,0.2)",
+              Icon: FileText,
+            };
+            return (
+              <div
+                key={res.id}
+                className="group glass-card flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.12)] overflow-hidden"
+              >
+                <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/40">
+                  <SafeImage
+                    src={res.coverImage}
+                    alt={`${res.title} Cover`}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute top-3 left-3 z-10">
+                    <span
+                      className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full border backdrop-blur-md"
+                      style={{ color: catStyle.color, background: "rgba(10, 15, 30, 0.8)", borderColor: catStyle.border }}
+                    >
+                      {res.category}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-6 sm:p-8 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">
+                    {res.title}
+                  </h3>
+                  <p className="text-sm text-zinc-400 mb-6 leading-relaxed flex-grow">
+                    {res.description}
+                  </p>
+
+                  <div className="pt-6 border-t border-white/10 flex items-center justify-between mt-auto">
+                    <Link
+                      href={`/resources/${res.slug}`}
+                      className="inline-flex items-center gap-2 text-sm font-bold text-white group-hover:text-primary transition-colors"
+                    >
+                      <span>View resource</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                    <Link
+                      href={`/resources/${res.slug}`}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all border text-zinc-300 hover:text-black hover:bg-primary"
+                      style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }}
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>{res.accessType === "public" ? "Open" : "Get access"}</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
