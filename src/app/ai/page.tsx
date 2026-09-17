@@ -111,6 +111,7 @@ export const dynamic = "force-dynamic";
 export default function AiChatPage() {
   const router = useRouter();
   const [landed, setLanded] = useState(true);
+  const [comingSoonNote, setComingSoonNote] = useState(false);
   const [landMenu, setLandMenu] = useState(false);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -578,21 +579,23 @@ export default function AiChatPage() {
           <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row w-full max-w-xs sm:max-w-none items-stretch sm:items-center justify-center gap-2.5 sm:gap-3">
             <button
               type="button"
-              onClick={async () => {
-                // Require auth before entering the chat workspace
-                const { data } = await supabase.auth.getUser();
-                if (!data.user) {
-                  router.push("/login?next=/ai");
-                  return;
-                }
-                setLanded(false);
-              }}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#E8651C] px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(232,101,28,0.35)] hover:brightness-110"
+              onClick={() => setComingSoonNote(true)}
+              aria-label="Coming Soon - AI Workspace not yet publicly available"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-md hover:bg-white/15 hover:border-white/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors"
             >
-              Get Started <ArrowRight className="w-4 h-4" />
+              Coming Soon
             </button>
-            <Link href="/ai-assistant" className="rounded-full border border-white/15 bg-black/25 px-5 py-3 text-sm text-center">Learn More</Link>
+            <Link href="/ai-assistant" className="rounded-full border border-white/15 bg-black/25 px-5 py-3 text-sm text-center backdrop-blur-sm hover:bg-black/40 transition-colors">Learn More</Link>
           </div>
+          {comingSoonNote ? (
+            <p
+              role="status"
+              className="mt-5 max-w-md mx-auto text-sm text-[color:var(--ai-muted)] leading-relaxed rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md px-4 py-3"
+            >
+              <span className="block text-white font-semibold mb-1">AI Workspace</span>
+              Coming soon - we are preparing the next generation of the Logic Intelligence Technologies AI experience.
+            </p>
+          ) : null}
         </main>
         <div className="absolute bottom-4 inset-x-0 overflow-hidden pointer-events-none">
           <div className="lit-ticker flex w-max">

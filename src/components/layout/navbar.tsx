@@ -102,7 +102,7 @@ export default function Navbar() {
         aria-label="Main navigation"
         className={`w-full transition-all duration-300 ${
           scrolled
-            ? "bg-[rgba(10,15,30,0.85)] backdrop-blur-[20px] border-b border-white/[0.08] py-2.5"
+            ? "glass-nav py-2.5"
             : "bg-transparent py-3"
         }`}
       >
