@@ -3,7 +3,6 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - scripts/restore-glass-pages.py
       - .github/workflows/restore-glass-pages.yml
 permissions:
   contents: write
@@ -13,12 +12,76 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 40
-      - run: python3 scripts/restore-glass-pages.py
-      - run: |
+          fetch-depth: 50
+      - name: Restore pages from last good commit
+        run: |
+          set -e
+          GOOD=ec0b1e83d8b185d9526308fe3670e0e9a1fbf5a0
+          for f in \
+            "src/app/(marketing)/services/page.tsx" \
+            "src/app/(marketing)/blog/page.tsx" \
+            "src/app/(marketing)/industries/page.tsx" \
+            "src/app/(marketing)/resources/page.tsx" \
+            "src/app/(marketing)/work/masonry-grid.tsx"
+          do
+            # restore if missing or empty
+            if [ ! -s "$f" ]; then
+              git show "$GOOD:$f" > "$f"
+              echo restored $f
+            fi
+          done
+          python3 - <<'PY'
+          from pathlib import Path
+          def ensure(path, old, new):
+            p = Path(path)
+            t = p.read_text()
+            if old in t:
+              p.write_text(t.replace(old, new, 1))
+              print("glass", path)
+            elif "glass-card" in t:
+              print("already", path)
+            else:
+              print("warn", path)
+          ensure(
+            "src/app/(marketing)/services/page.tsx",
+            'className="group relative flex flex-col justify-between rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)] overflow-hidden"',
+            'className="group relative flex flex-col justify-between glass-card hover:bg-white/[0.05] transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)] overflow-hidden"',
+          )
+          ensure(
+            "src/app/(marketing)/resources/page.tsx",
+            'className="group rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.12)] overflow-hidden"',
+            'className="group glass-card flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.12)] overflow-hidden"',
+          )
+          ensure(
+            "src/app/(marketing)/blog/page.tsx",
+            'className="group flex flex-col h-full bg-white/[0.02] border border-white/10 rounded-3xl overflow-hidden hover:bg-white/[0.04] hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)]"',
+            'className="group flex flex-col h-full glass-card overflow-hidden hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)]"',
+          )
+          ensure(
+            "src/app/(marketing)/industries/page.tsx",
+            'className="group rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)]"',
+            'className="group glass-card p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)]"',
+          )
+          ensure(
+            "src/app/(marketing)/work/masonry-grid.tsx",
+            'className="break-inside-avoid group rounded-[2rem] border border-white/5 bg-zinc-900/40 overflow-hidden hover:border-primary/30 hover:bg-zinc-900/60 transition-all duration-500 flex flex-col relative"',
+            'className="break-inside-avoid group glass-card overflow-hidden hover:border-primary/30 transition-all duration-500 flex flex-col relative"',
+          )
+          for f in [
+            "src/app/(marketing)/services/page.tsx",
+            "src/app/(marketing)/blog/page.tsx",
+            "src/app/(marketing)/industries/page.tsx",
+            "src/app/(marketing)/resources/page.tsx",
+            "src/app/(marketing)/work/masonry-grid.tsx",
+          ]:
+            assert Path(f).stat().st_size > 200, f
+          print("VERIFY OK")
+          PY
+      - name: Commit restore
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           if git diff --staged --quiet; then echo No changes; exit 0; fi
-          git commit -m "fix(ui): restore marketing pages + glass-card grid migration"
+          git commit -m "fix(ui): restore marketing pages + apply glass-card migration"
           git push
