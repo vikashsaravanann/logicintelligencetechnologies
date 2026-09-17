@@ -197,18 +197,35 @@ export default function LoginPage() {
         fetch("/api/auth/send-welcome", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: data?.user?.id, email: email.trim() }),
+          body: JSON.stringify({
+            userId: data?.user?.id,
+            email: email.trim(),
+            fullName: name.trim() || data?.user?.user_metadata?.full_name || null,
+          }),
         }).catch(() => {});
         setServerSuccess("Account created. Check your email to verify, then sign in.");
         setMode("signin");
         setPassword("");
         setConfirm("");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data: signInData, error } = await supabase.auth.signInWithPassword({
           email: email.trim(),
           password,
         });
         if (error) throw error;
+        // Idempotent: covers users who signed up while SMTP was failing (no welcome ever sent)
+        fetch("/api/auth/send-welcome", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: signInData?.user?.id,
+            email: email.trim(),
+            fullName:
+              (signInData?.user?.user_metadata?.full_name as string | undefined) ||
+              (signInData?.user?.user_metadata?.name as string | undefined) ||
+              null,
+          }),
+        }).catch(() => {});
         fetch("/api/auth/login-notification", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
