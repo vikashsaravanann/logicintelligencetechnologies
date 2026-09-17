@@ -114,21 +114,26 @@ export default function DiscoveryPage() {
       return;
     }
     setIsSubmitting(true);
-    
+    setSubmitError(null);
+
     try {
       const res = await fetch("/api/checklist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: AbortSignal.timeout(25000),
         body: JSON.stringify({ answers, email }),
       });
-      
-      if (res.ok) {
-        setSent(true);
-      } else {
-        console.error("Submission failed");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.success === false) {
+        throw new Error(
+          data?.message || "Submission failed. Please try again or contact us on WhatsApp."
+        );
       }
+      setSent(true);
     } catch (err) {
-      console.error(err);
+      setSubmitError(
+        err instanceof Error ? err.message : "Network error. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
