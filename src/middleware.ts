@@ -25,10 +25,11 @@ function isPublicPath(path: string): boolean {
   if (path.startsWith("/manifest")) return true;
   const marketing = [
     "/about", "/services", "/industries", "/products", "/work", "/packages",
-    "/blog", "/resources", "/careers", "/press", "/investors", "/contact",
+    "/blog", "/resources", "/careers", "/jobs", "/press", "/investors", "/contact",
     "/book-consultation", "/free-demo", "/discovery", "/checklist", "/support",
-    "/search", "/ai", "/privacy", "/terms", "/refund-policy", "/cookie-policy",
-    "/accessibility", "/certifications", "/expertise",
+    "/search", "/ai", "/ai-assistant", "/privacy", "/terms", "/refund-policy",
+    "/cookie-policy", "/accessibility", "/certifications", "/expertise",
+    "/booking", "/proposal",
   ];
   if (marketing.some((p) => path === p || path.startsWith(p + "/"))) return true;
   return false;
