@@ -9,19 +9,23 @@ import { getLeadNotificationRecipients } from "@/lib/email/recipients";
 import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
 import { sanitizeMultilineText, sanitizePersonName } from "@/lib/email/validation";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 const ticketSchema = z.object({
   name: z.string().min(2).max(120),
   email: z.string().email().max(254),
   subject: z.string().min(3).max(200),
   message: z.string().min(10).max(5000),
   priority: z.enum(["Low", "Medium", "High", "Critical"]).default("Medium"),
+  pageUrl: z.string().max(500).optional(),
 });
 
 export async function POST(req: NextRequest) {
   try {
     if (!rateLimit(`support:${clientIp(req)}`, 8, 15 * 60_000)) {
       return NextResponse.json(
-        { success: false, message: "Too many requests. Please try again shortly." },
+        { success: false, code: "RATE_LIMITED", message: "Too many requests. Please try again shortly." },
         { status: 429 }
       );
     }
@@ -30,7 +34,11 @@ export async function POST(req: NextRequest) {
     const parsed = ticketSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: parsed.error.issues[0]?.message || "Invalid input" },
+        {
+          success: false,
+          code: "VALIDATION_ERROR",
+          message: parsed.error.issues[0]?.message || "Invalid input",
+        },
         { status: 400 }
       );
     }
@@ -39,15 +47,25 @@ export async function POST(req: NextRequest) {
     const email = parsed.data.email.trim().toLowerCase();
     const subject = sanitizePersonName(parsed.data.subject, 200);
     const message = sanitizeMultilineText(parsed.data.message, 5000);
+    const priority = parsed.data.priority;
 
+    // user_id intentionally omitted for public web submissions (nullable after migration)
     const stored = await insertLead("support_tickets", {
-      subject: `[${parsed.data.priority}] ${subject}`,
+      subject: `[${priority}] ${subject}`,
       message: `From: ${name} (${email})\n\n${message}`,
       status: "Open",
+      requester_name: name,
+      requester_email: email,
+      priority,
+      source: "web-form",
+      page_url: parsed.data.pageUrl || "/support/new",
     });
 
     if (!stored.ok) {
-      return NextResponse.json({ success: false, message: stored.message }, { status: 503 });
+      return NextResponse.json(
+        { success: false, code: "SUBMISSION_FAILED", message: stored.message },
+        { status: 503 }
+      );
     }
 
     try {
@@ -65,7 +83,7 @@ export async function POST(req: NextRequest) {
           companyName: "—",
           email,
           phone: "—",
-          service: `Support — ${parsed.data.priority}`,
+          service: `Support — ${priority}`,
           requirements: message,
           submissionDate: new Date().toISOString(),
         }),
@@ -87,11 +105,22 @@ export async function POST(req: NextRequest) {
       console.error("[Support Email]", emailErr);
     }
 
-    return NextResponse.json({ success: true, ticketId: stored.id }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Support request received",
+        ticketId: stored.id,
+      },
+      { status: 201 }
+    );
   } catch (err) {
     console.error("[Support API Error]", err);
     return NextResponse.json(
-      { success: false, message: "Could not create the ticket. Please try again." },
+      {
+        success: false,
+        code: "SUBMISSION_FAILED",
+        message: "Could not create the ticket. Please try again.",
+      },
       { status: 500 }
     );
   }
