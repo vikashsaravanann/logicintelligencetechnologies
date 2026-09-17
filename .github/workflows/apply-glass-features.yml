@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   push:
     paths:
+      - "scripts/apply-ai-coming-soon.py"
+      - "scripts/apply-jobs-ceo-glass.py"
+      - "scripts/apply-glass-tokens.py"
       - ".github/workflows/apply-glass-features.yml"
 
 permissions:
@@ -14,132 +17,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Patch AI Coming Soon + Jobs CEO + globals glass tokens
+      - name: Apply patches
         run: |
-          python3 << 'PY'
-          from pathlib import Path
-
-          # --- AI page ---
-          p = Path("src/app/ai/page.tsx")
-          t = p.read_text()
-          if "comingSoonNote" not in t:
-              t = t.replace(
-                  "const [landed, setLanded] = useState(true);",
-                  "const [landed, setLanded] = useState(true);\n  const [comingSoonNote, setComingSoonNote] = useState(false);",
-              )
-          old = '''            <button\n              type=\"button\"\n              onClick={async () => {\n                // Require auth before entering the chat workspace\n                const { data } = await supabase.auth.getUser();\n                if (!data.user) {\n                  router.push(\"/login?next=/ai\");\n                  return;\n                }\n                setLanded(false);\n              }}\n              className=\"inline-flex items-center justify-center gap-2 rounded-full bg-[#E8651C] px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(232,101,28,0.35)] hover:brightness-110\"\n            >\n              Get Started <ArrowRight className=\"w-4 h-4\" />\n            </button>'''
-          new = '''            <button\n              type=\"button\"\n              onClick={() => setComingSoonNote(true)}\n              aria-label=\"Coming Soon — AI Workspace not yet publicly available\"\n              className=\"inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-md hover:bg-white/15 hover:border-white/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors\"\n            >\n              Coming Soon\n            </button>'''
-          if old in t:
-              t = t.replace(old, new)
-          if "comingSoonNote ?" not in t and "Coming Soon" in t:
-              needle = '''            <Link href=\"/ai-assistant\" className=\"rounded-full border border-white/15 bg-black/25 px-5 py-3 text-sm text-center\">Learn More</Link>\n          </div>\n        </main>'''
-              repl = '''            <Link href=\"/ai-assistant\" className=\"rounded-full border border-white/15 bg-black/25 px-5 py-3 text-sm text-center backdrop-blur-sm hover:bg-black/40 transition-colors\">Learn More</Link>\n          </div>\n          {comingSoonNote ? (\n            <p\n              role=\"status\"\n              className=\"mt-5 max-w-md mx-auto text-sm text-[color:var(--ai-muted)] leading-relaxed rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md px-4 py-3\"\n            >\n              <span className=\"block text-white font-semibold mb-1\">AI Workspace</span>\n              Coming soon — we're preparing the next generation of the Logic Intelligence Technologies AI experience.\n            </p>\n          ) : null}\n        </main>'''
-              if needle in t:
-                  t = t.replace(needle, repl)
-          p.write_text(t)
-          print("AI", "Coming Soon" in t, "Get Started" in t)
-
-          # --- globals tokens if missing ---
-          g = Path("src/app/globals.css")
-          gt = g.read_text()
-          if "--glass-bg:" not in gt:
-              insert = '''\n  /* Glassmorphism design tokens */\n  --glass-bg: rgba(12, 18, 32, 0.72);\n  --glass-bg-strong: rgba(10, 15, 30, 0.88);\n  --glass-border: rgba(255, 255, 255, 0.10);\n  --glass-blur: 16px;\n  --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);\n  --glass-radius-lg: 1.5rem;\n'''
-              gt = gt.replace("  --ai-glow:", insert + "  --ai-glow:")
-          if ".glass-surface {" not in gt:
-              gt += '''\n.glass-surface { background: var(--glass-bg, rgba(12,18,32,0.72)); border: 1px solid var(--glass-border, rgba(255,255,255,0.1)); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 1.5rem; box-shadow: 0 12px 40px rgba(0,0,0,0.35); }\n.glass-surface-strong { background: rgba(10,15,30,0.9); border: 1px solid rgba(255,255,255,0.14); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 1.5rem; }\n.glass-nav { background: rgba(10,15,30,0.82); border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }\n@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .glass-surface, .glass-surface-strong, .glass-nav { background: #0c1220; } }\n'''
-          g.write_text(gt)
-          print("globals ok")
-
-          # --- navbar ---
-          n = Path("src/components/layout/navbar.tsx")
-          nt = n.read_text()
-          nt = nt.replace(
-              '"bg-[rgba(10,15,30,0.85)] backdrop-blur-[20px] border-b border-white/[0.08] py-2.5"',
-              '"glass-nav py-2.5"',
-          )
-          n.write_text(nt)
-          print("navbar ok")
-          PY
-
-      - name: Rewrite Jobs CEO block
-        run: |
-          python3 << 'PY'
-          from pathlib import Path
-          p = Path("src/app/(marketing)/jobs/jobs-client.tsx")
-          t = p.read_text()
-          start = t.find("      {/* Featured CEO Card */}")
-          end = t.find("      {/* Director Seats (3 Cards) */}")
-          if start < 0 or end < 0:
-              print("CEO markers missing", start, end)
-              raise SystemExit(1)
-          new_block = r'''      {/* Featured CEO Card — half image / half glass content */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-14">
-        <article className="relative isolate overflow-hidden rounded-[32px] border border-white/12 shadow-[0_30px_90px_rgba(0,0,0,0.55)] bg-[#0A0F1E]">
-          <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[480px] lg:min-h-[560px]">
-            <div className="relative min-h-[220px] sm:min-h-[280px] lg:min-h-full order-1">
-              <Image src={featured.cover!} alt="" fill sizes="(max-width: 1024px) 100vw, 50vw" quality={75} className="object-cover object-center" priority />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[#0A0F1E]/40" />
-              <div className="absolute top-5 left-5 z-20">
-                <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] rounded-full border border-cyan-300/40 bg-black/65 backdrop-blur-md px-3.5 py-1 text-cyan-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" aria-hidden />
-                  Priority Role · Open Seat
-                </span>
-              </div>
-            </div>
-            <div className="relative z-10 order-2 flex flex-col justify-center p-6 sm:p-9 lg:p-11 bg-[rgba(10,15,30,0.94)] lg:bg-[rgba(10,15,30,0.92)] border-t lg:border-t-0 lg:border-l border-white/10 backdrop-blur-xl">
-              <div className="flex flex-wrap items-center gap-2 mb-3">
-                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-cyan-400">Executive Appointment</span>
-                <span className="text-zinc-600" aria-hidden>|</span>
-                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-300">Coimbatore HQ</span>
-              </div>
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight uppercase text-white leading-[1.15] mb-4">{featured.t}</h3>
-              <p className="text-sm sm:text-base text-zinc-200 leading-relaxed mb-5 max-w-prose">{featured.d}</p>
-              <div className="space-y-3 mb-5 rounded-2xl border border-white/10 bg-black/35 p-4">
-                <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed">
-                  <span className="text-cyan-400 font-bold uppercase tracking-wider text-[11px] block mb-1">Ideal Profile</span>
-                  {featured.who}
-                </p>
-                <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed">
-                  <span className="text-cyan-400 font-bold uppercase tracking-wider text-[11px] block mb-1">Location Requirement</span>
-                  {featured.extra}
-                </p>
-              </div>
-              <div className="inline-flex flex-wrap items-center gap-2 sm:gap-3 px-4 py-3 rounded-xl border border-cyan-400/25 bg-cyan-950/50 mb-6 max-w-full">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-300 shrink-0">Terms</span>
-                <span className="text-xs font-semibold text-white uppercase tracking-wide">{featured.salary} · {featured.equity}</span>
-              </div>
-              <div className="space-y-2 mb-8">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400">90-Day Ownership Goals</p>
-                <div className="grid gap-2">
-                  {featured.days.map((d) => (
-                    <div key={d} className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-semibold text-zinc-100 tracking-wide flex items-start gap-2">
-                      <span className="text-cyan-400 font-bold shrink-0" aria-hidden>→</span>
-                      <span className="normal-case sm:uppercase">{d}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <button type="button" onClick={() => goApply("ceo")} className="h-12 px-8 rounded-xl bg-primary text-black font-black text-xs uppercase tracking-[0.16em] w-full sm:w-auto shadow-[0_10px_30px_rgba(0,191,255,0.28)] hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all">
-                Apply for CEO Seat
-              </button>
-            </div>
-          </div>
-        </article>
-      </section>
-
-'''
-          p.write_text(t[:start] + new_block + t[end:])
-          print("CEO rewritten")
-          PY
+          python3 scripts/apply-ai-coming-soon.py
+          python3 scripts/apply-jobs-ceo-glass.py
+          python3 scripts/apply-glass-tokens.py
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff --staged --quiet && echo "No changes" && exit 0
+          if git diff --staged --quiet; then
+            echo "No changes"
+            exit 0
+          fi
           git commit -m "feat(ui): AI Coming Soon + Jobs CEO glass panel + glass tokens"
           git push
