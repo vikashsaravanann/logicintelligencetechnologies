@@ -91,6 +91,21 @@ export async function ensureWelcomeEmail({
       return { success: true, message: "Welcome email already sent", alreadySent: true };
     }
 
+    if (userId && isSupabaseLive()) {
+      try {
+        await supabaseAdmin
+          .from("profiles")
+          .update({
+            email: cleanEmail,
+            full_name: safeName || undefined,
+            welcome_email_sent_at: new Date().toISOString(),
+          })
+          .eq("id", userId);
+      } catch {
+        /* non-fatal */
+      }
+    }
+
     return {
       success: true,
       message: "Welcome email queued",
