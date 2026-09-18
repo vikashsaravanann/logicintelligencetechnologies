@@ -9,8 +9,8 @@ export default function GlobalVideoBackground() {
   const activeVideo = useMemo(() => {
     if (!pathname) return "/assets/backdrops/bg-vid-1.mp4";
     
-    // Check if it's the home page, specifically force bg-vid-2 as requested earlier
-    if (pathname === "/") return "/assets/backdrops/bg-vid-2.mp4";
+    // Check if it's the home page, specifically force bg-vid-4 as requested earlier
+    if (pathname === "/") return "/assets/backdrops/bg-vid-4.mp4";
     
     // Hash the pathname to pick a video 1-5 consistently for this specific page
     let hash = 0;
