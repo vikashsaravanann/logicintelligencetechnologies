@@ -63,7 +63,7 @@ export default function InstagramFeedSection() {
         </motion.div>
 
         {/* Grid of posts */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl mx-auto">
+        <div className="grid grid-cols-2 gap-3 max-w-2xl mx-auto">
           {instagramPosts.map((post, i) => (
             <motion.a
               key={i}

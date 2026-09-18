@@ -14,29 +14,23 @@ img, video, canvas, iframe, svg {
   max-width: 100vw;
 }
 
-/* Drastically reduced scale for mobile to make everything smaller */
-@media (max-width: 768px) {
-  html {
-    font-size: 13px !important;
-  }
-}
-
+/* Comfortable reading scale on narrow screens */
 @media (max-width: 640px) {
   html {
-    font-size: 11px !important;
+    font-size: 15px;
   }
   h1, .text-4xl, .text-5xl, .text-6xl {
     line-height: 1.15;
     word-break: break-word;
   }
   section, .container {
-    padding-left: max(0.5rem, env(safe-area-inset-left));
-    padding-right: max(0.5rem, env(safe-area-inset-right));
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
   }
 }
 
 @media (max-width: 390px) {
   html {
-    font-size: 9.5px !important;
+    font-size: 14px;
   }
 }

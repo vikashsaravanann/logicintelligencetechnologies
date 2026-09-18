@@ -117,12 +117,12 @@ export default function Navbar() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <span className="text-xs font-bold text-white tracking-[0.14em] hidden md:inline">
+              <span className="text-xs font-bold text-white tracking-[0.14em] hidden lg:inline">
                 {COMPANY.displayName.toUpperCase()}
               </span>
             </Link>
 
-            <div className="hidden md:flex items-center justify-center gap-0.5 flex-1 min-w-0">
+            <div className="hidden lg:flex items-center justify-center gap-0.5 flex-1 min-w-0">
               {PRIMARY_NAV.map((item) => (
                 <NavLink key={item.href} href={item.href}>
                   {item.label.toUpperCase()}
@@ -192,20 +192,20 @@ export default function Navbar() {
               <AuthNavControl />
               <Link
                 href={PRIMARY_CTA.href}
-                className="hidden md:inline-flex h-8 px-4 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
+                className="hidden lg:inline-flex h-8 px-4 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
               >
                 Book Consultation
               </Link>
               <Link
                 href="/contact"
-                className="hidden md:inline-flex h-8 px-4 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-90 transition-opacity"
+                className="hidden lg:inline-flex h-8 px-4 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-90 transition-opacity"
               >
                 Start Project
               </Link>
-              <ThemeToggle className="hidden md:grid" />
+              <ThemeToggle className="hidden lg:grid" />
               <button
                 type="button"
-                className="md:hidden text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="lg:hidden text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={isOpen ? "Close menu" : "Open menu"}
                 aria-expanded={isOpen}
@@ -223,7 +223,7 @@ export default function Navbar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 320 }}
-              className="fixed top-0 right-0 w-[min(88vw,380px)] h-[100dvh] bg-[rgba(10,15,30,0.98)] border-l border-white/10 md:hidden z-40 overflow-y-auto"
+              className="fixed top-0 right-0 w-[min(88vw,380px)] h-[100dvh] bg-[rgba(10,15,30,0.98)] border-l border-white/10 lg:hidden z-40 overflow-y-auto"
             >
               <div className="flex flex-col px-5 pt-16 pb-10">
                 <div className="space-y-1 mb-6">
@@ -320,7 +320,7 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/60 z-30 md:hidden"
+              className="fixed inset-0 bg-black/60 z-30 lg:hidden"
               aria-hidden
             />
           )}

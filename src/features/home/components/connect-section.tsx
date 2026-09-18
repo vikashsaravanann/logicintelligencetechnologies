@@ -5,7 +5,7 @@ import { COMPANY } from "@/config/company";
 
 export default function ConnectSection() {
   return (
-    <section className="py-16 md:py-24 bg-[#0a0d1a] relative overflow-hidden">
+    <section className="py-16 md:py-24 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,191,255,0.05)_0%,transparent_70%)]" />
       <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
         <motion.div
@@ -18,7 +18,7 @@ export default function ConnectSection() {
           <p className="text-zinc-400">Reach out to us directly through any of these channels.</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { icon: MessageCircle, label: "WhatsApp", val: COMPANY.whatsappNumber, href: `https://wa.me/${COMPANY.whatsappNumber}` },
             { icon: Mail, label: "Email", val: COMPANY.email, href: `mailto:${COMPANY.email}` },
@@ -32,7 +32,7 @@ export default function ConnectSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ delay: i * 0.1 }}
-              className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center hover:bg-white/10 transition-colors"
+              className="bg-white/5 border border-white/10 rounded-xl p-3 sm:p-6 flex flex-col items-center hover:bg-white/10 transition-colors"
             >
               <item.icon className="w-8 h-8 text-primary mb-4" />
               <h3 className="text-white font-bold mb-2">{item.label}</h3>

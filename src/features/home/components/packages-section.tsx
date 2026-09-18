@@ -29,7 +29,7 @@ export default function PackagesSection() {
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
           {packagesData.map((pkg) => {
             const isPopular = pkg.slug === "business-pro-pack";
             return (
