@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import WebGLParticles from "@/components/motion/webgl-particles";
 
 /**
- * Site-wide tech ambient layer (no opacity blend on the video).
- * Full-opacity loop + light navy scrim so UI text stays readable.
- * Mobile: playsInline + muted for autoplay; respects reduced-motion.
+ * Site-wide tech ambient — full opacity video (no 30% blend).
+ * Prefers /assets/ambient/tech-loop.*; falls back to public CDN loop.
+ * Mobile-safe: muted + playsInline for autoplay.
  */
 export default function AmbientTechBackground() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -55,11 +55,15 @@ export default function AmbientTechBackground() {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           poster="/assets/banner.jpg"
         >
           <source src="/assets/ambient/tech-loop.webm" type="video/webm" />
           <source src="/assets/ambient/tech-loop.mp4" type="video/mp4" />
+          <source
+            src="https://assets.mixkit.co/videos/34523/34523-720.mp4"
+            type="video/mp4"
+          />
         </video>
       )}
 
@@ -72,7 +76,6 @@ export default function AmbientTechBackground() {
       <div className="absolute -top-24 left-1/4 h-56 w-56 rounded-full bg-primary/10 blur-[90px] sm:h-72 sm:w-72" />
       <div className="absolute top-1/3 right-0 h-64 w-64 rounded-full bg-accent/10 blur-[100px] sm:h-80 sm:w-80" />
 
-      {/* Light scrim only — video remains fully visible; text still readable */}
       <div className="absolute inset-0 bg-[#0A0F1E]/35" />
       <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/25 via-transparent to-[#0A0F1E]/70" />
     </div>
