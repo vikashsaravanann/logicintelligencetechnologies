@@ -1,1 +1,4 @@
-LOAD_FROM_FILE
+@import "./styles/tokens.css";
+@import "./styles/components-a.css";
+@import "./styles/components-b.css";
+@import "./styles/glass.css";
