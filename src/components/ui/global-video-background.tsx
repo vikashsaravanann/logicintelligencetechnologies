@@ -1,12 +1,13 @@
 "use client";
 
-const VIDEO = "/assets/backdrops/bg-vid-4.mp4";
+const VIDEO = "/assets/backdrops/bg-vid-1.mp4";
 
 export default function GlobalVideoBackground() {
   return (
     <div className="fixed inset-0 z-[-50] overflow-hidden pointer-events-none bg-[#0A0F1E]" aria-hidden>
       <video
         src={VIDEO}
+        poster="/bg-vid-1.mp4.jpg"
         autoPlay
         muted
         loop
