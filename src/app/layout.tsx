@@ -18,9 +18,7 @@ const inter = Inter({
 });
 
 export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 5,
+  width: 1280,
   userScalable: true,
   viewportFit: "cover",
   themeColor: [
@@ -92,7 +90,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
+
         <link rel="icon" href="/icon-48.png" type="image/png" sizes="48x48" />
         <link rel="icon" href="/assets/logo-icon.jpg" type="image/jpeg" />
         <link rel="apple-touch-icon" href="/apple-icon.png" sizes="180x180" />
