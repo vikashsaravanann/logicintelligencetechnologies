@@ -1,0 +1,39 @@
+/* components-b: buttons + reduced motion */
+.lit-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #0A0F1E;
+  background: linear-gradient(135deg, #00BFFF 0%, #7B2FBE 100%);
+  border: none;
+  transition: filter 0.2s ease;
+}
+.lit-btn-primary:hover { filter: brightness(1.08); }
+.lit-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+}
+.lit-btn-secondary:hover { background: rgba(255,255,255,0.1); }
+@media (prefers-reduced-motion: reduce) {
+  .lit-btn-primary, .lit-btn-secondary { transition: none; }
+}
