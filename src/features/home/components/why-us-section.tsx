@@ -27,7 +27,7 @@ export default function WhyUsSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#0A0F1E] relative overflow-hidden">
+    <section className="py-16 md:py-24 bg-transparent relative overflow-hidden">
       {/* Background blueprint/grid styling */}
       <div className="absolute inset-0 bg-[url('https://res.cloudinary.com/dbuznxrrm/image/upload/v1704285811/grid-pattern_q5aocu.svg')] opacity-5" />
       <div className="absolute right-0 top-0 w-1/2 h-full opacity-10 pointer-events-none">

@@ -30,7 +30,7 @@ export default function TrustBadgesSection() {
   ];
 
   return (
-    <section className="py-16 bg-[#0A0F1E] border-t border-b border-white/5 relative z-10">
+    <section className="py-16 bg-transparent border-t border-b border-white/5 relative z-10">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {trustElements.map((item, i) => {

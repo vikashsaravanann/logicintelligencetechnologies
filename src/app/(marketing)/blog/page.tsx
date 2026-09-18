@@ -22,7 +22,7 @@ export default function BlogListPage() {
   );
 
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white pt-32 pb-24 relative overflow-hidden">
+    <main className="min-h-screen bg-transparent text-white pt-32 pb-24 relative overflow-hidden">
       <BackToHome href="/" label="Back to Home" />
       <PageBackdrop src="/assets/jobs/ceo-desk.jpg" />
       

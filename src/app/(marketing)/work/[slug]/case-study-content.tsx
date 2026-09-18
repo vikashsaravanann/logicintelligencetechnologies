@@ -45,7 +45,7 @@ export default function CaseStudyContent({
   };
 
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white pt-24 lg:pt-32 pb-24 overflow-hidden relative">
+    <main className="min-h-screen bg-transparent text-white pt-24 lg:pt-32 pb-24 overflow-hidden relative">
       <FloatingElements />
       
       {/* Background glow */}
