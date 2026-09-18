@@ -5,9 +5,9 @@ import { COMPANY } from '@/config/company';
 import { organizationNode, websiteNode } from '@/lib/seo/schema';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from '@/components/theme/theme-provider';
+import GlobalVideoBackground from '@/components/ui/global-video-background';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
-import GlobalVideoBackground from '@/components/ui/global-video-background';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -18,7 +18,9 @@ const inter = Inter({
 });
 
 export const viewport: Viewport = {
-  width: 1280,
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
   userScalable: true,
   viewportFit: "cover",
   themeColor: [
@@ -90,7 +92,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
         <link rel="icon" href="/icon-48.png" type="image/png" sizes="48x48" />
         <link rel="icon" href="/assets/logo-icon.jpg" type="image/jpeg" />
         <link rel="apple-touch-icon" href="/apple-icon.png" sizes="180x180" />
