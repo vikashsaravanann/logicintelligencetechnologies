@@ -1,7 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const VIDEOS = [
   "/assets/backdrops/bg-vid-1.mp4",
@@ -21,6 +22,11 @@ const POSTERS = [
 
 export default function GlobalVideoBackground() {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const activeIndex = useMemo(() => {
     if (!pathname || pathname === "/") return 0;
@@ -33,22 +39,30 @@ export default function GlobalVideoBackground() {
     return Math.abs(hash) % 5;
   }, [pathname]);
 
+  if (!mounted) return (
+    <div className="fixed inset-0 z-[-50] overflow-hidden pointer-events-none bg-[#0A0F1E]" aria-hidden>
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/20 via-[#0A0F1E]/40 to-[#0A0F1E]/80" />
+    </div>
+  );
+
   return (
     <div className="fixed inset-0 z-[-50] overflow-hidden pointer-events-none bg-[#0A0F1E]" aria-hidden>
-      {VIDEOS.map((video, index) => (
-        <video
-          key={video}
-          src={video}
-          poster={POSTERS[index]}
+      <AnimatePresence mode="popLayout">
+        <motion.video
+          key={VIDEOS[activeIndex]}
+          src={VIDEOS[activeIndex]}
+          poster={POSTERS[activeIndex]}
           autoPlay
           muted
           loop
           playsInline
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${
-            index === activeIndex ? "opacity-60" : "opacity-0"
-          }`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.6 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+          className="absolute inset-0 h-full w-full object-cover"
         />
-      ))}
+      </AnimatePresence>
       <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/20 via-[#0A0F1E]/40 to-[#0A0F1E]/80" />
     </div>
   );
