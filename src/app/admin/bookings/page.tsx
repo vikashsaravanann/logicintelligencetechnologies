@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { Calendar, Clock, Globe, User, ArrowRight } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: "Consultation Bookings | Admin Command Center",
@@ -17,6 +18,7 @@ export default async function AdminBookingsPage() {
 
   return (
     <div className="container mx-auto p-4 py-8 max-w-6xl space-y-8">
+      <BackToHome href="/admin/command-center" label="Back to Command Center" inline />
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-800">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white mb-1">

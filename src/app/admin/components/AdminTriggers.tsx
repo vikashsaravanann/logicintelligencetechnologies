@@ -1,29 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { Send, FileText, CheckCircle, Rocket, FileCheck, CheckSquare, Loader2 } from "lucide-react";
+import { Send, Loader2, FileText, CheckCircle, Rocket, CheckSquare, FileCheck } from "lucide-react";
 
 export function AdminTriggers() {
-  const [activeTab, setActiveTab] = useState<string>("invoice");
+  const [activeTab, setActiveTab] = useState("invoice");
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const [adminSecret, setAdminSecret] = useState("");
 
   const [formData, setFormData] = useState({
     email: "",
     fullName: "",
-    invoiceNumber: "INV-2026-001",
-    amount: "$1,500.00",
-    dueDate: "2026-09-30",
-    paymentLink: "https://www.logicintelligencetechnologies.in/dashboard",
-    projectName: "Logic Intel Web App",
-    liveUrl: "https://www.logicintelligencetechnologies.in",
-    proposalUrl: "https://www.logicintelligencetechnologies.in/dashboard",
+    invoiceNumber: "",
+    amount: "",
+    dueDate: "",
+    paymentLink: "",
+    projectName: "",
+    liveUrl: "",
+    proposalUrl: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSend = async (e: React.FormEvent) => {
@@ -37,7 +36,6 @@ export function AdminTriggers() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${adminSecret}`,
         },
         body: JSON.stringify({
           type: activeTab,
@@ -50,7 +48,8 @@ export function AdminTriggers() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to send");
       
-      setSuccessMsg(`Successfully sent ${activeTab} email to ${formData.email}`);
+      const status = data.status || "queued";
+      setSuccessMsg(`Email ${status} to ${formData.email} (${activeTab})`);
     } catch (err: any) {
       setErrorMsg(err.message);
     } finally {
@@ -66,19 +65,19 @@ export function AdminTriggers() {
       </div>
 
       <div className="flex flex-wrap gap-2 mb-8">
-        <button onClick={() => setActiveTab('invoice')} className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors ${activeTab === 'invoice' ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-neutral-800/50 text-neutral-400 hover:text-white border border-transparent'}`}>
+        <button type="button" onClick={() => setActiveTab('invoice')} className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors ${activeTab === 'invoice' ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-neutral-800/50 text-neutral-400 hover:text-white border border-transparent'}`}>
           <FileText size={16} /> Send Invoice
         </button>
-        <button onClick={() => setActiveTab('payment')} className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors ${activeTab === 'payment' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-neutral-800/50 text-neutral-400 hover:text-white border border-transparent'}`}>
+        <button type="button" onClick={() => setActiveTab('payment')} className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors ${activeTab === 'payment' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-neutral-800/50 text-neutral-400 hover:text-white border border-transparent'}`}>
           <CheckCircle size={16} /> Payment Received
         </button>
-        <button onClick={() => setActiveTab('kickoff')} className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors ${activeTab === 'kickoff' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-neutral-800/50 text-neutral-400 hover:text-white border border-transparent'}`}>
+        <button type="button" onClick={() => setActiveTab('kickoff')} className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors ${activeTab === 'kickoff' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-neutral-800/50 text-neutral-400 hover:text-white border border-transparent'}`}>
           <Rocket size={16} /> Project Kickoff
         </button>
-        <button onClick={() => setActiveTab('delivered')} className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors ${activeTab === 'delivered' ? 'bg-fuchsia-500/20 text-fuchsia-400 border border-fuchsia-500/30' : 'bg-neutral-800/50 text-neutral-400 hover:text-white border border-transparent'}`}>
+        <button type="button" onClick={() => setActiveTab('delivered')} className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors ${activeTab === 'delivered' ? 'bg-fuchsia-500/20 text-fuchsia-400 border border-fuchsia-500/30' : 'bg-neutral-800/50 text-neutral-400 hover:text-white border border-transparent'}`}>
           <CheckSquare size={16} /> Project Delivered
         </button>
-        <button onClick={() => setActiveTab('proposal')} className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors ${activeTab === 'proposal' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-neutral-800/50 text-neutral-400 hover:text-white border border-transparent'}`}>
+        <button type="button" onClick={() => setActiveTab('proposal')} className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors ${activeTab === 'proposal' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-neutral-800/50 text-neutral-400 hover:text-white border border-transparent'}`}>
           <FileCheck size={16} /> Send Proposal
         </button>
       </div>
@@ -141,19 +140,14 @@ export function AdminTriggers() {
             <input type="url" name="proposalUrl" value={formData.proposalUrl} onChange={handleChange} className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500" />
           </div>
         )}
-        
-        <div className="pt-4 border-t border-neutral-800">
-          <label className="block text-xs font-medium text-neutral-400 mb-1">Admin Secret (CRON_SECRET) *</label>
-          <input required type="password" value={adminSecret} onChange={(e) => setAdminSecret(e.target.value)} className="w-full max-w-xs bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500" placeholder="Enter CRON_SECRET to authorize" />
-        </div>
 
-        <div className="flex items-center gap-4 pt-4">
+        <div className="flex items-center gap-4 pt-4 mt-2 border-t border-neutral-800">
           <button type="submit" disabled={loading} className="px-6 py-2.5 bg-white text-black font-semibold rounded-lg hover:bg-neutral-200 transition-colors disabled:opacity-50 flex items-center gap-2">
             {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
             Dispatch Email
           </button>
-          {successMsg && <span className="text-emerald-400 text-sm">{successMsg}</span>}
-          {errorMsg && <span className="text-rose-400 text-sm">{errorMsg}</span>}
+          {successMsg && <span className="text-emerald-400 text-sm font-medium">{successMsg}</span>}
+          {errorMsg && <span className="text-rose-400 text-sm font-medium">{errorMsg}</span>}
         </div>
       </form>
     </div>

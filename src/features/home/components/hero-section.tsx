@@ -22,13 +22,10 @@ export default function HeroSection() {
 
   return (
     <section
-      id="home"
-      className="relative min-h-[100svh] flex items-center justify-center overflow-hidden bg-[#0A0F1E] pt-28 md:pt-36 pb-16"
+      id="hero"
+      aria-label="Logic Intelligence Technologies - Where Logic Meets Innovation"
+      className="relative min-h-[100svh] flex items-center justify-center overflow-hidden bg-transparent pt-28 md:pt-36 pb-16"
     >
-      <div className="absolute inset-0 z-0">
-        <PageBackdrop src="/assets/backdrops/home-hero.jpg" />
-      </div>
-
       <div className="relative z-20 w-full max-w-7xl mx-auto px-6 lg:px-8 flex flex-col items-center text-center">
         <div className="max-w-4xl flex flex-col items-center mt-4">
           <div className="flex flex-col items-center gap-4 mb-8">

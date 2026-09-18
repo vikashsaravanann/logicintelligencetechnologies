@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { HelpCircle, CheckCircle2, Clock, AlertTriangle, ArrowRight } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: "Support Desk | Admin Command Center",
@@ -17,7 +18,8 @@ export default async function AdminSupportPage() {
 
   return (
     <div className="container mx-auto p-4 py-8 max-w-6xl">
-      <div className="mb-8">
+      <BackToHome href="/admin/command-center" label="Back to Command Center" inline />
+      <div className="mb-8 mt-4">
         <h1 className="text-3xl font-bold tracking-tight text-white mb-1">
           Support Desk Queue
         </h1>
@@ -61,8 +63,7 @@ export default async function AdminSupportPage() {
                     </td>
                     <td className="p-4 text-right">
                       <Link
-                        href={`/support/${t.id}`}
-                        target="_blank"
+                        href={`/admin/support/${t.id}`}
                         className="text-xs text-primary font-bold hover:underline inline-flex items-center gap-1"
                       >
                         <span>Open Details</span>

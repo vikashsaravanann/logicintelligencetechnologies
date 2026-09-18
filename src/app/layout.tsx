@@ -7,6 +7,7 @@ import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from '@/components/theme/theme-provider';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
+import GlobalVideoBackground from '@/components/ui/global-video-background';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -108,6 +109,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <GlobalVideoBackground />
           <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
           {children}
           <SpeedInsights />

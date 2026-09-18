@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { FileText, Plus, ArrowRight, CheckCircle2, Clock, Eye, Send } from "lucide-react";
+import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: "Proposal Management | Admin Command Center",
@@ -17,7 +18,8 @@ export default async function AdminProposalsPage() {
 
   return (
     <div className="container mx-auto p-4 py-8 max-w-6xl">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <BackToHome href="/admin/command-center" label="Back to Command Center" inline />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 mt-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white mb-1">
             Client Proposals & Contracts

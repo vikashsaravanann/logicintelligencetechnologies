@@ -12,7 +12,7 @@ export default function MarketingLayout({
     <>
       <InitialLoader />
       <Navbar />
-      <main className="min-h-screen bg-[#0A0F1E]">{children}</main>
+      <main className="min-h-screen bg-transparent">{children}</main>
       <Footer />
       <ClientWidgets />
     </>

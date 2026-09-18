@@ -1,5 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import Link from "next/link";
+import BackToHome from "@/components/ui/back-to-home";
 
 export const revalidate = 0;
 
@@ -12,12 +12,12 @@ export default async function AdminAiLeadsPage() {
 
   return (
     <div className="container mx-auto p-4 py-8 max-w-6xl">
-      <div className="mb-6 flex items-end justify-between gap-4">
+      <BackToHome href="/admin/command-center" label="Back to Command Center" inline />
+      <div className="mb-6 mt-4 flex items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white mb-1">AI leads</h1>
           <p className="text-neutral-400 text-sm">Captured from /ai and the site-wide chat widget.</p>
         </div>
-        <Link href="/admin" className="text-sm text-neutral-400 hover:text-white">Back</Link>
       </div>
       <div className="overflow-x-auto rounded-xl border border-neutral-800">
         <table className="w-full text-sm">

@@ -1,4 +1,6 @@
-/**
+const fs = require('fs');
+
+const routeContent = `/**
  * Centralized Route Inventory and Route Metadata for Logic Intelligence Technologies.
  */
 
@@ -75,3 +77,6 @@ export const ROUTE_MIGRATION_MAP: Record<string, string> = {
   "/vikashs-portfolio": "/about",
   "/vikash-portfolio": "/about",
 };
+`;
+
+fs.writeFileSync('src/config/routes.ts', routeContent);

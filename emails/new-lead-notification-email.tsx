@@ -3,7 +3,7 @@ import * as React from "react";
 import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
-import { EmailButton } from "./components/email-button";
+import { EmailButton, EmailButtonGroup } from "./components/email-button";
 import {
   EmailContent,
   EmailTitle,
@@ -52,7 +52,10 @@ export const NewLeadNotificationEmail = ({
           {requirements ? <InfoRow label="Details" value={requirements} /> : null}
           {(Budget || budget) ? <InfoRow label="Budget" value={Budget || budget} /> : null}
         </Section>
-        <EmailButton href={`${EMAIL.siteUrl}/admin/leads`}>Open leads</EmailButton>
+        <EmailButtonGroup>
+          <EmailButton href={`${EMAIL.siteUrl}/admin/command-center`}>Open Admin Dashboard</EmailButton>
+          <EmailButton href={`${EMAIL.siteUrl}/admin/leads`} variant="secondary">Open leads</EmailButton>
+        </EmailButtonGroup>
         <EmailMuted>Reply-To is set to the customer email when available.</EmailMuted>
       </EmailContent>
       <EmailFooter />
