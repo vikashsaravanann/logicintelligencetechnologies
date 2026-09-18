@@ -19,33 +19,22 @@ img, video, canvas, iframe, svg {
   max-width: 100vw;
 }
 
-/* Landscape Mode & Small Tablets (Forces compact layout when phone is rotated horizontally) */
-@media (max-width: 950px) {
+/* Drastically scale down the entire page visually on mobile devices */
+@media (max-width: 768px) {
   html {
     font-size: 13px !important;
   }
   body {
-    zoom: 0.75 !important;
+    zoom: 0.8 !important;
   }
 }
 
-/* Drastically scale down the entire page visually on mobile devices */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   html {
     font-size: 11px !important;
   }
   body {
     zoom: 0.65 !important;
-  }
-}
-
-/* Small phones (Portrait) */
-@media (max-width: 450px) {
-  html {
-    font-size: 9.5px !important;
-  }
-  body {
-    zoom: 0.55 !important;
   }
   h1, .text-4xl, .text-5xl, .text-6xl {
     line-height: 1.15;
@@ -57,26 +46,16 @@ img, video, canvas, iframe, svg {
   }
 }
 
-/* Extreme compact for Landscape Phones (Short height) */
-@media (max-height: 500px) and (orientation: landscape) {
+@media (max-width: 390px) {
   html {
-    font-size: 10px !important;
+    font-size: 9.5px !important;
   }
   body {
-    zoom: 0.60 !important;
-  }
-  /* Remove excessive padding in hero sections for horizontal view */
-  .py-16, .py-20, .py-24, .py-32 {
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
-  }
-  .min-h-screen {
-    min-height: auto !important;
-    height: auto !important;
+    zoom: 0.55 !important;
   }
 }
 
-/* Extreme compact for Landscape Phones (Short height) */
+/* Extreme compact for Landscape Phones (Short height) to keep buttons visible */
 @media (max-height: 500px) and (orientation: landscape) {
   html {
     font-size: 10px !important;
@@ -84,7 +63,6 @@ img, video, canvas, iframe, svg {
   body {
     zoom: 0.60 !important;
   }
-  /* Remove excessive padding in hero sections for horizontal view */
   .pt-28, .pt-36 {
     padding-top: 5rem !important;
   }
