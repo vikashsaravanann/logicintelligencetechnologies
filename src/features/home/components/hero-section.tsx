@@ -96,7 +96,7 @@ export default function HeroSection() {
           </div>
 
           <div className="w-full max-w-5xl">
-            <dl className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-left">
+            <dl className="grid grid-cols-2 md:grid-cols-4 gap-3 text-left">
               {[
                 { kicker: "Scope", stat: "31 points", body: "Every paid project is written down before a rupee moves." },
                 { kicker: "Floor", stat: "₹8,999", body: "Digital Launch pack. Published price. Never invented on a call." },
