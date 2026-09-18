@@ -13,12 +13,13 @@ export default function MarketingLayout({
     <>
       <InitialLoader />
       <Navbar />
-      <main className="min-h-screen bg-[#0A0F1E] relative">
-        {/* Fixed ambient — all marketing pages A→Z */}
+      <main className="relative min-h-screen min-h-[100dvh] overflow-x-hidden bg-[#0A0F1E]">
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-          <AmbientTechBackground opacity={0.3} />
+          <AmbientTechBackground />
         </div>
-        <div className="relative z-[1]">{children}</div>
+        <div className="relative z-[1] w-full max-w-[100vw] overflow-x-hidden">
+          {children}
+        </div>
       </main>
       <Footer />
       <ClientWidgets />

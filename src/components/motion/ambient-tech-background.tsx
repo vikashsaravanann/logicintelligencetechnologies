@@ -4,17 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import WebGLParticles from "@/components/motion/webgl-particles";
 
 /**
- * Site-wide tech ambient layer:
- * - looping muted video at 30% opacity
- * - dark navy scrim so text never washes out
- * - WebGL particle field as secondary motion
- * - respects prefers-reduced-motion
+ * Site-wide tech ambient layer (no opacity blend on the video).
+ * Full-opacity loop + light navy scrim so UI text stays readable.
+ * Mobile: playsInline + muted for autoplay; respects reduced-motion.
  */
-export default function AmbientTechBackground({
-  opacity = 0.3,
-}: {
-  opacity?: number;
-}) {
+export default function AmbientTechBackground() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [ready, setReady] = useState(false);
   const [reduced, setReduced] = useState(false);
@@ -31,7 +25,10 @@ export default function AmbientTechBackground({
     const v = videoRef.current;
     if (!v || reduced) return;
     v.muted = true;
+    v.defaultMuted = true;
     v.playsInline = true;
+    v.setAttribute("playsinline", "");
+    v.setAttribute("webkit-playsinline", "");
     const play = () => {
       v.play().then(() => setReady(true)).catch(() => setReady(false));
     };
@@ -50,7 +47,10 @@ export default function AmbientTechBackground({
         <video
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
-          style={{ opacity: ready ? opacity : 0, transition: "opacity 1.2s ease" }}
+          style={{
+            opacity: ready ? 1 : 0,
+            transition: "opacity 1s ease",
+          }}
           autoPlay
           muted
           loop
@@ -64,17 +64,17 @@ export default function AmbientTechBackground({
       )}
 
       {!reduced && (
-        <div className="absolute inset-0 opacity-40">
+        <div className="absolute inset-0 opacity-30">
           <WebGLParticles className="h-full w-full" />
         </div>
       )}
 
-      <div className="absolute -top-32 left-1/4 h-72 w-72 rounded-full bg-primary/10 blur-[100px]" />
-      <div className="absolute top-1/3 right-0 h-80 w-80 rounded-full bg-accent/10 blur-[120px]" />
-      <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-primary/5 blur-[90px]" />
+      <div className="absolute -top-24 left-1/4 h-56 w-56 rounded-full bg-primary/10 blur-[90px] sm:h-72 sm:w-72" />
+      <div className="absolute top-1/3 right-0 h-64 w-64 rounded-full bg-accent/10 blur-[100px] sm:h-80 sm:w-80" />
 
-      <div className="absolute inset-0 bg-[#0A0F1E]/55" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/45 via-[#0A0F1E]/50 to-[#0A0F1E]/85" />
+      {/* Light scrim only — video remains fully visible; text still readable */}
+      <div className="absolute inset-0 bg-[#0A0F1E]/35" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/25 via-transparent to-[#0A0F1E]/70" />
     </div>
   );
 }
