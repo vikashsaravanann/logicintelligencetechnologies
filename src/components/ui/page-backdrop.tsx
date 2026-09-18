@@ -1,6 +1,6 @@
 /**
- * Full-bleed photo under page heroes. Overlay keeps type readable.
- * Decorative: empty alt.
+ * Optional page hero photo under content.
+ * Darker overlay so type stays sharp over ambient video + photo.
  */
 export default function PageBackdrop({
   src,
@@ -17,12 +17,12 @@ export default function PageBackdrop({
       <img
         src={src}
         alt=""
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover opacity-40"
         style={{ objectPosition: position }}
         decoding="async"
       />
-      <div className="absolute inset-0 bg-[#0A0F1E]/74" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/40 via-[#0A0F1E]/62 to-[#0A0F1E]" />
+      <div className="absolute inset-0 bg-[#0A0F1E]/78" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/50 via-[#0A0F1E]/70 to-[#0A0F1E]" />
     </div>
   );
 }
