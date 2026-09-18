@@ -32,8 +32,8 @@ export default function GlobalVideoBackground() {
         playsInline
         className="absolute inset-0 h-full w-full object-cover opacity-60"
       />
-      <div className="absolute inset-0 bg-[#0A0F1E]/80" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/60 via-[#0A0F1E]/85 to-[#0A0F1E]" />
+      <div className="absolute inset-0 bg-[#0A0F1E]/60" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/20 via-[#0A0F1E]/40 to-[#0A0F1E]/80" />
     </div>
   );
 }

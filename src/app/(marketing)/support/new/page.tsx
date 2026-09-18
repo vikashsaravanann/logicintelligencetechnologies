@@ -125,7 +125,7 @@ export default function NewSupportTicketPage() {
               <select
                 value={priority}
                 onChange={(e: any) => setPriority(e.target.value)}
-                className="w-full bg-[#0A0F1E] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary/50"
+                className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary/50"
               >
                 <option value="Low">Low (General Inquiry)</option>
                 <option value="Medium">Medium (Minor Glitch)</option>

@@ -192,7 +192,7 @@ export default function FreeDemoPage() {
 
   if (sent) {
     return (
-      <main className="min-h-screen bg-[#0A0F1E] text-white relative">
+      <main className="min-h-screen bg-transparent text-white relative">
         <PageBackdrop src="/assets/backdrops/home-hero.jpg" />
         <BackToHome />
         <div className="relative z-10 max-w-lg mx-auto px-6 py-32 text-center">
@@ -226,7 +226,7 @@ export default function FreeDemoPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white relative">
+    <main className="min-h-screen bg-transparent text-white relative">
       <PageBackdrop src="/assets/backdrops/home-hero.jpg" />
       <BackToHome />
 
@@ -442,7 +442,7 @@ export default function FreeDemoPage() {
                     className={inputClass + " appearance-none"}
                   >
                     {SERVICE_TYPES.map((o) => (
-                      <option key={o} value={o} className="bg-[#0A0F1E]">
+                      <option key={o} value={o} className="bg-transparent">
                         {o}
                       </option>
                     ))}
@@ -456,7 +456,7 @@ export default function FreeDemoPage() {
                     className={inputClass + " appearance-none"}
                   >
                     {PROJECT_GOALS.map((o) => (
-                      <option key={o} value={o} className="bg-[#0A0F1E]">
+                      <option key={o} value={o} className="bg-transparent">
                         {o}
                       </option>
                     ))}
@@ -617,12 +617,12 @@ export default function FreeDemoPage() {
                     onChange={(e) => setForm({ ...form, budget: e.target.value })}
                     className={inputClass + " appearance-none"}
                   >
-                    <option className="bg-[#0A0F1E]">Starter website project</option>
-                    <option className="bg-[#0A0F1E]">Growth / multi-page project</option>
-                    <option className="bg-[#0A0F1E]">Enterprise / multi-system build</option>
-                    <option className="bg-[#0A0F1E]">Chatbot / automation only</option>
-                    <option className="bg-[#0A0F1E]">Prefer a custom quote</option>
-                    <option className="bg-[#0A0F1E]">Not sure — please advise</option>
+                    <option className="bg-transparent">Starter website project</option>
+                    <option className="bg-transparent">Growth / multi-page project</option>
+                    <option className="bg-transparent">Enterprise / multi-system build</option>
+                    <option className="bg-transparent">Chatbot / automation only</option>
+                    <option className="bg-transparent">Prefer a custom quote</option>
+                    <option className="bg-transparent">Not sure — please advise</option>
                   </select>
                 </div>
                 <div>
@@ -632,10 +632,10 @@ export default function FreeDemoPage() {
                     onChange={(e) => setForm({ ...form, timeline: e.target.value })}
                     className={inputClass + " appearance-none"}
                   >
-                    <option className="bg-[#0A0F1E]">As soon as possible</option>
-                    <option className="bg-[#0A0F1E]">Within 1 month</option>
-                    <option className="bg-[#0A0F1E]">1–3 months</option>
-                    <option className="bg-[#0A0F1E]">Just exploring options</option>
+                    <option className="bg-transparent">As soon as possible</option>
+                    <option className="bg-transparent">Within 1 month</option>
+                    <option className="bg-transparent">1–3 months</option>
+                    <option className="bg-transparent">Just exploring options</option>
                   </select>
                 </div>
               </div>

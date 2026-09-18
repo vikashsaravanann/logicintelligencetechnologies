@@ -22,7 +22,7 @@ const points = [
 
 export default function InvestorsPage() {
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white pt-24 sm:pt-28">
+    <main className="min-h-screen bg-transparent text-white pt-24 sm:pt-28">
       <BackToHome />
       <section className="relative px-6 lg:px-8 overflow-hidden">
         <PageBackdrop src="/assets/jobs/studio-hero.jpg" />

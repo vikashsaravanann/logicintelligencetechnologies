@@ -16,7 +16,7 @@ export default function AboutSection() {
   ];
 
   return (
-    <section id="about" className="py-16 md:py-24 bg-[#0A0F1E] border-y border-white/5 relative overflow-hidden">
+    <section id="about" className="py-16 md:py-24 bg-transparent border-y border-white/5 relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
           
