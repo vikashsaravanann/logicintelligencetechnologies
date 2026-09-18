@@ -52,7 +52,7 @@ export default function ServicesSection() {
   ];
 
   return (
-    <section id="services" className="relative py-20 md:py-32 bg-transparent overflow-hidden">
+    <section id="services" className="relative py-20 md:py-32 bg-[#0A0F1E] overflow-hidden">
       {/* Background Elements */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.02] mix-blend-overlay pointer-events-none" />

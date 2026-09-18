@@ -12,7 +12,7 @@ export default function PackagesSection() {
   return (
     <section
       id="packages"
-      className="py-16 md:py-24 bg-transparent relative border-t border-white/5"
+      className="py-16 md:py-24 bg-[#0A0F1E] relative border-t border-white/5"
     >
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-primary/5 blur-[120px] rounded-full pointer-events-none"

@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function WorkPage() {
   return (
-    <main className="min-h-screen bg-transparent text-white pt-32">
+    <main className="min-h-screen bg-[#0A0F1E] text-white pt-32">
       <BackToHome href="/" label="Back to Home" />
       <section className="relative py-16 px-6 lg:px-8 overflow-hidden">
         <PageBackdrop src="/assets/backdrops/work-hero.jpg" />

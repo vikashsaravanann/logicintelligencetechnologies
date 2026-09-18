@@ -50,7 +50,7 @@ const fromYou = [
 
 export default function AiAssistantPage() {
   return (
-    <main className="min-h-screen bg-transparent text-white pt-28 sm:pt-32">
+    <main className="min-h-screen bg-[#0A0F1E] text-white pt-28 sm:pt-32">
       <BackToHome />
 
       <section className="relative px-6 lg:px-8 overflow-hidden">

@@ -34,7 +34,7 @@ export default function CertificationsPage() {
   const certifications = FOUNDER.credentials.filter(hasImage);
   
   return (
-    <main className="min-h-screen bg-transparent text-white pt-28 sm:pt-32 pb-20">
+    <main className="min-h-screen bg-[#0A0F1E] text-white pt-28 sm:pt-32 pb-20">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-8">
         <BackButton fallbackHref="/about" label="Back to About" inline />
       </div>

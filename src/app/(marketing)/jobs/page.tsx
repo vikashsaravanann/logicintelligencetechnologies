@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function JobsPage() {
   return (
-    <main className="min-h-screen bg-transparent text-white">
+    <main className="min-h-screen bg-[#0A0F1E] text-white">
       <JsonLd
         data={[
           breadcrumb([

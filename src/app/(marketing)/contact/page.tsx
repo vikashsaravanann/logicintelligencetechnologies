@@ -134,7 +134,7 @@ export default function ContactPage() {
   const labelClass = "block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2";
 
   return (
-    <main className="min-h-screen bg-transparent text-white pt-24">
+    <main className="min-h-screen bg-[#0A0F1E] text-white pt-24">
       <BackToHome />
 
       <section className="relative py-16 px-6 lg:px-8 overflow-hidden min-h-[80vh] flex flex-col justify-center">
@@ -191,7 +191,7 @@ export default function ContactPage() {
                       className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 ${
                         step >= s
                           ? "bg-primary text-black shadow-[0_0_15px_rgba(0,191,255,0.4)]"
-                          : "bg-transparent text-zinc-500 border border-white/10"
+                          : "bg-[#0A0F1E] text-zinc-500 border border-white/10"
                       }`}
                     >
                       {step > s ? <CheckCircle2 className="w-5 h-5" /> : s}
