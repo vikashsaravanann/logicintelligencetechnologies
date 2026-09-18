@@ -4,7 +4,7 @@ import { COMPANY } from "@/config/company";
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white flex flex-col items-center justify-center relative overflow-hidden px-6 py-24 selection:bg-primary/30">
+    <main className="min-h-screen bg-transparent text-white flex flex-col items-center justify-center relative overflow-hidden px-6 py-24 selection:bg-primary/30">
       {/* Background radial glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 blur-[140px] rounded-full pointer-events-none" />
 

@@ -18,7 +18,7 @@ export default async function UnsubscribePage({
   const token = params.token || "";
 
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white flex items-center justify-center px-6 py-16">
+    <main className="min-h-screen bg-transparent text-white flex items-center justify-center px-6 py-16">
       <section className="w-full max-w-lg rounded-2xl border border-white/10 bg-white/5 p-8">
         <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">{COMPANY.displayName}</p>
         <h1 className="mt-4 text-3xl font-semibold">Email preferences</h1>

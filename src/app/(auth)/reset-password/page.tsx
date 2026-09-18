@@ -41,7 +41,7 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <main className="min-h-[100dvh] bg-[#0A0F1E] text-white flex items-center justify-center px-5">
+    <main className="min-h-[100dvh] bg-transparent text-white flex items-center justify-center px-5">
       <BackToHome href="/login" label="Back to Sign In" />
       <form onSubmit={onSubmit} className="w-full max-w-md space-y-4">
         <Link href="/" className="text-[11px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white">

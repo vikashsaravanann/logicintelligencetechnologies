@@ -121,7 +121,7 @@ export default function OmniPublisherPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 rounded-2xl border border-white/10 bg-[#0A0F1E] p-5 space-y-4">
+          <div className="lg:col-span-1 rounded-2xl border border-white/10 bg-transparent p-5 space-y-4">
             <h2 className="font-bold text-lg">Compose</h2>
             <input
               value={title}
