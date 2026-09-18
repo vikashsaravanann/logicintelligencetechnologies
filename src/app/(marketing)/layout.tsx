@@ -12,7 +12,11 @@ export default function MarketingLayout({
     <>
       <InitialLoader />
       <Navbar />
-      <main className="min-h-screen bg-transparent">{children}</main>
+      <main className="relative min-h-screen min-h-[100dvh] overflow-x-hidden bg-transparent">
+        <div className="relative z-[1] w-full max-w-[100vw] overflow-x-hidden">
+          {children}
+        </div>
+      </main>
       <Footer />
       <ClientWidgets />
     </>
