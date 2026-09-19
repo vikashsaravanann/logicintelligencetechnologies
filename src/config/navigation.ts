@@ -62,6 +62,26 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
         label: "VOICESHIELD DEMO",
         description: "REAL-TIME DETECTION EXPERIENCE",
       },
+      {
+        href: "/ai-assistant",
+        label: "AI ASSISTANT",
+        description: "COMPANY KNOWLEDGE WORKSPACE",
+      },
+      {
+        href: "/knowledge-base",
+        label: "KNOWLEDGE BASE",
+        description: "ASSISTANT KNOWLEDGE HUB",
+      },
+      {
+        href: "/investor-brief",
+        label: "INVESTOR BRIEF",
+        description: "QUARTERLY AI PERFORMANCE",
+      },
+      {
+        href: "/ai-discovery",
+        label: "AI DISCOVERY",
+        description: "STRUCTURED AI IMPLEMENTATION",
+      },
     ],
   },
   {
@@ -78,10 +98,10 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
     id: "tools",
     label: "TOOLS",
     items: [
-      { href: "/ai", label: "AI ASSISTANT", description: "COMPANY KNOWLEDGE WORKSPACE" },
-      { href: "/discovery", label: "DISCOVERY", description: "START A STRUCTURED DISCOVERY" },
       { href: "/free-demo", label: "FREE DEMO", description: "REQUEST A WORKING DIRECTION" },
-      { href: "/knowledge", label: "KNOWLEDGE BASE", description: "ASSISTANT KNOWLEDGE HUB" },
+      { href: "/roi-calculator", label: "ROI CALCULATOR", description: "ESTIMATE YOUR SAVINGS" },
+      { href: "/architecture", label: "SYSTEM ARCHITECTURE", description: "INFRASTRUCTURE DESIGN" },
+      { href: "/docs/api", label: "API DOCUMENTATION", description: "DEVELOPER INTEGRATION" },
     ],
   },
   {
@@ -89,6 +109,10 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
     label: "SUPPORT",
     items: [
       { href: "/support", label: "CUSTOMER SUPPORT", description: "TICKETS AND HELP" },
+      { href: "/help-center", label: "HELP CENTER", description: "GUIDES AND FAQS" },
+      { href: "/community", label: "COMMUNITY FORUM", description: "PEER TO PEER DISCUSSIONS" },
+      { href: "/status", label: "STATUS PAGE", description: "SYSTEM UPTIME MONITOR" },
+      { href: "/sales", label: "CONTACT SALES", description: "ENTERPRISE INQUIRIES" },
     ],
   },
   {
