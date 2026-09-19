@@ -118,7 +118,7 @@ export default async function AdminCommandCenterPage() {
           href="/admin/proposals"
           className="p-4 rounded-xl border border-neutral-800 bg-neutral-900/30 hover:bg-neutral-900/60 transition-colors flex items-center justify-between text-xs font-bold text-white"
         >
-          <span>Proposals & SOWs</span>
+          <span>Proposals &amp; SOWs</span>
           <ArrowRight className="w-4 h-4 text-primary" />
         </Link>
         <Link
@@ -127,6 +127,16 @@ export default async function AdminCommandCenterPage() {
         >
           <span>Support Tickets</span>
           <ArrowRight className="w-4 h-4 text-primary" />
+        </Link>
+        <Link
+          href="/admin/voiceshield-requests"
+          className="p-4 rounded-xl border border-cyan-500/30 bg-cyan-950/20 hover:bg-cyan-950/40 transition-colors flex items-center justify-between text-xs font-bold text-cyan-300 col-span-2 sm:col-span-4"
+        >
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4" />
+            <span>VoiceShield Access Requests — Review &amp; Grant Console Access</span>
+          </div>
+          <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
 
