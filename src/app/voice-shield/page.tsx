@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { COMPANY } from "@/config/company";
+import { voiceShieldProductNode } from "@/lib/seo/schema";
 import VoiceShieldHero from "@/components/voice-shield/hero";
 import VoiceShieldProblem from "@/components/voice-shield/problem";
 import VoiceShieldHow from "@/components/voice-shield/how-it-works";
@@ -16,9 +17,9 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.logicintelligencetechnologies.in";
 
 export const metadata: Metadata = {
-  title: "VoiceShield — AI Voice Security | Logic Intelligence Technologies",
+  title: "VoiceShield | AI Voice Security & Compliance | LIT",
   description:
-    "VoiceShield by Logic Intelligence Technologies. Real-time AI voice anti-spoofing and voice fraud intelligence. Benefits, use cases, and architecture for telephony and enterprise security.",
+    "VoiceShield is an AI-powered voice security and compliance intelligence product by Logic Intelligence Technologies Pvt. Ltd. Defend against deepfakes in real-time.",
   keywords: [
     "VoiceShield",
     "voice security",
@@ -32,9 +33,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_IN",
     siteName: COMPANY.legalName,
-    title: "VoiceShield — AI Voice Security by Logic Intelligence Technologies",
+    title: "VoiceShield | AI Voice Security & Compliance | LIT",
     description:
-      "Real-time voice anti-spoofing and voice fraud intelligence. Detect AI-generated voice clones and protect telephony infrastructure.",
+      "VoiceShield is an AI-powered voice security and compliance intelligence product by Logic Intelligence Technologies Pvt. Ltd.",
     url: `${SITE_URL}/voice-shield`,
   },
 };
@@ -48,6 +49,15 @@ export const metadata: Metadata = {
 export default function VoiceShieldProductPage() {
   return (
     <main className="relative min-h-screen bg-transparent text-slate-100 overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [voiceShieldProductNode()],
+          }),
+        }}
+      />
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
         <VoiceShieldHero />
         <VoiceShieldProblem />

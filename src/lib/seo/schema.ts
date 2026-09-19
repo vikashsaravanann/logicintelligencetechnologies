@@ -24,13 +24,13 @@ export function breadcrumb(items: Array<{ name: string; path: string }>) {
 
 export function organizationNode() {
   return {
-    "@type": ["Organization", "ProfessionalService", "LocalBusiness"],
+    "@type": ["Organization", "Corporation", "LocalBusiness"],
     "@id": ORG_ID,
-    name: COMPANY.displayName,
-    legalName: COMPANY.legalName,
+    name: "Logic Intelligence Technologies Pvt. Ltd.",
+    alternateName: "Logic Intelligence Technologies",
     url: SITE,
-    email: COMPANY.email,
-    telephone: COMPANY.phone,
+    email: "hello@logicintelligencetechnologies.in",
+    telephone: "+91 9342877474",
     image: LOGO_512,
     logo: {
       "@type": "ImageObject",
@@ -39,10 +39,9 @@ export function organizationNode() {
       contentUrl: LOGO_192,
       width: 192,
       height: 192,
-      caption: COMPANY.displayName,
+      caption: "Logic Intelligence Technologies Pvt. Ltd.",
     },
-    description:
-      "Coimbatore web and AI development studio. Custom websites, software, and private knowledge assistants. Free demo before payment.",
+    description: "Logic Intelligence Technologies Pvt. Ltd. is an AI technology company based in Coimbatore, Tamil Nadu, India, building AI-powered business automation products including AI Website Agents, AI Voice Agents and VoiceShield, an AI security product for voice-risk, fraud, compliance and quality intelligence.",
     foundingDate: "2025",
     address: {
       "@type": "PostalAddress",
@@ -62,10 +61,17 @@ export function organizationNode() {
       {
         "@type": "ContactPoint",
         contactType: "sales",
-        telephone: COMPANY.phone,
-        email: COMPANY.email,
+        telephone: "+91 9342877474",
+        email: "contact@logicintelligencetechnologies.in",
         availableLanguage: ["English", "Tamil"],
       },
+      {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        telephone: "+91 9342877474",
+        email: "support@logicintelligencetechnologies.in",
+        availableLanguage: ["English", "Tamil"],
+      }
     ],
   };
 }
@@ -281,4 +287,63 @@ export const AI_FAQ: Array<{ q: string; a: string }> = [
     a: "No. It accelerates answers; complex delivery and sales still go through the team.",
   },
 ];
+
+export function voiceShieldProductNode() {
+  return {
+    "@type": "Product",
+    "@id": `${SITE}/voice-shield/#product`,
+    name: "VoiceShield",
+    brand: {
+      "@type": "Brand",
+      name: "Logic Intelligence Technologies",
+    },
+    description: "VoiceShield is an AI-powered voice security and compliance intelligence product designed to analyze eligible voice interactions for configurable fraud-risk, security, compliance and quality signals and produce structured evidence for enterprise workflows.",
+    url: `${SITE}/voice-shield`,
+    manufacturer: { "@id": ORG_ID },
+  };
+}
+
+export function aiWebsiteAgentsProductNode() {
+  return {
+    "@type": "Product",
+    "@id": `${SITE}/products/ai-website-agents/#product`,
+    name: "AI Website Agents",
+    brand: {
+      "@type": "Brand",
+      name: "Logic Intelligence Technologies",
+    },
+    description: "AI-powered website agents designed to answer visitor questions using approved business knowledge, qualify leads, capture enquiries and support human handoff.",
+    url: `${SITE}/products/ai-website-agents`,
+    manufacturer: { "@id": ORG_ID },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "USD",
+      price: "39.00",
+      availability: "https://schema.org/InStock",
+      url: `${SITE}/products/ai-website-agents`,
+    },
+  };
+}
+
+export function aiVoiceAgentsProductNode() {
+  return {
+    "@type": "Product",
+    "@id": `${SITE}/products/ai-voice-agents/#product`,
+    name: "AI Voice Agents",
+    brand: {
+      "@type": "Brand",
+      name: "Logic Intelligence Technologies",
+    },
+    description: "AI-powered voice agents designed for business calls, enquiry handling, lead qualification, appointment workflows, structured extraction and human escalation.",
+    url: `${SITE}/products/ai-voice-agents`,
+    manufacturer: { "@id": ORG_ID },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "USD",
+      price: "149.00",
+      availability: "https://schema.org/InStock",
+      url: `${SITE}/products/ai-voice-agents`,
+    },
+  };
+}
 

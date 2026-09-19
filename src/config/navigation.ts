@@ -18,6 +18,8 @@ export type NavGroup = {
 /** Always-visible desktop primary links. */
 export const PRIMARY_NAV: NavItem[] = [
   { href: "/", label: "HOME" },
+  { href: "/voice-shield", label: "VOICESHIELD" },
+  { href: "/ai", label: "LOGIC AI" },
   { href: "/services", label: "SOLUTIONS" },
   { href: "/industries", label: "INDUSTRIES" },
   { href: "/work", label: "WORK" },

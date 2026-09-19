@@ -75,10 +75,10 @@ export default function VoiceShieldAccessRequest() {
     <div className="absolute inset-0 flex items-center justify-center p-4 lg:p-8">
       <GlassSurface 
         variant="liquid" 
-        className="w-full h-full max-w-[1400px] flex flex-col lg:flex-row overflow-hidden shadow-2xl shadow-cyan-900/20"
+        className="w-[95vw] lg:w-[1200px] max-w-none h-auto lg:h-[560px] flex flex-col lg:flex-row overflow-hidden shadow-2xl shadow-cyan-900/20 rounded-3xl"
       >
         {/* Left Pane - Information (Liquid styling) */}
-        <div className="w-full lg:w-[45%] h-full p-6 lg:p-12 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/10 bg-gradient-to-br from-cyan-950/40 to-slate-900/40 relative">
+        <div className="w-full lg:w-[45%] h-full p-6 lg:p-10 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/10 bg-gradient-to-br from-cyan-950/40 to-slate-900/40 relative">
           
           <div className="space-y-6 relative z-10">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-400/30 backdrop-blur-md shadow-[0_0_15px_rgba(34,211,238,0.2)]">
@@ -127,7 +127,7 @@ export default function VoiceShieldAccessRequest() {
         </div>
 
         {/* Right Pane - Form (Liquid styling) */}
-        <div className="w-full lg:w-[55%] h-full p-6 lg:p-12 flex flex-col justify-center relative bg-black/20">
+        <div className="w-full lg:w-[55%] h-full p-6 lg:p-10 flex flex-col justify-center relative bg-black/20">
           
           <div className="w-full max-w-md mx-auto relative z-10">
             {sent ? (
