@@ -15,6 +15,8 @@ export interface PricingPlan {
     USD: number;
     INR: number;
   };
+  features: string[];
+  popular?: boolean;
 }
 
 export interface ProductPricing {
@@ -31,11 +33,27 @@ export const PRICING_CONFIG: ProductPricing[] = [
       {
         name: 'Free',
         monthlyPrice: { USD: 0, INR: 0 },
+        features: [
+          'Standard AI Chatbot widget',
+          'Up to 500 conversations/mo',
+          'Basic knowledge base (10 pages)',
+          'Email support',
+          'Standard response time',
+        ],
       },
       {
         name: 'Pro',
         monthlyPrice: { USD: 39, INR: 3250 },
         setupFee: { USD: 199, INR: 16500 },
+        popular: true,
+        features: [
+          'Custom-trained AI Agent',
+          'Unlimited conversations',
+          'Advanced knowledge base (1,000+ pages)',
+          'Priority 24/7 support',
+          'Real-time handoff to human agents',
+          'Custom UI/Branding',
+        ],
       },
     ],
   },
@@ -47,6 +65,15 @@ export const PRICING_CONFIG: ProductPricing[] = [
         name: 'Pro',
         monthlyPrice: { USD: 149, INR: 12400 },
         setupFee: { USD: 599, INR: 50000 },
+        popular: true,
+        features: [
+          'Inbound/Outbound call handling',
+          'Natural voice generation',
+          'CRM Integration (HubSpot, Salesforce)',
+          'Custom conversational flows',
+          'Transcripts and Analytics',
+          'Multi-language support',
+        ],
       },
     ],
   },
@@ -58,11 +85,20 @@ export const PRICING_CONFIG: ProductPricing[] = [
         name: 'Enterprise',
         monthlyPrice: { USD: 349, INR: 29000 },
         setupFee: { USD: 999, INR: 83000 },
+        popular: true,
         usageFee: {
           description: 'per minute',
           USD: 0.05,
           INR: 4,
         },
+        features: [
+          'Voice Deepfake Detection API',
+          'Real-time audio scanning',
+          'Enterprise SLA (99.99% uptime)',
+          'Dedicated Account Manager',
+          'Fraud Analytics Dashboard',
+          'Custom compliance reporting',
+        ],
       },
     ],
   },
