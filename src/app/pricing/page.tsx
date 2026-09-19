@@ -13,10 +13,9 @@ export default function PricingPage() {
 
   return (
     <PageShell>
-      {/* Absolute Golden/Black Background */}
-      <div className="fixed inset-0 z-[-1] bg-black overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-[url('/assets/noise.png')] opacity-[0.03] mix-blend-overlay" />
-        <div className="absolute top-[-20%] left-[-10%] w-[120%] h-[120%] bg-[radial-gradient(ellipse_at_center,_rgba(184,134,11,0.15)_0%,_rgba(0,0,0,1)_70%)]" />
+      {/* Absolute Golden Gradients (Overlaying the global background) */}
+      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[120%] h-[120%] bg-[radial-gradient(ellipse_at_center,_rgba(184,134,11,0.15)_0%,_rgba(0,0,0,0)_70%)]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[80%] h-[80%] bg-[radial-gradient(ellipse_at_center,_rgba(218,165,32,0.1)_0%,_rgba(0,0,0,0)_60%)]" />
         <div className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-[radial-gradient(ellipse_at_center,_rgba(255,215,0,0.05)_0%,_rgba(0,0,0,0)_60%)]" />
       </div>
@@ -57,7 +56,7 @@ export default function PricingPage() {
         </div>
 
         {/* Pricing Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-32">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-[1400px] mx-auto mb-32 px-4 xl:px-8">
           {PRICING_CONFIG.flatMap((product) => 
             product.plans.map((plan) => ({ product, plan }))
           ).map(({ product, plan }, idx) => {
