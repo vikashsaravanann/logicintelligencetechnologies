@@ -60,3 +60,33 @@ body {
     height: auto;
   }
 }
+
+/* Global desktop scaling */
+@media screen and (min-width: 768px) {
+    body {
+        zoom: 0.5;
+    }
+}
+
+/* User's custom mobile 25% scaling solution */
+@media screen and (max-width: 767px) {
+    html, body {
+        /* 1. Prevent mobile browsers from scaling the layout on their own */
+        min-width: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+    body {
+        /* 2. Shrink the visual scaling down to 25% */
+        transform: scale(0.25);
+        transform-origin: top left;
+        
+        /* 3. Force the layout container to take up exactly 400% of the viewport width */
+        width: 400% !important;
+        max-width: 400% !important;
+        
+        /* 4. Fixes height gaps that can appear at the bottom when scaling */
+        height: auto !important; 
+    }
+}
