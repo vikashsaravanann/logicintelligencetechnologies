@@ -18,9 +18,9 @@ export default function LiquidBackground({ className }: { className?: string }) 
       <div className="absolute inset-0 bg-[#050A15]" />
       
       {/* Animated Liquid Orbs (Emerald / Green / Cyan Theme) */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-emerald-600/25 blur-[120px] mix-blend-screen animate-[spin_20s_linear_infinite]" />
-      <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-cyan-600/20 blur-[100px] mix-blend-screen animate-[spin_25s_linear_infinite_reverse]" />
-      <div className="absolute bottom-[-10%] left-[20%] w-[45vw] h-[45vw] rounded-full bg-teal-500/20 blur-[140px] mix-blend-screen animate-[spin_30s_linear_infinite]" />
+      <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[50vw] rounded-[40%_60%_70%_30%] bg-emerald-500/40 blur-[100px] mix-blend-normal animate-[spin_20s_linear_infinite]" />
+      <div className="absolute top-[20%] right-[-15%] w-[50vw] h-[60vw] rounded-[60%_40%_30%_70%] bg-cyan-500/30 blur-[90px] mix-blend-normal animate-[spin_25s_linear_infinite_reverse]" />
+      <div className="absolute bottom-[-20%] left-[15%] w-[55vw] h-[45vw] rounded-[50%_50%_60%_40%] bg-teal-400/30 blur-[120px] mix-blend-normal animate-[spin_30s_linear_infinite]" />
       
       {/* Noise Overlay for texture */}
       <div 

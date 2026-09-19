@@ -150,7 +150,7 @@ export default async function AdminCommandCenterPage() {
         {/* ── NAVIGATION SHORTCUTS ────────────────────────────── */}
         <div>
           <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-500 mb-4">Quick Navigation</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {[
               { label: "CRM Leads", href: "/admin/leads", icon: Users, desc: "Inbound inquiries" },
               { label: "AI Chat Leads", href: "/admin/ai-leads", icon: Bot, desc: "AI-captured leads" },
@@ -158,6 +158,10 @@ export default async function AdminCommandCenterPage() {
               { label: "Proposals", href: "/admin/proposals", icon: FileText, desc: "SOWs & quotes" },
               { label: "Support", href: "/admin/support", icon: Headphones, desc: "Open tickets" },
               { label: "VoiceShield", href: "/admin/voiceshield-requests", icon: ShieldCheck, desc: "Grant access", highlight: true },
+              { label: "Email Broadcasts", href: "/admin/emails", icon: Mail, desc: "Send campaigns" },
+              { label: "Invoices", href: "/admin/invoices", icon: DollarSign, desc: "Billing & payments" },
+              { label: "Analytics", href: "/admin/analytics", icon: BarChart3, desc: "Metrics & traffic" },
+              { label: "System Status", href: "/admin/status", icon: Activity, desc: "Logs & health" },
             ].map((item) => (
               <Link
                 key={item.href}
@@ -306,12 +310,14 @@ export default async function AdminCommandCenterPage() {
         {/* ── QUICK ACTIONS ───────────────────────────────────── */}
         <div>
           <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-zinc-500 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
               { label: "New Proposal", href: "/admin/proposals/new", icon: Plus, desc: "Draft a client SOW", color: "bg-primary/10 border-primary/20 text-primary" },
-              { label: "View All Leads", href: "/admin/leads", icon: Users, desc: "Review CRM pipeline", color: "bg-violet-500/10 border-violet-500/20 text-violet-400" },
-              { label: "Grant VS Access", href: "/admin/voiceshield-requests", icon: ShieldCheck, desc: "Approve requests", color: "bg-cyan-500/10 border-cyan-500/20 text-cyan-400" },
-              { label: "Support Queue", href: "/admin/support", icon: Headphones, desc: "Handle open tickets", color: "bg-rose-500/10 border-rose-500/20 text-rose-400" },
+              { label: "Send Email", href: "/admin/emails/new", icon: Mail, desc: "Compose broadcast", color: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" },
+              { label: "View Leads", href: "/admin/leads", icon: Users, desc: "Review CRM pipeline", color: "bg-violet-500/10 border-violet-500/20 text-violet-400" },
+              { label: "VS Access", href: "/admin/voiceshield-requests", icon: ShieldCheck, desc: "Approve requests", color: "bg-cyan-500/10 border-cyan-500/20 text-cyan-400" },
+              { label: "Support", href: "/admin/support", icon: Headphones, desc: "Handle tickets", color: "bg-rose-500/10 border-rose-500/20 text-rose-400" },
+              { label: "Check Analytics", href: "/admin/analytics", icon: BarChart3, desc: "Traffic & metrics", color: "bg-yellow-500/10 border-yellow-500/20 text-yellow-400" },
             ].map((action) => (
               <Link
                 key={action.href}

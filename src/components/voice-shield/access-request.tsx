@@ -71,7 +71,7 @@ export default function VoiceShieldAccessRequest() {
 
   return (
     <div
-      className="h-screen w-full flex flex-col bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 overflow-hidden"
+      className="min-h-[100dvh] md:h-screen w-full flex flex-col bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 overflow-x-hidden overflow-y-auto md:overflow-hidden"
       style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
     >
       {/* Top announcement bar */}
