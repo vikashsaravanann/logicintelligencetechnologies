@@ -1,10 +1,19 @@
-/* Mobile full-bleed: fill viewport edge-to-edge — no zoom/transform, no right gap */
+/*
+ * Full-bleed mobile layout.
+ * No CSS zoom / transform scale — those leave a blank strip on the right.
+ * Denser root font-size approximates Safari “smaller A” without breaking width.
+ */
 html, body {
   overflow-x: hidden !important;
   max-width: 100vw !important;
   width: 100% !important;
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 img, video, canvas, iframe, svg {
@@ -16,23 +25,32 @@ img, video, canvas, iframe, svg {
   max-width: 100vw;
 }
 
-/* Phone: denser type + full-width containers (Safari smaller-A look via font-size, not zoom) */
 @media (max-width: 768px) {
   html {
     font-size: 13.5px;
   }
+
   body {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
 
-  /* Kill horizontal empty space — every shell fills the screen */
+  /* Every major shell fills the viewport width */
   main,
   section,
-  .container,
-  [class*="max-w-"] {
+  .container {
+    width: 100% !important;
     max-width: 100vw !important;
     box-sizing: border-box;
+  }
+
+  /* Tailwind max-w utilities must not create a narrow column with empty right space */
+  .max-w-7xl,
+  .max-w-6xl,
+  .max-w-5xl,
+  .max-w-4xl,
+  .max-w-3xl {
+    max-width: 100% !important;
   }
 
   main > div,
@@ -42,16 +60,22 @@ img, video, canvas, iframe, svg {
     box-sizing: border-box;
   }
 
-  /* Symmetric safe-area padding — no asymmetric right gap */
+  /* Symmetric horizontal padding only — no asymmetric right gap */
   section {
-    padding-left: max(0.85rem, env(safe-area-inset-left)) !important;
-    padding-right: max(0.85rem, env(safe-area-inset-right)) !important;
+    padding-left: max(1rem, env(safe-area-inset-left)) !important;
+    padding-right: max(1rem, env(safe-area-inset-right)) !important;
   }
 
-  /* Content shells that used px-6 / px-8 */
-  .px-6, .px-8, .lg\:px-8 {
-    padding-left: max(0.85rem, env(safe-area-inset-left)) !important;
-    padding-right: max(0.85rem, env(safe-area-inset-right)) !important;
+  .px-6,
+  .px-8,
+  .lg\:px-8 {
+    padding-left: max(1rem, env(safe-area-inset-left)) !important;
+    padding-right: max(1rem, env(safe-area-inset-right)) !important;
+  }
+
+  .mx-auto {
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 
   h1, .text-4xl, .text-5xl, .text-6xl, .text-7xl {
@@ -63,26 +87,34 @@ img, video, canvas, iframe, svg {
     padding-top: 2.5rem !important;
     padding-bottom: 2.5rem !important;
   }
+
   .md\:py-32 {
     padding-top: 2.75rem !important;
     padding-bottom: 2.75rem !important;
   }
 
-  .glass-card, .glass-panel, [class*="rounded-3xl"] {
+  .glass-card,
+  .glass-panel,
+  [class*="rounded-3xl"] {
     border-radius: 1rem !important;
   }
+
   .p-8, .p-10, .md\:p-10 {
     padding: 1rem !important;
   }
+
   .gap-8 {
     gap: 0.75rem !important;
   }
+
   .gap-6 {
     gap: 0.625rem !important;
   }
+
   .mb-20, .mb-16 {
     margin-bottom: 2rem !important;
   }
+
   .mb-8, .mb-10 {
     margin-bottom: 1rem !important;
   }
@@ -90,15 +122,19 @@ img, video, canvas, iframe, svg {
   .text-3xl {
     font-size: 1.35rem !important;
   }
+
   .text-2xl {
     font-size: 1.15rem !important;
   }
+
   .text-lg {
     font-size: 0.95rem !important;
   }
+
   .text-base {
     font-size: 0.875rem !important;
   }
+
   .text-sm {
     font-size: 0.8rem !important;
   }
