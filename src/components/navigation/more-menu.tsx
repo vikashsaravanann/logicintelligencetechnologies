@@ -77,37 +77,73 @@ export function MoreMenu({
             transition={{ duration: 0.15 }}
             className="absolute top-full right-0 mt-2 w-[min(92vw,640px)] bg-[rgba(10,15,30,0.96)] border border-white/15 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] p-5 z-[80] grid grid-cols-2 gap-5 backdrop-blur-[24px]"
           >
-            {groups.map((group) => (
-              <div key={group.id} className="min-w-0">
-                <p className="px-2 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-400">
-                  {group.label}
-                </p>
-                <ul className="space-y-1">
-                  {group.items.map((item) => (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        role="menuitem"
-                        onClick={() => {
-                          setIsOpen(false);
-                          if (onNavigate) onNavigate();
-                        }}
-                        className="block rounded-lg px-2.5 py-2 hover:bg-white/[0.06] hover:border hover:border-white/10 transition-all group"
-                      >
-                        <span className="block text-[12px] font-bold tracking-wide text-zinc-200 group-hover:text-cyan-300 uppercase">
-                          {item.label}
-                        </span>
-                        {item.description && (
-                          <span className="block text-[11px] text-zinc-400 group-hover:text-zinc-300 mt-0.5 leading-snug uppercase tracking-wider">
-                            {item.description}
+            <div className="flex flex-col gap-5">
+              {groups.filter((_, i) => i % 2 === 0).map((group) => (
+                <div key={group.id} className="min-w-0">
+                  <p className="px-2 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-400">
+                    {group.label}
+                  </p>
+                  <ul className="space-y-1">
+                    {group.items.map((item) => (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          role="menuitem"
+                          onClick={() => {
+                            setIsOpen(false);
+                            if (onNavigate) onNavigate();
+                          }}
+                          className="block rounded-lg px-2.5 py-2 hover:bg-white/[0.06] hover:border hover:border-white/10 transition-all group"
+                        >
+                          <span className="block text-[12px] font-bold tracking-wide text-zinc-200 group-hover:text-cyan-300 uppercase">
+                            {item.label}
                           </span>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+                          {item.description && (
+                            <span className="block text-[11px] text-zinc-400 group-hover:text-zinc-300 mt-0.5 leading-snug uppercase tracking-wider">
+                              {item.description}
+                            </span>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+            
+            <div className="flex flex-col gap-5">
+              {groups.filter((_, i) => i % 2 !== 0).map((group) => (
+                <div key={group.id} className="min-w-0">
+                  <p className="px-2 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-400">
+                    {group.label}
+                  </p>
+                  <ul className="space-y-1">
+                    {group.items.map((item) => (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          role="menuitem"
+                          onClick={() => {
+                            setIsOpen(false);
+                            if (onNavigate) onNavigate();
+                          }}
+                          className="block rounded-lg px-2.5 py-2 hover:bg-white/[0.06] hover:border hover:border-white/10 transition-all group"
+                        >
+                          <span className="block text-[12px] font-bold tracking-wide text-zinc-200 group-hover:text-cyan-300 uppercase">
+                            {item.label}
+                          </span>
+                          {item.description && (
+                            <span className="block text-[11px] text-zinc-400 group-hover:text-zinc-300 mt-0.5 leading-snug uppercase tracking-wider">
+                              {item.description}
+                            </span>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
