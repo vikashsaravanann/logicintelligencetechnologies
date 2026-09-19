@@ -1,26 +1,62 @@
 import type { Metadata } from "next";
 import { COMPANY } from "@/config/company";
-import VoiceShieldAccessRequest from "@/components/voice-shield/access-request";
+import VoiceShieldHero from "@/components/voice-shield/hero";
+import VoiceShieldProblem from "@/components/voice-shield/problem";
+import VoiceShieldHow from "@/components/voice-shield/how-it-works";
+import VoiceShieldCapabilities from "@/components/voice-shield/capabilities";
+import VoiceShieldArchitecture from "@/components/voice-shield/architecture";
+import VoiceShieldUseCases from "@/components/voice-shield/use-cases";
+import VoiceShieldTechnology from "@/components/voice-shield/technology";
+import VoiceShieldSecurity from "@/components/voice-shield/security";
+import VoiceShieldFAQ from "@/components/voice-shield/faq";
+import VoiceShieldCTA from "@/components/voice-shield/cta";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.logicintelligencetechnologies.in";
 
 export const metadata: Metadata = {
-  title: "VoiceShield — Request Access | Logic Intelligence Technologies",
+  title: "VoiceShield — AI Voice Security | Logic Intelligence Technologies",
   description:
-    "Request beta or demo access to VoiceShield by Logic Intelligence Technologies. Real-time AI voice anti-spoofing and voice fraud intelligence.",
+    "VoiceShield by Logic Intelligence Technologies. Real-time AI voice anti-spoofing and voice fraud intelligence. Benefits, use cases, and architecture for telephony and enterprise security.",
+  keywords: [
+    "VoiceShield",
+    "voice security",
+    "AI anti-spoofing",
+    "voice fraud detection",
+    "deepfake voice detection",
+    "Logic Intelligence Technologies",
+  ],
   alternates: { canonical: `${SITE_URL}/voice-shield` },
   openGraph: {
     type: "website",
     locale: "en_IN",
     siteName: COMPANY.legalName,
-    title: "VoiceShield — Request Access | Logic Intelligence Technologies",
+    title: "VoiceShield — AI Voice Security by Logic Intelligence Technologies",
     description:
-      "A Logic Intelligence Technologies product. Request beta or demo access to real-time voice-clone detection.",
+      "Real-time voice anti-spoofing and voice fraud intelligence. Detect AI-generated voice clones and protect telephony infrastructure.",
     url: `${SITE_URL}/voice-shield`,
   },
 };
 
-export default function VoiceShieldPage() {
-  return <VoiceShieldAccessRequest />;
+/**
+ * VoiceShield product overview on the company domain.
+ * Full product story: problem, why, how, benefits, use cases, security.
+ * Request access → /voice-shield/request
+ * Live console (after approval) → /voice-shield/console (proxied) or dedicated host
+ */
+export default function VoiceShieldProductPage() {
+  return (
+    <main className="min-h-screen bg-[#030712] text-slate-100">
+      <VoiceShieldHero />
+      <VoiceShieldProblem />
+      <VoiceShieldHow />
+      <VoiceShieldCapabilities />
+      <VoiceShieldArchitecture />
+      <VoiceShieldUseCases />
+      <VoiceShieldTechnology />
+      <VoiceShieldSecurity />
+      <VoiceShieldFAQ />
+      <VoiceShieldCTA />
+    </main>
+  );
 }
