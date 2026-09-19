@@ -6,8 +6,11 @@ import { ShieldCheck, Menu, X, Terminal } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 const NAV_LINKS = [
-  { label: "Back to Home", href: "/" },
+  { label: "Home", href: "/" },
   { label: "Overview", href: "/voice-shield" },
+  { label: "AI Website Agent", href: "/products/ai-website-agents" },
+  { label: "Voice Agent", href: "/products/ai-voice-agents" },
+  { label: "Founder", href: "/about/founder" },
 ];
 
 export default function VoiceShieldNavbar() {
@@ -58,14 +61,14 @@ export default function VoiceShieldNavbar() {
 
             {/* Desktop Nav (Absolute Center) */}
             <div className="hidden lg:flex absolute inset-0 items-center justify-center pointer-events-none">
-              <nav className="flex items-center gap-6 pointer-events-auto">
+              <nav className="flex items-center gap-3 xl:gap-6 pointer-events-auto">
                 {NAV_LINKS.map((link) => {
                   const isActive = link.href !== "/" && (pathname === link.href || pathname.startsWith(link.href + "/"));
                   return (
                     <Link
                       key={link.label}
                       href={link.href}
-                      className={`text-[11px] font-mono font-bold tracking-[0.15em] uppercase transition-colors hover:text-cyan-300 px-4 py-2 ${
+                      className={`text-[9px] xl:text-[11px] font-mono font-bold tracking-[0.1em] xl:tracking-[0.15em] uppercase transition-colors hover:text-cyan-300 px-2 xl:px-4 py-2 ${
                         isActive ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]" : "text-slate-400"
                       }`}
                     >

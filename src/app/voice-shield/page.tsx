@@ -69,7 +69,7 @@ export default function VoiceShieldProductPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
             <Link
               href="/voice-shield/request"
-              className="group flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_40px_rgba(6,182,212,0.5)] backdrop-blur-md"
+              className="group flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 active:bg-cyan-500/30 active:scale-95 border border-cyan-400/50 transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_40px_rgba(6,182,212,0.5)] backdrop-blur-md transform-gpu"
             >
               <Zap className="w-5 h-5 text-cyan-400" />
               <span className="font-mono font-bold tracking-widest text-cyan-100 uppercase text-sm">Start Live Demo</span>
@@ -86,7 +86,7 @@ export default function VoiceShieldProductPage() {
             { value: "0 BYTES", label: "AUDIO ON DISK (DPDP)", color: "text-emerald-400" },
             { value: "100%", label: "RLS AUDIT LOGGED", color: "text-amber-400" },
           ].map((stat, i) => (
-            <div key={i} className="bg-slate-900/60 border border-slate-800 rounded-3xl p-8 text-center backdrop-blur-xl hover:border-slate-700 transition-colors">
+            <div key={i} className="bg-slate-900/60 border border-slate-800 rounded-3xl p-8 text-center backdrop-blur-md lg:backdrop-blur-xl hover:border-slate-700 transition-colors">
               <div className={`text-3xl md:text-4xl font-black font-mono mb-2 ${stat.color} drop-shadow-md`}>{stat.value}</div>
               <div className="text-xs font-bold text-slate-400 tracking-[0.15em] uppercase">{stat.label}</div>
             </div>
@@ -154,8 +154,7 @@ export default function VoiceShieldProductPage() {
           </div>
         </section>
 
-        {/* BOTTOM FOOTER CTA */}
-        <section className="relative rounded-3xl overflow-hidden border border-cyan-500/20 bg-slate-900/80 backdrop-blur-xl p-8 md:p-16 text-center">
+        <section className="relative rounded-3xl overflow-hidden border border-cyan-500/20 bg-slate-900/80 backdrop-blur-md lg:backdrop-blur-xl p-8 md:p-16 text-center transform-gpu">
           <div className="absolute inset-0 bg-gradient-to-t from-cyan-900/20 to-transparent" />
           <div className="relative z-10 space-y-6">
             <h2 className="text-2xl md:text-4xl font-black text-white">
@@ -167,7 +166,7 @@ export default function VoiceShieldProductPage() {
             <div className="pt-6">
               <Link
                 href="/voice-shield/request"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white text-slate-950 font-bold text-sm tracking-widest uppercase transition-all hover:bg-cyan-50"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white text-slate-950 font-bold text-sm tracking-widest uppercase transition-all hover:bg-cyan-50 active:scale-95 active:bg-cyan-100 transform-gpu"
               >
                 <Terminal className="w-5 h-5" />
                 Request Beta Access
