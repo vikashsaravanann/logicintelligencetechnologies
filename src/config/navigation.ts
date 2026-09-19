@@ -81,6 +81,7 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
       { href: "/ai", label: "AI ASSISTANT", description: "COMPANY KNOWLEDGE WORKSPACE" },
       { href: "/discovery", label: "DISCOVERY", description: "START A STRUCTURED DISCOVERY" },
       { href: "/free-demo", label: "FREE DEMO", description: "REQUEST A WORKING DIRECTION" },
+      { href: "/knowledge", label: "KNOWLEDGE BASE", description: "ASSISTANT KNOWLEDGE HUB" },
     ],
   },
   {
@@ -94,11 +95,11 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
     id: "legal",
     label: "LEGAL",
     items: [
-      { href: "/privacy", label: "PRIVACY" },
-      { href: "/terms", label: "TERMS" },
-      { href: "/refund-policy", label: "REFUND POLICY" },
-      { href: "/cookie-policy", label: "COOKIE POLICY" },
-      { href: "/accessibility", label: "ACCESSIBILITY" },
+      { href: "/privacy", label: "PRIVACY", description: "DATA HANDLING POLICIES" },
+      { href: "/terms", label: "TERMS", description: "USER AGREEMENTS" },
+      { href: "/refund-policy", label: "REFUND POLICY", description: "PAYMENT TERMS" },
+      { href: "/cookie-policy", label: "COOKIE POLICY", description: "TRACKING INFORMATION" },
+      { href: "/accessibility", label: "ACCESSIBILITY", description: "WCAG COMPLIANCE" },
     ],
   },
 ];
