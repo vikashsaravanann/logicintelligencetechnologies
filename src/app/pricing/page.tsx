@@ -57,7 +57,7 @@ export default function PricingPage() {
         </div>
 
         {/* Pricing Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-32">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-32">
           {PRICING_CONFIG.flatMap((product) => 
             product.plans.map((plan) => ({ product, plan }))
           ).map(({ product, plan }, idx) => {
@@ -80,20 +80,20 @@ export default function PricingPage() {
                   </div>
                 )}
                 
-                <div className="text-[10px] font-mono font-bold tracking-widest text-yellow-500/80 uppercase mb-3">
+                <div className="text-[10px] font-mono font-bold tracking-widest text-yellow-500/80 uppercase mb-3 text-center">
                   {product.name}
                 </div>
-                <h4 className="text-2xl font-bold text-white mb-6">{plan.name}</h4>
+                <h4 className="text-3xl font-black text-white mb-6 text-center">{plan.name}</h4>
                 
-                <div className="mb-8 pb-8 border-b border-white/10">
+                <div className="mb-8 pb-8 border-b border-white/10 flex flex-col items-center">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60">
+                    <span className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60">
                       {formatPrice(plan.monthlyPrice[currency], currency)}
                     </span>
                     <span className="text-zinc-500 font-medium">/mo</span>
                   </div>
                   
-                  <div className="mt-4 space-y-1.5 min-h-[48px]">
+                  <div className="mt-4 space-y-1.5 min-h-[48px] text-center">
                     {plan.setupFee && (
                       <div className="text-sm font-medium text-zinc-400">
                         + {formatPrice(plan.setupFee[currency], currency)} one-time setup
@@ -112,14 +112,14 @@ export default function PricingPage() {
                   </div>
                 </div>
 
-                <div className="flex-grow">
-                  <p className="text-xs font-bold tracking-wider text-zinc-400 uppercase mb-6">
+                <div className="flex-grow flex flex-col items-center">
+                  <p className="text-xs font-bold tracking-wider text-zinc-400 uppercase mb-6 text-center">
                     What's included
                   </p>
-                  <ul className="space-y-4">
+                  <ul className="space-y-4 w-full max-w-[280px]">
                     {plan.features.map((feature, fIdx) => (
                       <li key={fIdx} className="flex items-start gap-3">
-                        <Check className={`w-4 h-4 shrink-0 mt-0.5 ${isPopular ? 'text-yellow-500' : 'text-primary'}`} />
+                        <Check className={`w-5 h-5 shrink-0 ${isPopular ? 'text-yellow-500' : 'text-primary'}`} />
                         <span className="text-sm text-zinc-300 leading-tight">{feature}</span>
                       </li>
                     ))}
