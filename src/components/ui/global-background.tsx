@@ -142,7 +142,7 @@ export default function GlobalBackground() {
             alt="Company Background"
             fill
             priority
-            className="object-cover object-center brightness-[0.8]"
+            className="object-cover object-center brightness-[0.2]"
             quality={100}
           />
           <div className="absolute inset-0 bg-[#0A0F1E]/30" />
