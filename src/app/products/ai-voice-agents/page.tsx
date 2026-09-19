@@ -4,15 +4,28 @@ import PageShell from '@/components/layout/page-shell';
 import SectionHeader from '@/components/ui/section-header';
 import { Button } from '@/components/ui/button';
 import { COMPANY } from '@/config/company';
+import { aiVoiceAgentsProductNode } from '@/lib/seo/schema';
 
 export const metadata: Metadata = {
-  title: 'AI Voice Agents',
+  title: 'AI Voice Agents | Logic Intelligence Technologies',
   description: 'Your AI-powered front desk for calls, enquiries and appointments.',
+  alternates: {
+    canonical: 'https://www.logicintelligencetechnologies.in/products/ai-voice-agents',
+  }
 };
 
 export default function AIVoiceAgentsPage() {
   return (
     <PageShell>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [aiVoiceAgentsProductNode()],
+          }),
+        }}
+      />
       <div className="container py-24">
         <SectionHeader
           title="AI Voice Agents"

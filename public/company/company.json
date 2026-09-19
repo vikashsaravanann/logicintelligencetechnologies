@@ -1,8 +1,13 @@
 {
-  "name": "Logic Intelligence Technologies",
+  "legalName": "Logic Intelligence Technologies Pvt. Ltd.",
+  "brandName": "Logic Intelligence Technologies",
+  "website": "https://www.logicintelligencetechnologies.in/",
   "founder": "Vikash Saravanan",
-  "location": "Coimbatore",
+  "designation": "Founder & CEO",
+  "location": "Coimbatore, Tamil Nadu, India",
   "products": [
+    "AI Website Agents",
+    "AI Voice Agents",
     "VoiceShield"
   ]
 }

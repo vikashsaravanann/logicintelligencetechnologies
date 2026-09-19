@@ -2,7 +2,7 @@ type JsonLdProps = {
   data: object | object[];
 };
 
-export default function JsonLd({ data }: JsonLdProps) {
+export function JsonLd({ data }: JsonLdProps) {
   const payload = Array.isArray(data)
     ? { "@context": "https://schema.org", "@graph": data }
     : { "@context": "https://schema.org", ...(data as Record<string, unknown>) };
@@ -14,3 +14,5 @@ export default function JsonLd({ data }: JsonLdProps) {
     />
   );
 }
+
+export default JsonLd;
