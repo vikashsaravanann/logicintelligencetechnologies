@@ -90,7 +90,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="overflow-x-hidden">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
         <link rel="icon" href="/icon-48.png" type="image/png" sizes="48x48" />
@@ -107,22 +107,14 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inter.className}>
-        <div style={{ 
-          zoom: "0.5", 
-          transform: "scale(1)", // Fallback anchor
-          transformOrigin: "top center",
-          width: "100%",
-          overflowX: "hidden"
-        }}>
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-            <GlobalVideoBackground />
-            <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
-            {children}
-            <SpeedInsights />
-            <Analytics />
-          </ThemeProvider>
-        </div>
+      <body className={`${inter.className} overflow-x-hidden w-full max-w-[100vw]`}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <GlobalVideoBackground />
+          <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
+          {children}
+          <SpeedInsights />
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   );
