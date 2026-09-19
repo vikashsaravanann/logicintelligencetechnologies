@@ -108,19 +108,13 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} overflow-x-hidden w-full max-w-[100vw] m-0 p-0`}>
-        {/* Outer clip: no horizontal scrollbar / right gap */}
-        <div className="site-zoom-clip">
-          {/* Inner: zoom 0.3 + width 333.333% defined in globals.css */}
-          <div id="site-zoom-root" className="site-zoom-root">
-            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-              <GlobalVideoBackground />
-              <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
-              {children}
-              <SpeedInsights />
-              <Analytics />
-            </ThemeProvider>
-          </div>
-        </div>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <GlobalVideoBackground />
+          <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
+          {children}
+          <SpeedInsights />
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   );
