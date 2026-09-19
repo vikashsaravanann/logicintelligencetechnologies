@@ -114,6 +114,9 @@ export default function RootLayout({
           {children}
           <SpeedInsights />
           <Analytics />
+          {process.env.NODE_ENV === 'development' && (
+            <script type="module" src="http://localhost:7331/inject.js" suppressHydrationWarning />
+          )}
         </ThemeProvider>
       </body>
     </html>

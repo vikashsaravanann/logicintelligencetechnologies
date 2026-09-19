@@ -4,7 +4,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 
 export interface GlassSurfaceProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "subtle" | "default" | "prominent" | "card";
+  variant?: "subtle" | "default" | "prominent" | "card" | "liquid";
   children: React.ReactNode;
   className?: string;
   as?: React.ElementType;
@@ -30,6 +30,8 @@ export function GlassSurface({
       "bg-[rgba(15,23,42,0.92)] border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-[28px] -webkit-backdrop-blur-[28px]",
     card:
       "bg-white/[0.04] border border-white/10 hover:border-cyan-500/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_8px_32px_rgba(0,0,0,0.2)] backdrop-blur-xl -webkit-backdrop-blur-xl transition-all duration-300",
+    liquid:
+      "bg-gradient-to-br from-white/10 to-transparent border border-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(255,255,255,0.1),0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-[40px] -webkit-backdrop-blur-[40px] saturate-[1.2]",
   };
 
   return (

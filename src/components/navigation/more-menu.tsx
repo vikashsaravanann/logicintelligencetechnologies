@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { MORE_NAV_GROUPS, NavGroup } from "@/config/navigation";
 import { cn } from "@/lib/utils";
@@ -22,20 +21,37 @@ export function MoreMenu({
   onNavigate,
 }: MoreMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const closeMenu = React.useCallback(() => {
     if (!isOpen) return;
+    setIsOpen(false);
+    setIsClosing(true);
+    setTimeout(() => setIsClosing(false), 150);
+  }, [isOpen]);
+
+  const toggleMenu = () => {
+    if (isOpen) {
+      closeMenu();
+    } else {
+      setIsClosing(false);
+      setIsOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    if (!isOpen && !isClosing) return;
 
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
+        closeMenu();
       }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setIsOpen(false);
+        closeMenu();
       }
     };
 
@@ -45,14 +61,14 @@ export function MoreMenu({
       document.removeEventListener("mousedown", handleClickOutside);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, isClosing, closeMenu]);
 
   return (
     <div className={cn("relative", className)} ref={menuRef}>
       <button
         type="button"
         className="inline-flex items-center h-11 px-2.5 text-xs font-semibold tracking-[0.14em] text-zinc-200 hover:text-cyan-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-lg"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={toggleMenu}
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-controls="desktop-more-menu"
@@ -66,17 +82,16 @@ export function MoreMenu({
         />
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            id="desktop-more-menu"
-            role="menu"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            transition={{ duration: 0.15 }}
-            className="absolute top-full right-0 mt-2 w-[min(92vw,640px)] bg-[rgba(10,15,30,0.96)] border border-white/15 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] p-5 z-[80] grid grid-cols-2 gap-5 backdrop-blur-[24px]"
-          >
+      <div
+        id="desktop-more-menu"
+        role="menu"
+        data-origin="top-right"
+        className={cn(
+          "t-dropdown absolute top-full right-0 mt-2 w-[min(92vw,640px)] bg-[rgba(10,15,30,0.96)] border border-white/15 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] p-5 z-[80] grid grid-cols-2 gap-5 backdrop-blur-[24px]",
+          isOpen && "is-open",
+          isClosing && "is-closing"
+        )}
+      >
             <div className="flex flex-col gap-5">
               {groups.filter((_, i) => i % 2 === 0).map((group) => (
                 <div key={group.id} className="min-w-0">
@@ -90,7 +105,7 @@ export function MoreMenu({
                           href={item.href}
                           role="menuitem"
                           onClick={() => {
-                            setIsOpen(false);
+                            closeMenu();
                             if (onNavigate) onNavigate();
                           }}
                           className={cn(
@@ -135,7 +150,7 @@ export function MoreMenu({
                           href={item.href}
                           role="menuitem"
                           onClick={() => {
-                            setIsOpen(false);
+                            closeMenu();
                             if (onNavigate) onNavigate();
                           }}
                           className={cn(
@@ -166,9 +181,7 @@ export function MoreMenu({
                 </div>
               ))}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 }

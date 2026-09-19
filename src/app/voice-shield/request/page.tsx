@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { COMPANY } from "@/config/company";
 import VoiceShieldAccessRequest from "@/components/voice-shield/access-request";
+import LiquidBackground from "@/components/voice-shield/liquid-background";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.logicintelligencetechnologies.in";
@@ -19,5 +20,10 @@ export const metadata: Metadata = {
 };
 
 export default function VoiceShieldRequestPage() {
-  return <VoiceShieldAccessRequest />;
+  return (
+    <main className="h-screen w-screen overflow-hidden bg-[#030712] relative">
+      <LiquidBackground />
+      <VoiceShieldAccessRequest />
+    </main>
+  );
 }

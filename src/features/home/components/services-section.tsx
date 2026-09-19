@@ -6,48 +6,37 @@ import Link from "next/link";
 export default function ServicesSection() {
   const services = [
     {
-      title: "Full Stack Web Development",
-      description: "Custom websites and web apps built from scratch — scoped to your business, not a template.",
+      title: "AI Website Agents",
+      description: "Turn website visitors into conversations, qualified leads and customers.",
       icon: Monitor,
-      features: ["Custom front-end design", "Back-end & database setup", "API integrations", "Deployment & hosting setup", "Post-launch support"],
-      link: "/contact?service=full-stack",
+      features: ["Custom front-end design", "Intelligent conversational interface", "Lead generation & qualification", "Analytics dashboard"],
+      link: "/products/ai-website-agents",
       accent: "from-blue-500/20 to-cyan-500/20",
       borderHover: "group-hover:border-blue-500/50",
       shadowHover: "group-hover:shadow-[0_0_40px_rgba(59,130,246,0.3)]",
       iconColor: "text-blue-400"
     },
     {
-      title: "E-Commerce Websites",
-      description: "Online stores with secure checkout, inventory tools, and admin dashboards you can actually use.",
-      icon: ShoppingCart,
-      features: ["Custom storefront design", "Secure payment gateways", "Inventory management system", "Admin dashboard", "Mobile shopping optimized"],
-      link: "/contact?service=ecommerce",
+      title: "AI Voice Agents",
+      description: "Your AI-powered front desk for calls, enquiries and appointments.",
+      icon: Brain,
+      features: ["Human-like voice interactions", "Automated call handling", "Appointment scheduling", "24/7 availability"],
+      link: "/products/ai-voice-agents",
       accent: "from-purple-500/20 to-pink-500/20",
       borderHover: "group-hover:border-purple-500/50",
       shadowHover: "group-hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]",
       iconColor: "text-purple-400"
     },
     {
-      title: "Custom Software Development",
-      description: "CRMs, booking systems, and internal tools designed around how your team already works.",
+      title: "VoiceShield",
+      description: "AI-Powered Voice Security & Compliance Intelligence",
       icon: Code,
-      features: ["Requirement analysis", "Custom CRM / ERP builds", "Workflow automation", "Secure data architecture", "Ongoing maintenance"],
-      link: "/contact?service=software",
+      features: ["Real-time deepfake detection", "Acoustic verification", "Compliance reporting", "Risk assessment"],
+      link: "/voice-shield",
       accent: "from-emerald-500/20 to-teal-500/20",
       borderHover: "group-hover:border-emerald-500/50",
       shadowHover: "group-hover:shadow-[0_0_40px_rgba(16,185,129,0.3)]",
       iconColor: "text-emerald-400"
-    },
-    {
-      title: "AI-Powered Solutions",
-      description: "Practical AI features — chatbots, dashboards, and automations — integrated into your existing product or workflow.",
-      icon: Brain,
-      features: ["AI chatbot integration", "Data dashboards & analytics", "ML-powered features", "Automation workflows", "API integration with AI models"],
-      link: "/contact?service=ai-solutions",
-      accent: "from-amber-500/20 to-orange-500/20",
-      borderHover: "group-hover:border-amber-500/50",
-      shadowHover: "group-hover:shadow-[0_0_40px_rgba(245,158,11,0.3)]",
-      iconColor: "text-amber-400"
     }
   ];
 
@@ -90,7 +79,7 @@ export default function ServicesSection() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {services.map((service, index) => (
             <motion.div
               key={service.title}

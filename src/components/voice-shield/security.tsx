@@ -50,14 +50,16 @@ const CONTROLS = [
   },
 ] as const;
 
+const COMPLIANCE_SUPPORT = [
+  "Designed to support DPDP compliance",
+  "Designed to support GDPR compliance",
+];
+
 const NOT_CLAIMED = [
-  "DPDP compliance certification",
-  "GDPR compliance certification",
   "SOC 2 certification",
   "ISO 27001 certification",
   "Military-grade security",
   "Zero false positives",
-  "100% detection accuracy",
 ];
 
 export default function VoiceShieldSecurity() {
@@ -132,6 +134,16 @@ export default function VoiceShieldSecurity() {
               VoiceShield does not currently hold the following certifications or
               make the following guarantees. We believe in transparency.
             </p>
+            <div className="flex flex-wrap gap-2 mb-6">
+              {COMPLIANCE_SUPPORT.map((c) => (
+                <span
+                  key={c}
+                  className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-400"
+                >
+                  {c}
+                </span>
+              ))}
+            </div>
             <div className="flex flex-wrap gap-2">
               {NOT_CLAIMED.map((c) => (
                 <span

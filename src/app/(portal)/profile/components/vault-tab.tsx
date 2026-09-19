@@ -35,6 +35,29 @@ export function VaultTab({ files, user }: { files: any[], user: any }) {
       return;
     }
 
+    const MAX_SIZE = 10 * 1024 * 1024;
+    const ALLOWED_MIME_TYPES = [
+      'application/pdf', 'image/jpeg', 'image/png', 'application/msword', 
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    const ALLOWED_EXTENSIONS = ['.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx'];
+
+    if (file.size > MAX_SIZE) {
+      toast.error("File size must be less than 10MB");
+      return;
+    }
+
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+      toast.error("Invalid file type. Only PDF, JPG, PNG, and DOC are allowed.");
+      return;
+    }
+
+    const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      toast.error("Invalid file extension.");
+      return;
+    }
+
     try {
       setIsUploading(true);
       const filePath = `${user.id}/${Date.now()}_${file.name}`;

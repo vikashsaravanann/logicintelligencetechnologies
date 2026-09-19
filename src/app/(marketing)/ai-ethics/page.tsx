@@ -74,7 +74,7 @@ export default function AIEthicsPage() {
         <div className="rounded-2xl border border-emerald-900/50 bg-emerald-950/10 backdrop-blur-xl p-8 flex items-center justify-center gap-4 text-center">
           <CheckCircle2 className="w-5 h-5 text-emerald-400" />
           <p className="text-xs font-mono font-bold text-slate-300 uppercase tracking-widest">
-            Compliant with SOC2, GDPR, and emerging global AI regulations.
+            Designed to support SOC2, GDPR, and emerging global AI regulations.
           </p>
         </div>
 

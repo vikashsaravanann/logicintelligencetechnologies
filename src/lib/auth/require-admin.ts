@@ -18,15 +18,6 @@ function timingEqual(a: string, b: string): boolean {
 export async function requireAdminApi(
   req: Request
 ): Promise<{ ok: true } | { ok: false; status: number; message: string }> {
-  const cron = process.env.CRON_SECRET;
-  const auth = req.headers.get("authorization") || "";
-  const headerSecret = req.headers.get("x-cron-secret") || "";
-  if (cron && auth.startsWith("Bearer ") && timingEqual(auth.slice(7), cron)) {
-    return { ok: true };
-  }
-  if (cron && headerSecret && timingEqual(headerSecret, cron)) {
-    return { ok: true };
-  }
 
   try {
     const cookieStore = await cookies();

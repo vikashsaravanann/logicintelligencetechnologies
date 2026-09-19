@@ -27,7 +27,7 @@ export default function InvestorBriefPage() {
             Performance & Vision
           </h1>
           <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl">
-            {COMPANY.name} is accelerating its market presence in enterprise AI security, specifically through our flagship VoiceShield infrastructure.
+            {COMPANY.displayName} is accelerating its market presence in enterprise AI security, specifically through our flagship VoiceShield infrastructure.
           </p>
         </div>
 

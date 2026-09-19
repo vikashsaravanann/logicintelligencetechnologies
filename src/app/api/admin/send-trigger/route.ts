@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 import { sendEmail } from "@/lib/email/send-email";
 import * as React from "react";
 import { requireAdminApi } from "@/lib/auth/require-admin";
@@ -38,10 +39,21 @@ export async function POST(req: Request) {
     (authHeader.startsWith("Bearer ") || xCronHeader);
   const ipAddress = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
 
+  let authOk = false;
+  if (isMachineCall) {
+    const cron = process.env.CRON_SECRET;
+    const auth = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : xCronHeader;
+    if (cron && auth && crypto.timingSafeEqual(Buffer.from(auth), Buffer.from(cron))) {
+      authOk = true;
+    }
+  }
+
   try {
-    const auth = await requireAdminApi(req);
-    if (!auth.ok) {
-      return NextResponse.json({ error: auth.message }, { status: auth.status });
+    if (!authOk) {
+      const auth = await requireAdminApi(req);
+      if (!auth.ok) {
+        return NextResponse.json({ error: auth.message }, { status: auth.status });
+      }
     }
 
     // Determine caller identity for audit trail (never expose the token itself)

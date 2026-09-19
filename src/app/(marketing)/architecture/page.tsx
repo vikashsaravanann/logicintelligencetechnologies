@@ -86,7 +86,7 @@ export default function ArchitecturePage() {
               Enterprise Data Security
             </h2>
             <p className="text-sm text-slate-400 leading-relaxed">
-              We process audio streams entirely in volatile memory (RAM). Absolutely zero audio data or personally identifiable information (PII) is persisted to disk during analysis, ensuring full GDPR and SOC2 compliance.
+              We process audio streams entirely in volatile memory (RAM). Absolutely zero audio data or personally identifiable information (PII) is persisted to disk during analysis, ensuring architectures designed to support GDPR and SOC2 compliance.
             </p>
           </div>
           

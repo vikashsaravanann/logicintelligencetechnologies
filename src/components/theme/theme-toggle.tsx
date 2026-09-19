@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
+
 
 type ThemeToggleProps = {
   className?: string;
@@ -36,7 +38,10 @@ export function ThemeToggle({ className = "", variant = "icon" }: ThemeTogglePro
         title={label}
         className={`inline-flex flex-row items-center justify-center gap-2 h-10 px-4 rounded-full border border-white/15 bg-white/[0.06] text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-200 hover:bg-white/10 whitespace-nowrap shrink-0 ${className}`}
       >
-        {mounted ? dark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5 opacity-40" />}
+        <div className="t-icon-swap" data-state={mounted ? (dark ? "b" : "a") : "b"}>
+          <Moon className={cn("w-3.5 h-3.5 t-icon", !mounted && "opacity-40")} data-icon="a" />
+          <Sun className={cn("w-3.5 h-3.5 t-icon", !mounted && "opacity-40")} data-icon="b" />
+        </div>
         <span className="leading-none">{mounted ? (dark ? "Light" : "Dark") : "Theme"}</span>
       </button>
     );
@@ -50,11 +55,10 @@ export function ThemeToggle({ className = "", variant = "icon" }: ThemeTogglePro
       title={label}
       className={`h-8 w-8 shrink-0 grid place-items-center rounded-full border border-white/15 bg-white/[0.06] text-white hover:bg-white/10 ${className}`}
     >
-      {mounted ? (
-        dark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />
-      ) : (
-        <Sun className="w-3.5 h-3.5 opacity-40" />
-      )}
+      <div className="t-icon-swap" data-state={mounted ? (dark ? "b" : "a") : "b"}>
+        <Moon className={cn("w-3.5 h-3.5 t-icon", !mounted && "opacity-40")} data-icon="a" />
+        <Sun className={cn("w-3.5 h-3.5 t-icon", !mounted && "opacity-40")} data-icon="b" />
+      </div>
     </button>
   );
 }
