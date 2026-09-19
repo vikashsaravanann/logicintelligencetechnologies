@@ -11,7 +11,6 @@ import VoiceShieldTechnology from "@/components/voice-shield/technology";
 import VoiceShieldSecurity from "@/components/voice-shield/security";
 import VoiceShieldFAQ from "@/components/voice-shield/faq";
 import VoiceShieldCTA from "@/components/voice-shield/cta";
-import LiquidBackground from "@/components/voice-shield/liquid-background";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.logicintelligencetechnologies.in";
