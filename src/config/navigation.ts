@@ -1,6 +1,6 @@
 /**
  * Central navigation model for Logic Intelligence Technologies.
- * Last updated: 2026-09-19 — Added VoiceShield AI product navigation.
+ * Last updated: 2026-09-19 — Single VoiceShield product entry (request access on product page).
  */
 export type NavItem = {
   href: string;
@@ -56,11 +56,6 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
         href: "/voice-shield",
         label: "VOICESHIELD",
         description: "AI VOICE SECURITY & ANTI-SPOOFING",
-      },
-      {
-        href: "/voice-shield/demo",
-        label: "VOICESHIELD DEMO",
-        description: "REAL-TIME DETECTION EXPERIENCE",
       },
     ],
   },
