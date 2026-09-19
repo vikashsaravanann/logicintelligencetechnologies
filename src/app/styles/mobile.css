@@ -1,7 +1,7 @@
 /*
- * Mobile: root font-size 4px only (user-requested densest type).
- * Does NOT change padding, gaps, radius, widgets, or layout structure.
- * Does NOT use transform scale / zoom (those create a right-side blank gap).
+ * Mobile: full-bleed only. Do not change root font-size, padding, or widgets.
+ * Changing html font-size scales all rem-based Tailwind layout (broken UI).
+ * No transform / zoom (those create a right-side blank gap).
  */
 
 html, body {
@@ -18,16 +18,10 @@ img, video, canvas, iframe, svg {
 }
 
 @media (max-width: 768px) {
-  html {
-    font-size: 4px;
-  }
-
   body {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     transform: none;
     zoom: normal;
-    width: 100%;
-    max-width: 100vw;
   }
 }
