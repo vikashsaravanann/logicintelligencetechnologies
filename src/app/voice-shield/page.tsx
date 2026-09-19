@@ -30,7 +30,7 @@ import BackToHome from "@/components/ui/back-to-home";
 
 export default function VoiceShieldProductPage() {
   return (
-    <main className="relative min-h-screen bg-[#030712] text-slate-100 overflow-x-hidden font-sans">
+    <main className="relative min-h-screen bg-transparent text-slate-100 overflow-x-hidden font-sans">
       <LiquidBackground />
       
       <script
