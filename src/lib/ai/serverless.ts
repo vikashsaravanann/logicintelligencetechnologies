@@ -98,11 +98,11 @@ export async function runServerlessAI(
     system = `${system}\n\n${req.systemExtra.trim()}`;
   }
 
-  const history = (req.history || [])
+  const history: ChatMessage[] = (req.history || [])
     .filter((m) => m.role === "user" || m.role === "assistant")
     .slice(-12)
     .map((m) => ({
-      role: m.role,
+      role: m.role as "user" | "assistant",
       content: String(m.content || "").slice(0, 4000),
     }));
 

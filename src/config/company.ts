@@ -38,6 +38,14 @@ export const COMPANY = {
     admin: 'admin@logicintelligencetechnologies.in',
     support: 'support@logicintelligencetechnologies.in',
   },
+  products: {
+    voiceShield: {
+      name: 'VoiceShield',
+      tagline: 'AI Voice Security & Anti-Spoofing',
+      path: '/voice-shield',
+      description: 'Real-time synthetic voice detection for telephony and call centres.',
+    },
+  },
 } as const;
 
 export const LEGAL_LAST_UPDATED = 'September 7, 2026';

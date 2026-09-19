@@ -40,13 +40,22 @@ export async function requireAdminApi(
     const {
       data: { session },
     } = await supabase.auth.getSession();
-    const email = session?.user?.email || "";
-    if (email.toLowerCase().endsWith("@logicintelligencetechnologies.in")) {
-      return { ok: true };
+    
+    if (session?.user?.id) {
+      // Fetch profile to verify role
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+        
+      if (profile && (profile.role === "admin" || profile.role === "super_admin")) {
+        return { ok: true };
+      }
     }
-  } catch {
-    /* fall through */
+  } catch (error) {
+    console.error("[requireAdminApi] Auth check failed:", error);
   }
 
-  return { ok: false, status: 401, message: "Unauthorized" };
+  return { ok: false, status: 403, message: "Forbidden: Admin access required" };
 }

@@ -23,6 +23,8 @@ export const PAGE_VISUALS: PageVisual[] = [
   { route: "/blog", concept: "Editorial cards per article", asset: "/images/blog/website-pricing-breakdown.jpg", alt: "LIT blog", og: "/api/og?title=Blog" },
   { route: "/resources", concept: "Resource covers", asset: "/images/resources/company-profile.jpg", alt: "LIT resources", og: "/api/og?title=Resources" },
   { route: "/login", concept: "Glass authentication panel", asset: "/assets/jobs/eng-desk.jpg", alt: "Sign in to LIT", og: "/api/og?title=Sign+In" },
+  { route: "/voice-shield", concept: "AI voice security dark mesh", asset: "/assets/voiceshield/page-hero.jpg", alt: "VoiceShield — AI Voice Security by Logic Intelligence Technologies", og: "/api/og?title=VoiceShield+%E2%80%94+AI+Voice+Security" },
+  { route: "/voice-shield/demo", concept: "Real-time audio waveform", asset: "/assets/voiceshield/demo-hero.jpg", alt: "VoiceShield Live Demo — Logic Intelligence Technologies", og: "/api/og?title=VoiceShield+Live+Demo" },
 ];
 
 export function visualFor(route: string): PageVisual | undefined {

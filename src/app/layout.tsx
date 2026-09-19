@@ -108,13 +108,21 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <GlobalVideoBackground />
-          <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
-          {children}
-          <SpeedInsights />
-          <Analytics />
-        </ThemeProvider>
+        <div style={{ 
+          zoom: "0.5", 
+          transform: "scale(1)", // Fallback anchor
+          transformOrigin: "top center",
+          width: "100%",
+          overflowX: "hidden"
+        }}>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+            <GlobalVideoBackground />
+            <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
+            {children}
+            <SpeedInsights />
+            <Analytics />
+          </ThemeProvider>
+        </div>
       </body>
     </html>
   );

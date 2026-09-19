@@ -62,8 +62,19 @@ export async function middleware(req: NextRequest) {
     }
 
     if (path.startsWith("/dashboard") || path.startsWith("/admin")) {
-      const email = session.user.email || "";
-      if (!isCompanyEmail(email)) {
+      let isAllowed = false;
+      if (session.user.id) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", session.user.id)
+          .single();
+        if (profile && (profile.role === "admin" || profile.role === "super_admin")) {
+          isAllowed = true;
+        }
+      }
+      
+      if (!isAllowed) {
         return NextResponse.redirect(new URL("/profile", req.url));
       }
     }
