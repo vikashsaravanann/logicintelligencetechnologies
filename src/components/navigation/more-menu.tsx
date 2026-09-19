@@ -139,7 +139,6 @@ export function MoreMenu({
           </div>
         ))}
       </div>
-      </div>
     </div>
   );
 }
