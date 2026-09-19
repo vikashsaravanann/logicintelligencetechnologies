@@ -15,6 +15,7 @@ export default function ResourceDownloadForm({ resource }: Props) {
   const [company, setCompany] = useState("");
   const [loading, setLoading] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
+  const [secureToken, setSecureToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,21 +26,21 @@ export default function ResourceDownloadForm({ resource }: Props) {
     setError(null);
 
     try {
-      // 1. Post lead data to contact / lead ingestion
-      const res = await fetch("/api/contact", {
+      // 1. Post lead data to secure token endpoint
+      const res = await fetch("/api/resources/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: name || "Resource Requester",
+          fullName: name || "Resource Requester",
           email,
-          company: company || "Not Specified",
-          message: `Requested download: ${resource.title} (${resource.slug})`,
-          serviceInterest: "Resource Download",
+          companyName: company || "Not Specified",
+          resourceId: resource.id,
         }),
       });
 
-      if (!res.ok) {
-        // Even if lead capture has warning, still allow direct download for user satisfaction
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Failed to request document.");
       }
 
       trackEvent("resource_download", {
@@ -47,11 +48,13 @@ export default function ResourceDownloadForm({ resource }: Props) {
         resourceTitle: resource.title,
       });
 
+      // We need to store the token in state so they can "Download Again"
+      setSecureToken(data.token);
       setDownloaded(true);
 
-      // 2. Trigger direct download automatically
+      // 2. Trigger direct download automatically using the secure token
       const link = document.createElement("a");
-      link.href = resource.publicPath;
+      link.href = `/api/resources/download?token=${data.token}`;
       link.download = resource.filename;
       document.body.appendChild(link);
       link.click();
@@ -74,7 +77,7 @@ export default function ResourceDownloadForm({ resource }: Props) {
           Your document is downloading now. If it didn't start automatically, use the button below.
         </p>
         <a
-          href={resource.publicPath}
+          href={secureToken ? `/api/resources/download?token=${secureToken}` : "#"}
           download={resource.filename}
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.4)]"
         >
