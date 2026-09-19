@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { resolveSupportTicket, sendAdminEmail } from "../actions";
+import { resolveSupportTicket, sendAdminEmail } from "../../actions";
 import { CheckCircle2, Mail, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
 
