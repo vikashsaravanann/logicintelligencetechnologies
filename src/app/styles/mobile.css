@@ -1,7 +1,7 @@
 /*
- * Mobile: denser root type only.
- * Do NOT override padding, gaps, radius, max-width, or widget layout.
- * No transform / zoom (those create a right-side blank gap).
+ * Mobile: root font-size 4px only (user-requested densest type).
+ * Does NOT change padding, gaps, radius, widgets, or layout structure.
+ * Does NOT use transform scale / zoom (those create a right-side blank gap).
  */
 
 html, body {
@@ -19,7 +19,7 @@ img, video, canvas, iframe, svg {
 
 @media (max-width: 768px) {
   html {
-    font-size: 12px;
+    font-size: 4px;
   }
 
   body {
@@ -27,17 +27,7 @@ img, video, canvas, iframe, svg {
     text-size-adjust: 100%;
     transform: none;
     zoom: normal;
-  }
-}
-
-@media (max-width: 430px) {
-  html {
-    font-size: 11.5px;
-  }
-}
-
-@media (max-width: 360px) {
-  html {
-    font-size: 11px;
+    width: 100%;
+    max-width: 100vw;
   }
 }
