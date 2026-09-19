@@ -17,6 +17,10 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+/** Zoom factor for global denser layout (Safari / Chrome zoom; transform fallback for Firefox). */
+const SITE_ZOOM = 0.3;
+const SITE_ZOOM_WIDTH = `${100 / SITE_ZOOM}%`; // 333.333% — fills viewport after zoom
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -107,14 +111,40 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} overflow-x-hidden w-full max-w-[100vw]`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <GlobalVideoBackground />
-          <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
-          {children}
-          <SpeedInsights />
-          <Analytics />
-        </ThemeProvider>
+      <body className={`${inter.className} overflow-x-hidden w-full max-w-[100vw] m-0 p-0`}>
+        {/*
+          Clip shell: prevents any post-zoom overflow from creating a right-side gap.
+          Inner shell: width = 100/zoom so after zoom:0.3 the visual width = 100vw.
+        */}
+        <div
+          className="w-full max-w-[100vw] overflow-x-hidden overflow-y-visible"
+          style={{ width: "100%", maxWidth: "100vw" }}
+        >
+          <div
+            id="site-zoom-root"
+            style={{
+              zoom: SITE_ZOOM,
+              width: SITE_ZOOM_WIDTH,
+              transformOrigin: "top left",
+              // Firefox does not support zoom — scale + compensated width
+              // @ts-expect-error CSS zoom is valid in Chromium/WebKit
+              ...(typeof CSS !== "undefined" && !CSS.supports?.("zoom", "1")
+                ? {
+                    transform: `scale(${SITE_ZOOM})`,
+                    width: SITE_ZOOM_WIDTH,
+                  }
+                : {}),
+            }}
+          >
+            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+              <GlobalVideoBackground />
+              <Toaster position="top-right" toastOptions={{ style: { background: "#333", color: "#fff" } }} />
+              {children}
+              <SpeedInsights />
+              <Analytics />
+            </ThemeProvider>
+          </div>
+        </div>
       </body>
     </html>
   );
