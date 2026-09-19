@@ -3,6 +3,7 @@ import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { FileText, Plus, ArrowRight, CheckCircle2, Clock, Eye, Send } from "lucide-react";
 import BackToHome from "@/components/ui/back-to-home";
+import { ProposalActions } from "./proposal-actions";
 
 export const metadata: Metadata = {
   title: "Proposal Management | Admin Command Center",
@@ -82,14 +83,7 @@ export default async function AdminProposalsPage() {
                       {new Date(p.created_at).toLocaleDateString()}
                     </td>
                     <td className="p-4 text-right">
-                      <Link
-                        href={`/proposal/${p.secure_token}`}
-                        target="_blank"
-                        className="text-xs text-primary font-bold hover:underline inline-flex items-center gap-1"
-                      >
-                        <span>View Client Link</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
+                      <ProposalActions proposalId={p.id} secureToken={p.secure_token} />
                     </td>
                   </tr>
                 ))
