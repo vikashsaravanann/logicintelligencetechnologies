@@ -30,46 +30,18 @@ body {
   max-width: 100vw;
 }
 
-/* Smartphones only — absolute minimum scale (25%) */
-@media screen and (max-width: 767px) {
-  html {
-    overflow-x: hidden !important;
-    width: 100% !important;
-    max-width: 100vw !important;
-  }
-
-  body {
-    /* 1. Shrink entire page to 25% */
-    transform: scale(0.25);
-    /* 2. Anchor top-left so layout does not float center */
-    transform-origin: top left;
-    /* 3. Expand canvas to 400% so after scale it fills 100vw (1/0.25 = 4) */
-    width: 400% !important;
-    max-width: none !important;
-    /* 4. No horizontal scrollbar */
-    overflow-x: hidden !important;
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* Keep media from overflowing the scaled canvas */
-  img, video, canvas, iframe, svg {
-    max-width: 100%;
-    height: auto;
-  }
-}
-
 /* Global desktop scaling */
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 1025px) {
     body {
         zoom: 0.5;
     }
 }
 
-/* User's custom mobile 25% scaling solution */
-@media screen and (max-width: 767px) {
+/* 
+   Targets ONLY mobile phones and tablets.
+   Excludes laptops/desktops by checking pointer capabilities and device width boundaries.
+*/
+@media screen and (max-width: 1024px) and (hover: none) and (pointer: coarse) {
     html, body {
         /* 1. Prevent mobile browsers from scaling the layout on their own */
         min-width: 100%;
@@ -88,5 +60,12 @@ body {
         
         /* 4. Fixes height gaps that can appear at the bottom when scaling */
         height: auto !important; 
+    }
+}
+
+/* Fallback for small desktop windows (e.g. 800px wide laptop browser) */
+@media screen and (max-width: 1024px) and (pointer: fine) {
+    body {
+        zoom: 0.5;
     }
 }
