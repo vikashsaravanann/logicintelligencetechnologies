@@ -25,7 +25,7 @@ const NavLink = ({
     <Link
       href={href}
       onClick={onClick}
-      className={`relative inline-flex items-center h-11 px-2 text-xs font-semibold tracking-[0.14em] whitespace-nowrap transition-colors ${
+      className={`relative inline-flex items-center h-11 px-1.5 text-[10px] font-bold tracking-wider whitespace-nowrap transition-colors ${
         isActive ? "text-primary" : "text-zinc-200 hover:text-primary"
       }`}
     >
@@ -117,7 +117,7 @@ export default function Navbar() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <span className="text-xs font-bold text-white tracking-[0.14em] hidden lg:inline">
+              <span className="text-[10px] font-bold text-white tracking-widest hidden xl:inline">
                 {COMPANY.displayName.toUpperCase()}
               </span>
             </Link>
@@ -132,7 +132,7 @@ export default function Navbar() {
               <div className="relative" ref={moreRef}>
                 <button
                   type="button"
-                  className="inline-flex items-center h-11 px-2 text-xs font-semibold tracking-[0.14em] text-zinc-200 hover:text-primary transition-colors"
+                  className="inline-flex items-center h-11 px-1.5 text-[10px] font-bold tracking-wider text-zinc-200 hover:text-primary transition-colors"
                   onClick={() => setMoreOpen((v) => !v)}
                   aria-expanded={moreOpen}
                   aria-haspopup="true"
@@ -192,13 +192,13 @@ export default function Navbar() {
               <AuthNavControl />
               <Link
                 href={PRIMARY_CTA.href}
-                className="hidden lg:inline-flex h-8 px-4 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
+                className="hidden lg:inline-flex h-7 px-3 items-center rounded-full text-[9px] font-bold text-white uppercase tracking-wider border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
               >
                 Book Consultation
               </Link>
               <Link
                 href="/contact"
-                className="hidden lg:inline-flex h-8 px-4 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-90 transition-opacity"
+                className="hidden lg:inline-flex h-7 px-3 items-center rounded-full text-[9px] font-bold text-white uppercase tracking-wider bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-90 transition-opacity"
               >
                 Start Project
               </Link>
