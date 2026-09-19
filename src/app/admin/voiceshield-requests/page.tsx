@@ -8,6 +8,8 @@ export const metadata: Metadata = {
 
 export const revalidate = 0;
 
+import BackToHome from "@/components/ui/back-to-home";
+
 export default async function VoiceShieldRequestsPage() {
   const { data: leads } = await supabaseAdmin
     .from("contact_leads")
@@ -15,5 +17,10 @@ export default async function VoiceShieldRequestsPage() {
     .ilike("message", "%VoiceShield%")
     .order("created_at", { ascending: false });
 
-  return <VoiceShieldRequestsClient leads={leads ?? []} />;
+  return (
+    <>
+      <BackToHome href="/admin/command-center" label="Back to Command Center" inline />
+      <VoiceShieldRequestsClient leads={leads ?? []} />
+    </>
+  );
 }

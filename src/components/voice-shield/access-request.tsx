@@ -71,7 +71,7 @@ export default function VoiceShieldAccessRequest() {
 
   return (
     <div
-      className="min-h-screen w-full flex flex-col bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 overflow-x-hidden"
+      className="h-screen w-full flex flex-col bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 overflow-hidden"
       style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
     >
       {/* Top announcement bar */}
@@ -108,12 +108,12 @@ export default function VoiceShieldAccessRequest() {
 
           {/* Nav */}
           <div className="flex items-center gap-2">
-            <Link
-              href={CONSOLE_URL}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-mono font-bold tracking-[0.1em] uppercase text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent transition-all"
+            <button
+              disabled
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-mono font-bold tracking-[0.1em] uppercase text-slate-500 bg-slate-900/50 border border-transparent cursor-not-allowed"
             >
-              <Globe className="w-3.5 h-3.5" /> Console
-            </Link>
+              <Lock className="w-3.5 h-3.5" /> Console (Locked)
+            </button>
             <Link
               href="/voice-shield"
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-mono font-bold text-[11px] tracking-widest uppercase transition-all border border-slate-800"
@@ -126,19 +126,19 @@ export default function VoiceShieldAccessRequest() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-start lg:items-center justify-center px-4 py-12 lg:py-8">
+      <main className="flex-1 flex items-start lg:items-center justify-center px-4 py-4 lg:py-2">
         <div className="w-full max-w-6xl">
 
           {/* Page header */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-800 bg-slate-900/90 text-xs text-slate-300 font-mono mb-6 backdrop-blur-md">
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-800 bg-slate-900/90 text-xs text-slate-300 font-mono mb-3 backdrop-blur-md">
               <Lock className="w-3.5 h-3.5 text-emerald-400" />
               <span>Gated Enterprise Access — Admin Reviewed</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white mb-4 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-2 leading-tight">
               Request Console Access
             </h1>
-            <p className="text-base sm:text-lg text-slate-400 max-w-xl mx-auto leading-relaxed">
+            <p className="text-sm sm:text-base text-slate-400 max-w-xl mx-auto leading-relaxed">
               VoiceShield is a restricted platform. Submit your application — our team will review and send you a private access link within 24 hours.
             </p>
           </div>
@@ -171,7 +171,6 @@ export default function VoiceShieldAccessRequest() {
                 {[
                   { icon: Activity, label: "Live Demo", desc: "Microphone-based real-time voice scan" },
                   { icon: Cpu, label: "Forensic Lab", desc: "Upload audio files for deep analysis" },
-                  { icon: ShieldCheck, label: "SOC Dashboard", desc: "Threat analytics and session logs" },
                   { icon: Globe, label: "WebSocket API", desc: "Stream integration documentation" },
                   { icon: UserCheck, label: "Product Brief", desc: "Architecture, compliance, SLA details" },
                 ].map((f) => (
@@ -202,38 +201,38 @@ export default function VoiceShieldAccessRequest() {
 
             {/* Right — Form panel */}
             <div className="lg:col-span-3">
-              <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-emerald-950/20">
+              <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl shadow-emerald-950/20">
 
                 {sent ? (
-                  <div className="flex flex-col items-center justify-center text-center space-y-5 py-12">
-                    <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.2)]">
-                      <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+                  <div className="flex flex-col items-center justify-center text-center space-y-4 py-8">
+                    <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.2)]">
+                      <CheckCircle2 className="w-8 h-8 text-emerald-400" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-tight">Application Submitted</h2>
-                      <p className="text-slate-400 leading-relaxed max-w-sm mx-auto text-sm">
+                      <h2 className="text-xl font-black text-white mb-2 uppercase tracking-tight">Application Submitted</h2>
+                      <p className="text-slate-400 leading-relaxed max-w-sm mx-auto text-xs">
                         Our team will review your request. If approved, you will receive an <strong className="text-emerald-400">encrypted private link</strong> to the VoiceShield console at your work email.
                       </p>
                     </div>
-                    <div className="flex items-center gap-2 text-[11px] font-mono text-slate-500 uppercase tracking-widest">
+                    <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500 uppercase tracking-widest">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       Typical response: within 24 hours
                     </div>
                     <Link
                       href="/voice-shield"
-                      className="mt-4 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs tracking-widest uppercase transition-all border border-slate-700"
+                      className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-[10px] tracking-widest uppercase transition-all border border-slate-700"
                     >
                       <ArrowRight className="w-4 h-4 rotate-180" /> Return to VoiceShield
                     </Link>
                   </div>
                 ) : (
                   <>
-                    <div className="flex items-center gap-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-emerald-400 mb-6 pb-5 border-b border-slate-800">
+                    <div className="flex items-center gap-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-emerald-400 mb-4 pb-3 border-b border-slate-800">
                       <Lock className="w-3.5 h-3.5" />
                       Gated Access Application
                     </div>
 
-                    <form onSubmit={onSubmit} className="space-y-5">
+                    <form onSubmit={onSubmit} className="space-y-3">
                       {/* Row 1 */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>

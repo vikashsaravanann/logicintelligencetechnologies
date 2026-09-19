@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Calculator, ShieldCheck, ArrowRight, ShieldAlert } from "lucide-react";
 import Link from "next/link";
+import BackToHome from "@/components/ui/back-to-home";
 
 export default function ROICalculator() {
   const [calls, setCalls] = useState(100000);
@@ -33,6 +34,7 @@ export default function ROICalculator() {
 
   return (
     <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 pt-32 pb-16">
+      <BackToHome />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.1),_transparent_45%)]" />
 
       <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6">

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Briefcase, ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { Metadata } from "next";
 import { COMPANY } from "@/config/company";
+import BackToHome from "@/components/ui/back-to-home";
 
 export default function SalesPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -20,6 +21,7 @@ export default function SalesPage() {
 
   return (
     <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 pt-32 pb-24">
+      <BackToHome />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_left,_rgba(16,185,129,0.08),_transparent_40%)]" />
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6">

@@ -1,6 +1,7 @@
 import React from "react";
 import { Activity, Server, Shield, Globe2, CheckCircle2 } from "lucide-react";
 import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: "System Status | Logic Intelligence Technologies",
@@ -19,6 +20,7 @@ export default function StatusPage() {
 
   return (
     <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 pt-32 pb-24">
+      <BackToHome />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.05),_transparent_40%)]" />
 
       <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6">

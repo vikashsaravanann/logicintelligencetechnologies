@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import PageShell from '@/components/layout/page-shell';
 import SectionHeader from '@/components/ui/section-header';
+import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 export default function PrivacyPolicyPage() {
   return (
     <PageShell>
+      <BackToHome />
       <div className="container py-24 max-w-4xl mx-auto">
         <SectionHeader
           title="Privacy Policy"

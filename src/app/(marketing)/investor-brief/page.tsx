@@ -3,6 +3,7 @@ import { TrendingUp, BarChart3, Download, LineChart, Target, Rocket } from "luci
 import Link from "next/link";
 import { Metadata } from "next";
 import { COMPANY } from "@/config/company";
+import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: "Investor Brief | Logic Intelligence Technologies",
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 export default function InvestorBriefPage() {
   return (
     <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 pt-32 pb-24">
+      <BackToHome />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_bottom_left,_rgba(16,185,129,0.1),_transparent_60%)]" />
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">

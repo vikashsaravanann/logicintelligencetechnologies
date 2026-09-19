@@ -2,6 +2,7 @@ import React from "react";
 import { LifeBuoy, FileText, Wrench, Search, MessageSquare, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: "Enterprise Help Center | Logic Intelligence Technologies",
@@ -30,6 +31,7 @@ export default function HelpCenterPage() {
 
   return (
     <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 pt-32 pb-24">
+      <BackToHome />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.05),_transparent_40%)]" />
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">

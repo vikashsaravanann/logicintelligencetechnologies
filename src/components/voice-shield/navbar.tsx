@@ -35,8 +35,13 @@ export default function VoiceShieldNavbar() {
             {/* Logo (Left) */}
             <div className="flex items-center gap-3 relative z-10">
               <Link href="/voice-shield" className="flex items-center gap-2 group">
-                <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/20 transition-all shadow-[0_0_10px_rgba(34,211,238,0.2)]">
-                  <ShieldCheck className="w-4 h-4" />
+                <div className="w-9 h-9 rounded-full overflow-hidden bg-gradient-to-tr from-cyan-600 to-emerald-600 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/assets/logo-icon.jpg"
+                    alt="LIT logo"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs font-black tracking-tight text-white leading-none mb-0.5 group-hover:text-cyan-50 transition-colors">
@@ -69,8 +74,14 @@ export default function VoiceShieldNavbar() {
               </nav>
             </div>
 
-            {/* Empty Right Side for Balance or Mobile Toggle */}
-            <div className="flex items-center gap-4 relative z-10 w-8 lg:w-auto">
+            {/* Right Side */}
+            <div className="flex items-center gap-4 relative z-10 w-8 lg:w-auto ml-auto">
+              <Link
+                href="/voice-shield/request"
+                className="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono font-bold text-[10px] tracking-widest uppercase transition-all shadow-lg shadow-cyan-500/20"
+              >
+                Request Console Access
+              </Link>
               <button
                 className="lg:hidden p-2 text-slate-300 hover:text-cyan-300 transition-colors ml-auto"
                 onClick={() => setMobileMenu(true)}

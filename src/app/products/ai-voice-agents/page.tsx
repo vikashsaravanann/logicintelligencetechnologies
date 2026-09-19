@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { aiVoiceAgentsProductNode } from '@/lib/seo/schema';
 import { ArrowRight, PhoneCall, Mic, CalendarCheck, ShieldCheck, Zap, Workflow, Server, Activity } from 'lucide-react';
+import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: 'AI Voice Agents | Logic Intelligence Technologies',
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 export default function AIVoiceAgentsPage() {
   return (
     <main className="relative min-h-screen bg-[#0A0515] text-slate-100 overflow-hidden font-sans">
+      <BackToHome />
       {/* Dynamic Background Effect specific to AI Voice Agents (Fuchsia/Purple Theme) */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[50%] bg-fuchsia-600/20 blur-[150px] rounded-full mix-blend-screen" />

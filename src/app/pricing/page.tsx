@@ -6,6 +6,7 @@ import { PRICING_CONFIG, Currency, formatPrice } from '@/config/pricing';
 import PageShell from '@/components/layout/page-shell';
 import { Check, HelpCircle, Shield, Lock, FileCheck, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
+import BackToHome from "@/components/ui/back-to-home";
 
 export default function PricingPage() {
   const [currency, setCurrency] = useState<Currency>('USD');
@@ -16,6 +17,7 @@ export default function PricingPage() {
 
   return (
     <PageShell>
+      <BackToHome />
       {/* Golden gradient overlay on top of global background */}
       <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
         <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[80%] h-[60%] bg-[radial-gradient(ellipse_at_center,_rgba(184,134,11,0.18)_0%,_rgba(0,0,0,0)_70%)]" />

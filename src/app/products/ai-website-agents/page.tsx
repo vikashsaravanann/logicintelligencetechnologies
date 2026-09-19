@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { aiWebsiteAgentsProductNode } from '@/lib/seo/schema';
 import { ArrowRight, Bot, Zap, Globe, Database, Sparkles, Code2, LineChart, MessageSquare } from 'lucide-react';
+import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: 'AI Website Agents | Logic Intelligence Technologies',
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 export default function AIWebsiteAgentsPage() {
   return (
     <main className="relative min-h-screen bg-[#050A15] text-slate-100 overflow-hidden font-sans">
+      <BackToHome />
       {/* Dynamic Background Effect specific to AI Website Agents (Cyan/Blue Theme) */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-cyan-600/20 blur-[150px] rounded-full mix-blend-screen" />

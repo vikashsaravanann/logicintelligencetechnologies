@@ -2,6 +2,7 @@ import React from "react";
 import { BookOpen, Search, ArrowRight, Zap, Shield, Brain } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: "AI Knowledge Hub | Logic Intelligence Technologies",
@@ -17,6 +18,7 @@ export default function KnowledgeBasePage() {
 
   return (
     <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 pt-32 pb-24">
+      <BackToHome />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.1),_transparent_50%)]" />
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">

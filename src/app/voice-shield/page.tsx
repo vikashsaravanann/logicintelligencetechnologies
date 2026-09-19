@@ -26,9 +26,12 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE_URL}/voice-shield` },
 };
 
+import BackToHome from "@/components/ui/back-to-home";
+
 export default function VoiceShieldProductPage() {
   return (
     <main className="relative min-h-screen bg-[#030712] text-slate-100 overflow-x-hidden font-sans">
+      <BackToHome />
       <LiquidBackground />
       
       <script

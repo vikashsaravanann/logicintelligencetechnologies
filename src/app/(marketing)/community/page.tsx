@@ -2,6 +2,7 @@ import React from "react";
 import { Users2, MessageSquare, Terminal, Heart, Trophy, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
+import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: "Developer Community | Logic Intelligence Technologies",
@@ -18,6 +19,7 @@ export default function CommunityPage() {
 
   return (
     <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 pt-32 pb-24">
+      <BackToHome />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_right,_rgba(16,185,129,0.05),_transparent_40%)]" />
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
