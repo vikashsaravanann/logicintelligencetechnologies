@@ -132,7 +132,104 @@ export default function AIVoiceAgentsPage() {
           </div>
         </section>
 
-        {/* CTA */}
+        {/* HOW IT WORKS */}
+        <section className="space-y-16 py-12 border-t border-white/5">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl md:text-5xl font-bold text-white">How it Works</h2>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+              Deploying a voice agent is faster and simpler than setting up traditional IVR.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            <div className="hidden md:block absolute top-1/2 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-fuchsia-500/20 to-transparent -translate-y-1/2 z-0" />
+            
+            {[
+              {
+                step: "01",
+                title: "Define Workflows",
+                desc: "Map out the conversation flows, required data to extract (like emails or names), and connect your calendar or CRM."
+              },
+              {
+                step: "02",
+                title: "Choose a Voice",
+                desc: "Select from ultra-realistic, natural-sounding AI voices that match your brand identity across multiple languages."
+              },
+              {
+                step: "03",
+                title: "Route & Answer",
+                desc: "Port your existing phone number or claim a new one. The AI instantly starts answering concurrent calls, 24/7."
+              }
+            ].map((item, i) => (
+              <div key={i} className="relative z-10 bg-[#0A0515] border border-white/10 rounded-3xl p-8 hover:border-fuchsia-500/30 transition-all text-center group">
+                <div className="w-16 h-16 rounded-full bg-fuchsia-950 border border-fuchsia-500/20 flex items-center justify-center mx-auto mb-6 text-2xl font-black text-fuchsia-400 shadow-[0_0_30px_-10px_rgba(192,38,211,0.3)]">
+                  {item.step}
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
+                <p className="text-slate-400 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* USE CASES */}
+        <section className="space-y-16 py-12 border-t border-white/5">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl md:text-5xl font-bold text-white">Built for High-Volume Telephony</h2>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+              Automate the phone lines in industries where missing a call means missing revenue.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 hover:bg-white/[0.04] transition-all">
+              <h3 className="text-xl font-bold text-white mb-4">Healthcare & Clinics</h3>
+              <ul className="space-y-3 text-slate-400">
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Patient appointment scheduling</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Pre-appointment reminders via voice</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> FAQ for clinic hours and locations</li>
+              </ul>
+            </div>
+            <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 hover:bg-white/[0.04] transition-all">
+              <h3 className="text-xl font-bold text-white mb-4">Logistics & Delivery</h3>
+              <ul className="space-y-3 text-slate-400">
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Automated delivery status updates</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Driver dispatch coordination</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Rescheduling missed deliveries</li>
+              </ul>
+            </div>
+            <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 hover:bg-white/[0.04] transition-all">
+              <h3 className="text-xl font-bold text-white mb-4">Local Services & Hospitality</h3>
+              <ul className="space-y-3 text-slate-400">
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Restaurant reservations</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Hotel booking and room service queries</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Handling overflow calls during peak hours</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="space-y-12 py-12 border-t border-white/5 max-w-4xl mx-auto w-full">
+          <div className="text-center space-y-4 mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold text-white">Frequently Asked Questions</h2>
+          </div>
+          
+          <div className="space-y-6">
+            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
+              <h4 className="text-lg font-bold text-white mb-2">Can callers tell they are speaking to an AI?</h4>
+              <p className="text-slate-400">The voices are nearly indistinguishable from humans, featuring natural breathing pauses, inflections, and sub-second latency. However, we recommend ethically disclosing that they are speaking to an AI assistant.</p>
+            </div>
+            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
+              <h4 className="text-lg font-bold text-white mb-2">Can it handle multiple calls at once?</h4>
+              <p className="text-slate-400">Yes, the AI voice agent can handle virtually unlimited concurrent calls. You will never put a customer on hold or send them to voicemail again.</p>
+            </div>
+            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
+              <h4 className="text-lg font-bold text-white mb-2">How does human handoff work over the phone?</h4>
+              <p className="text-slate-400">If the caller asks for a human, or if the AI detects an emergency/complex situation, the AI will place the caller on a brief hold and instantly bridge the call to your specified fallback phone number.</p>
+            </div>
+          </div>
+        </section>
         <section className="relative rounded-[3rem] overflow-hidden border border-fuchsia-500/20 bg-fuchsia-950/20 backdrop-blur-md p-10 md:p-20 text-center">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-fuchsia-900/40 via-transparent to-transparent" />
           <div className="relative z-10 space-y-8">
