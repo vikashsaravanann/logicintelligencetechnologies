@@ -5,30 +5,31 @@ import { EMAIL } from "./email-styles";
 export const contentPad = { padding: "28px 32px 8px 32px" };
 export const titleStyle = {
   color: EMAIL.colors.text,
-  fontSize: "22px",
+  fontSize: "24px",
   fontWeight: "700" as const,
-  lineHeight: "30px",
+  lineHeight: "32px",
   margin: "0 0 16px 0",
   fontFamily: EMAIL.font,
+  letterSpacing: "-0.01em",
 };
 export const greetingStyle = {
   color: EMAIL.colors.text,
-  fontSize: "15px",
-  lineHeight: "24px",
-  margin: "0 0 12px 0",
+  fontSize: "16px",
+  lineHeight: "26px",
+  margin: "0 0 16px 0",
   fontFamily: EMAIL.font,
 };
 export const bodyStyle = {
   color: EMAIL.colors.body,
-  fontSize: "15px",
-  lineHeight: "24px",
-  margin: "0 0 14px 0",
+  fontSize: "16px",
+  lineHeight: "26px",
+  margin: "0 0 16px 0",
   fontFamily: EMAIL.font,
 };
 export const mutedStyle = {
   color: EMAIL.colors.muted,
-  fontSize: "13px",
-  lineHeight: "20px",
+  fontSize: "14px",
+  lineHeight: "22px",
   margin: "0 0 12px 0",
   fontFamily: EMAIL.font,
 };

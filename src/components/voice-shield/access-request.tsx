@@ -2,9 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ShieldCheck, Lock, CheckCircle2, ArrowRight, Loader2, Cpu, Shield, UserCheck } from "lucide-react";
+import {
+  ShieldCheck, Lock, CheckCircle2, ArrowRight, Loader2,
+  Zap, Activity, Globe, UserCheck, ChevronRight, Cpu,
+  Eye, EyeOff
+} from "lucide-react";
 import { COMPANY } from "@/config/company";
-import GlassSurface from "@/components/ui/glass-surface";
 
 const CONSOLE_URL = COMPANY.products.voiceShield.consoleUrl;
 
@@ -66,148 +69,312 @@ export default function VoiceShieldAccessRequest() {
     }
   };
 
-  const inputClass =
-    "w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-white placeholder:text-slate-400 font-mono focus:outline-none focus:border-cyan-400/50 focus:bg-white/10 transition-colors";
-  const labelClass =
-    "block text-[9px] font-mono font-bold tracking-[0.15em] uppercase text-cyan-100/70 mb-1.5 pl-1";
-
   return (
-    <div className="absolute inset-0 flex items-center justify-center p-4 lg:p-8">
-      <GlassSurface 
-        variant="liquid" 
-        className="w-[95vw] lg:w-[1200px] max-w-none h-auto lg:h-[560px] flex flex-col lg:flex-row overflow-hidden shadow-2xl shadow-cyan-900/20 rounded-3xl"
-      >
-        {/* Left Pane - Information (Liquid styling) */}
-        <div className="w-full lg:w-[45%] h-full p-6 lg:p-10 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/10 bg-gradient-to-br from-cyan-950/40 to-slate-900/40 relative">
-          
-          <div className="space-y-6 relative z-10">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-400/30 backdrop-blur-md shadow-[0_0_15px_rgba(34,211,238,0.2)]">
-              <ShieldCheck className="w-6 h-6 text-cyan-300" />
-            </div>
-            
-            <div>
-              <p className="text-[10px] font-mono font-bold tracking-[0.3em] text-cyan-400 uppercase mb-2">
-                Logic Intelligence Technologies
-              </p>
-              <h1 className="text-3xl lg:text-5xl font-black tracking-tight text-white mb-4 drop-shadow-md">
-                VoiceShield
-              </h1>
-              <p className="text-sm text-cyan-100/70 leading-relaxed max-w-sm">
-                Advanced AI voice security and anti-spoofing intelligence. Protect your enterprise communications in real-time.
-              </p>
-            </div>
+    <div
+      className="min-h-screen w-full flex flex-col bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 overflow-x-hidden"
+      style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
+    >
+      {/* Top announcement bar */}
+      <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border-b border-emerald-500/20 py-2.5 px-4 text-center">
+        <div className="inline-flex items-center gap-2 text-xs font-mono font-medium text-emerald-300">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span>A LOGIC INTELLIGENCE TECHNOLOGIES PRODUCT | AI SECURITY &amp; VOICE FRAUD INTELLIGENCE</span>
+        </div>
+      </div>
 
-            <div className="hidden sm:grid grid-cols-1 gap-4 pt-4">
-              {[
-                { icon: Cpu, title: "Sub-250ms Detection", desc: "Real-time stream analysis" },
-                { icon: Shield, title: "Zero Audio Retention", desc: "Privacy-first architecture" },
-                { icon: UserCheck, title: "Admin Approved", desc: "Gated access only" }
-              ].map((feature, idx) => (
-                <div key={idx} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 backdrop-blur-sm">
-                  <div className="p-2 rounded-lg bg-cyan-500/20">
-                    <feature.icon className="w-4 h-4 text-cyan-300" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wider">{feature.title}</h4>
-                    <p className="text-[10px] text-cyan-100/60 mt-0.5">{feature.desc}</p>
-                  </div>
-                </div>
-              ))}
+      {/* Navigation Header */}
+      <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-[#030712]/90 border-b border-slate-800/80 shadow-2xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-3">
+          {/* Logo */}
+          <Link href={CONSOLE_URL} className="flex items-center gap-2.5 group shrink-0">
+            <div className="relative shrink-0">
+              <div className="w-9 h-9 rounded-full border-2 border-emerald-500/60 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:border-emerald-400 transition-all overflow-hidden bg-slate-950">
+                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+              </div>
+              <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
             </div>
-          </div>
+            <div className="flex items-center gap-2">
+              <span className="text-base font-black tracking-[0.12em] text-white uppercase group-hover:text-emerald-300 transition-colors">
+                VOICESHIELD
+              </span>
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold tracking-widest bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 uppercase">
+                LIT
+              </span>
+            </div>
+          </Link>
 
-          <div className="relative z-10 mt-6 lg:mt-0">
+          {/* Nav */}
+          <div className="flex items-center gap-2">
+            <Link
+              href={CONSOLE_URL}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-mono font-bold tracking-[0.1em] uppercase text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent transition-all"
+            >
+              <Globe className="w-3.5 h-3.5" /> Console
+            </Link>
             <Link
               href="/voice-shield"
-              className="inline-flex items-center gap-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-cyan-400/80 hover:text-cyan-300 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-mono font-bold text-[11px] tracking-widest uppercase transition-all border border-slate-800"
             >
-              <ArrowRight className="w-3.5 h-3.5 rotate-180" /> Return to Overview
+              <ArrowRight className="w-3.5 h-3.5 rotate-180" /> Back to Overview
             </Link>
           </div>
         </div>
+        <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
+      </header>
 
-        {/* Right Pane - Form (Liquid styling) */}
-        <div className="w-full lg:w-[55%] h-full p-6 lg:p-10 flex flex-col justify-center relative bg-black/20">
-          
-          <div className="w-full max-w-md mx-auto relative z-10">
-            {sent ? (
-              <div className="text-center space-y-4 py-8 animate-in fade-in zoom-in duration-500">
-                <div className="mx-auto inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-500/15 border border-cyan-400/30 shadow-[0_0_30px_rgba(34,211,238,0.2)]">
-                  <CheckCircle2 className="w-8 h-8 text-cyan-400" />
-                </div>
-                <h2 className="text-2xl font-bold text-white tracking-tight">Request Received</h2>
-                <p className="text-xs text-cyan-100/70 leading-relaxed max-w-sm mx-auto">
-                  Our team will review your application. If approved, you will receive an encrypted link to access the VoiceShield console.
-                </p>
+      {/* Main Content */}
+      <main className="flex-1 flex items-start lg:items-center justify-center px-4 py-12 lg:py-8">
+        <div className="w-full max-w-6xl">
+
+          {/* Page header */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-800 bg-slate-900/90 text-xs text-slate-300 font-mono mb-6 backdrop-blur-md">
+              <Lock className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Gated Enterprise Access — Admin Reviewed</span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white mb-4 leading-tight">
+              Request Console Access
+            </h1>
+            <p className="text-base sm:text-lg text-slate-400 max-w-xl mx-auto leading-relaxed">
+              VoiceShield is a restricted platform. Submit your application — our team will review and send you a private access link within 24 hours.
+            </p>
+          </div>
+
+          {/* Two-column layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
+
+            {/* Left — Info panel */}
+            <div className="lg:col-span-2 space-y-5">
+              {/* Stats row */}
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { value: "< 250ms", label: "Latency" },
+                  { value: "< 5.4%", label: "EER (G.711)" },
+                  { value: "0 BYTES", label: "Audio on disk" },
+                  { value: "100%", label: "Audit Logged" },
+                ].map((s) => (
+                  <div key={s.label} className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 text-center">
+                    <div className="text-xl font-extrabold font-mono text-emerald-400">{s.value}</div>
+                    <div className="text-[10px] text-slate-400 uppercase tracking-wider font-mono mt-0.5">{s.label}</div>
+                  </div>
+                ))}
               </div>
-            ) : (
-              <form onSubmit={onSubmit} className="space-y-4">
-                <div className="flex items-center gap-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-cyan-400 mb-4 pb-4 border-b border-white/10">
-                  <Lock className="w-3.5 h-3.5" /> Gated Access Request
-                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass} htmlFor="fullName">Full name *</label>
-                    <input id="fullName" name="fullName" required value={form.fullName} onChange={onChange} className={inputClass} placeholder="John Doe" />
+              {/* Feature list */}
+              <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
+                <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-emerald-400 mb-2">
+                  What you get access to
+                </h3>
+                {[
+                  { icon: Activity, label: "Live Demo", desc: "Microphone-based real-time voice scan" },
+                  { icon: Cpu, label: "Forensic Lab", desc: "Upload audio files for deep analysis" },
+                  { icon: ShieldCheck, label: "SOC Dashboard", desc: "Threat analytics and session logs" },
+                  { icon: Globe, label: "WebSocket API", desc: "Stream integration documentation" },
+                  { icon: UserCheck, label: "Product Brief", desc: "Architecture, compliance, SLA details" },
+                ].map((f) => (
+                  <div key={f.label} className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                      <f.icon className="w-4 h-4 text-emerald-400" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-white">{f.label}</div>
+                      <div className="text-[10px] text-slate-400">{f.desc}</div>
+                    </div>
                   </div>
-                  <div>
-                    <label className={labelClass} htmlFor="email">Work email *</label>
-                    <input id="email" name="email" type="email" required value={form.email} onChange={onChange} className={inputClass} placeholder="john@company.com" />
-                  </div>
-                </div>
+                ))}
+              </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass} htmlFor="companyName">Company</label>
-                    <input id="companyName" name="companyName" value={form.companyName} onChange={onChange} className={inputClass} placeholder="Organisation Ltd" />
-                  </div>
-                  <div>
-                    <label className={labelClass} htmlFor="role">Role</label>
-                    <input id="role" name="role" value={form.role} onChange={onChange} className={inputClass} placeholder="e.g. CISO, Developer" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className={labelClass} htmlFor="phone">Phone</label>
-                    <input id="phone" name="phone" value={form.phone} onChange={onChange} className={inputClass} placeholder="+91 ..." />
-                  </div>
-                  <div>
-                    <label className={labelClass} htmlFor="accessType">Access type *</label>
-                    <select id="accessType" name="accessType" required value={form.accessType} onChange={onChange} className={inputClass}>
-                      <option value="Demo" className="bg-slate-900">Demo</option>
-                      <option value="Beta" className="bg-slate-900">Beta programme</option>
-                      <option value="Pilot" className="bg-slate-900">Enterprise pilot</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className={labelClass} htmlFor="useCase">Use case</label>
-                  <textarea id="useCase" name="useCase" rows={2} value={form.useCase} onChange={onChange} className={inputClass} placeholder="Telephony channel, contact centre..." />
-                </div>
-
-                {error && <p className="text-[11px] text-red-400 font-mono mt-1" role="alert">{error}</p>}
-
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={busy}
-                    className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-50 font-bold text-xs tracking-wider uppercase backdrop-blur-md transition-all shadow-[0_0_15px_rgba(34,211,238,0.1)] hover:shadow-[0_0_25px_rgba(34,211,238,0.3)] disabled:opacity-50 disabled:pointer-events-none"
+              {/* Compliance tags */}
+              <div className="flex flex-wrap gap-2">
+                {["DPDP Act 2023", "CERT-IN", "G.711 / AMR", "Zero Raw Audio Disk"].map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1.5 rounded bg-slate-900/40 border border-slate-800 text-slate-400 text-[10px] font-mono font-bold uppercase tracking-widest"
                   >
-                    {busy ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing</> : <><Lock className="w-4 h-4" /> Submit Application</>}
-                  </button>
-                </div>
-                
-                <p className="text-[9px] text-cyan-100/50 text-center leading-relaxed mt-4">
-                  Submitting confirms agreement to our privacy terms. The live console is gated and monitored by LIT.
-                </p>
-              </form>
-            )}
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Right — Form panel */}
+            <div className="lg:col-span-3">
+              <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-emerald-950/20">
+
+                {sent ? (
+                  <div className="flex flex-col items-center justify-center text-center space-y-5 py-12">
+                    <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.2)]">
+                      <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-tight">Application Submitted</h2>
+                      <p className="text-slate-400 leading-relaxed max-w-sm mx-auto text-sm">
+                        Our team will review your request. If approved, you will receive an <strong className="text-emerald-400">encrypted private link</strong> to the VoiceShield console at your work email.
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 text-[11px] font-mono text-slate-500 uppercase tracking-widest">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Typical response: within 24 hours
+                    </div>
+                    <Link
+                      href="/voice-shield"
+                      className="mt-4 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs tracking-widest uppercase transition-all border border-slate-700"
+                    >
+                      <ArrowRight className="w-4 h-4 rotate-180" /> Return to VoiceShield
+                    </Link>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2 text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-emerald-400 mb-6 pb-5 border-b border-slate-800">
+                      <Lock className="w-3.5 h-3.5" />
+                      Gated Access Application
+                    </div>
+
+                    <form onSubmit={onSubmit} className="space-y-5">
+                      {/* Row 1 */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1.5" htmlFor="fullName">
+                            Full Name <span className="text-emerald-400">*</span>
+                          </label>
+                          <input
+                            id="fullName" name="fullName" required
+                            value={form.fullName} onChange={onChange}
+                            placeholder="John Doe"
+                            className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1.5" htmlFor="email">
+                            Work Email <span className="text-emerald-400">*</span>
+                          </label>
+                          <input
+                            id="email" name="email" type="email" required
+                            value={form.email} onChange={onChange}
+                            placeholder="you@company.com"
+                            className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Row 2 */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1.5" htmlFor="companyName">
+                            Organisation
+                          </label>
+                          <input
+                            id="companyName" name="companyName"
+                            value={form.companyName} onChange={onChange}
+                            placeholder="Organisation Ltd."
+                            className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1.5" htmlFor="role">
+                            Your Role
+                          </label>
+                          <input
+                            id="role" name="role"
+                            value={form.role} onChange={onChange}
+                            placeholder="e.g. CISO, CTO, Developer"
+                            className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Row 3 */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1.5" htmlFor="phone">
+                            Phone
+                          </label>
+                          <input
+                            id="phone" name="phone"
+                            value={form.phone} onChange={onChange}
+                            placeholder="+91 ..."
+                            className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1.5" htmlFor="accessType">
+                            Access Type <span className="text-emerald-400">*</span>
+                          </label>
+                          <select
+                            id="accessType" name="accessType" required
+                            value={form.accessType} onChange={onChange}
+                            className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-100 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all appearance-none cursor-pointer"
+                          >
+                            <option value="Demo" className="bg-slate-900">Live Demo Access</option>
+                            <option value="Beta" className="bg-slate-900">Beta Programme</option>
+                            <option value="Pilot" className="bg-slate-900">Enterprise Pilot</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Use case */}
+                      <div>
+                        <label className="block text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1.5" htmlFor="useCase">
+                          Intended Use Case
+                        </label>
+                        <textarea
+                          id="useCase" name="useCase" rows={3}
+                          value={form.useCase} onChange={onChange}
+                          placeholder="Describe your use case: Telephony fraud prevention, BFSI KYC, contact centre security..."
+                          className="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all resize-none"
+                        />
+                      </div>
+
+                      {/* Error */}
+                      {error && (
+                        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-950/40 border border-red-500/30 text-red-400 text-xs font-mono">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
+                          {error}
+                        </div>
+                      )}
+
+                      {/* Submit */}
+                      <div className="pt-2">
+                        <button
+                          type="submit"
+                          disabled={busy}
+                          className="w-full inline-flex items-center justify-center gap-2.5 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-mono font-bold text-sm tracking-widest uppercase transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:pointer-events-none"
+                        >
+                          {busy ? (
+                            <><Loader2 className="w-4 h-4 animate-spin" /> Processing Application...</>
+                          ) : (
+                            <><Lock className="w-4 h-4" /> Submit Access Request</>
+                          )}
+                        </button>
+                      </div>
+
+                      <p className="text-[10px] text-slate-600 text-center leading-relaxed font-mono">
+                        By submitting, you agree to our privacy terms. The VoiceShield console is gated and access is monitored by Logic Intelligence Technologies. Zero raw audio is stored.
+                      </p>
+                    </form>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      </GlassSurface>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-800/50 py-6 px-6 text-center">
+        <div className="flex items-center justify-center gap-4 text-[10px] font-mono text-slate-600 uppercase tracking-widest flex-wrap">
+          <span className="flex items-center gap-1.5">
+            <Zap className="w-3 h-3 text-emerald-500" /> VoiceShield · LIT Product
+          </span>
+          <span className="text-slate-800">·</span>
+          <Link href="/voice-shield" className="hover:text-slate-400 transition-colors">Overview</Link>
+          <Link href="/privacy" className="hover:text-slate-400 transition-colors">Privacy</Link>
+          <Link href="/contact" className="hover:text-slate-400 transition-colors">Contact</Link>
+        </div>
+      </footer>
     </div>
   );
 }
