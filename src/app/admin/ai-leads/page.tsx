@@ -1,6 +1,8 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import BackToHome from "@/components/ui/back-to-home";
 
+import { AiLeadActions } from "./ai-lead-actions";
+
 export const revalidate = 0;
 
 export default async function AdminAiLeadsPage() {
@@ -23,24 +25,29 @@ export default async function AdminAiLeadsPage() {
         <table className="w-full text-sm">
           <thead className="bg-neutral-900 text-[11px] uppercase tracking-wider text-neutral-400">
             <tr>
-              {["When", "Name", "Email", "Interest", "Source", "Chat"].map((h) => (
-                <th key={h} className="text-left px-3 py-2 font-medium">{h}</th>
+              {["When", "Name", "Email", "Interest", "Source", "Chat", "Actions"].map((h) => (
+                <th key={h} className={h === "Actions" ? "text-right px-3 py-2 font-medium" : "text-left px-3 py-2 font-medium"}>
+                  {h}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {(leads || []).map((row) => (
-              <tr key={row.id} className="border-t border-neutral-800">
+              <tr key={row.id} className="border-t border-neutral-800 hover:bg-white/[0.02] transition-colors relative">
                 <td className="px-3 py-2 text-neutral-400 whitespace-nowrap">{new Date(row.created_at).toLocaleString("en-IN")}</td>
                 <td className="px-3 py-2 text-white">{row.name}</td>
                 <td className="px-3 py-2 text-neutral-300">{row.email}</td>
                 <td className="px-3 py-2 text-neutral-400 max-w-xs truncate">{row.interest || "—"}</td>
                 <td className="px-3 py-2 text-neutral-400">{row.source}</td>
                 <td className="px-3 py-2 text-neutral-500 font-mono text-[11px]">{row.chat_id ? String(row.chat_id).slice(0, 8) : "—"}</td>
+                <td className="px-3 py-2 text-right">
+                  <AiLeadActions email={row.email} name={row.name} />
+                </td>
               </tr>
             ))}
             {!leads?.length && (
-              <tr><td colSpan={6} className="px-3 py-8 text-center text-neutral-500">No AI leads yet.</td></tr>
+              <tr><td colSpan={7} className="px-3 py-8 text-center text-neutral-500">No AI leads yet.</td></tr>
             )}
           </tbody>
         </table>

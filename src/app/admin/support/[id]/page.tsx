@@ -3,6 +3,7 @@ import BackToHome from "@/components/ui/back-to-home";
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { CheckCircle2 } from "lucide-react";
+import { SupportTicketActions } from "./support-ticket-actions";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -56,6 +57,10 @@ export default async function AdminSupportDetailPage({ params }: Props) {
           <div className="p-4 rounded-xl bg-neutral-950 border border-neutral-800 text-sm text-neutral-300 whitespace-pre-line leading-relaxed">
             {ticket.message}
           </div>
+        </div>
+        
+        <div className="pt-4">
+          <SupportTicketActions ticketId={ticket.id} email={ticket.email} status={ticket.status} />
         </div>
 
         <div className="pt-6 border-t border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-neutral-500 gap-2">

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Calendar, Clock, Globe, User, ArrowRight } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import BackToHome from "@/components/ui/back-to-home";
+import { BookingActions } from "./booking-actions";
 
 export const metadata: Metadata = {
   title: "Consultation Bookings | Admin Command Center",
@@ -48,12 +49,13 @@ export default async function AdminBookingsPage() {
                 <th className="p-4">Slot Time</th>
                 <th className="p-4">Status</th>
                 <th className="p-4">Notes</th>
+                <th className="p-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-800">
               {bookings && bookings.length > 0 ? (
                 bookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-white/[0.02] transition-colors">
+                  <tr key={b.id} className="hover:bg-white/[0.02] transition-colors relative">
                     <td className="p-4">
                       <div className="font-bold text-white text-sm">{b.name}</div>
                       <div className="text-xs text-zinc-400">{b.email} {b.phone ? `· ${b.phone}` : ""}</div>
@@ -67,12 +69,26 @@ export default async function AdminBookingsPage() {
                       <div className="text-zinc-500 text-[10px]">{new Date(b.slot_time).toLocaleTimeString()} ({b.timezone})</div>
                     </td>
                     <td className="p-4">
-                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        {b.status}
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
+                        b.status === "Completed"
+                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                          : b.status === "Cancelled"
+                          ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                          : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                      }`}>
+                        {b.status || "Scheduled"}
                       </span>
                     </td>
                     <td className="p-4 text-xs text-zinc-400 max-w-xs truncate">
                       {b.notes || "No notes"}
+                    </td>
+                    <td className="p-4 text-right">
+                      <BookingActions 
+                        bookingId={b.id} 
+                        email={b.email} 
+                        name={b.name} 
+                        currentStatus={b.status || "Scheduled"} 
+                      />
                     </td>
                   </tr>
                 ))
