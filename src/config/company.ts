@@ -43,6 +43,9 @@ export const COMPANY = {
       name: 'VoiceShield',
       tagline: 'AI Voice Security & Anti-Spoofing',
       path: '/voice-shield',
+      requestPath: '/voice-shield/request',
+      /** Live console — share ONLY after access request is approved. Never public CTA. */
+      consoleUrl: 'https://voiceshield.logicintelligencetechnologies.in',
       description: 'Real-time synthetic voice detection for telephony and call centres.',
     },
   },
