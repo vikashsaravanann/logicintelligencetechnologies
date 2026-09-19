@@ -129,11 +129,10 @@ export default function GlobalBackground() {
             alt="Company Background"
             fill
             priority
-            className="object-cover object-center"
+            className="object-cover object-center brightness-[0.7]"
             quality={100}
           />
-          {/* We might want a scrim over the image if it's too bright, but usually gradient-bgs are designed to be dark. Let's add a light scrim just in case. */}
-          <div className="absolute inset-0 bg-[#0A0F1E]/20" />
+          <div className="absolute inset-0 bg-[#0A0F1E]/30" />
         </>
       )}
     </div>

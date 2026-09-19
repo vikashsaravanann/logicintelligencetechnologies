@@ -28,7 +28,7 @@ export default function JobsPage() {
       <BackToHome />
       <section className="relative min-h-[72vh] sm:min-h-[82vh] flex items-end overflow-hidden pt-28">
         <Image
-          src="/assets/jobs/studio-hero.jpg"
+          src="/assets/careers_bg.jpg"
           alt="Logic Intelligence Technologies studio"
           fill
           priority

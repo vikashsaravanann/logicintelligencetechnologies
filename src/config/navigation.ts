@@ -60,7 +60,7 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
         highlight: true,
       },
       {
-        href: "/ai-assistant",
+        href: "/ai",
         label: "AI ASSISTANT",
         description: "COMPANY KNOWLEDGE WORKSPACE",
         highlight: true,

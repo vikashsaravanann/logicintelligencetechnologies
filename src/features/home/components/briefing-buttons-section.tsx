@@ -5,22 +5,22 @@ import { ArrowUpRight, BrainCircuit, BarChart3, Building2 } from "lucide-react";
 
 const ITEMS = [
   {
-    href: "/ai-assistant",
-    title: "Knowledge Assistant",
+    href: "/ai",
+    title: "LOGIC AI",
     icon: BrainCircuit,
-    image: "/assets/knowledge_assistant_bg.jpg",
+    image: "/assets/logic_ai_bg.jpg",
   },
   {
     href: "/investors",
-    title: "Investor briefing",
+    title: "INVESTORS",
     icon: BarChart3,
-    image: "/assets/investor_briefing_bg.jpg",
+    image: "/assets/investors_bg.jpg",
   },
   {
     href: "/jobs",
-    title: "Jobs — CEO / Directors",
+    title: "CAREERS",
     icon: Building2,
-    image: "/assets/ceo_directors_bg.jpg",
+    image: "/assets/careers_bg.jpg",
   },
 ] as const;
 
@@ -51,7 +51,7 @@ export default function BriefingButtonsSection() {
                   <item.icon className="h-4 w-4 text-white/70 group-hover:text-white" />
                 </div>
               </div>
-              <p className="mt-1 flex items-center justify-between text-lg md:text-xl font-bold uppercase tracking-widest text-white">
+              <p className="mt-1 flex items-center justify-between text-sm md:text-base font-bold uppercase tracking-widest text-white">
                 {item.title}
                 <ArrowUpRight className="h-5 w-5 opacity-70 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </p>

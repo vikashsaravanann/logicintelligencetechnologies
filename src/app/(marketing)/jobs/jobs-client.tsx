@@ -563,7 +563,7 @@ export default function JobsClient() {
       <section className="relative px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-16 overflow-hidden">
         <div className="relative rounded-[32px] border border-white/12 overflow-hidden bg-transparent shadow-[0_30px_90px_rgba(0,0,0,0.6)]">
           <Image
-            src="/assets/jobs/apply-pane.jpg"
+            src="/assets/careers_bg.jpg"
             alt=""
             fill
             sizes="100vw"
@@ -678,7 +678,7 @@ export default function JobsClient() {
             {/* Left Info Panel */}
             <div className="relative hidden lg:block self-stretch min-h-full overflow-hidden">
               <Image
-                src="/assets/jobs/apply-pane.jpg"
+                src="/assets/careers_bg.jpg"
                 alt=""
                 fill
                 sizes="(min-width: 1024px) 38vw, 0px"
