@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import { COMPANY } from '@/config/company';
 import { organizationNode, websiteNode } from '@/lib/seo/schema';
@@ -115,7 +116,7 @@ export default function RootLayout({
           <SpeedInsights />
           <Analytics />
           {process.env.NODE_ENV === 'development' && (
-            <script type="module" src="http://localhost:7331/inject.js" suppressHydrationWarning />
+            <Script type="module" src="http://localhost:7331/inject.js" strategy="afterInteractive" />
           )}
         </ThemeProvider>
       </body>
