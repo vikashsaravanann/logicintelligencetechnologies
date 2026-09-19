@@ -31,7 +31,6 @@ import BackToHome from "@/components/ui/back-to-home";
 export default function VoiceShieldProductPage() {
   return (
     <main className="relative min-h-screen bg-[#030712] text-slate-100 overflow-x-hidden font-sans">
-      <BackToHome />
       <LiquidBackground />
       
       <script
@@ -75,13 +74,6 @@ export default function VoiceShieldProductPage() {
               <Zap className="w-5 h-5 text-cyan-400" />
               <span className="font-mono font-bold tracking-widest text-cyan-100 uppercase text-sm">Start Live Demo</span>
               <ArrowRight className="w-4 h-4 text-cyan-400 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              href="/contact"
-              className="group flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-900/50 hover:bg-slate-800/80 border border-slate-700 transition-all backdrop-blur-md"
-            >
-              <Activity className="w-5 h-5 text-slate-300" />
-              <span className="font-mono font-bold tracking-widest text-white uppercase text-sm">SOC Dashboard</span>
             </Link>
           </div>
         </section>

@@ -6,6 +6,7 @@ import { ShieldCheck, Menu, X, Terminal } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 const NAV_LINKS = [
+  { label: "Back to Home", href: "/" },
   { label: "Overview", href: "/voice-shield" },
 ];
 
@@ -39,7 +40,7 @@ export default function VoiceShieldNavbar() {
             {/* Logo (Left) */}
             <div className="flex items-center gap-3 relative z-10">
               <Link href="/voice-shield" className="flex items-center gap-2 group">
-                <div className="w-9 h-9 rounded-full overflow-hidden bg-gradient-to-tr from-cyan-600 to-emerald-600 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+                <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 bg-gradient-to-tr from-cyan-600 to-emerald-600 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/assets/logo-icon.jpg"
@@ -47,12 +48,9 @@ export default function VoiceShieldNavbar() {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-black tracking-tight text-white leading-none mb-0.5 group-hover:text-cyan-50 transition-colors">
-                    VOICESHIELD
-                  </span>
-                  <span className="text-[8px] font-mono font-bold tracking-[0.2em] text-cyan-400 uppercase leading-none">
-                    LIT PRODUCT
+                <div className="flex items-center">
+                  <span className="text-[11px] font-mono font-bold tracking-[0.15em] text-white group-hover:text-cyan-50 transition-colors uppercase">
+                    VOICE SHIELD - LIT PRODUCT
                   </span>
                 </div>
               </Link>
@@ -62,12 +60,12 @@ export default function VoiceShieldNavbar() {
             <div className="hidden lg:flex absolute inset-0 items-center justify-center pointer-events-none">
               <nav className="flex items-center gap-6 pointer-events-auto">
                 {NAV_LINKS.map((link) => {
-                  const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+                  const isActive = link.href !== "/" && (pathname === link.href || pathname.startsWith(link.href + "/"));
                   return (
                     <Link
                       key={link.label}
                       href={link.href}
-                      className={`text-[10px] font-mono font-bold tracking-[0.15em] uppercase transition-colors hover:text-cyan-300 px-4 py-2 ${
+                      className={`text-[11px] font-mono font-bold tracking-[0.15em] uppercase transition-colors hover:text-cyan-300 px-4 py-2 ${
                         isActive ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]" : "text-slate-400"
                       }`}
                     >
@@ -82,7 +80,7 @@ export default function VoiceShieldNavbar() {
             <div className="flex items-center gap-4 relative z-10 w-8 lg:w-auto ml-auto">
               <Link
                 href="/voice-shield/request"
-                className="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono font-bold text-[10px] tracking-widest uppercase transition-all shadow-lg shadow-cyan-500/20"
+                className="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono font-bold text-[11px] tracking-[0.15em] uppercase transition-all shadow-lg shadow-cyan-500/20"
               >
                 Request Console Access
               </Link>
