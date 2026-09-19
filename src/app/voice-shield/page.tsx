@@ -99,7 +99,7 @@ export default function VoiceShieldProductPage() {
         </section>
 
         {/* DEFENSE ARCHITECTURE */}
-        <section className="space-y-12">
+        <section id="architecture" className="space-y-12">
           <div className="text-center space-y-4">
             <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight">
               Defense Architecture

@@ -7,11 +7,6 @@ import { usePathname } from "next/navigation";
 
 const NAV_LINKS = [
   { label: "Overview", href: "/voice-shield" },
-  { label: "Live Demo", href: "/voice-shield/request" },
-  { label: "Forensic Lab", href: "/voice-shield/request" },
-  { label: "SOC Dashboard", href: "/contact" },
-  { label: "Architecture Docs", href: "#architecture" },
-  { label: "Product Brief", href: "#" },
 ];
 
 export default function VoiceShieldNavbar() {
@@ -34,11 +29,11 @@ export default function VoiceShieldNavbar() {
             : "bg-transparent border-transparent py-5"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="flex items-center justify-between">
             
-            {/* Logo */}
-            <div className="flex items-center gap-3">
+            {/* Logo (Left) */}
+            <div className="flex items-center gap-3 relative z-10">
               <Link href="/voice-shield" className="flex items-center gap-2 group">
                 <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500/20 transition-all shadow-[0_0_10px_rgba(34,211,238,0.2)]">
                   <ShieldCheck className="w-4 h-4" />
@@ -54,36 +49,30 @@ export default function VoiceShieldNavbar() {
               </Link>
             </div>
 
-            {/* Desktop Nav */}
-            <nav className="hidden lg:flex items-center gap-6">
-              {NAV_LINKS.map((link) => {
-                const isActive = pathname === link.href;
-                return (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    className={`text-[10px] font-mono font-bold tracking-[0.15em] uppercase transition-colors hover:text-cyan-300 ${
-                      isActive ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]" : "text-slate-400"
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })}
-            </nav>
+            {/* Desktop Nav (Absolute Center) */}
+            <div className="hidden lg:flex absolute inset-0 items-center justify-center pointer-events-none">
+              <nav className="flex items-center gap-6 pointer-events-auto">
+                {NAV_LINKS.map((link) => {
+                  const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+                  return (
+                    <Link
+                      key={link.label}
+                      href={link.href}
+                      className={`text-[10px] font-mono font-bold tracking-[0.15em] uppercase transition-colors hover:text-cyan-300 px-4 py-2 ${
+                        isActive ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]" : "text-slate-400"
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
 
-            {/* CTA & Mobile Toggle */}
-            <div className="flex items-center gap-4">
-              <Link
-                href="/voice-shield/request"
-                className="hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-50 font-bold text-[10px] font-mono tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(34,211,238,0.1)] hover:shadow-[0_0_25px_rgba(34,211,238,0.3)] backdrop-blur-md"
-              >
-                <Terminal className="w-3.5 h-3.5 text-cyan-400" />
-                Live Sign In
-              </Link>
-
+            {/* Empty Right Side for Balance or Mobile Toggle */}
+            <div className="flex items-center gap-4 relative z-10 w-8 lg:w-auto">
               <button
-                className="lg:hidden p-2 text-slate-300 hover:text-cyan-300 transition-colors"
+                className="lg:hidden p-2 text-slate-300 hover:text-cyan-300 transition-colors ml-auto"
                 onClick={() => setMobileMenu(true)}
                 aria-label="Open Menu"
               >
@@ -116,13 +105,6 @@ export default function VoiceShieldNavbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/voice-shield/request"
-              onClick={() => setMobileMenu(false)}
-              className="mt-4 px-8 py-3 rounded-xl bg-cyan-500/20 border border-cyan-400/50 text-cyan-50 font-bold text-xs font-mono tracking-widest uppercase"
-            >
-              Live Sign In
-            </Link>
           </nav>
         </div>
       )}
