@@ -122,11 +122,11 @@ export default function VoiceShieldHero() {
           className="flex flex-col sm:flex-row gap-4 mb-20"
         >
           <Link
-            href="/voice-shield/demo"
+            href="/voice-shield/request"
             className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm tracking-wide transition-all shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:shadow-[0_0_40px_rgba(6,182,212,0.5)]"
           >
             <Waves className="w-4 h-4" aria-hidden />
-            Experience Live Demo
+            Request Access
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden />
           </Link>
           <Link
