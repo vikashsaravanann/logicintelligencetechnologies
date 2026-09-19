@@ -41,6 +41,6 @@ img, video, canvas, iframe, svg {
 
 @media (max-width: 640px) {
   html, body {
-    font-size: 8px !important;
+    font-size: 12px !important;
   }
 }
