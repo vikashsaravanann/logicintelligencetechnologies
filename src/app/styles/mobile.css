@@ -25,3 +25,16 @@ img, video, canvas, iframe, svg {
     zoom: normal;
   }
 }
+
+/* Custom Root Font Sizes for denser typography on smaller screens */
+@media screen and (max-width: 768px) {
+  html { font-size: 12px !important; }
+}
+
+@media screen and (max-width: 430px) {
+  html { font-size: 11.5px !important; }
+}
+
+@media screen and (max-width: 360px) {
+  html { font-size: 11px !important; }
+}
