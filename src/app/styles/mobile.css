@@ -1,6 +1,6 @@
 /*
  * Full-bleed mobile — NO transform / zoom (those create a right-side gap).
- * Root font-size 10px + tight padding = denser Safari-style UI without layout break.
+ * Root font-size 12px + tight padding = denser readable UI.
  */
 
 *, *::before, *::after {
@@ -26,7 +26,7 @@ img, video, canvas, iframe, svg {
 
 @media (max-width: 768px) {
   html {
-    font-size: 10px !important;
+    font-size: 12px !important;
   }
 
   body {
@@ -62,15 +62,15 @@ img, video, canvas, iframe, svg {
   }
 
   section {
-    padding-left: max(0.75rem, env(safe-area-inset-left)) !important;
-    padding-right: max(0.75rem, env(safe-area-inset-right)) !important;
+    padding-left: max(0.85rem, env(safe-area-inset-left)) !important;
+    padding-right: max(0.85rem, env(safe-area-inset-right)) !important;
   }
 
   .px-6,
   .px-8,
   .lg\:px-8 {
-    padding-left: max(0.75rem, env(safe-area-inset-left)) !important;
-    padding-right: max(0.75rem, env(safe-area-inset-right)) !important;
+    padding-left: max(0.85rem, env(safe-area-inset-left)) !important;
+    padding-right: max(0.85rem, env(safe-area-inset-right)) !important;
   }
 
   h1, .text-4xl, .text-5xl, .text-6xl, .text-7xl {
@@ -79,51 +79,51 @@ img, video, canvas, iframe, svg {
   }
 
   .py-20, .py-24, .py-28, .py-32 {
-    padding-top: 1.75rem !important;
-    padding-bottom: 1.75rem !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
   }
 
   .md\:py-32 {
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
+    padding-top: 2.25rem !important;
+    padding-bottom: 2.25rem !important;
   }
 
   .glass-card,
   .glass-panel,
   [class*="rounded-3xl"] {
-    border-radius: 0.75rem !important;
+    border-radius: 0.85rem !important;
   }
 
   .p-8, .p-10, .md\:p-10 {
-    padding: 0.75rem !important;
+    padding: 0.85rem !important;
   }
 
   .p-6, .p-5 {
-    padding: 0.6rem !important;
+    padding: 0.7rem !important;
   }
 
   .gap-8 {
-    gap: 0.5rem !important;
+    gap: 0.6rem !important;
   }
 
   .gap-6 {
-    gap: 0.45rem !important;
+    gap: 0.5rem !important;
   }
 
   .gap-4 {
-    gap: 0.4rem !important;
+    gap: 0.45rem !important;
   }
 
   .mb-20, .mb-16 {
-    margin-bottom: 1rem !important;
+    margin-bottom: 1.25rem !important;
   }
 
   .mb-8, .mb-10 {
-    margin-bottom: 0.65rem !important;
+    margin-bottom: 0.75rem !important;
   }
 
   .mb-6, .mb-4 {
-    margin-bottom: 0.45rem !important;
+    margin-bottom: 0.5rem !important;
   }
 
   .text-3xl {
@@ -157,12 +157,12 @@ img, video, canvas, iframe, svg {
 
 @media (max-width: 430px) {
   html {
-    font-size: 9.5px !important;
+    font-size: 11.5px !important;
   }
 }
 
 @media (max-width: 360px) {
   html {
-    font-size: 9px !important;
+    font-size: 11px !important;
   }
 }
