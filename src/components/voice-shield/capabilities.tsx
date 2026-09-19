@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import {
   ShieldCheck, Zap, Search, ChartBar, MessageSquareWarning,
   FileSearch, Lock, Layers,
@@ -85,24 +84,18 @@ const CAPABILITIES = [
 
 export default function VoiceShieldCapabilities() {
   return (
-    <section className="py-24 px-6" aria-labelledby="vs-capabilities-heading">
-      <div className="mx-auto max-w-6xl">
+    <section className="py-24 px-6 relative" aria-labelledby="vs-capabilities-heading">
+      <div className="mx-auto max-w-6xl relative z-10">
         <div className="mb-4 flex items-center gap-3">
           <span className="text-xs font-bold uppercase tracking-[0.18em] text-violet-400">
             Product Capabilities
           </span>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-14"
-        >
+        <div className="mb-14 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <h2
             id="vs-capabilities-heading"
-            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-5 tracking-tight"
+            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-5 tracking-tight drop-shadow-md"
           >
             What{" "}
             <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
@@ -110,32 +103,28 @@ export default function VoiceShieldCapabilities() {
             </span>{" "}
             delivers
           </h2>
-          <p className="text-zinc-400 text-lg max-w-3xl leading-relaxed">
+          <p className="text-cyan-50/80 text-lg max-w-3xl leading-relaxed">
             Capabilities described below are based on the verified VoiceShield
             implementation. No unverified performance claims are made.
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-both">
           {CAPABILITIES.map((cap, i) => (
-            <motion.div
+            <GlassSurface
               key={cap.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: i * 0.06 }}
+              variant="liquid"
+              className={`p-5 h-full bg-gradient-to-br ${cap.color} border-white/5 hover:border-white/20 transition-all duration-300 hover:-translate-y-1`}
             >
-              <GlassSurface variant="card" className={`p-5 h-full bg-gradient-to-br ${cap.color}`}>
-                <div className="mb-4 flex items-center justify-between">
-                  <cap.icon className={`w-5 h-5 ${cap.accent}`} aria-hidden />
-                  <span className={`text-[10px] font-bold font-mono ${cap.accent} opacity-70 tracking-wider`}>
-                    {cap.tag}
-                  </span>
-                </div>
-                <h3 className="text-sm font-bold text-white mb-2 leading-tight">{cap.title}</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">{cap.description}</p>
-              </GlassSurface>
-            </motion.div>
+              <div className="mb-4 flex items-center justify-between">
+                <cap.icon className={`w-5 h-5 ${cap.accent}`} aria-hidden />
+                <span className={`text-[10px] font-bold font-mono ${cap.accent} opacity-70 tracking-wider`}>
+                  {cap.tag}
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-white mb-2 leading-tight">{cap.title}</h3>
+              <p className="text-xs text-cyan-100/60 leading-relaxed">{cap.description}</p>
+            </GlassSurface>
           ))}
         </div>
       </div>

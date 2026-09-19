@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import { Code2, Layers, Cpu, Globe, GitBranch } from "lucide-react";
 import { GlassSurface } from "@/components/ui/glass-surface";
 
@@ -56,7 +55,7 @@ const TECH_STACK = [
       { name: "Next.js 16", role: "LIT platform framework" },
       { name: "React 19", role: "UI rendering" },
       { name: "Tailwind CSS v4", role: "Utility-first styling" },
-      { name: "framer-motion", role: "Accessible UI animations" },
+      { name: "transitions.dev", role: "Liquid glass motion & transitions" },
     ],
     icon: Code2,
     color: "text-amber-400",
@@ -66,62 +65,47 @@ const TECH_STACK = [
 export default function VoiceShieldTechnology() {
   return (
     <section
-      className="py-24 px-6 relative bg-[rgba(5,10,25,0.7)]"
+      className="py-24 px-6 relative"
       aria-labelledby="vs-tech-heading"
     >
-      <div aria-hidden className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-6xl relative z-10">
         <div className="mb-4">
           <span className="text-xs font-bold uppercase tracking-[0.18em] text-amber-400">
             Technology Stack
           </span>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-14"
-        >
+        <div className="mb-14 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <h2
             id="vs-tech-heading"
-            className="text-3xl sm:text-4xl font-extrabold text-white mb-4 tracking-tight"
+            className="text-3xl sm:text-4xl font-extrabold text-white mb-4 tracking-tight drop-shadow-md"
           >
             Built on production-grade technology
           </h2>
-          <p className="text-zinc-400 text-base max-w-2xl leading-relaxed">
+          <p className="text-cyan-50/80 text-base max-w-2xl leading-relaxed">
             VoiceShield is implemented with proven open-source components and
             production-tested infrastructure.
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-both">
           {TECH_STACK.map((tech, i) => (
-            <motion.div
-              key={tech.category}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-            >
-              <GlassSurface variant="card" className="p-6 h-full">
-                <div className="flex items-center gap-3 mb-5">
-                  <tech.icon className={`w-4 h-4 ${tech.color}`} aria-hidden />
-                  <span className={`text-[11px] font-bold uppercase tracking-[0.16em] ${tech.color}`}>
-                    {tech.category}
-                  </span>
-                </div>
-                <ul className="space-y-3">
-                  {tech.items.map((item) => (
-                    <li key={item.name} className="flex flex-col">
-                      <span className="text-xs font-bold text-white">{item.name}</span>
-                      <span className="text-[11px] text-zinc-500 mt-0.5">{item.role}</span>
-                    </li>
-                  ))}
-                </ul>
-              </GlassSurface>
-            </motion.div>
+            <GlassSurface key={tech.category} variant="liquid" className="p-6 h-full border-white/5 hover:border-white/20 transition-all duration-300">
+              <div className="flex items-center gap-3 mb-5">
+                <tech.icon className={`w-4 h-4 ${tech.color}`} aria-hidden />
+                <span className={`text-[11px] font-bold uppercase tracking-[0.16em] ${tech.color}`}>
+                  {tech.category}
+                </span>
+              </div>
+              <ul className="space-y-3">
+                {tech.items.map((item) => (
+                  <li key={item.name} className="flex flex-col">
+                    <span className="text-xs font-bold text-white/90">{item.name}</span>
+                    <span className="text-[11px] text-cyan-100/50 mt-0.5">{item.role}</span>
+                  </li>
+                ))}
+              </ul>
+            </GlassSurface>
           ))}
         </div>
       </div>

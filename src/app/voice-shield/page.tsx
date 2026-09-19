@@ -10,6 +10,7 @@ import VoiceShieldTechnology from "@/components/voice-shield/technology";
 import VoiceShieldSecurity from "@/components/voice-shield/security";
 import VoiceShieldFAQ from "@/components/voice-shield/faq";
 import VoiceShieldCTA from "@/components/voice-shield/cta";
+import LiquidBackground from "@/components/voice-shield/liquid-background";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.logicintelligencetechnologies.in";
@@ -46,17 +47,20 @@ export const metadata: Metadata = {
  */
 export default function VoiceShieldProductPage() {
   return (
-    <main className="min-h-screen bg-[#030712] text-slate-100">
-      <VoiceShieldHero />
-      <VoiceShieldProblem />
-      <VoiceShieldHow />
-      <VoiceShieldCapabilities />
-      <VoiceShieldArchitecture />
-      <VoiceShieldUseCases />
-      <VoiceShieldTechnology />
-      <VoiceShieldSecurity />
-      <VoiceShieldFAQ />
-      <VoiceShieldCTA />
+    <main className="relative min-h-screen bg-transparent text-slate-100 overflow-hidden">
+      <LiquidBackground />
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24">
+        <VoiceShieldHero />
+        <VoiceShieldProblem />
+        <VoiceShieldHow />
+        <VoiceShieldCapabilities />
+        <VoiceShieldArchitecture />
+        <VoiceShieldUseCases />
+        <VoiceShieldTechnology />
+        <VoiceShieldSecurity />
+        <VoiceShieldFAQ />
+        <VoiceShieldCTA />
+      </div>
     </main>
   );
 }

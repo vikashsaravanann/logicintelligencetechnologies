@@ -1,17 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { Send, CheckCircle2, ShieldCheck, AlertCircle, Loader2 } from "lucide-react";
 import { GlassSurface } from "@/components/ui/glass-surface";
-
-/**
- * VoiceShield CTA — Request a Demo.
- *
- * Submits to the existing LIT contact API (/api/contact) with projectType
- * set to "VoiceShield Demo Request". This reuses LIT's lead capture, DB,
- * email notification, and rate-limiting infrastructure without duplication.
- */
 
 interface FormState {
   fullName: string;
@@ -86,72 +77,62 @@ export default function VoiceShieldCTA() {
   const inputClass =
     "w-full px-4 py-3 bg-white/[0.04] border border-white/10 rounded-xl text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all";
   const labelClass =
-    "block text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-400 mb-1.5";
+    "block text-[11px] font-bold uppercase tracking-[0.14em] text-cyan-200/70 mb-1.5";
 
   return (
     <section
       id="request-demo"
-      className="py-24 px-6"
+      className="py-24 px-6 relative"
       aria-labelledby="vs-cta-heading"
     >
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-5xl relative z-10">
         {/* Hero CTA */}
         <div className="text-center mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold tracking-wider uppercase mb-6">
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold tracking-wider uppercase mb-6 shadow-[0_0_15px_rgba(34,211,238,0.15)]">
               <ShieldCheck className="w-3.5 h-3.5" aria-hidden />
               VoiceShield by Logic Intelligence Technologies
             </div>
             <h2
               id="vs-cta-heading"
-              className="text-3xl sm:text-5xl font-extrabold text-white mb-5 tracking-tight"
+              className="text-3xl sm:text-5xl font-extrabold text-white mb-5 tracking-tight drop-shadow-md"
             >
               Ready to protect your{" "}
               <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
                 voice infrastructure?
               </span>
             </h2>
-            <p className="text-zinc-400 text-lg max-w-2xl mx-auto leading-relaxed">
+            <p className="text-cyan-50/80 text-lg max-w-2xl mx-auto leading-relaxed">
               Request a demonstration of VoiceShield. Our team will contact you
               to schedule a session tailored to your use case.
             </p>
-          </motion.div>
+          </div>
         </div>
 
         {/* Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.15 }}
-          className="max-w-2xl mx-auto"
-        >
-          <GlassSurface variant="prominent" className="p-8">
+        <div className="max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-both">
+          <GlassSurface variant="liquid" className="p-8 border-white/20">
             {sent ? (
-              <div className="flex flex-col items-center gap-4 py-8 text-center">
-                <CheckCircle2 className="w-12 h-12 text-emerald-400" aria-hidden />
-                <h3 className="text-lg font-bold text-white">
+              <div className="flex flex-col items-center gap-4 py-8 text-center animate-in zoom-in fade-in duration-500">
+                <CheckCircle2 className="w-12 h-12 text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]" aria-hidden />
+                <h3 className="text-lg font-bold text-white drop-shadow-sm">
                   Demo request received
                 </h3>
-                <p className="text-sm text-zinc-400 max-w-xs leading-relaxed">
+                <p className="text-sm text-cyan-100/70 max-w-xs leading-relaxed">
                   Thank you. Our team at Logic Intelligence Technologies will
                   review your request and be in touch shortly.
                 </p>
                 <button
                   type="button"
                   onClick={() => setSent(false)}
-                  className="mt-2 text-xs text-cyan-400 underline underline-offset-2"
+                  className="mt-2 text-xs text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition-colors"
                 >
                   Submit another request
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} noValidate>
-                <h3 className="text-base font-bold text-white mb-6">
+                <h3 className="text-base font-bold text-white mb-6 tracking-wide drop-shadow-sm">
                   Request a VoiceShield Demo
                 </h3>
 
@@ -256,7 +237,7 @@ export default function VoiceShieldCTA() {
                 <button
                   type="submit"
                   disabled={submitting || !form.fullName || !form.email}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm tracking-wide transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_24px_rgba(6,182,212,0.25)]"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-gradient-to-r from-cyan-500/80 to-blue-600/80 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm tracking-widest uppercase transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_24px_rgba(6,182,212,0.4)] hover:shadow-[0_0_35px_rgba(6,182,212,0.6)] backdrop-blur-md border border-cyan-400/30"
                 >
                   {submitting ? (
                     <>
@@ -271,7 +252,7 @@ export default function VoiceShieldCTA() {
                   )}
                 </button>
 
-                <p className="mt-4 text-[11px] text-zinc-600 text-center leading-relaxed">
+                <p className="mt-4 text-[11px] text-cyan-100/50 text-center leading-relaxed">
                   By submitting, you agree to be contacted by Logic Intelligence
                   Technologies regarding VoiceShield. No spam. No unsolicited
                   marketing.
@@ -279,7 +260,7 @@ export default function VoiceShieldCTA() {
               </form>
             )}
           </GlassSurface>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

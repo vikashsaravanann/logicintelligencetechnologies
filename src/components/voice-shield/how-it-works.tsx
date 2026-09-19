@@ -1,14 +1,9 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import { Mic, Waves, Brain, BarChart3, BellRing, FileText } from "lucide-react";
 import { GlassSurface } from "@/components/ui/glass-surface";
 
-/**
- * How VoiceShield Works — detection pipeline steps.
- * All steps verified from the VoiceShield repository implementation.
- */
 const STEPS = [
   {
     num: "01",
@@ -69,30 +64,20 @@ const STEPS = [
 export default function VoiceShieldHow() {
   return (
     <section
-      className="py-24 px-6 relative bg-[rgba(10,15,30,0.6)]"
+      className="py-24 px-6 relative"
       aria-labelledby="vs-how-heading"
     >
-      {/* Subtle gradient separator */}
-      <div aria-hidden className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-      <div aria-hidden className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-6xl relative z-10">
         <div className="mb-4 flex items-center gap-3">
           <span className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-400">
             Detection Architecture
           </span>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
-        >
+        <div className="mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <h2
             id="vs-how-heading"
-            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-5 tracking-tight"
+            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-5 tracking-tight drop-shadow-md"
           >
             How{" "}
             <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
@@ -100,53 +85,40 @@ export default function VoiceShieldHow() {
             </span>{" "}
             works
           </h2>
-          <p className="text-zinc-400 text-lg max-w-3xl leading-relaxed">
+          <p className="text-cyan-50/80 text-lg max-w-3xl leading-relaxed">
             A deterministic, latency-sensitive pipeline from microphone to detection result.
             No large language model is in the real-time audio detection loop.
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-both">
           {STEPS.map((step, i) => (
-            <motion.div
+            <GlassSurface
               key={step.num}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
+              variant="liquid"
+              className={`p-6 h-full border ${step.border} hover:border-white/30 transition-all duration-300`}
             >
-              <GlassSurface
-                variant="card"
-                className={`p-6 h-full border ${step.border}`}
-              >
-                <div className="flex items-start gap-4 mb-4">
-                  <span className={`font-mono text-xs font-bold ${step.color} opacity-60`}>
-                    {step.num}
-                  </span>
-                  <step.icon className={`w-5 h-5 ${step.color} shrink-0`} aria-hidden />
-                </div>
-                <h3 className="text-sm font-bold text-white mb-2 uppercase tracking-wide">
-                  {step.title}
-                </h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">{step.description}</p>
-              </GlassSurface>
-            </motion.div>
+              <div className="flex items-start gap-4 mb-4">
+                <span className={`font-mono text-xs font-bold ${step.color} opacity-60`}>
+                  {step.num}
+                </span>
+                <step.icon className={`w-5 h-5 ${step.color} shrink-0`} aria-hidden />
+              </div>
+              <h3 className="text-sm font-bold text-white mb-2 uppercase tracking-wide">
+                {step.title}
+              </h3>
+              <p className="text-sm text-cyan-100/60 leading-relaxed">{step.description}</p>
+            </GlassSurface>
           ))}
         </div>
 
         {/* Pipeline diagram — text-based */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="mt-12"
-        >
-          <GlassSurface variant="subtle" className="p-6 overflow-x-auto">
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-4">
+        <div className="mt-12 animate-in fade-in zoom-in-95 duration-700 delay-500 fill-mode-both">
+          <GlassSurface variant="liquid" className="p-6 overflow-x-auto border-white/10">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-200/50 mb-4">
               Real-Time Pipeline
             </p>
-            <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 whitespace-nowrap flex-wrap gap-y-2">
+            <div className="flex items-center gap-2 text-xs font-mono text-cyan-100/70 whitespace-nowrap flex-wrap gap-y-2">
               {[
                 "Browser Mic",
                 "Web Audio / AudioWorklet",
@@ -159,17 +131,17 @@ export default function VoiceShieldHow() {
                 "UI Update",
               ].map((step, i, arr) => (
                 <React.Fragment key={step}>
-                  <span className="px-2 py-1 rounded bg-white/5 border border-white/10 text-zinc-300">
+                  <span className="px-2 py-1 rounded bg-white/5 border border-white/10 text-white shadow-sm">
                     {step}
                   </span>
                   {i < arr.length - 1 && (
-                    <span className="text-cyan-600" aria-hidden>→</span>
+                    <span className="text-cyan-600 font-bold" aria-hidden>→</span>
                   )}
                 </React.Fragment>
               ))}
             </div>
           </GlassSurface>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

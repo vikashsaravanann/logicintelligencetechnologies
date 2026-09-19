@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import { Building2, Phone, Scale, CreditCard, ShieldCheck, Radio } from "lucide-react";
 import { GlassSurface } from "@/components/ui/glass-surface";
 
@@ -64,61 +63,48 @@ const USE_CASES = [
 
 export default function VoiceShieldUseCases() {
   return (
-    <section className="py-24 px-6" aria-labelledby="vs-usecases-heading">
-      <div className="mx-auto max-w-6xl">
+    <section className="py-24 px-6 relative" aria-labelledby="vs-usecases-heading">
+      <div className="mx-auto max-w-6xl relative z-10">
         <div className="mb-4">
           <span className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-400">
             Use Cases
           </span>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-14"
-        >
+        <div className="mb-14 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <h2
             id="vs-usecases-heading"
-            className="text-3xl sm:text-4xl font-extrabold text-white mb-4 tracking-tight"
+            className="text-3xl sm:text-4xl font-extrabold text-white mb-4 tracking-tight drop-shadow-md"
           >
             Sector applications
           </h2>
-          <p className="text-zinc-400 text-lg max-w-3xl leading-relaxed">
+          <p className="text-cyan-50/80 text-lg max-w-3xl leading-relaxed">
             VoiceShield is applicable wherever voice authenticity matters.
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-both">
           {USE_CASES.map((uc, i) => (
-            <motion.div
-              key={uc.headline}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-            >
-              <GlassSurface variant="card" className="p-6 h-full">
-                <div className="flex items-center gap-3 mb-4">
-                  <uc.icon className={`w-5 h-5 ${uc.color}`} aria-hidden />
-                  <span className={`text-[10px] font-bold uppercase tracking-wider ${uc.color}`}>
-                    {uc.sector}
+            <GlassSurface key={uc.headline} variant="liquid" className="p-6 h-full border-white/5 hover:border-white/20 transition-all duration-300">
+              <div className="flex items-center gap-3 mb-4">
+                <uc.icon className={`w-5 h-5 ${uc.color}`} aria-hidden />
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${uc.color}`}>
+                  {uc.sector}
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-white mb-2">{uc.headline}</h3>
+              <p className="text-xs text-cyan-100/60 leading-relaxed mb-4">{uc.description}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {uc.signals.map((s) => (
+                  <span
+                    key={s}
+                    className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] text-cyan-100/80 shadow-sm"
+                  >
+                    {s}
                   </span>
-                </div>
-                <h3 className="text-sm font-bold text-white mb-2">{uc.headline}</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed mb-4">{uc.description}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {uc.signals.map((s) => (
-                    <span
-                      key={s}
-                      className="px-2 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-[10px] text-zinc-400"
-                    >
-                      {s}
-                    </span>
-                  ))}
-                </div>
-              </GlassSurface>
-            </motion.div>
+                ))}
+              </div>
+            </GlassSurface>
           ))}
         </div>
       </div>

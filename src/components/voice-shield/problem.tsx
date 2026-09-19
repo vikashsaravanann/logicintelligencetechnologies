@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import { PhoneCall, TrendingUp, Users, Building2, AlertCircle } from "lucide-react";
 import { GlassSurface } from "@/components/ui/glass-surface";
 
@@ -55,15 +54,10 @@ export default function VoiceShieldProblem() {
           </span>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
           <h2
             id="vs-problem-heading"
-            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-6 tracking-tight"
+            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-6 tracking-tight drop-shadow-md"
           >
             Voice fraud is{" "}
             <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
@@ -72,33 +66,25 @@ export default function VoiceShieldProblem() {
             for telephony.
           </h2>
 
-          <p className="text-zinc-400 text-lg max-w-3xl mb-16 leading-relaxed">
+          <p className="text-cyan-50/80 text-lg max-w-3xl mb-16 leading-relaxed">
             Advances in generative AI have made high-quality voice synthesis accessible
             and affordable. Traditional voice authentication systems — built for human
             imposters — are not designed to detect machine-generated voices. VoiceShield
             addresses this gap with purpose-built anti-spoofing technology.
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid sm:grid-cols-2 gap-5">
+        <div className="grid sm:grid-cols-2 gap-5 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-both">
           {THREATS.map((threat, i) => (
-            <motion.div
-              key={threat.title}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-            >
-              <GlassSurface variant="card" className="p-6 h-full">
-                <div
-                  className={`inline-flex items-center justify-center w-10 h-10 rounded-xl mb-4 border ${threat.bg}`}
-                >
-                  <threat.icon className={`w-5 h-5 ${threat.color}`} aria-hidden />
-                </div>
-                <h3 className="text-base font-bold text-white mb-2">{threat.title}</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">{threat.description}</p>
-              </GlassSurface>
-            </motion.div>
+            <GlassSurface key={threat.title} variant="liquid" className="p-6 h-full border-white/5 hover:border-white/10 transition-colors">
+              <div
+                className={`inline-flex items-center justify-center w-10 h-10 rounded-xl mb-4 border ${threat.bg}`}
+              >
+                <threat.icon className={`w-5 h-5 ${threat.color}`} aria-hidden />
+              </div>
+              <h3 className="text-base font-bold text-white mb-2">{threat.title}</h3>
+              <p className="text-sm text-cyan-100/60 leading-relaxed">{threat.description}</p>
+            </GlassSurface>
           ))}
         </div>
       </div>

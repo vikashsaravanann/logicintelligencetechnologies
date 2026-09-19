@@ -5,7 +5,7 @@ import { COMPANY } from '@/config/company';
 import { organizationNode, websiteNode } from '@/lib/seo/schema';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from '@/components/theme/theme-provider';
-import GlobalVideoBackground from '@/components/ui/global-video-background';
+import GlobalBackground from '@/components/ui/global-background';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 
@@ -109,7 +109,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} m-0 p-0 w-full max-w-[100vw] overflow-x-hidden`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <GlobalVideoBackground />
+          <GlobalBackground />
           <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
           {children}
           <SpeedInsights />
