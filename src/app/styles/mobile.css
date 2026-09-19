@@ -1,18 +1,15 @@
 /*
- * Full-bleed mobile — NO transform / zoom (those create a right-side gap).
- * Root font-size 12px + tight padding = denser readable UI.
+ * Mobile: denser root type only.
+ * Do NOT override padding, gaps, radius, max-width, or widget layout.
+ * No transform / zoom (those create a right-side blank gap).
  */
 
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
 html, body {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 img, video, canvas, iframe, svg {
@@ -20,149 +17,27 @@ img, video, canvas, iframe, svg {
   height: auto;
 }
 
-.fixed {
-  max-width: 100vw;
-}
-
 @media (max-width: 768px) {
   html {
-    font-size: 12px !important;
+    font-size: 12px;
   }
 
   body {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    transform: none !important;
-    zoom: normal !important;
-    width: 100% !important;
-    max-width: 100vw !important;
-  }
-
-  main,
-  section,
-  .container {
-    width: 100% !important;
-    max-width: 100vw !important;
-    box-sizing: border-box;
-  }
-
-  .max-w-7xl,
-  .max-w-6xl,
-  .max-w-5xl,
-  .max-w-4xl,
-  .max-w-3xl {
-    max-width: 100% !important;
-  }
-
-  main > div,
-  section > div {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-
-  section {
-    padding-left: max(0.85rem, env(safe-area-inset-left)) !important;
-    padding-right: max(0.85rem, env(safe-area-inset-right)) !important;
-  }
-
-  .px-6,
-  .px-8,
-  .lg\:px-8 {
-    padding-left: max(0.85rem, env(safe-area-inset-left)) !important;
-    padding-right: max(0.85rem, env(safe-area-inset-right)) !important;
-  }
-
-  h1, .text-4xl, .text-5xl, .text-6xl, .text-7xl {
-    line-height: 1.12 !important;
-    word-break: break-word;
-  }
-
-  .py-20, .py-24, .py-28, .py-32 {
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
-  }
-
-  .md\:py-32 {
-    padding-top: 2.25rem !important;
-    padding-bottom: 2.25rem !important;
-  }
-
-  .glass-card,
-  .glass-panel,
-  [class*="rounded-3xl"] {
-    border-radius: 0.85rem !important;
-  }
-
-  .p-8, .p-10, .md\:p-10 {
-    padding: 0.85rem !important;
-  }
-
-  .p-6, .p-5 {
-    padding: 0.7rem !important;
-  }
-
-  .gap-8 {
-    gap: 0.6rem !important;
-  }
-
-  .gap-6 {
-    gap: 0.5rem !important;
-  }
-
-  .gap-4 {
-    gap: 0.45rem !important;
-  }
-
-  .mb-20, .mb-16 {
-    margin-bottom: 1.25rem !important;
-  }
-
-  .mb-8, .mb-10 {
-    margin-bottom: 0.75rem !important;
-  }
-
-  .mb-6, .mb-4 {
-    margin-bottom: 0.5rem !important;
-  }
-
-  .text-3xl {
-    font-size: 1.5rem !important;
-  }
-
-  .text-2xl {
-    font-size: 1.3rem !important;
-  }
-
-  .text-xl {
-    font-size: 1.15rem !important;
-  }
-
-  .text-lg {
-    font-size: 1.05rem !important;
-  }
-
-  .text-base {
-    font-size: 1rem !important;
-  }
-
-  .text-sm {
-    font-size: 0.9rem !important;
-  }
-
-  .text-xs {
-    font-size: 0.8rem !important;
+    transform: none;
+    zoom: normal;
   }
 }
 
 @media (max-width: 430px) {
   html {
-    font-size: 11.5px !important;
+    font-size: 11.5px;
   }
 }
 
 @media (max-width: 360px) {
   html {
-    font-size: 11px !important;
+    font-size: 11px;
   }
 }
