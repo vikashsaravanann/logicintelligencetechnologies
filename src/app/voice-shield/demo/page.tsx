@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-/** Demo is no longer a separate public page — single product entry at /voice-shield. */
+/** Legacy demo URL — send users to the access request form. */
 export default function VoiceShieldDemoRedirect() {
-  redirect("/voice-shield");
+  redirect("/voice-shield/request");
 }
