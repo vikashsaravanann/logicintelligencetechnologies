@@ -215,6 +215,14 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
           >
             <Sparkles className="w-4 h-4" /> AI Assistant
           </Link>
+          {user.email?.toLowerCase().endsWith('@logicintelligencetechnologies.in') && (
+            <Link
+              href="/admin/command-center"
+              className="flex items-center gap-2 py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-200 hover:bg-cyan-950/30 min-h-[44px]"
+            >
+              <Sparkles className="w-4 h-4" /> Admin Dashboard
+            </Link>
+          )}
           <button
             type="button"
             onClick={() => void signOut()}
@@ -282,6 +290,16 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
           >
             <Sparkles className="w-3.5 h-3.5" /> AI Assistant
           </Link>
+          {user.email?.toLowerCase().endsWith('@logicintelligencetechnologies.in') && (
+            <Link
+              role="menuitem"
+              href="/admin/command-center"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-200 hover:bg-cyan-950/30"
+            >
+              <Sparkles className="w-3.5 h-3.5" /> Admin Dashboard
+            </Link>
+          )}
           <button
             type="button"
             role="menuitem"
