@@ -22,7 +22,7 @@ export default function VoiceShieldLayout({
 }) {
   return (
     <div 
-      className={`min-h-screen bg-[#030712] selection:bg-cyan-500/30 selection:text-cyan-50 ${ibm.variable} ${jetbrains.variable}`}
+      className={`min-h-screen bg-[#050A15] selection:bg-cyan-500/30 selection:text-cyan-50 ${ibm.variable} ${jetbrains.variable}`}
     >
       <style dangerouslySetInnerHTML={{ __html: `
         :root {

@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import Image from "next/image";
 import BackToHome from "@/components/ui/back-to-home";
 import { COMPANY } from "@/config/company";
 import JobsClient from "./jobs-client";
@@ -26,16 +25,13 @@ export default function JobsPage() {
         ]}
       />
       <BackToHome />
-      <section className="relative min-h-[72vh] sm:min-h-[82vh] flex items-end overflow-hidden pt-28">
-        <Image
-          src="/assets/careers_bg.jpg"
-          alt="Logic Intelligence Technologies studio"
-          fill
-          priority
-          className="object-cover object-center"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/80 to-[#0A0F1E]/30" />
+      <section className="relative min-h-[72vh] sm:min-h-[82vh] flex items-end overflow-hidden pt-28 bg-[#050A15]">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-cyan-600/15 blur-[150px] rounded-full" />
+          <div className="absolute top-[30%] -right-[10%] w-[50%] h-[50%] bg-blue-600/15 blur-[150px] rounded-full" />
+          <div className="absolute bottom-0 left-[20%] w-[60%] h-[40%] bg-emerald-500/10 blur-[150px] rounded-full" />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/60 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-500/10 via-transparent to-transparent pointer-events-none" />
         
         <div className="relative z-10 w-full px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-12 sm:pb-16">
