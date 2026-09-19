@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     const protocol = host.includes("localhost") ? "http" : "https";
     const proposalUrl = `${protocol}://${host}/proposal/${proposal.secure_token}`;
 
-    const { success, message, error: emailError } = await sendEmail({
+    const { success, message } = await sendEmail({
       to: proposal.client_email,
       subject: `Project Proposal: ${proposal.title} - ${COMPANY.name}`,
       react: ProposalSentEmail({
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!success) {
-      console.error("Failed to send proposal email:", message, emailError);
+      console.error("Failed to send proposal email:", message);
       return NextResponse.json(
         { error: "Failed to send email", details: message },
         { status: 500 }
