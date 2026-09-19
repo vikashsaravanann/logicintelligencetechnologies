@@ -232,7 +232,7 @@ export default function FounderPage() {
                   alt={`${FOUNDER.name} — Founder of ${FOUNDER.company}`}
                   fill
                   priority
-                  className="object-cover object-[center_20%]"
+                  className="object-cover object-top sm:object-center"
                   sizes="(max-width: 1024px) 100vw, 48vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E]/80 via-transparent to-transparent" />
