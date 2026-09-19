@@ -71,7 +71,7 @@ export default function VoiceShieldAccessRequest() {
 
   return (
     <div
-      className="min-h-[100dvh] md:h-screen w-full flex flex-col bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 overflow-x-hidden overflow-y-auto md:overflow-hidden"
+      className="h-screen w-full flex flex-col bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 overflow-hidden"
       style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
     >
       {/* Top announcement bar */}
@@ -147,7 +147,7 @@ export default function VoiceShieldAccessRequest() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
 
             {/* Left — Info panel */}
-            <div className="lg:col-span-2 space-y-5">
+            <div className="hidden lg:block lg:col-span-2 space-y-5">
               {/* Stats row */}
               <div className="grid grid-cols-2 gap-3">
                 {[
