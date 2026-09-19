@@ -127,18 +127,18 @@ export default function VoiceShieldAccessRequest() {
 
       {/* Main Content */}
       <main className="flex-1 flex items-start lg:items-center justify-center px-2 py-2 lg:px-4 lg:py-2 overflow-y-auto lg:overflow-hidden">
-        <div className="w-full max-w-6xl my-auto">
+        <div className="w-full max-w-6xl my-2 lg:my-auto">
 
-          {/* Page header */}
-          <div className="text-center mb-2 lg:mb-6">
+          {/* Header block */}
+          <div className="text-center mb-4 lg:mb-10">
             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 lg:px-3.5 lg:py-1.5 rounded-full border border-slate-800 bg-slate-900/90 text-[9px] lg:text-xs text-slate-300 font-mono mb-1 lg:mb-2 backdrop-blur-md">
               <Lock className="w-2.5 h-2.5 lg:w-3.5 lg:h-3.5 text-emerald-400" />
               <span>Gated Enterprise Access</span>
             </div>
-            <h1 className="text-lg sm:text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-0.5 leading-tight">
+            <h1 className="text-lg sm:text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-0.5 leading-tight uppercase">
               Request Console Access
             </h1>
-            <p className="text-[9px] sm:text-sm lg:text-base text-slate-400 max-w-xl mx-auto leading-relaxed px-2">
+            <p className="text-[9px] sm:text-sm lg:text-base text-slate-400 max-w-xl mx-auto leading-relaxed px-2 uppercase tracking-wide">
               VoiceShield is restricted. Submit your application for private access.
             </p>
           </div>
