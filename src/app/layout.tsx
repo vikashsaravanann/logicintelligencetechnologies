@@ -17,15 +17,16 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+/** Standard viewport — never put initial-scale=0.25 here (breaks laptops). Mobile scale is CSS-only. */
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  viewportFit: "cover",
+  viewportFit: 'cover',
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0A0F1E" },
-    { media: "(prefers-color-scheme: light)", color: "#F7F4EE" },
+    { media: '(prefers-color-scheme: dark)', color: '#0A0F1E' },
+    { media: '(prefers-color-scheme: light)', color: '#F7F4EE' },
   ],
 };
 
@@ -92,7 +93,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="overflow-x-hidden">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
+        {/* Mandatory: initial-scale=1.0 only — mobile scale is 100% CSS media query */}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href="/icon-48.png" type="image/png" sizes="48x48" />
         <link rel="icon" href="/assets/logo-icon.jpg" type="image/jpeg" />
         <link rel="apple-touch-icon" href="/apple-icon.png" sizes="180x180" />
@@ -107,7 +109,6 @@ export default function RootLayout({
           }}
         />
       </head>
-      {/* No max-w on body — mobile.css sets width:400% + scale(0.25) on phones */}
       <body className={`${inter.className} m-0 p-0 overflow-x-hidden`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <GlobalVideoBackground />
