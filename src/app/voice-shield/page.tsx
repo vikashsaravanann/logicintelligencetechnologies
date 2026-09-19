@@ -10,7 +10,7 @@ import {
   Zap, 
   ArrowRight,
   Radio,
-  Waveform,
+  Mic,
   Globe,
   Server,
   Database,
@@ -117,7 +117,7 @@ export default function VoiceShieldProductPage() {
                 color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20"
               },
               {
-                icon: Waveform,
+                icon: Mic,
                 title: "EXPLAINABLE AI SPECTROGRAM",
                 desc: "Waterfall spectral heatmaps surface plain-English anomaly markers like unnatural high-frequency energy and phase variance.",
                 color: "text-cyan-400", bg: "bg-cyan-500/10 border-cyan-500/20"
