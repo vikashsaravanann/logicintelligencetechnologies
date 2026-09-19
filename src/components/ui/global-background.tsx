@@ -50,10 +50,13 @@ export default function GlobalBackground() {
     return Math.abs(hash) % 5;
   }, [pathname]);
 
+  const isVoiceShieldPage = useMemo(() => {
+    return pathname?.startsWith("/voice-shield");
+  }, [pathname]);
+
   const isVideoPage = useMemo(() => {
     if (!pathname) return false;
     return (
-      pathname.startsWith("/voice-shield") ||
       pathname.startsWith("/products/ai-voice-agents") ||
       pathname.startsWith("/products/ai-website-agents") ||
       pathname === "/ai" ||
@@ -121,6 +124,16 @@ export default function GlobalBackground() {
           )}
           <div className="absolute inset-0 bg-[#0A0F1E]/30" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/20 via-transparent to-[#0A0F1E]/65" />
+        </>
+      ) : isVoiceShieldPage ? (
+        <>
+          <div className="absolute inset-0 bg-[#020617]" />
+          <div className="absolute inset-0 bg-[url('/company-bg.png')] bg-cover bg-center mix-blend-overlay opacity-30 brightness-50" />
+          <div className="absolute top-[-20%] left-[-10%] w-[120%] h-[120%] bg-[radial-gradient(ellipse_at_center,_rgba(14,165,233,0.15)_0%,_rgba(2,6,23,1)_70%)]" />
+          {/* Subtle shield-like radar rings */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-cyan-500/10" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] rounded-full border border-cyan-500/5" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-cyan-500/5 blur-[100px]" />
         </>
       ) : (
         <>

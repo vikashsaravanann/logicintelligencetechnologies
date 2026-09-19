@@ -48,8 +48,7 @@ export const metadata: Metadata = {
 export default function VoiceShieldProductPage() {
   return (
     <main className="relative min-h-screen bg-transparent text-slate-100 overflow-hidden">
-      <LiquidBackground />
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
         <VoiceShieldHero />
         <VoiceShieldProblem />
         <VoiceShieldHow />
