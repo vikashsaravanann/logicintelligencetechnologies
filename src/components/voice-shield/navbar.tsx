@@ -20,6 +20,10 @@ export default function VoiceShieldNavbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  if (pathname === "/voice-shield/request") {
+    return null;
+  }
+
   return (
     <>
       <header
