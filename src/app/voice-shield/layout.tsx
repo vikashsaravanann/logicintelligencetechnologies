@@ -1,9 +1,9 @@
 import React from "react";
 import VoiceShieldNavbar from "@/components/voice-shield/navbar";
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 
-const ibm = IBM_Plex_Sans({
+const ibm = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-ibm",

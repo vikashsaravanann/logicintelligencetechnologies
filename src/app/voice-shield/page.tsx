@@ -10,7 +10,7 @@ import {
   Zap, 
   ArrowRight,
   Radio,
-  Mic,
+  Waves as Waveform,
   Globe,
   Server,
   Database,
