@@ -63,7 +63,13 @@ export async function middleware(req: NextRequest) {
 
     if (path.startsWith("/dashboard") || path.startsWith("/admin")) {
       let isAllowed = false;
-      if (session.user.id) {
+      
+      // Auto-allow company emails
+      if (session.user.email && isCompanyEmail(session.user.email)) {
+        isAllowed = true;
+      } 
+      // Otherwise fallback to profile role check
+      else if (session.user.id) {
         const { data: profile } = await supabase
           .from("profiles")
           .select("role")
