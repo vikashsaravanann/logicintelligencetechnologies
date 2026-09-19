@@ -6,6 +6,7 @@ export type NavItem = {
   href: string;
   label: string;
   description?: string;
+  highlight?: boolean;
 };
 
 export type NavGroup = {
@@ -40,10 +41,10 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
     id: "company",
     label: "COMPANY",
     items: [
-      { href: "/about/founder", label: "FOUNDER", description: "VIKASH SARAVANAN PROFILE" },
+      { href: "/about/founder", label: "FOUNDER", description: "VIKASH SARAVANAN PROFILE", highlight: true },
       { href: "/expertise", label: "TECHNICAL EXPERTISE", description: "ENGINEERING CAPABILITIES" },
-      { href: "/careers", label: "CAREERS", description: "CULTURE AND OPEN PATHS" },
-      { href: "/jobs", label: "LEADERSHIP JOBS", description: "CEO AND DIRECTOR SEATS" },
+      { href: "/careers", label: "CAREERS", description: "CULTURE AND OPEN PATHS", highlight: true },
+      { href: "/jobs", label: "LEADERSHIP JOBS", description: "CEO AND DIRECTOR SEATS", highlight: true },
       { href: "/press", label: "PRESS", description: "MEDIA AND BRAND ASSETS" },
       { href: "/investors", label: "INVESTORS", description: "PARTNERSHIP OVERVIEW" },
     ],
@@ -56,11 +57,13 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
         href: "/voice-shield",
         label: "VOICESHIELD",
         description: "AI VOICE SECURITY & ANTI-SPOOFING",
+        highlight: true,
       },
       {
         href: "/ai-assistant",
         label: "AI ASSISTANT",
         description: "COMPANY KNOWLEDGE WORKSPACE",
+        highlight: true,
       },
       {
         href: "/knowledge-base",
@@ -99,9 +102,9 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
     label: "TOOLS",
     items: [
       { href: "/free-demo", label: "FREE DEMO", description: "REQUEST A WORKING DIRECTION" },
-      { href: "/roi-calculator", label: "ROI CALCULATOR", description: "ESTIMATE YOUR SAVINGS" },
-      { href: "/architecture", label: "SYSTEM ARCHITECTURE", description: "INFRASTRUCTURE DESIGN" },
-      { href: "/docs/api", label: "API DOCUMENTATION", description: "DEVELOPER INTEGRATION" },
+      { href: "/roi-calculator", label: "ROI CALCULATOR", description: "ESTIMATE YOUR SAVINGS", highlight: true },
+      { href: "/architecture", label: "SYSTEM ARCHITECTURE", description: "INFRASTRUCTURE DESIGN", highlight: true },
+      { href: "/docs/api", label: "API DOCUMENTATION", description: "DEVELOPER INTEGRATION", highlight: true },
     ],
   },
   {

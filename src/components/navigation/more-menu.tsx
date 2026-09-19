@@ -93,13 +93,24 @@ export function MoreMenu({
                             setIsOpen(false);
                             if (onNavigate) onNavigate();
                           }}
-                          className="block rounded-lg px-2.5 py-2 hover:bg-white/[0.06] hover:border hover:border-white/10 transition-all group"
+                          className={cn(
+                            "block rounded-lg px-2.5 py-2 transition-all group border border-transparent",
+                            item.highlight
+                              ? "bg-white/[0.03] border-white/[0.05] shadow-[0_0_15px_rgba(255,255,255,0.01)] hover:bg-white/[0.06] hover:border-cyan-500/40 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)] backdrop-blur-sm"
+                              : "hover:bg-white/[0.06] hover:border-white/10"
+                          )}
                         >
-                          <span className="block text-[12px] font-bold tracking-wide text-zinc-200 group-hover:text-cyan-300 uppercase">
+                          <span className={cn(
+                            "block text-[12px] font-bold tracking-wide uppercase",
+                            item.highlight ? "text-cyan-400 group-hover:text-cyan-300" : "text-zinc-200 group-hover:text-cyan-300"
+                          )}>
                             {item.label}
                           </span>
                           {item.description && (
-                            <span className="block text-[11px] text-zinc-400 group-hover:text-zinc-300 mt-0.5 leading-snug uppercase tracking-wider">
+                            <span className={cn(
+                              "block text-[11px] mt-0.5 leading-snug uppercase tracking-wider",
+                              item.highlight ? "text-cyan-200/60 group-hover:text-cyan-100/80" : "text-zinc-400 group-hover:text-zinc-300"
+                            )}>
                               {item.description}
                             </span>
                           )}
@@ -127,13 +138,24 @@ export function MoreMenu({
                             setIsOpen(false);
                             if (onNavigate) onNavigate();
                           }}
-                          className="block rounded-lg px-2.5 py-2 hover:bg-white/[0.06] hover:border hover:border-white/10 transition-all group"
+                          className={cn(
+                            "block rounded-lg px-2.5 py-2 transition-all group border border-transparent",
+                            item.highlight
+                              ? "bg-white/[0.03] border-white/[0.05] shadow-[0_0_15px_rgba(255,255,255,0.01)] hover:bg-white/[0.06] hover:border-cyan-500/40 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)] backdrop-blur-sm"
+                              : "hover:bg-white/[0.06] hover:border-white/10"
+                          )}
                         >
-                          <span className="block text-[12px] font-bold tracking-wide text-zinc-200 group-hover:text-cyan-300 uppercase">
+                          <span className={cn(
+                            "block text-[12px] font-bold tracking-wide uppercase",
+                            item.highlight ? "text-cyan-400 group-hover:text-cyan-300" : "text-zinc-200 group-hover:text-cyan-300"
+                          )}>
                             {item.label}
                           </span>
                           {item.description && (
-                            <span className="block text-[11px] text-zinc-400 group-hover:text-zinc-300 mt-0.5 leading-snug uppercase tracking-wider">
+                            <span className={cn(
+                              "block text-[11px] mt-0.5 leading-snug uppercase tracking-wider",
+                              item.highlight ? "text-cyan-200/60 group-hover:text-cyan-100/80" : "text-zinc-400 group-hover:text-zinc-300"
+                            )}>
                               {item.description}
                             </span>
                           )}
