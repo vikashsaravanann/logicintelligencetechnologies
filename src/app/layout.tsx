@@ -17,7 +17,6 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-/** Standard viewport — never put initial-scale=0.25 here (breaks laptops). Mobile scale is CSS-only. */
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -91,9 +90,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="overflow-x-hidden">
+    <html lang="en" suppressHydrationWarning className="overflow-x-hidden w-full max-w-[100vw]">
       <head>
-        {/* Mandatory: initial-scale=1.0 only — mobile scale is 100% CSS media query */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href="/icon-48.png" type="image/png" sizes="48x48" />
         <link rel="icon" href="/assets/logo-icon.jpg" type="image/jpeg" />
@@ -109,7 +107,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} m-0 p-0 overflow-x-hidden`}>
+      <body className={`${inter.className} m-0 p-0 w-full max-w-[100vw] overflow-x-hidden`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <GlobalVideoBackground />
           <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
