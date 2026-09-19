@@ -147,24 +147,24 @@ export default function VoiceShieldAccessRequest() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 lg:gap-8">
 
             {/* Left — Info panel */}
-            <div className="hidden lg:block lg:col-span-2 space-y-4 lg:space-y-5">
-              {/* Stats row */}
-              <div className="grid grid-cols-2 gap-2 lg:gap-3">
+            <div className="lg:col-span-2 space-y-3 lg:space-y-5">
+              {/* Stats row - Visible on mobile too */}
+              <div className="grid grid-cols-4 lg:grid-cols-2 gap-1.5 lg:gap-3">
                 {[
                   { value: "< 250ms", label: "Latency" },
                   { value: "< 5.4%", label: "EER" },
-                  { value: "0 BYTES", label: "Audio on disk" },
-                  { value: "100%", label: "Audit Logged" },
+                  { value: "0 BYTES", label: "On disk" },
+                  { value: "100%", label: "Audit" },
                 ].map((s) => (
-                  <div key={s.label} className="bg-slate-900/60 border border-slate-800 rounded-xl lg:rounded-2xl p-3 lg:p-4 text-center">
-                    <div className="text-lg lg:text-xl font-extrabold font-mono text-emerald-400">{s.value}</div>
-                    <div className="text-[9px] lg:text-[10px] text-slate-400 uppercase tracking-wider font-mono mt-0.5">{s.label}</div>
+                  <div key={s.label} className="bg-slate-900/60 border border-slate-800 rounded-lg lg:rounded-2xl p-2 lg:p-4 text-center">
+                    <div className="text-[10px] lg:text-xl font-extrabold font-mono text-emerald-400">{s.value}</div>
+                    <div className="text-[7px] lg:text-[10px] text-slate-400 uppercase tracking-wider font-mono mt-0.5">{s.label}</div>
                   </div>
                 ))}
               </div>
 
-              {/* Feature list */}
-              <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
+              {/* Feature list - Hidden on mobile */}
+              <div className="hidden lg:block bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
                 <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-emerald-400 mb-2">
                   What you get access to
                 </h3>
@@ -186,8 +186,8 @@ export default function VoiceShieldAccessRequest() {
                 ))}
               </div>
 
-              {/* Compliance tags */}
-              <div className="flex flex-wrap gap-2">
+              {/* Compliance tags - Hidden on mobile */}
+              <div className="hidden lg:flex flex-wrap gap-2">
                 {["DPDP Act 2023", "CERT-IN", "G.711 / AMR", "Zero Raw Audio Disk"].map((tag) => (
                   <span
                     key={tag}
@@ -363,15 +363,15 @@ export default function VoiceShieldAccessRequest() {
       </main>
 
       {/* Footer */}
-      <footer className="hidden lg:block border-t border-slate-800/50 py-6 px-6 text-center">
-        <div className="flex items-center justify-center gap-4 text-[10px] font-mono text-slate-600 uppercase tracking-widest flex-wrap">
+      <footer className="border-t border-slate-800/50 py-4 lg:py-6 px-4 lg:px-6 text-center mt-auto">
+        <div className="flex items-center justify-center gap-2 lg:gap-4 text-[8px] lg:text-[10px] font-mono text-slate-600 uppercase tracking-widest flex-wrap">
           <span className="flex items-center gap-1.5">
-            <Zap className="w-3 h-3 text-emerald-500" /> VoiceShield · LIT Product
+            <Zap className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-emerald-500" /> VoiceShield · LIT
           </span>
           <span className="text-slate-800">·</span>
           <Link href="/voice-shield" className="hover:text-slate-400 transition-colors">Overview</Link>
+          <span className="text-slate-800">·</span>
           <Link href="/privacy" className="hover:text-slate-400 transition-colors">Privacy</Link>
-          <Link href="/contact" className="hover:text-slate-400 transition-colors">Contact</Link>
         </div>
       </footer>
     </div>
