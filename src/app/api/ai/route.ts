@@ -98,7 +98,7 @@ export async function POST(request: Request) {
   let steps = 1;
 
   try {
-    if (!rateLimit(`ai:${clientIp(request)}`, 20, 60_000)) {
+    if (!(await rateLimit(`ai:${clientIp(request)}`, 20, 60_000))) {
       return NextResponse.json({ success: false, error: "Too many requests. Please wait a moment." }, { status: 429 });
     }
     const body = await request.json();

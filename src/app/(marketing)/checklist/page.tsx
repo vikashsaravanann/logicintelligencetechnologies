@@ -10,40 +10,58 @@ import SafeImage from "@/components/ui/safe-image";
 export default function ChecklistLeadMagnet() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [emailSent, setEmailSent] = useState(true);
 
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
+
     setIsSubmitting(true);
     setError(null);
-    
     try {
       const res = await fetch("/api/checklist", {
         method: "POST",
-        signal: AbortSignal.timeout(25000),
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, type: "lead_magnet" }),
       });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.message || "Could not send the checklist. Please try again.");
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIsSubmitted(true);
+        setEmailSent(data.emailSent !== false);
+      } else {
+        alert(data.message || "Something went wrong. Please try again.");
       }
-      
-      setSent(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      alert("Failed to submit request. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDirectDownload = () => {
-    // In a real app, this would trigger a direct download of a local public/checklist.pdf
-    window.open("/checklist.pdf", "_blank");
+  const handleDirectDownload = async () => {
+    try {
+      const res = await fetch("/api/resources/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: "Checklist Requester",
+          email: email,
+          companyName: "",
+          resourceId: "pdf-website-checklist",
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.token) {
+        window.location.href = `/api/resources/download?token=${data.token}`;
+      } else {
+        alert("Could not start download.");
+      }
+    } catch (err) {
+      alert("Could not start download.");
+    }
   };
 
   return (
@@ -64,14 +82,20 @@ export default function ChecklistLeadMagnet() {
           </motion.p>
         </div>
 
-        <div className="max-w-xl mx-auto relative z-10">
-          {sent ? (
-             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-16 bg-[#12172b] rounded-3xl border border-white/10 shadow-2xl p-8 md:p-6 md:p-12">
+        <div className="max-w-md mx-auto relative z-10">
+          {isSubmitted ? (
+             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#12172b] rounded-3xl border border-white/10 shadow-2xl p-8 md:p-12 text-center">
                <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(0,191,255,0.2)]">
                  <CheckCircle2 className="h-10 w-10 text-primary" />
                </div>
-               <h3 className="text-2xl font-black text-white mb-3">Checklist Sent!</h3>
-               <p className="text-zinc-400 mb-8">Check your inbox. We've sent the PDF to <strong>{email}</strong>.</p>
+               <h3 className="text-2xl font-black text-white mb-3">Request Verified!</h3>
+               <p className="text-zinc-400 mb-8">
+                 {emailSent ? (
+                   <>Check your inbox. We've sent the PDF to <strong>{email}</strong>.</>
+                 ) : (
+                   <>We received your request, but email delivery is delayed. You can download it directly below.</>
+                 )}
+               </p>
                <button onClick={handleDirectDownload} className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-primary transition-all">
                  <Download className="w-4 h-4" /> Download Instantly
                </button>

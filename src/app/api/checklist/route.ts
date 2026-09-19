@@ -24,7 +24,7 @@ const schema = z.object({
 
 export async function POST(req: Request) {
   try {
-    if (!rateLimit(`checklist:${clientIp(req)}`, 10, 15 * 60_000)) {
+    if (!(await rateLimit(`checklist:${clientIp(req)}`, 10, 15 * 60_000))) {
       return NextResponse.json(
         { success: false, message: "Too many requests. Please try again shortly." },
         { status: 429 }
@@ -66,11 +66,12 @@ export async function POST(req: Request) {
 
     const idemBase = stored.id;
 
+    let customerEmailSent = false;
     if (email) {
       try {
         const attachments: Array<{ filename: string; path: string }> = [];
         if (isLeadMagnet) {
-          const pdfPath = path.join(process.cwd(), "public", "checklist.pdf");
+          const pdfPath = path.join(process.cwd(), "private", "resources", "website-development-checklist.pdf");
           if (fs.existsSync(pdfPath)) {
             attachments.push({
               filename: "Website-Launch-Checklist.pdf",
@@ -99,6 +100,8 @@ export async function POST(req: Request) {
         });
         if (!emailResult.success) {
           console.error("[Email Error] Failed to send email:", emailResult.message);
+        } else {
+          customerEmailSent = true;
         }
       } catch (emailErr) {
         console.error("[Email Error] Checklist user confirmation failed:", emailErr);
@@ -141,7 +144,12 @@ export async function POST(req: Request) {
       console.error("[Email Error] Checklist internal notification failed:", emailErr);
     }
 
-    return NextResponse.json({ success: true, message: "Request received", leadId: stored.id });
+    return NextResponse.json({ 
+      success: true, 
+      message: "Request received", 
+      leadId: stored.id,
+      emailSent: customerEmailSent 
+    });
   } catch (error) {
     console.error("Checklist API Error:", error);
     return NextResponse.json(

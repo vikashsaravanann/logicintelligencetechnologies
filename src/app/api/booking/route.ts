@@ -25,7 +25,7 @@ const bookingSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    if (!rateLimit(`booking:${clientIp(req)}`, 8, 15 * 60_000)) {
+    if (!(await rateLimit(`booking:${clientIp(req)}`, 8, 15 * 60_000))) {
       return NextResponse.json(
         { success: false, message: "Too many requests. Please try again shortly." },
         { status: 429 }

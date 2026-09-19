@@ -14,7 +14,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  if (!rateLimit(`ticket:${clientIp(request)}`, 4, 10 * 60_000)) {
+  if (!(await rateLimit(`ticket:${clientIp(request)}`, 4, 10 * 60_000))) {
     return NextResponse.json({ ok: false, error: "Too many requests." }, { status: 429 });
   }
   try {

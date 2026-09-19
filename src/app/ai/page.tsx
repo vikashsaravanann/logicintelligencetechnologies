@@ -578,18 +578,14 @@ export default function AiChatPage() {
           <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row w-full max-w-xs sm:max-w-none items-stretch sm:items-center justify-center gap-2.5 sm:gap-3">
             <button
               type="button"
-              onClick={async () => {
-                // Require auth before entering the chat workspace
-                const { data } = await supabase.auth.getUser();
-                if (!data.user) {
-                  router.push("/login?next=/ai");
-                  return;
-                }
-                setLanded(false);
+              onClick={() => {
+                // Feature currently under development per P1 requirements
+                alert("This feature is currently under development. Please check back later.");
               }}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#E8651C] px-5 py-3 text-sm font-semibold text-white shadow-[0_8px_30px_rgba(232,101,28,0.35)] hover:brightness-110"
+              disabled
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-zinc-800 px-5 py-3 text-sm font-semibold text-zinc-400 cursor-not-allowed border border-white/5"
             >
-              Get Started <ArrowRight className="w-4 h-4" />
+              Coming Soon
             </button>
             <Link href="/ai-assistant" className="rounded-full border border-white/15 bg-black/25 px-5 py-3 text-sm text-center">Learn More</Link>
           </div>

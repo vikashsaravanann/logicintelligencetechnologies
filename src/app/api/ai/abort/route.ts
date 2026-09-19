@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  if (!rateLimit(`abort:${clientIp(request)}`, 30, 60_000)) {
+  if (!(await rateLimit(`abort:${clientIp(request)}`, 30, 60_000))) {
     return NextResponse.json({ ok: false }, { status: 429 });
   }
   try {

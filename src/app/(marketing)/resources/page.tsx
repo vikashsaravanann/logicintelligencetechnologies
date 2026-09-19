@@ -93,18 +93,20 @@ export default function ResourcesPage() {
                       href={`/resources/${res.slug}`}
                       className="inline-flex items-center gap-2 text-sm font-bold text-white group-hover:text-primary transition-colors"
                     >
-                      <span>View Details</span>
+                      <span>{res.isGated ? "Access Document" : "View Details"}</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
-                    <a
-                      href={res.publicPath}
-                      download={res.filename}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all border text-zinc-300 hover:text-black hover:bg-primary"
-                      style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }}
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>PDF</span>
-                    </a>
+                    {!res.isGated && res.publicPath && (
+                      <a
+                        href={res.publicPath}
+                        download={res.filename}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all border text-zinc-300 hover:text-black hover:bg-primary"
+                        style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }}
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>PDF</span>
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>

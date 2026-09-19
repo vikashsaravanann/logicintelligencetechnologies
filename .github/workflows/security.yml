@@ -30,7 +30,7 @@ jobs:
         run: |
           npm audit --audit-level=critical || true
           npm audit --json > npm-audit.json || true
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Secret scanning (literal secrets only)
         run: |
