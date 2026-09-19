@@ -107,7 +107,8 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} overflow-x-hidden w-full max-w-[100vw] m-0 p-0`}>
+      {/* No max-w on body — mobile.css sets width:400% + scale(0.25) on phones */}
+      <body className={`${inter.className} m-0 p-0 overflow-x-hidden`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <GlobalVideoBackground />
           <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
