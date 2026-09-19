@@ -27,13 +27,6 @@ export const metadata: Metadata = {
   },
 };
 
-import BackToHome from "@/components/ui/back-to-home";
-
 export default function VoiceShieldRequestPage() {
-  return (
-    <>
-      <BackToHome />
-      <VoiceShieldAccessRequest />
-    </>
-  );
+  return <VoiceShieldAccessRequest />;
 }
