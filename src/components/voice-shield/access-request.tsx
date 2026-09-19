@@ -3,11 +3,14 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { ShieldCheck, Lock, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
+import { COMPANY } from "@/config/company";
+
+const CONSOLE_URL = COMPANY.products.voiceShield.consoleUrl;
 
 /**
- * VoiceShield access request — product-styled registration for beta / demo.
- * Visual language matches the VoiceShield console (dark slate + emerald).
- * Submissions go to LIT contact leads with projectType VoiceShield Access Request.
+ * VoiceShield access request — gated product access.
+ * Public never receives the live console URL.
+ * Admin notification includes CONSOLE_URL to send only after approval.
  */
 export default function VoiceShieldAccessRequest() {
   const [sent, setSent] = useState(false);
@@ -47,10 +50,14 @@ export default function VoiceShieldAccessRequest() {
             `Access type: ${form.accessType}`,
             form.role ? `Role: ${form.role}` : null,
             form.useCase ? `Use case: ${form.useCase}` : null,
+            "",
+            "— Admin action —",
+            "Do NOT publish the console publicly.",
+            `After approval, email the applicant the console URL: ${CONSOLE_URL}`,
           ]
-            .filter(Boolean)
+            .filter((line) => line !== null)
             .join("\n"),
-          pageUrl: "/voice-shield",
+          pageUrl: "/voice-shield/request",
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -75,7 +82,6 @@ export default function VoiceShieldAccessRequest() {
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.1),_transparent_45%)]" />
 
       <div className="relative z-10 mx-auto max-w-lg px-4 py-16 sm:px-6 sm:py-24">
-        {/* Brand */}
         <div className="mb-10 text-center space-y-4">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full border-2 border-emerald-500/50 bg-slate-950 shadow-lg shadow-emerald-500/20 mb-2">
             <ShieldCheck className="w-7 h-7 text-emerald-400" />
@@ -88,7 +94,7 @@ export default function VoiceShieldAccessRequest() {
           </h1>
           <p className="text-sm text-slate-400 leading-relaxed max-w-md mx-auto">
             AI voice security & anti-spoofing — a Logic Intelligence Technologies product.
-            Request beta or demo access. We review every request and send access details by email.
+            Request beta or demo access. Console access is issued only after approval.
           </p>
         </div>
 
@@ -102,14 +108,14 @@ export default function VoiceShieldAccessRequest() {
                 Request received
               </h2>
               <p className="text-sm text-slate-400 leading-relaxed">
-                Thank you. The Logic Intelligence Technologies team will review your VoiceShield
-                access request and contact you at the email you provided.
+                Thank you. Our team will review your request. If approved, you will receive an email
+                with the VoiceShield console link. The live console is not publicly linked.
               </p>
               <Link
-                href="/"
+                href="/voice-shield"
                 className="inline-flex items-center gap-2 text-xs font-mono font-bold tracking-widest uppercase text-emerald-400 hover:text-emerald-300"
               >
-                Return home <ArrowRight className="w-3.5 h-3.5" />
+                Back to product overview <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           ) : (
@@ -254,8 +260,8 @@ export default function VoiceShieldAccessRequest() {
               </button>
 
               <p className="text-[11px] text-slate-500 text-center leading-relaxed">
-                No public self-serve login. Access is issued by Logic Intelligence Technologies after review.
-                By submitting you agree to be contacted about VoiceShield.
+                No public self-serve console. Access is issued by Logic Intelligence Technologies
+                after review. By submitting you agree to be contacted about VoiceShield.
               </p>
             </form>
           )}
