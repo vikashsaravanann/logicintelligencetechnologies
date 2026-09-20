@@ -74,7 +74,6 @@ export default function VoiceShieldAccessRequest() {
       className="min-h-[100dvh] lg:h-[100dvh] w-full flex flex-col bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 overflow-x-hidden lg:overflow-hidden"
       style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
     >
-      {/* Top announcement bar */}
       <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border-b border-emerald-500/20 py-1.5 lg:py-2.5 px-2 lg:px-4 text-center">
         <div className="inline-flex items-center gap-1.5 lg:gap-2 text-[10px] lg:text-xs font-mono font-medium text-emerald-300">
           <span className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -82,11 +81,9 @@ export default function VoiceShieldAccessRequest() {
         </div>
       </div>
 
-      {/* Navigation Header */}
       <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-[#030712]/90 border-b border-slate-800/80 shadow-2xl">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-12 sm:h-16 flex items-center justify-between gap-2">
-          {/* Logo */}
-          <Link href={CONSOLE_URL} className="flex items-center gap-2 group shrink-0">
+          <Link href="/voice-shield" className="flex items-center gap-2 group shrink-0">
             <div className="relative shrink-0">
               <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full border-2 border-emerald-500/60 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:border-emerald-400 transition-all overflow-hidden bg-slate-950">
                 <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
@@ -106,7 +103,6 @@ export default function VoiceShieldAccessRequest() {
             </div>
           </Link>
 
-          {/* Nav */}
           <div className="flex items-center gap-2">
             <button
               disabled
@@ -125,11 +121,8 @@ export default function VoiceShieldAccessRequest() {
         <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 flex flex-col px-3 py-3 lg:px-4 lg:py-2 overflow-y-auto lg:overflow-hidden">
         <div className="w-full max-w-6xl mx-auto flex-1 flex flex-col justify-evenly lg:justify-center gap-4 lg:gap-8">
-
-          {/* Header block */}
           <div className="text-center shrink-0">
             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 lg:px-3.5 lg:py-1.5 rounded-full border border-slate-800 bg-slate-900/90 text-[9px] lg:text-xs text-slate-300 font-mono mb-1.5 lg:mb-2 backdrop-blur-md">
               <Lock className="w-2.5 h-2.5 lg:w-3.5 lg:h-3.5 text-emerald-400" />
@@ -143,18 +136,14 @@ export default function VoiceShieldAccessRequest() {
             </p>
           </div>
 
-          {/* Two-column layout */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-8 shrink-0">
-
-            {/* Left — Info panel */}
             <div className="lg:col-span-2 space-y-3 lg:space-y-5">
-              {/* Stats row - Visible on mobile too */}
               <div className="grid grid-cols-4 lg:grid-cols-2 gap-1.5 lg:gap-3">
                 {[
-                  { value: "< 250ms", label: "Latency" },
-                  { value: "< 5.4%", label: "EER" },
-                  { value: "0 BYTES", label: "On disk" },
-                  { value: "100%", label: "Audit" },
+                  { value: "Real-time", label: "Detection" },
+                  { value: "Async", label: "Forensics" },
+                  { value: "Evidence", label: "Structured" },
+                  { value: "API", label: "Integration" },
                 ].map((s) => (
                   <div key={s.label} className="bg-slate-900/60 border border-slate-800 rounded-lg lg:rounded-2xl p-2 lg:p-4 text-center">
                     <div className="text-[10px] lg:text-xl font-extrabold font-mono text-emerald-400">{s.value}</div>
@@ -163,7 +152,6 @@ export default function VoiceShieldAccessRequest() {
                 ))}
               </div>
 
-              {/* Feature list - Hidden on mobile */}
               <div className="hidden lg:block bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
                 <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-emerald-400 mb-2">
                   What you get access to
@@ -172,7 +160,7 @@ export default function VoiceShieldAccessRequest() {
                   { icon: Activity, label: "Live Demo", desc: "Microphone-based real-time voice scan" },
                   { icon: Cpu, label: "Forensic Lab", desc: "Upload audio files for deep analysis" },
                   { icon: Globe, label: "WebSocket API", desc: "Stream integration documentation" },
-                  { icon: UserCheck, label: "Product Brief", desc: "Architecture, compliance, SLA details" },
+                  { icon: UserCheck, label: "Product Brief", desc: "Architecture and security design details" },
                 ].map((f) => (
                   <div key={f.label} className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
@@ -186,9 +174,8 @@ export default function VoiceShieldAccessRequest() {
                 ))}
               </div>
 
-              {/* Compliance tags - Hidden on mobile */}
               <div className="hidden lg:flex flex-wrap gap-2">
-                {["DPDP Act 2023", "CERT-IN", "G.711 / AMR", "Zero Raw Audio Disk"].map((tag) => (
+                {["DPDP-aware design", "Configurable retention", "Enterprise API", "Audit-oriented logs"].map((tag) => (
                   <span
                     key={tag}
                     className="px-3 py-1.5 rounded bg-slate-900/40 border border-slate-800 text-slate-400 text-[10px] font-mono font-bold uppercase tracking-widest"
@@ -199,10 +186,8 @@ export default function VoiceShieldAccessRequest() {
               </div>
             </div>
 
-            {/* Right — Form panel */}
             <div className="lg:col-span-3">
               <div className="bg-slate-900/60 border border-slate-800 rounded-xl lg:rounded-3xl p-3 sm:p-5 lg:p-6 shadow-2xl shadow-emerald-950/20">
-
                 {sent ? (
                   <div className="flex flex-col items-center justify-center text-center space-y-2 lg:space-y-4 py-4 lg:py-8">
                     <div className="w-10 h-10 lg:w-16 lg:h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.2)]">
@@ -233,7 +218,6 @@ export default function VoiceShieldAccessRequest() {
                     </div>
 
                     <form onSubmit={onSubmit} className="space-y-1.5 lg:space-y-3">
-                      {/* Row 1 */}
                       <div className="grid grid-cols-2 gap-2 lg:gap-4">
                         <div>
                           <label className="block text-[8px] lg:text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1 lg:mb-1.5" htmlFor="fullName">
@@ -259,7 +243,6 @@ export default function VoiceShieldAccessRequest() {
                         </div>
                       </div>
 
-                      {/* Row 2 */}
                       <div className="grid grid-cols-2 gap-2 lg:gap-4">
                         <div>
                           <label className="block text-[8px] lg:text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1 lg:mb-1.5" htmlFor="companyName">
@@ -285,7 +268,6 @@ export default function VoiceShieldAccessRequest() {
                         </div>
                       </div>
 
-                      {/* Row 3 */}
                       <div className="grid grid-cols-2 gap-2 lg:gap-4">
                         <div>
                           <label className="block text-[8px] lg:text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1 lg:mb-1.5" htmlFor="phone">
@@ -314,44 +296,39 @@ export default function VoiceShieldAccessRequest() {
                         </div>
                       </div>
 
-                      {/* Use case */}
                       <div>
                         <label className="block text-[8px] lg:text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1 lg:mb-1.5" htmlFor="useCase">
                           Intended Use Case
                         </label>
                         <textarea
-                          id="useCase" name="useCase" rows={1}
+                          id="useCase" name="useCase" rows={2}
                           value={form.useCase} onChange={onChange}
-                          placeholder="Describe your use case..."
-                          className="w-full px-2.5 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all resize-none"
+                          placeholder="Describe your intended use..."
+                          className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all resize-none"
                         />
                       </div>
 
-                      {/* Error */}
                       {error && (
-                        <div className="flex items-center gap-2 px-3 py-2 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-red-950/40 border border-red-500/30 text-red-400 text-[9px] lg:text-xs font-mono">
-                          <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
+                        <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-[10px] lg:text-xs text-red-300 font-mono">
                           {error}
                         </div>
                       )}
 
-                      {/* Submit */}
-                      <div className="pt-0.5 lg:pt-2">
-                        <button
-                          type="submit"
-                          disabled={busy}
-                          className="w-full inline-flex items-center justify-center gap-2 lg:gap-2.5 py-2 lg:py-4 rounded-lg lg:rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-mono font-bold text-[9px] lg:text-sm tracking-widest uppercase transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:pointer-events-none"
-                        >
-                          {busy ? (
-                            <><Loader2 className="w-3.5 h-3.5 lg:w-4 lg:h-4 animate-spin" /> Processing...</>
-                          ) : (
-                            <><Lock className="w-3 h-3 lg:w-4 lg:h-4" /> Submit Access Request</>
-                          )}
-                        </button>
-                      </div>
+                      <button
+                        type="submit"
+                        disabled={busy}
+                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 lg:py-3.5 rounded-lg lg:rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-[10px] lg:text-sm tracking-widest uppercase transition-all disabled:opacity-50"
+                      >
+                        {busy ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Zap className="w-4 h-4" />
+                        )}
+                        {busy ? "Submitting…" : "Submit Access Request"}
+                      </button>
 
-                      <p className="text-[7px] lg:text-[10px] text-slate-600 text-center leading-relaxed font-mono px-2">
-                        By submitting, you agree to our privacy terms. The VoiceShield console is gated and access is monitored by Logic Intelligence Technologies. Zero raw audio is stored.
+                      <p className="text-[8px] lg:text-[10px] text-slate-500 font-mono text-center pt-1">
+                        Console URL is shared only after approval. Not published on this page.
                       </p>
                     </form>
                   </>
@@ -361,19 +338,6 @@ export default function VoiceShieldAccessRequest() {
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-800/50 py-4 lg:py-6 px-4 lg:px-6 text-center mt-auto">
-        <div className="flex items-center justify-center gap-2 lg:gap-4 text-[8px] lg:text-[10px] font-mono text-slate-600 uppercase tracking-widest flex-wrap">
-          <span className="flex items-center gap-1.5">
-            <Zap className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-emerald-500" /> VoiceShield · LIT
-          </span>
-          <span className="text-slate-800">·</span>
-          <Link href="/voice-shield" className="hover:text-slate-400 transition-colors">Overview</Link>
-          <span className="text-slate-800">·</span>
-          <Link href="/privacy" className="hover:text-slate-400 transition-colors">Privacy</Link>
-        </div>
-      </footer>
     </div>
   );
 }
