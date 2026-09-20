@@ -1,6 +1,7 @@
 /**
  * Central navigation model for Logic Intelligence Technologies.
- * Last updated: 2026-09-19 — Single VoiceShield product entry (request access on product page).
+ * Products: AI Agent · AI Voice Agent · VoiceShield
+ * /ai = AI Agent interactive assistant experience (not a fourth product).
  */
 export type NavItem = {
   href: string;
@@ -18,8 +19,8 @@ export type NavGroup = {
 /** Always-visible desktop primary links. */
 export const PRIMARY_NAV: NavItem[] = [
   { href: "/", label: "HOME" },
+  { href: "/ai", label: "AI AGENT" },
   { href: "/voice-shield", label: "VOICESHIELD" },
-  { href: "/ai", label: "LOGIC AI" },
   { href: "/services", label: "SOLUTIONS" },
   { href: "/industries", label: "INDUSTRIES" },
   { href: "/work", label: "WORK" },
@@ -33,11 +34,6 @@ export const PRIMARY_CTA: NavItem = {
   label: "BOOK A CONSULTATION",
 };
 
-/**
- * More menu — secondary destinations only.
- * Do NOT repeat PRIMARY_NAV hrefs (/about, /work, /resources, /contact).
- * Do NOT repeat header auth (login / profile) — handled by AuthNavControl.
- */
 export const MORE_NAV_GROUPS: NavGroup[] = [
   {
     id: "company",
@@ -56,16 +52,27 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
     label: "AI PRODUCTS",
     items: [
       {
-        href: "/voice-shield",
-        label: "VOICESHIELD",
-        description: "AI VOICE SECURITY & ANTI-SPOOFING",
+        href: "/products/ai-website-agents",
+        label: "AI AGENT",
+        description: "INTELLIGENT BUSINESS AI — ASSISTANT AT /AI",
         highlight: true,
       },
       {
-        href: "/ai",
-        label: "AI ASSISTANT",
-        description: "COMPANY KNOWLEDGE WORKSPACE",
+        href: "/products/ai-voice-agents",
+        label: "AI VOICE AGENT",
+        description: "AI-POWERED PHONE CONVERSATIONS",
         highlight: true,
+      },
+      {
+        href: "/voice-shield",
+        label: "VOICESHIELD",
+        description: "AI VOICE SECURITY & COMPLIANCE — LIT PRODUCT",
+        highlight: true,
+      },
+      {
+        href: "/pricing",
+        label: "PRICING",
+        description: "COMMERCIAL PLANS USD / INR",
       },
       {
         href: "/knowledge-base",
@@ -73,64 +80,25 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
         description: "ASSISTANT KNOWLEDGE HUB",
       },
       {
-        href: "/investor-brief",
-        label: "INVESTOR BRIEF",
-        description: "QUARTERLY AI PERFORMANCE",
-      },
-      {
         href: "/ai-discovery",
         label: "AI DISCOVERY",
-        description: "STRUCTURED AI IMPLEMENTATION",
+        description: "DISCOVERY WORKSHOP",
       },
       {
         href: "/ai-ethics",
         label: "AI ETHICS",
-        description: "RESPONSIBLE AI GUIDELINES",
+        description: "RESPONSIBLE AI PRINCIPLES",
       },
     ],
   },
   {
-    id: "resources",
-    label: "RESOURCES",
+    id: "engage",
+    label: "ENGAGE",
     items: [
-      { href: "/blog", label: "BLOG", description: "ENGINEERING AND PRODUCT NOTES" },
-      { href: "/certifications", label: "CERTIFICATIONS", description: "VERIFIED CREDENTIALS" },
-      { href: "/checklist", label: "WEBSITE CHECKLIST", description: "PRODUCTION QA FRAMEWORK" },
-      { href: "/packages", label: "PACKAGES", description: "FIXED-SCOPE OFFERINGS" },
-    ],
-  },
-  {
-    id: "tools",
-    label: "TOOLS",
-    items: [
-      { href: "/free-demo", label: "FREE DEMO", description: "REQUEST A WORKING DIRECTION" },
-      { href: "/roi-calculator", label: "ROI CALCULATOR", description: "ESTIMATE YOUR SAVINGS", highlight: true },
-      { href: "/architecture", label: "SYSTEM ARCHITECTURE", description: "INFRASTRUCTURE DESIGN", highlight: true },
-      { href: "/docs/api", label: "API DOCUMENTATION", description: "DEVELOPER INTEGRATION", highlight: true },
-    ],
-  },
-  {
-    id: "support",
-    label: "SUPPORT",
-    items: [
-      { href: "/support", label: "CUSTOMER SUPPORT", description: "TICKETS AND HELP" },
-      { href: "/help-center", label: "HELP CENTER", description: "GUIDES AND FAQS" },
-      { href: "/community", label: "COMMUNITY FORUM", description: "PEER TO PEER DISCUSSIONS" },
-      { href: "/status", label: "STATUS PAGE", description: "SYSTEM UPTIME MONITOR" },
-      { href: "/sales", label: "CONTACT SALES", description: "ENTERPRISE INQUIRIES" },
-    ],
-  },
-  {
-    id: "legal",
-    label: "LEGAL",
-    items: [
-      { href: "/privacy", label: "PRIVACY", description: "DATA HANDLING POLICIES" },
-      { href: "/terms", label: "TERMS", description: "USER AGREEMENTS" },
-      { href: "/refund-policy", label: "REFUND POLICY", description: "PAYMENT TERMS" },
-      { href: "/cookie-policy", label: "COOKIE POLICY", description: "TRACKING INFORMATION" },
-      { href: "/accessibility", label: "ACCESSIBILITY", description: "WCAG COMPLIANCE" },
+      { href: "/free-demo", label: "FREE DEMO", description: "SEE THE WORK BEFORE PAYMENT" },
+      { href: "/book-consultation", label: "BOOK CONSULTATION", description: "SCHEDULE A CALL" },
+      { href: "/support", label: "SUPPORT", description: "HELP AND TICKETS" },
+      { href: "/checklist", label: "CHECKLIST", description: "PROJECT READINESS" },
     ],
   },
 ];
-
-export const MORE_NAV_FLAT: NavItem[] = MORE_NAV_GROUPS.flatMap((g) => g.items);
