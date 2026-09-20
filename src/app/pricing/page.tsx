@@ -129,7 +129,7 @@ export default function PricingPage() {
 
                   <div className="flex-1 flex flex-col">
                     <p className="text-[9px] font-black tracking-[0.2em] text-zinc-500 uppercase mb-5 text-center">
-                      What's included
+                      What&apos;s included
                     </p>
                     <ul className="space-y-3 flex-1">
                       {plan.features.map((feature, fIdx) => (
@@ -326,7 +326,7 @@ export default function PricingPage() {
               },
               {
                 q: 'Do you offer a free tier?',
-                a: 'The AI Website Agent Free tier is available under current commercial pricing (100 interactions/month). Voice Agents and VoiceShield are arranged after a contact or access request.',
+                a: 'The AI Agent Free tier is available under current commercial pricing (100 interactions/month). AI Voice Agent and VoiceShield are arranged after a contact or access request.',
               },
               {
                 q: 'Is there a long-term contract?',
@@ -339,23 +339,23 @@ export default function PricingPage() {
             ].map((faq, i) => (
               <div
                 key={i}
-                className="bg-black/40 border border-white/8 rounded-2xl p-6 hover:border-white/15 transition-colors"
+                className="bg-white/[0.02] border border-white/8 rounded-2xl p-6 hover:bg-white/[0.04] transition-colors"
               >
                 <div className="flex items-start gap-3">
                   <HelpCircle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="text-white font-bold mb-2">{faq.q}</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">{faq.a}</p>
+                    <h4 className="text-base font-bold text-white mb-2">{faq.q}</h4>
+                    <p className="text-sm text-zinc-400 leading-relaxed">{faq.a}</p>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-
-          <p className="text-[10px] text-zinc-600 mt-10 text-center leading-relaxed max-w-2xl mx-auto">
-            {PRICING_DISCLAIMER}
-          </p>
         </section>
+
+        <p className="text-center text-xs text-zinc-600 mt-20 max-w-3xl mx-auto leading-relaxed">
+          {PRICING_DISCLAIMER}
+        </p>
       </div>
     </PageShell>
   );
