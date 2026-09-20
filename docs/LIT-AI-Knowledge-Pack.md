@@ -19,9 +19,9 @@
 - **Phone:** +91 9342877474
 
 ## E. Product Portfolio
-1. **AI Website Agents**
-2. **AI Voice Agents**
-3. **VoiceShield**
+1. **AI Agent** — intelligent business AI; interactive assistant experience at `/ai`
+2. **AI Voice Agent** — AI-powered phone conversations
+3. **VoiceShield** — AI security & compliance intelligence (LIT product, not a separate company)
 
 ## F. Entity Clarification (VoiceShield)
 - VoiceShield is an **AI security product by LIT**. It is **NOT** a separate company.

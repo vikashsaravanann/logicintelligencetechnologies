@@ -36,11 +36,13 @@ The following JSON-LD structure represents the strict semantic relationships of 
   "owns": [
     {
       "@type": "Product",
-      "name": "AI Website Agents"
+      "name": "AI Agent",
+      "description": "Intelligent business AI agent; interactive assistant experience at /ai."
     },
     {
       "@type": "Product",
-      "name": "AI Voice Agents"
+      "name": "AI Voice Agent",
+      "description": "AI-powered phone conversations for enquiries, appointments and lead qualification."
     },
     {
       "@type": "Product",
