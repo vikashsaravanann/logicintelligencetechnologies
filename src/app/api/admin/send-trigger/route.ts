@@ -31,50 +31,43 @@ function safeUrl(value: unknown, fallback: string): string {
 }
 
 export async function POST(req: Request) {
-  // Identify the caller for the audit log — session email or 'cron'
   const authHeader = req.headers.get("authorization") ?? "";
   const xCronHeader = req.headers.get("x-cron-secret") ?? "";
   const isMachineCall =
     Boolean(process.env.CRON_SECRET) &&
-    (authHeader.startsWith("Bearer ") || xCronHeader);
-  const ipAddress = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+    (authHeader.startsWith("Bearer ") || Boolean(xCronHeader));
+  const ipAddress =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
 
   let authOk = false;
   if (isMachineCall) {
-    const cron = process.env.CRON_SECRET;
-    const auth = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : xCronHeader;
-    if (cron && auth && crypto.timingSafeEqual(Buffer.from(auth), Buffer.from(cron))) {
-      authOk = true;
+    const cron = process.env.CRON_SECRET || "";
+    const auth = authHeader.startsWith("Bearer ")
+      ? authHeader.slice(7)
+      : xCronHeader;
+    // Length-safe compare — timingSafeEqual throws on unequal lengths
+    if (cron && auth) {
+      const a = Buffer.from(auth);
+      const b = Buffer.from(cron);
+      if (a.length === b.length && crypto.timingSafeEqual(a, b)) {
+        authOk = true;
+      }
     }
   }
 
   try {
+    let triggeredBy = "cron";
     if (!authOk) {
       const auth = await requireAdminApi(req);
       if (!auth.ok) {
-        return NextResponse.json({ error: auth.message }, { status: auth.status });
-      }
-    }
-
-    // Determine caller identity for audit trail (never expose the token itself)
-    let triggeredBy = "cron";
-    if (!isMachineCall) {
-      // Authenticated via session — extract email from cookie-based session
-      // requireAdminApi already verified this; we read it best-effort for audit
-      try {
-        const { cookies } = await import("next/headers");
-        const { createRouteHandlerClient } = await import("@supabase/auth-helpers-nextjs");
-        const { env } = await import("@/config/env");
-        const cookieStore = await cookies();
-        const supabase = createRouteHandlerClient(
-          { cookies: () => cookieStore as any },
-          { supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL, supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY }
+        return NextResponse.json(
+          { error: auth.message },
+          { status: auth.status }
         );
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user?.email) triggeredBy = `session:${session.user.email}`;
-      } catch {
-        triggeredBy = "session:unknown";
       }
+      triggeredBy = auth.email
+        ? `session:${auth.email}`
+        : `session:${auth.userId}`;
     }
 
     const body = await req.json();
@@ -84,12 +77,16 @@ export async function POST(req: Request) {
     const data = body.data && typeof body.data === "object" ? body.data : {};
 
     if (!isValidEmail(email) || !type) {
-      return NextResponse.json({ error: "Missing email or type" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing email or type" },
+        { status: 400 }
+      );
     }
 
     let reactComponent: React.ReactElement;
     let subject = "";
-    let fromAddress: "noReply" | "hello" | "admin" | "vikash" | "support" = "hello";
+    let fromAddress: "noReply" | "hello" | "admin" | "vikash" | "support" =
+      "hello";
     let replyToAddress: string | undefined = undefined;
     const eventType = type;
     const site = COMPANY.websiteUrl;
@@ -109,8 +106,11 @@ export async function POST(req: Request) {
           fullName: fullName || "Client",
           amount: sanitizePersonName(String(data.amount || "0"), 40),
           dueDate: sanitizePersonName(String(data.dueDate || "Upon Receipt"), 40),
-          invoiceNumber: sanitizePersonName(String(data.invoiceNumber || "INV-000"), 40),
-          paymentLink: safeUrl(data.invoiceUrl, `${site}/dashboard`),
+          invoiceNumber: sanitizePersonName(
+            String(data.invoiceNumber || "INV-000"),
+            40
+          ),
+          paymentLink: safeUrl(data.invoiceUrl || data.paymentLink, `${site}/dashboard`),
         });
         break;
       case "payment":
@@ -119,7 +119,10 @@ export async function POST(req: Request) {
         reactComponent = React.createElement(PaymentReceivedEmail, {
           fullName: fullName || "Client",
           amount: sanitizePersonName(String(data.amount || "0"), 40),
-          invoiceNumber: sanitizePersonName(String(data.invoiceNumber || "INV-000"), 40),
+          invoiceNumber: sanitizePersonName(
+            String(data.invoiceNumber || "INV-000"),
+            40
+          ),
         });
         break;
       case "kickoff":
@@ -127,7 +130,10 @@ export async function POST(req: Request) {
         subject = `Project kickoff: ${sanitizePersonName(String(data.projectName || "Your Project"), 80)}`;
         reactComponent = React.createElement(ProjectKickoffEmail, {
           fullName: fullName || "Client",
-          projectName: sanitizePersonName(String(data.projectName || "Your Project"), 80),
+          projectName: sanitizePersonName(
+            String(data.projectName || "Your Project"),
+            80
+          ),
         });
         break;
       case "delivered":
@@ -135,7 +141,10 @@ export async function POST(req: Request) {
         subject = `Project delivered: ${sanitizePersonName(String(data.projectName || "Your Project"), 80)}`;
         reactComponent = React.createElement(ProjectDeliveredEmail, {
           fullName: fullName || "Client",
-          projectName: sanitizePersonName(String(data.projectName || "Your Project"), 80),
+          projectName: sanitizePersonName(
+            String(data.projectName || "Your Project"),
+            80
+          ),
           liveUrl: safeUrl(data.liveUrl, site),
         });
         break;
@@ -174,7 +183,10 @@ export async function POST(req: Request) {
         });
         break;
       default:
-        return NextResponse.json({ error: "Invalid email type" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Invalid email type" },
+          { status: 400 }
+        );
     }
 
     const emailResult = await sendEmail({
@@ -190,7 +202,11 @@ export async function POST(req: Request) {
     });
 
     if (!emailResult.success) {
-      console.error("[Email Error] Admin Trigger Failed:", emailResult.message);
+      console.error(
+        "[Email Error] Admin Trigger Failed:",
+        emailResult.message,
+        emailResult.errorCode
+      );
       await writeAdminAudit({
         triggeredBy,
         emailType: type,
@@ -200,7 +216,16 @@ export async function POST(req: Request) {
         errorMessage: emailResult.message,
         ipAddress,
       });
-      return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
+      return NextResponse.json(
+        {
+          error: emailResult.message || "Failed to send email",
+          status: emailResult.status,
+          errorCategory: emailResult.errorCategory ?? null,
+          errorCode: emailResult.errorCode ?? null,
+          outboxId: emailResult.outboxId ?? null,
+        },
+        { status: 500 }
+      );
     }
 
     await writeAdminAudit({
@@ -212,9 +237,21 @@ export async function POST(req: Request) {
       ipAddress,
     });
 
-    return NextResponse.json({ success: true, message: `Queued ${type} email`, status: emailResult.status });
+    return NextResponse.json({
+      success: true,
+      message: emailResult.skipped
+        ? `Email ${emailResult.status} (not delivered to provider)`
+        : `Email ${emailResult.status}`,
+      status: emailResult.status,
+      skipped: Boolean(emailResult.skipped),
+      outboxId: emailResult.outboxId ?? null,
+      messageId: emailResult.messageId ?? null,
+    });
   } catch (error) {
     console.error("Admin Email Trigger Error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
