@@ -76,7 +76,10 @@ function getSenderKeyFromEmail(email: string): SenderKey {
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+    timer = setTimeout(
+      () => reject(new Error(`${label} timed out after ${ms}ms`)),
+      ms
+    );
   });
   return Promise.race([promise, timeout]).finally(() => {
     if (timer) clearTimeout(timer);
@@ -94,6 +97,32 @@ function safeReplyTo(value: string | undefined): string | undefined {
     return COMPANY.emails[cleaned as SenderKey];
   }
   return undefined;
+}
+
+/** Admin-facing error without secrets (passwords, tokens). */
+function adminSafeEmailError(
+  classified: ReturnType<typeof classifyEmailError>
+): string {
+  if (classified.category === "configuration") {
+    if (
+      /535|eauth|authentication|invalid login/i.test(
+        classified.message + classified.code
+      )
+    ) {
+      return "SMTP authentication failed (535). Verify SMTP_USER / SMTP_PASS (Zoho app password) in Vercel env.";
+    }
+    if (/smtp config missing|not configured/i.test(classified.message)) {
+      return "SMTP not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASS (and optional SMTP_PORT) in production env.";
+    }
+    return `Email configuration error: ${classified.message.slice(0, 160)}`;
+  }
+  if (classified.category === "validation") {
+    return `Email validation error: ${classified.message.slice(0, 160)}`;
+  }
+  if (classified.category === "permanent") {
+    return `Permanent delivery failure: ${classified.message.slice(0, 160)}`;
+  }
+  return `Email delivery failed (${classified.category}): ${classified.message.slice(0, 160)}`;
 }
 
 /**
@@ -117,7 +146,13 @@ export async function sendEmail({
 }: SendEmailOptions): Promise<EmailResponse> {
   const recipients = parseRecipientList(to);
   if (!recipients.length) {
-    return { success: false, message: "No valid recipients", status: "failed" };
+    return {
+      success: false,
+      message: "No valid recipients",
+      status: "failed",
+      errorCategory: "validation",
+      errorCode: "NO_RECIPIENTS",
+    };
   }
 
   const safeSubject = sanitizeSubject(subject);
@@ -148,7 +183,10 @@ export async function sendEmail({
     const kept: string[] = [];
     for (const recipient of recipients) {
       if (await isSuppressed(recipient, "marketing")) {
-        emailLog("info", "suppressed", { recipient: maskEmail(recipient), subject: safeSubject });
+        emailLog("info", "suppressed", {
+          recipient: maskEmail(recipient),
+          subject: safeSubject,
+        });
       } else {
         kept.push(recipient);
       }
@@ -164,48 +202,67 @@ export async function sendEmail({
     recipients.splice(0, recipients.length, ...kept);
   }
 
-  if (!isSmtpConfigured(requested) && !isSmtpConfigured("noReply") && !isEmailDryRun()) {
+  if (
+    !isSmtpConfigured(requested) &&
+    !isSmtpConfigured("noReply") &&
+    !isEmailDryRun()
+  ) {
     emailLog("error", "smtp_unconfigured", { subject: safeSubject });
-    return { success: false, message: "SMTP not configured", status: "failed" };
+    return {
+      success: false,
+      message:
+        "SMTP not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASS in production env.",
+      status: "failed",
+      errorCategory: "configuration",
+      errorCode: "SMTP_UNCONFIGURED",
+    };
   }
 
-  const primary = hasSenderCredentials(requested) ? requested : resolveSender(requested);
-  const unsubRecipient = listUnsubscribeEmail || (category === "marketing" ? recipients[0] : undefined);
-  const listUnsub = unsubRecipient ? buildOneClickUnsubscribeUrl(unsubRecipient) : undefined;
+  const primary = hasSenderCredentials(requested)
+    ? requested
+    : resolveSender(requested);
+  const unsubRecipient = listUnsubscribeEmail || recipients[0];
+  const listUnsub =
+    category === "marketing" && unsubRecipient
+      ? buildOneClickUnsubscribeUrl(unsubRecipient)
+      : undefined;
 
   let html = "";
   let text = "";
   try {
     html = await render(react);
     text = await render(react, { plainText: true });
-  } catch (err) {
-    emailLog("error", "render_failed", {
-      message: err instanceof Error ? err.message : String(err),
-      subject: safeSubject,
-    });
-    return { success: false, message: "Internal failure while sending email", status: "failed" };
+  } catch (renderErr) {
+    const classified = classifyEmailError(renderErr);
+    return {
+      success: false,
+      message: adminSafeEmailError(classified),
+      status: "failed",
+      errorCategory: classified.category,
+      errorCode: classified.code,
+    };
   }
 
-  const outbox = idempotencyKey
-    ? await claimOutbox({
-        eventType,
-        templateKey,
-        category,
-        recipient: recipients.join(","),
-        sender: COMPANY.emails[primary],
-        replyTo: resolvedReplyTo,
-        subject: safeSubject,
-        html,
-        text,
-        idempotencyKey,
-        correlationId,
-      })
-    : null;
+  const outbox = await claimOutbox({
+    eventType,
+    templateKey,
+    category,
+    recipient: recipients.join(","),
+    sender: primary,
+    replyTo: resolvedReplyTo,
+    subject: safeSubject,
+    html,
+    text,
+    idempotencyKey:
+      idempotencyKey ||
+      `send_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
+    correlationId,
+  });
 
   if (outbox?.duplicate && outbox.alreadySent) {
     return {
       success: true,
-      message: "Already sent",
+      message: "Already sent (idempotent)",
       status: "sent",
       outboxId: outbox.id,
       skipped: true,
@@ -248,7 +305,12 @@ export async function sendEmail({
         html,
         text,
         replyTo: resolvedReplyTo,
-        attachments,
+        attachments: attachments?.map((a) => ({
+          filename: a.filename,
+          content: a.content,
+          path: a.path,
+          contentType: a.contentType,
+        })),
         headers: listUnsub
           ? {
               "List-Unsubscribe": `<${listUnsub}>`,
@@ -257,7 +319,7 @@ export async function sendEmail({
           : undefined,
       }),
       SEND_MAIL_TIMEOUT_MS,
-      "SMTP sendMail"
+      "smtp.sendMail"
     );
   };
 
@@ -270,7 +332,7 @@ export async function sendEmail({
         status: "sent",
         providerMessageId: result.messageId,
       });
-      if (outbox?.id) await markOutboxSent(outbox.id, result.messageId, false);
+      if (outbox?.id) await markOutboxSent(outbox.id, result.messageId);
       return {
         success: true,
         message: `Email sent: ${result.messageId}`,
@@ -296,26 +358,51 @@ export async function sendEmail({
         isSmtpConfigured("noReply");
 
       if (canFallback) {
-        const result = await attempt("noReply");
-        await recordAttempt({
-          outboxId: outbox?.id,
-          attempt: 2,
-          status: "sent",
-          providerMessageId: result.messageId,
-        });
-        if (outbox?.id) await markOutboxSent(outbox.id, result.messageId, true);
-        emailLog("warn", "fallback_sender_used", {
-          primary,
-          subject: safeSubject,
-        });
-        return {
-          success: true,
-          message: `Email sent via fallback: ${result.messageId}`,
-          status: "sent",
-          messageId: result.messageId,
-          outboxId: outbox?.id,
-          fallbackUsed: true,
-        };
+        try {
+          const result = await attempt("noReply");
+          await recordAttempt({
+            outboxId: outbox?.id,
+            attempt: 2,
+            status: "sent",
+            providerMessageId: result.messageId,
+          });
+          if (outbox?.id)
+            await markOutboxSent(outbox.id, result.messageId, true);
+          emailLog("warn", "fallback_sender_used", {
+            primary,
+            subject: safeSubject,
+          });
+          return {
+            success: true,
+            message: `Email sent via fallback: ${result.messageId}`,
+            status: "sent",
+            messageId: result.messageId,
+            outboxId: outbox?.id,
+            fallbackUsed: true,
+          };
+        } catch (fallbackErr) {
+          const fb = classifyEmailError(fallbackErr);
+          const status: EmailDeliveryStatus = outbox?.id
+            ? await markOutboxFailure(outbox.id, 2, fb)
+            : fb.retryable
+              ? "retrying"
+              : "failed";
+          await recordAttempt({
+            outboxId: outbox?.id,
+            attempt: 2,
+            status: "failed",
+            errorCode: fb.code,
+            errorMessage: fb.message,
+          });
+          return {
+            success: false,
+            message: adminSafeEmailError(fb),
+            status,
+            outboxId: outbox?.id,
+            errorCategory: fb.category,
+            errorCode: fb.code,
+          };
+        }
       }
 
       const status: EmailDeliveryStatus = outbox?.id
@@ -332,9 +419,11 @@ export async function sendEmail({
       });
       return {
         success: false,
-        message: "Internal failure while sending email",
+        message: adminSafeEmailError(classified),
         status,
         outboxId: outbox?.id,
+        errorCategory: classified.category,
+        errorCode: classified.code,
       };
     }
   } catch (error: unknown) {
@@ -350,9 +439,11 @@ export async function sendEmail({
     if (outbox?.id) await markOutboxFailure(outbox.id, 1, classified);
     return {
       success: false,
-      message: "Internal failure while sending email",
+      message: adminSafeEmailError(classified),
       status: classified.retryable ? "retrying" : "failed",
       outboxId: outbox?.id,
+      errorCategory: classified.category,
+      errorCode: classified.code,
     };
   }
 }
