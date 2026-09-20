@@ -21,6 +21,7 @@ import DemoReadyEmail from "@/emails/demo-ready-email";
 import TestimonialRequestEmail from "@/emails/testimonial-request-email";
 import MaintenanceRenewalEmail from "@/emails/maintenance-renewal-email";
 import WelcomeEmail from "@/emails/welcome-email";
+import BroadcastEmail from "@/emails/broadcast-email";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -45,7 +46,6 @@ export async function POST(req: Request) {
     const auth = authHeader.startsWith("Bearer ")
       ? authHeader.slice(7)
       : xCronHeader;
-    // Length-safe compare — timingSafeEqual throws on unequal lengths
     if (cron && auth) {
       const a = Buffer.from(auth);
       const b = Buffer.from(cron);
@@ -110,7 +110,10 @@ export async function POST(req: Request) {
             String(data.invoiceNumber || "INV-000"),
             40
           ),
-          paymentLink: safeUrl(data.invoiceUrl || data.paymentLink, `${site}/dashboard`),
+          paymentLink: safeUrl(
+            data.invoiceUrl || data.paymentLink,
+            `${site}/dashboard`
+          ),
         });
         break;
       case "payment":
@@ -180,6 +183,17 @@ export async function POST(req: Request) {
           fullName: fullName || "Client",
           expiryDate: sanitizePersonName(String(data.renewalDate || ""), 40),
           renewLink: safeUrl(data.renewalUrl, `${site}/dashboard`),
+        });
+        break;
+      case "broadcast":
+        fromAddress = "hello";
+        subject =
+          sanitizePersonName(String(data.subject || "Message from LIT"), 200) ||
+          "Message from LIT";
+        reactComponent = React.createElement(BroadcastEmail, {
+          fullName: fullName || undefined,
+          subjectLine: subject,
+          messageBody: String(data.message || "").slice(0, 8000),
         });
         break;
       default:
