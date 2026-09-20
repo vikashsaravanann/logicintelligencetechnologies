@@ -33,6 +33,9 @@ export type EmailResponse = {
   outboxId?: string;
   skipped?: boolean;
   fallbackUsed?: boolean;
+  /** Safe for admin UI — never contains secrets */
+  errorCategory?: EmailErrorCategory;
+  errorCode?: string;
 };
 
 export type EmailAttachment = {

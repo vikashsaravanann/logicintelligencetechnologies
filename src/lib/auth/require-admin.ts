@@ -2,23 +2,18 @@ import "server-only";
 import { cookies } from "next/headers";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { env } from "@/config/env";
-import crypto from "crypto";
 
-function timingEqual(a: string, b: string): boolean {
-  const left = Buffer.from(a);
-  const right = Buffer.from(b);
-  if (left.length !== right.length) return false;
-  try {
-    return crypto.timingSafeEqual(left, right);
-  } catch {
-    return false;
-  }
-}
+export type AdminApiAuth =
+  | { ok: true; userId: string; email: string | null; role: string }
+  | { ok: false; status: number; message: string };
 
+/**
+ * Human admin only. Does NOT accept CRON_SECRET.
+ * Cron/machine callers must use dedicated secret checks on their own routes.
+ */
 export async function requireAdminApi(
-  req: Request
-): Promise<{ ok: true } | { ok: false; status: number; message: string }> {
-
+  _req: Request
+): Promise<AdminApiAuth> {
   try {
     const cookieStore = await cookies();
     const supabase = createRouteHandlerClient(
@@ -31,17 +26,25 @@ export async function requireAdminApi(
     const {
       data: { session },
     } = await supabase.auth.getSession();
-    
+
     if (session?.user?.id) {
-      // Fetch profile to verify role
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", session.user.id)
         .single();
-        
+
+      if (error) {
+        console.error("[requireAdminApi] profile lookup failed:", error.message);
+      }
+
       if (profile && (profile.role === "admin" || profile.role === "super_admin")) {
-        return { ok: true };
+        return {
+          ok: true,
+          userId: session.user.id,
+          email: session.user.email ?? null,
+          role: profile.role,
+        };
       }
     }
   } catch (error) {
