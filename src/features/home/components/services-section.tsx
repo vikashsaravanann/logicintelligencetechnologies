@@ -1,17 +1,128 @@
 "use client";
+
 import { motion } from "framer-motion";
-import { Monitor, Code, ArrowRight, Brain, Shield, Mic, Bot, Sparkles, Activity, Target, Zap, Clock, Users, Database } from "lucide-react";
+import {
+  ArrowRight,
+  Brain,
+  Shield,
+  Mic,
+  Sparkles,
+} from "lucide-react";
 import Link from "next/link";
+
+/**
+ * Homepage product band — three commercial products only:
+ * AI Agent · AI Voice Agent · VoiceShield
+ * AI Assistant (/ai) is the interactive experience under AI Agent — not a fourth product.
+ * No invented accuracy, uptime, or latency claims.
+ */
+const PRODUCTS = [
+  {
+    id: "ai-agent",
+    name: "AI Agent",
+    badge: "Business Intelligence",
+    href: "/products/ai-website-agents",
+    experienceHref: "/ai",
+    cta: "Explore AI Agent",
+    icon: Brain,
+    description:
+      "An intelligent AI agent that understands your business, answers questions, works with approved knowledge, qualifies opportunities, and helps turn conversations into action.",
+    capabilities: [
+      "Business knowledge via RAG (approved content — not model training)",
+      "Conversations, lead capture and qualification",
+      "Tool-assisted workflows and human handoff where configured",
+    ],
+    suited: "SMB, professional services, SaaS, education, local services",
+    cardClass:
+      "bg-[#050B14] border-blue-900/50 shadow-[0_0_40px_rgba(5,15,40,0.8)]",
+    gradient: "from-blue-900/30 via-[#050B14] to-[#050B14]",
+    glow: "bg-cyan-500/10 group-hover:bg-cyan-500/20",
+    iconWrap: "bg-blue-950/50 border-blue-800/50",
+    iconColor: "text-cyan-400",
+    badgeClass: "bg-blue-900/40 border-blue-800/50 text-cyan-400",
+    textMuted: "text-blue-100/60",
+    capTitle: "text-cyan-500",
+    capIcon: "text-cyan-400",
+    capText: "text-blue-50/80",
+    suitedText: "text-blue-100/50",
+    borderTop: "border-blue-900/50",
+    btn: "text-blue-50 bg-blue-600/20 border-blue-500/30 group-hover:bg-cyan-500 group-hover:text-black group-hover:border-cyan-400",
+  },
+  {
+    id: "ai-voice-agent",
+    name: "AI Voice Agent",
+    badge: "Phone Conversations",
+    href: "/products/ai-voice-agents",
+    cta: "Explore AI Voice Agent",
+    icon: Mic,
+    description:
+      "Your AI-powered front desk for calls, enquiries and appointments — inbound handling, qualification and structured capture with human escalation.",
+    capabilities: [
+      "Inbound call handling and lead qualification",
+      "Appointment and calendar workflows where integrated",
+      "Transcription, structured extraction and human escalation",
+    ],
+    suited: "Contact centres, service businesses, high-enquiry teams",
+    cardClass:
+      "bg-[#0D0514] border-purple-900/50 shadow-[0_0_40px_rgba(20,5,35,0.8)]",
+    gradient: "from-purple-900/40 via-[#0D0514] to-[#0D0514]",
+    glow: "bg-fuchsia-600/10 group-hover:bg-fuchsia-600/20",
+    iconWrap: "bg-purple-950/50 border-purple-800/50",
+    iconColor: "text-fuchsia-400",
+    badgeClass: "bg-purple-900/40 border-purple-800/50 text-fuchsia-400",
+    textMuted: "text-purple-100/60",
+    capTitle: "text-fuchsia-500",
+    capIcon: "text-fuchsia-400",
+    capText: "text-purple-50/80",
+    suitedText: "text-purple-100/50",
+    borderTop: "border-purple-900/50",
+    btn: "text-purple-50 bg-purple-600/20 border-purple-500/30 group-hover:bg-fuchsia-500 group-hover:text-black group-hover:border-fuchsia-400",
+  },
+  {
+    id: "voice-shield",
+    name: "VoiceShield",
+    badge: "AI Security",
+    href: "/voice-shield",
+    cta: "Explore VoiceShield",
+    icon: Shield,
+    description:
+      "An AI security product by Logic Intelligence Technologies Pvt. Ltd. Analyze eligible voice interactions for configurable fraud-risk, security, compliance and quality signals.",
+    capabilities: [
+      "Real-time risk signals (detection path without LLM in the loop)",
+      "Async analysis with structured evidence for enterprise workflows",
+      "API-first integration and configurable retention",
+    ],
+    suited:
+      "BPOs, contact centres, financial services, telecom, enterprise support",
+    cardClass:
+      "bg-[#05140D] border-emerald-900/50 shadow-[0_0_40px_rgba(5,40,20,0.8)]",
+    gradient: "from-emerald-900/40 via-[#05140D] to-[#05140D]",
+    glow: "bg-emerald-600/10 group-hover:bg-emerald-600/20",
+    iconWrap: "bg-emerald-950/50 border-emerald-800/50",
+    iconColor: "text-emerald-400",
+    badgeClass: "bg-emerald-900/40 border-emerald-800/50 text-emerald-400",
+    textMuted: "text-emerald-100/60",
+    capTitle: "text-emerald-500",
+    capIcon: "text-emerald-500",
+    capText: "text-emerald-50/80",
+    suitedText: "text-emerald-100/50",
+    borderTop: "border-emerald-900/50",
+    btn: "text-emerald-50 bg-emerald-600/20 border-emerald-500/30 group-hover:bg-emerald-500 group-hover:text-black group-hover:border-emerald-400",
+  },
+] as const;
 
 export default function ServicesSection() {
   return (
-    <section id="services" className="relative py-24 md:py-32 bg-transparent overflow-hidden border-t border-white/5">
-      {/* Background Elements */}
+    <section
+      id="products"
+      className="relative py-24 md:py-32 bg-transparent overflow-hidden border-t border-white/5"
+      aria-labelledby="home-products-heading"
+    >
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
-      
+
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-24">
+        <div className="text-center mb-20">
           <motion.div
             initial={{ opacity: 1, y: 0 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -19,252 +130,129 @@ export default function ServicesSection() {
             className="flex items-center justify-center gap-2 mb-6"
           >
             <span className="h-px w-8 bg-white/20" />
-            <span className="text-sm font-bold tracking-[0.2em] uppercase text-primary">Core AI Products</span>
+            <span className="text-sm font-bold tracking-[0.2em] uppercase text-primary">
+              AI Products
+            </span>
             <span className="h-px w-8 bg-white/20" />
           </motion.div>
           <motion.h2
+            id="home-products-heading"
             initial={{ opacity: 1, y: 0 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-8"
+            className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-6"
           >
-            Next-Generation <br />
-            <span className="text-white opacity-90 font-light">Intelligent Systems</span>
+            Three products.{" "}
+            <span className="font-light opacity-90">One platform.</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 1, y: 0 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ delay: 0.2 }}
             className="text-zinc-400 max-w-2xl mx-auto text-lg leading-relaxed"
           >
-            Explore our flagship AI products designed to automate communication, secure interactions, and drive unprecedented business growth. Engineered for scale and precision.
+            Logic Intelligence Technologies builds AI systems for real business
+            operations — intelligent agents, voice conversations, and voice
+            security intelligence.
           </motion.p>
         </div>
 
-        {/* 3-Column Vertical Rectangle Layout (Like Packages) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-          
-          {/* 1. VoiceShield */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0 }}
-            className="group relative rounded-3xl p-8 lg:p-10 flex flex-col h-full bg-[#04120a] border border-emerald-900/50 shadow-[0_0_40px_rgba(4,30,15,0.8)] overflow-hidden hover:-translate-y-2 transition-transform duration-500"
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/40 via-[#04120a] to-[#04120a] pointer-events-none" />
-            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[80px] rounded-full pointer-events-none group-hover:bg-emerald-500/20 transition-colors duration-700" />
-            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay pointer-events-none" />
-            
-            <div className="relative z-10 flex-grow">
-              <div className="flex items-center justify-between mb-8">
-                <div className="w-14 h-14 rounded-xl bg-emerald-950 border border-emerald-800/50 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-                  <Shield className="w-7 h-7 text-emerald-400" />
-                </div>
-                <span className="px-3 py-1 rounded-full bg-emerald-900/40 border border-emerald-800/50 text-[10px] font-mono text-emerald-400 uppercase tracking-widest">
-                  Enterprise Security
-                </span>
-              </div>
-              
-              <h3 className="text-3xl lg:text-4xl font-black text-white mb-4 tracking-tight font-sans drop-shadow-md">
-                VoiceShield
-              </h3>
-              <p className="text-sm text-emerald-100/60 leading-relaxed mb-8 font-medium">
-                AI-Powered Voice Security & Compliance Intelligence. Defend against deepfakes, synthetic voices, and spoofing attacks in real-time.
-              </p>
+          {PRODUCTS.map((p, i) => {
+            const Icon = p.icon;
+            return (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className={`group relative rounded-3xl p-8 lg:p-10 flex flex-col h-full border overflow-hidden hover:-translate-y-2 transition-transform duration-500 ${p.cardClass}`}
+              >
+                <div
+                  className={`absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] ${p.gradient} pointer-events-none`}
+                />
+                <div
+                  className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 ${p.glow} blur-[90px] rounded-full pointer-events-none transition-colors duration-700`}
+                />
 
-              {/* Informative Stats Block */}
-              <div className="grid grid-cols-2 gap-3 mb-8">
-                <div className="bg-emerald-950/40 border border-emerald-900/50 rounded-lg p-3">
-                  <div className="text-emerald-400 font-bold text-lg">99.9%</div>
-                  <div className="text-[10px] uppercase tracking-wider text-emerald-100/50 mt-1">Detection Rate</div>
-                </div>
-                <div className="bg-emerald-950/40 border border-emerald-900/50 rounded-lg p-3">
-                  <div className="text-emerald-400 font-bold text-lg">&lt;200ms</div>
-                  <div className="text-[10px] uppercase tracking-wider text-emerald-100/50 mt-1">Processing Latency</div>
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <h4 className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-4">Core Capabilities</h4>
-                <div className="space-y-4">
-                  <div className="flex gap-3 items-start">
-                    <Activity className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-sm font-medium text-emerald-50/80">Real-time deepfake & AI voice detection via PCM streaming</span>
+                <div className="relative z-10 flex-grow">
+                  <div className="flex items-center justify-between mb-8">
+                    <div
+                      className={`w-14 h-14 rounded-xl border flex items-center justify-center group-hover:scale-110 transition-transform duration-500 ${p.iconWrap}`}
+                    >
+                      <Icon className={`w-7 h-7 ${p.iconColor}`} />
+                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-widest ${p.badgeClass}`}
+                    >
+                      {p.badge}
+                    </span>
                   </div>
-                  <div className="flex gap-3 items-start">
-                    <Code className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-sm font-medium text-emerald-50/80">Acoustic fingerprinting and anti-spoofing countermeasures</span>
+
+                  <h3 className="text-3xl lg:text-4xl font-black text-white mb-4 tracking-tight drop-shadow-md">
+                    {p.name}
+                  </h3>
+                  <p
+                    className={`text-sm leading-relaxed mb-8 font-medium ${p.textMuted}`}
+                  >
+                    {p.description}
+                  </p>
+
+                  <div className="mb-6">
+                    <h4
+                      className={`text-[10px] font-bold uppercase tracking-widest mb-4 ${p.capTitle}`}
+                    >
+                      Core capabilities
+                    </h4>
+                    <div className="space-y-4">
+                      {p.capabilities.map((c) => (
+                        <div key={c} className="flex gap-3 items-start">
+                          <Sparkles
+                            className={`w-4 h-4 mt-0.5 shrink-0 ${p.capIcon}`}
+                          />
+                          <span className={`text-sm font-medium ${p.capText}`}>
+                            {c}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex gap-3 items-start">
-                    <Shield className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                    <span className="text-sm font-medium text-emerald-50/80">Zero-trust architecture with complete data isolation</span>
-                  </div>
-                </div>
-              </div>
 
-              <div>
-                <h4 className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-3">Best Suited For</h4>
-                <p className="text-xs text-emerald-100/50 font-medium">Call centers, Financial institutions, Identity verification platforms, and high-security enterprise networks.</p>
-              </div>
-            </div>
-
-            <div className="relative z-10 mt-10 pt-6 border-t border-emerald-900/50">
-              <Link href="/voice-shield" className="inline-flex items-center justify-center w-full gap-2 text-sm font-bold text-emerald-50 bg-emerald-600/20 border border-emerald-500/30 rounded-xl py-4 group-hover:bg-emerald-500 group-hover:text-black group-hover:border-emerald-400 transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)] group-hover:shadow-[0_0_25px_rgba(16,185,129,0.4)]">
-                Explore VoiceShield
-                <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* 2. AI Website Agent */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="group relative rounded-3xl p-8 lg:p-10 flex flex-col h-full bg-[#050B14] border border-blue-900/50 shadow-[0_0_40px_rgba(5,15,40,0.8)] overflow-hidden hover:-translate-y-2 transition-transform duration-500"
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/30 via-[#050B14] to-[#050B14] pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500/10 blur-[80px] rounded-full pointer-events-none group-hover:bg-cyan-500/20 transition-colors duration-700" />
-            <div className="absolute top-0 right-0 w-full h-full bg-[url('/noise.png')] opacity-20 mix-blend-overlay pointer-events-none" />
-            
-            <div className="relative z-10 flex-grow">
-              <div className="flex items-center justify-between mb-8">
-                <div className="w-14 h-14 rounded-xl bg-blue-950/50 border border-blue-800/50 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-[0_0_20px_rgba(59,130,246,0.2)]">
-                  <Monitor className="w-7 h-7 text-cyan-400" />
-                </div>
-                <span className="px-3 py-1 rounded-full bg-blue-900/40 border border-blue-800/50 text-[10px] font-bold text-cyan-400 uppercase tracking-widest">
-                  Lead Conversion
-                </span>
-              </div>
-              
-              <h3 className="text-3xl lg:text-4xl font-black text-white mb-4 tracking-tight drop-shadow-md">
-                AI Website Agent
-              </h3>
-              <p className="text-sm text-blue-100/60 leading-relaxed mb-8 font-medium">
-                Turn website visitors into conversations, automatically qualify leads, and drive sales 24/7 without human intervention.
-              </p>
-
-              {/* Informative Stats Block */}
-              <div className="grid grid-cols-2 gap-3 mb-8">
-                <div className="bg-blue-950/30 border border-blue-900/50 rounded-lg p-3">
-                  <div className="text-cyan-400 font-bold text-lg">3x</div>
-                  <div className="text-[10px] uppercase tracking-wider text-blue-100/50 mt-1">Lead Capture Rate</div>
-                </div>
-                <div className="bg-blue-950/30 border border-blue-900/50 rounded-lg p-3">
-                  <div className="text-cyan-400 font-bold text-lg">24/7</div>
-                  <div className="text-[10px] uppercase tracking-wider text-blue-100/50 mt-1">Autonomous Support</div>
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <h4 className="text-[10px] font-bold text-cyan-500 uppercase tracking-widest mb-4">Core Capabilities</h4>
-                <div className="space-y-4">
-                  <div className="flex gap-3 items-start">
-                    <Bot className="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
-                    <span className="text-sm font-medium text-blue-50/80">Intelligent context-aware conversation engine with RAG memory</span>
-                  </div>
-                  <div className="flex gap-3 items-start">
-                    <Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
-                    <span className="text-sm font-medium text-blue-50/80">Automated lead qualification and direct CRM pipeline entry</span>
-                  </div>
-                  <div className="flex gap-3 items-start">
-                    <Database className="w-4 h-4 text-cyan-400 mt-0.5 shrink-0" />
-                    <span className="text-sm font-medium text-blue-50/80">Multi-language support trained directly on your business data</span>
+                  <div>
+                    <h4
+                      className={`text-[10px] font-bold uppercase tracking-widest mb-3 ${p.capTitle}`}
+                    >
+                      Best suited for
+                    </h4>
+                    <p className={`text-xs font-medium ${p.suitedText}`}>
+                      {p.suited}
+                    </p>
                   </div>
                 </div>
-              </div>
 
-              <div>
-                <h4 className="text-[10px] font-bold text-cyan-500 uppercase tracking-widest mb-3">Best Suited For</h4>
-                <p className="text-xs text-blue-100/50 font-medium">B2B SaaS companies, Real Estate agencies, E-commerce storefronts, and High-ticket service providers.</p>
-              </div>
-            </div>
-
-            <div className="relative z-10 mt-10 pt-6 border-t border-blue-900/50">
-              <Link href="/products/ai-website-agents" className="inline-flex items-center justify-center w-full gap-2 text-sm font-bold text-blue-50 bg-blue-600/20 border border-blue-500/30 rounded-xl py-4 group-hover:bg-cyan-500 group-hover:text-black group-hover:border-cyan-400 transition-all duration-300 shadow-[0_0_15px_rgba(6,182,212,0.15)] group-hover:shadow-[0_0_25px_rgba(6,182,212,0.4)]">
-                Deploy Website Agent
-                <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* 3. AI Voice Agent */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="group relative rounded-3xl p-8 lg:p-10 flex flex-col h-full bg-[#0D0514] border border-purple-900/50 shadow-[0_0_40px_rgba(20,5,35,0.8)] overflow-hidden hover:-translate-y-2 transition-transform duration-500"
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/40 via-[#0D0514] to-[#0D0514] pointer-events-none" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-fuchsia-600/10 blur-[90px] rounded-full pointer-events-none group-hover:bg-fuchsia-600/20 transition-colors duration-700" />
-            <div className="absolute top-0 right-0 w-full h-full bg-[url('/noise.png')] opacity-10 mix-blend-overlay pointer-events-none" />
-            
-            <div className="relative z-10 flex-grow">
-              <div className="flex items-center justify-between mb-8">
-                <div className="w-14 h-14 rounded-xl bg-purple-950/50 border border-purple-800/50 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-[0_0_20px_rgba(168,85,247,0.2)]">
-                  <Mic className="w-7 h-7 text-fuchsia-400" />
+                <div
+                  className={`relative z-10 mt-10 pt-6 border-t space-y-3 ${p.borderTop}`}
+                >
+                  <Link
+                    href={p.href}
+                    className={`inline-flex items-center justify-center w-full gap-2 text-sm font-bold border rounded-xl py-4 transition-all duration-300 ${p.btn}`}
+                  >
+                    {p.cta}
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                  {"experienceHref" in p && p.experienceHref ? (
+                    <Link
+                      href={p.experienceHref}
+                      className="block text-center text-xs font-mono tracking-wider uppercase text-zinc-500 hover:text-cyan-400 transition-colors"
+                    >
+                      Open AI Assistant experience →
+                    </Link>
+                  ) : null}
                 </div>
-                <span className="px-3 py-1 rounded-full bg-purple-900/40 border border-purple-800/50 text-[10px] font-bold text-fuchsia-400 uppercase tracking-widest">
-                  Audio Intelligence
-                </span>
-              </div>
-              
-              <h3 className="text-3xl lg:text-4xl font-black text-white mb-4 tracking-tight drop-shadow-md">
-                AI Voice Agent
-              </h3>
-              <p className="text-sm text-purple-100/60 leading-relaxed mb-8 font-medium">
-                Your AI-powered front desk for calls, inbound enquiries, and calendar scheduling over the phone.
-              </p>
-
-              {/* Informative Stats Block */}
-              <div className="grid grid-cols-2 gap-3 mb-8">
-                <div className="bg-purple-950/30 border border-purple-900/50 rounded-lg p-3">
-                  <div className="text-fuchsia-400 font-bold text-lg">&lt;800ms</div>
-                  <div className="text-[10px] uppercase tracking-wider text-purple-100/50 mt-1">Response Latency</div>
-                </div>
-                <div className="bg-purple-950/30 border border-purple-900/50 rounded-lg p-3">
-                  <div className="text-fuchsia-400 font-bold text-lg">∞</div>
-                  <div className="text-[10px] uppercase tracking-wider text-purple-100/50 mt-1">Concurrent Calls</div>
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <h4 className="text-[10px] font-bold text-fuchsia-500 uppercase tracking-widest mb-4">Core Capabilities</h4>
-                <div className="space-y-4">
-                  <div className="flex gap-3 items-start">
-                    <Brain className="w-4 h-4 text-fuchsia-400 mt-0.5 shrink-0" />
-                    <span className="text-sm font-medium text-purple-50/80">Human-like conversational AI with intent classification</span>
-                  </div>
-                  <div className="flex gap-3 items-start">
-                    <Mic className="w-4 h-4 text-fuchsia-400 mt-0.5 shrink-0" />
-                    <span className="text-sm font-medium text-purple-50/80">Ultra-low latency WebSocket streaming & SIP trunking</span>
-                  </div>
-                  <div className="flex gap-3 items-start">
-                    <Clock className="w-4 h-4 text-fuchsia-400 mt-0.5 shrink-0" />
-                    <span className="text-sm font-medium text-purple-50/80">Live calendar booking and real-time CRM integrations</span>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-[10px] font-bold text-fuchsia-500 uppercase tracking-widest mb-3">Best Suited For</h4>
-                <p className="text-xs text-purple-100/50 font-medium">Customer support lines, Outbound sales teams, Healthcare front-desks, and appointment routing.</p>
-              </div>
-            </div>
-
-            <div className="relative z-10 mt-10 pt-6 border-t border-purple-900/50">
-              <Link href="/products/ai-voice-agents" className="inline-flex items-center justify-center w-full gap-2 text-sm font-bold text-purple-50 bg-purple-600/20 border border-purple-500/30 rounded-xl py-4 group-hover:bg-fuchsia-500 group-hover:text-white group-hover:border-fuchsia-400 transition-all duration-300 shadow-[0_0_15px_rgba(217,70,239,0.15)] group-hover:shadow-[0_0_25px_rgba(217,70,239,0.4)]">
-                Start Voice Agent
-                <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-          </motion.div>
-
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
