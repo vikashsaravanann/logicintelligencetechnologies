@@ -41,7 +41,8 @@ export function organizationNode() {
       height: 192,
       caption: "Logic Intelligence Technologies Pvt. Ltd.",
     },
-    description: "Logic Intelligence Technologies Pvt. Ltd. is an AI technology company based in Coimbatore, Tamil Nadu, India, building AI-powered business automation products including AI Website Agents, AI Voice Agents and VoiceShield, an AI security product for voice-risk, fraud, compliance and quality intelligence.",
+    description:
+      "Logic Intelligence Technologies Pvt. Ltd. is an AI technology company based in Coimbatore, Tamil Nadu, India, building AI-powered business products including AI Agent, AI Voice Agent and VoiceShield, an AI security product for voice-risk, fraud, compliance and quality intelligence.",
     foundingDate: "2025",
     address: {
       "@type": "PostalAddress",
@@ -71,7 +72,7 @@ export function organizationNode() {
         telephone: "+91 9342877474",
         email: "support@logicintelligencetechnologies.in",
         availableLanguage: ["English", "Tamil"],
-      }
+      },
     ],
   };
 }
@@ -198,9 +199,11 @@ export const JOB_SEATS = [
 export const HOW_TO_STEPS = [
   { name: "Book a free consultation", text: "Share goals, constraints, and timeline." },
   { name: "Review the free demo", text: "See the proposed structure before you pay." },
-  { name: "Go live and hand over source", text: "DNS, SSL, Search Console, and repository on full payment." },
+  {
+    name: "Go live and hand over source",
+    text: "DNS, SSL, Search Console, and repository on full payment.",
+  },
 ];
-
 
 export const PACKAGES_FAQ: Array<{ q: string; a: string }> = [
   {
@@ -258,8 +261,6 @@ export function jobPostings() {
   }));
 }
 
-
-/** Alias used by checklist layout */
 export const HOWTO_STEPS = HOW_TO_STEPS;
 
 export const DEMO_FAQ: Array<{ q: string; a: string }> = [
@@ -279,8 +280,8 @@ export const DEMO_FAQ: Array<{ q: string; a: string }> = [
 
 export const AI_FAQ: Array<{ q: string; a: string }> = [
   {
-    q: "What is the Logic AI assistant?",
-    a: "A company knowledge workspace for product, packages, and process questions grounded in official company materials.",
+    q: "What is the LIT AI Agent assistant?",
+    a: "The interactive AI Assistant experience for the AI Agent product — a company knowledge workspace for product, packages, and process questions grounded in official materials.",
   },
   {
     q: "Does it replace human support?",
@@ -297,22 +298,25 @@ export function voiceShieldProductNode() {
       "@type": "Brand",
       name: "Logic Intelligence Technologies",
     },
-    description: "VoiceShield is an AI-powered voice security and compliance intelligence product designed to analyze eligible voice interactions for configurable fraud-risk, security, compliance and quality signals and produce structured evidence for enterprise workflows.",
+    description:
+      "VoiceShield is an AI-powered voice security and compliance intelligence product by Logic Intelligence Technologies Pvt. Ltd., designed to analyze eligible voice interactions for configurable fraud-risk, security, compliance and quality signals and produce structured evidence for enterprise workflows.",
     url: `${SITE}/voice-shield`,
     manufacturer: { "@id": ORG_ID },
   };
 }
 
+/** Public commercial name: AI Agent. Route kept for SEO continuity. */
 export function aiWebsiteAgentsProductNode() {
   return {
     "@type": "Product",
     "@id": `${SITE}/products/ai-website-agents/#product`,
-    name: "AI Website Agents",
+    name: "AI Agent",
     brand: {
       "@type": "Brand",
       name: "Logic Intelligence Technologies",
     },
-    description: "AI-powered website agents designed to answer visitor questions using approved business knowledge, qualify leads, capture enquiries and support human handoff.",
+    description:
+      "AI Agent by Logic Intelligence Technologies — understands approved business knowledge, answers questions, qualifies leads, captures enquiries and supports human handoff. Interactive assistant experience at /ai.",
     url: `${SITE}/products/ai-website-agents`,
     manufacturer: { "@id": ORG_ID },
     offers: {
@@ -329,12 +333,13 @@ export function aiVoiceAgentsProductNode() {
   return {
     "@type": "Product",
     "@id": `${SITE}/products/ai-voice-agents/#product`,
-    name: "AI Voice Agents",
+    name: "AI Voice Agent",
     brand: {
       "@type": "Brand",
       name: "Logic Intelligence Technologies",
     },
-    description: "AI-powered voice agents designed for business calls, enquiry handling, lead qualification, appointment workflows, structured extraction and human escalation.",
+    description:
+      "AI Voice Agent for business calls, enquiry handling, lead qualification, appointment workflows, structured extraction and human escalation.",
     url: `${SITE}/products/ai-voice-agents`,
     manufacturer: { "@id": ORG_ID },
     offers: {
@@ -346,4 +351,3 @@ export function aiVoiceAgentsProductNode() {
     },
   };
 }
-
