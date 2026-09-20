@@ -1,6 +1,6 @@
 /**
  * Canonical commercial pricing — source of truth.
- * Website UI and commercial PDFs must stay aligned with this module.
+ * Products: AI Agent · AI Voice Agent · VoiceShield
  * USD and INR are controlled display prices (not live FX).
  */
 
@@ -8,19 +8,9 @@ export type Currency = "USD" | "INR";
 
 export interface PricingPlan {
   name: string;
-  monthlyPrice: {
-    USD: number;
-    INR: number;
-  };
-  setupFee?: {
-    USD: number;
-    INR: number;
-  };
-  usageFee?: {
-    description: string;
-    USD: number;
-    INR: number;
-  };
+  monthlyPrice: { USD: number; INR: number };
+  setupFee?: { USD: number; INR: number };
+  usageFee?: { description: string; USD: number; INR: number };
   included?: string;
   features: string[];
   popular?: boolean;
@@ -40,14 +30,14 @@ export const PRICING_DISCLAIMER =
 export const PRICING_CONFIG: ProductPricing[] = [
   {
     id: "ai-website-agents",
-    name: "AI Website Agents",
+    name: "AI Agent",
     plans: [
       {
         name: "Free",
         monthlyPrice: { USD: 0, INR: 0 },
         included: "100 AI interactions / month",
         features: [
-          "Basic website agent",
+          "Basic AI Agent configuration",
           "Up to 100 AI interactions/month",
           "Standard configuration",
           "Email support",
@@ -73,7 +63,7 @@ export const PRICING_CONFIG: ProductPricing[] = [
           "Human handoff",
           "CRM integration where supported",
           "Analytics and usage monitoring",
-          "Standard maintenance and hosting/platform operation",
+          "Standard maintenance and platform operation",
         ],
         ctaLabel: "Get Professional",
         ctaHref: "/contact",
@@ -95,7 +85,7 @@ export const PRICING_CONFIG: ProductPricing[] = [
   },
   {
     id: "ai-voice-agents",
-    name: "AI Voice Agents",
+    name: "AI Voice Agent",
     plans: [
       {
         name: "Professional",
@@ -143,7 +133,8 @@ export const PRICING_CONFIG: ProductPricing[] = [
         monthlyPrice: { USD: 349, INR: 29000 },
         setupFee: { USD: 999, INR: 83000 },
         usageFee: {
-          description: "per successfully analyzed call (billing unit subject to final definition)",
+          description:
+            "per successfully analyzed call (billing unit subject to final definition)",
           USD: 0.05,
           INR: 4,
         },
@@ -178,7 +169,6 @@ export function formatPrice(amount: number, currency: Currency): string {
   }).format(amount);
 }
 
-/** True when Enterprise plan has no fixed monthly (custom quote). */
 export function isCustomPlan(plan: PricingPlan): boolean {
   return plan.name === "Enterprise" && plan.monthlyPrice.USD === 0 && !plan.setupFee;
 }
