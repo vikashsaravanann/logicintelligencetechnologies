@@ -6,8 +6,8 @@ import { ArrowRight, PhoneCall, Mic, CalendarCheck, ShieldCheck, Zap, Workflow, 
 import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
-  title: 'AI Voice Agents | Logic Intelligence Technologies',
-  description: 'AI-powered voice agents designed for business calls, enquiry handling, lead qualification, appointment workflows, structured extraction and human escalation.',
+  title: 'AI Voice Agent | Logic Intelligence Technologies',
+  description: 'AI Voice Agent by Logic Intelligence Technologies — business phone conversations, lead qualification, appointment workflows, structured extraction and human escalation.',
   alternates: {
     canonical: 'https://www.logicintelligencetechnologies.in/products/ai-voice-agents',
   }
@@ -17,7 +17,6 @@ export default function AIVoiceAgentsPage() {
   return (
     <main className="relative min-h-screen bg-[#0A0515] text-slate-100 overflow-hidden font-sans">
       <BackToHome />
-      {/* Dynamic Background Effect specific to AI Voice Agents (Fuchsia/Purple Theme) */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[50%] bg-fuchsia-600/20 blur-[150px] rounded-full mix-blend-screen" />
         <div className="absolute top-[40%] -left-[10%] w-[40%] h-[60%] bg-purple-600/20 blur-[150px] rounded-full mix-blend-screen" />
@@ -36,8 +35,6 @@ export default function AIVoiceAgentsPage() {
       />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-32">
-        
-        {/* HERO SECTION */}
         <section className="text-center space-y-8 pt-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-400 text-sm font-medium tracking-wide uppercase">
             <Mic className="w-4 h-4" />
@@ -49,7 +46,7 @@ export default function AIVoiceAgentsPage() {
           </h1>
           
           <p className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto leading-relaxed">
-            AI-powered voice agents designed for handling inbound enquiries, qualifying leads over the phone, managing appointment workflows, extracting structured call data, and escalating to human agents.
+            AI-powered voice agent designed for handling inbound enquiries, qualifying leads over the phone, managing appointment workflows, extracting structured call data, and escalating to human agents.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
@@ -66,12 +63,11 @@ export default function AIVoiceAgentsPage() {
           </div>
         </section>
 
-        {/* METRICS SECTION */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            { value: "∞", label: "Concurrent Call Capacity", icon: Workflow },
-            { value: "<800ms", label: "Voice-to-Voice Latency", icon: Zap },
-            { value: "100%", label: "Call Data Extraction", icon: Activity }
+            { value: "Business", label: "Inbound voice workflows", icon: Workflow },
+            { value: "Voice-first", label: "STT · LLM · TTS path", icon: Zap },
+            { value: "Structured", label: "Extraction & handoff", icon: Activity }
           ].map((stat, i) => (
             <div key={i} className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 text-center backdrop-blur-xl hover:bg-white/[0.04] transition-colors">
               <stat.icon className="w-8 h-8 text-fuchsia-400 mx-auto mb-4 opacity-80" />
@@ -81,7 +77,6 @@ export default function AIVoiceAgentsPage() {
           ))}
         </section>
 
-        {/* CORE CAPABILITIES */}
         <section className="space-y-16">
           <div className="text-center space-y-4">
             <h2 className="text-3xl md:text-5xl font-bold text-white">Capabilities beyond standard IVR</h2>
@@ -104,22 +99,22 @@ export default function AIVoiceAgentsPage() {
               },
               {
                 title: "Structured Data Extraction",
-                desc: "Listens to the caller, extracts key entities (names, addresses, IDs), and formats them into JSON for your CRM.",
+                desc: "Listens to the caller, extracts key entities (names, addresses, IDs), and formats them into structured data for your CRM where configured.",
                 icon: Server
               },
               {
                 title: "SIP Trunking Integration",
-                desc: "Connects seamlessly to Twilio, Vonage, or your existing PBX infrastructure via SIP/WebSocket streaming.",
+                desc: "Connects to telephony providers such as Twilio or your existing PBX infrastructure via SIP/WebSocket streaming when configured.",
                 icon: Workflow
               },
               {
                 title: "Human Escalation Protocol",
-                desc: "If the caller requests a human or the intent is beyond scope, the AI automatically transfers the active call to a human agent.",
+                desc: "If the caller requests a human or the intent is beyond scope, the AI can transfer the active call to a human agent when escalation is configured.",
                 icon: ShieldCheck
               },
               {
-                title: "Ultra-Low Latency Inference",
-                desc: "Powered by Deepgram STT and specialized LLMs to achieve sub-second conversational latency, preventing awkward pauses.",
+                title: "Provider-abstracted inference",
+                desc: "STT, LLM and TTS providers are abstracted so latency and quality can be validated under your chosen stack before production activation.",
                 icon: Zap
               }
             ].map((feature, i) => (
@@ -134,12 +129,11 @@ export default function AIVoiceAgentsPage() {
           </div>
         </section>
 
-        {/* HOW IT WORKS */}
         <section className="space-y-16 py-12 border-t border-white/5">
           <div className="text-center space-y-4">
             <h2 className="text-3xl md:text-5xl font-bold text-white">How it Works</h2>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-              Deploying a voice agent is faster and simpler than setting up traditional IVR.
+              Deploying a voice agent is structured around workflow definition, voice selection and telephony routing.
             </p>
           </div>
           
@@ -150,17 +144,17 @@ export default function AIVoiceAgentsPage() {
               {
                 step: "01",
                 title: "Define Workflows",
-                desc: "Map out the conversation flows, required data to extract (like emails or names), and connect your calendar or CRM."
+                desc: "Map conversation flows, required data to extract, and connect calendar or CRM where supported."
               },
               {
                 step: "02",
                 title: "Choose a Voice",
-                desc: "Select from ultra-realistic, natural-sounding AI voices that match your brand identity across multiple languages."
+                desc: "Select TTS voices that match your brand across languages supported by your provider."
               },
               {
                 step: "03",
                 title: "Route & Answer",
-                desc: "Port your existing phone number or claim a new one. The AI instantly starts answering concurrent calls, 24/7."
+                desc: "Connect a phone number via your telephony provider. The agent answers inbound calls according to plan capacity."
               }
             ].map((item, i) => (
               <div key={i} className="relative z-10 bg-[#0A0515] border border-white/10 rounded-3xl p-8 hover:border-fuchsia-500/30 transition-all text-center group">
@@ -174,12 +168,11 @@ export default function AIVoiceAgentsPage() {
           </div>
         </section>
 
-        {/* USE CASES */}
         <section className="space-y-16 py-12 border-t border-white/5">
           <div className="text-center space-y-4">
             <h2 className="text-3xl md:text-5xl font-bold text-white">Built for High-Volume Telephony</h2>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-              Automate the phone lines in industries where missing a call means missing revenue.
+              Automate phone lines in industries where missing a call means missing revenue.
             </p>
           </div>
 
@@ -187,7 +180,7 @@ export default function AIVoiceAgentsPage() {
             <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 hover:bg-white/[0.04] transition-all">
               <h3 className="text-xl font-bold text-white mb-4">Healthcare & Clinics</h3>
               <ul className="space-y-3 text-slate-400">
-                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Patient appointment scheduling</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Patient appointment scheduling (administrative)</li>
                 <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Pre-appointment reminders via voice</li>
                 <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> FAQ for clinic hours and locations</li>
               </ul>
@@ -211,7 +204,6 @@ export default function AIVoiceAgentsPage() {
           </div>
         </section>
 
-        {/* FAQ */}
         <section className="space-y-12 py-12 border-t border-white/5 max-w-4xl mx-auto w-full">
           <div className="text-center space-y-4 mb-12">
             <h2 className="text-3xl md:text-5xl font-bold text-white">Frequently Asked Questions</h2>
@@ -220,18 +212,19 @@ export default function AIVoiceAgentsPage() {
           <div className="space-y-6">
             <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
               <h4 className="text-lg font-bold text-white mb-2">Can callers tell they are speaking to an AI?</h4>
-              <p className="text-slate-400">The voices are nearly indistinguishable from humans, featuring natural breathing pauses, inflections, and sub-second latency. However, we recommend ethically disclosing that they are speaking to an AI assistant.</p>
+              <p className="text-slate-400">Voice quality and latency depend on the configured STT, LLM and TTS providers. We recommend ethically disclosing that callers are speaking with an AI assistant.</p>
             </div>
             <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
               <h4 className="text-lg font-bold text-white mb-2">Can it handle multiple calls at once?</h4>
-              <p className="text-slate-400">Yes, the AI voice agent can handle virtually unlimited concurrent calls. You will never put a customer on hold or send them to voicemail again.</p>
+              <p className="text-slate-400">Concurrency is limited by your plan, telephony provider capacity and deployment configuration — not marketed as unlimited.</p>
             </div>
             <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6">
               <h4 className="text-lg font-bold text-white mb-2">How does human handoff work over the phone?</h4>
-              <p className="text-slate-400">If the caller asks for a human, or if the AI detects an emergency/complex situation, the AI will place the caller on a brief hold and instantly bridge the call to your specified fallback phone number.</p>
+              <p className="text-slate-400">If the caller asks for a human, or if the AI detects a situation beyond configured scope, the agent can bridge the call to your specified fallback number when escalation is enabled.</p>
             </div>
           </div>
         </section>
+
         <section className="relative rounded-[3rem] overflow-hidden border border-fuchsia-500/20 bg-fuchsia-950/20 backdrop-blur-md p-10 md:p-20 text-center">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-fuchsia-900/40 via-transparent to-transparent" />
           <div className="relative z-10 space-y-8">
@@ -239,7 +232,7 @@ export default function AIVoiceAgentsPage() {
               Deploy your first AI Voice Agent.
             </h2>
             <p className="text-lg text-fuchsia-200/70 max-w-2xl mx-auto">
-              From $149/mo + setup. Stop missing calls and start automating your front desk telephony with intelligent conversational AI.
+              From $149/mo + setup under current commercial pricing. Automate front-desk telephony with conversational AI after provider activation.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8">
               <Button asChild size="lg" className="bg-white text-fuchsia-950 hover:bg-fuchsia-50 px-8 py-6 rounded-full text-lg">
