@@ -1,59 +1,31 @@
-# Production readiness — LIT website
+# LIT Production Readiness
 
-Last updated: 2026-09-21
+## CODE COMPLETE vs EXTERNAL vs VERIFIED
 
-## Product structure (PASS)
+| Layer | State |
+|-------|--------|
+| Corporate UI + routes | CODE COMPLETE (incremental glass still open) |
+| Email architecture | CODE COMPLETE |
+| Admin email trigger | CODE COMPLETE |
+| SMTP production delivery | EXTERNAL PROVIDER READY only after Zoho app password |
+| AI / Voice providers | EXTERNAL — keys + model IDs |
+| Full production gate | NOT VERIFIED end-to-end in this environment |
 
-```
-AI Agent (/products/ai-website-agents + /ai assistant)
-AI Voice Agent (/products/ai-voice-agents)
-VoiceShield (/voice-shield) — LIT product, not a separate company
-```
+## Activation checklist (you)
 
-## Email (IMPLEMENTED — verify credentials live)
+1. Vercel env: `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS` (Zoho **app** password), `SMTP_PORT`  
+2. Confirm `EMAIL_DRY_RUN` is **not** true in production  
+3. Admin login → Command Center → send test → expect status `sent` + inbox  
+4. Supabase: profile `role` = `admin` or `super_admin` for your user  
+5. Provider keys only when ready — no architecture rewrite
 
-- Central path: `sendEmail` → outbox → Zoho SMTP
-- Admin triggers: `/api/admin/send-trigger`
-- Admin compose: `/admin/emails/new` → type `broadcast` (single recipient)
-- Errors surface `errorCategory` / `errorCode` (incl. SMTP_535)
+## Admin email status vocabulary
 
-### Required env (server-only)
+| Status | Meaning |
+|--------|---------|
+| `queued` | Accepted for processing / in progress |
+| `sent` | Provider accepted message (messageId present) |
+| `skipped` | Dry-run, preview isolation, or suppressed |
+| `failed` / `retrying` / `dead_letter` | Delivery problem — surface errorCategory |
 
-| Key | Purpose |
-|-----|---------|
-| SMTP_HOST | e.g. smtp.zoho.in |
-| SMTP_PORT | 587 or 465 |
-| SMTP_USER | mailbox |
-| SMTP_PASS | Zoho **app password** |
-| SMTP_FROM | verified from |
-| SMTP_SECURE | true if 465 |
-
-### QA checklist (admin session)
-
-1. Login with `profiles.role` = `admin` or `super_admin`
-2. `GET /api/admin/smtp-verify` → `{ ok: true }`
-3. Manual Email Triggers → send to **your** inbox
-4. `/admin/emails/new` → single message to your inbox
-5. Confirm mailbox delivery
-
-## Liquid glass
-
-- Tokens: `src/app/styles/glass.css`
-- Component: `GlassSurface`
-- Homepage product band + shell marker ready
-- Deeper per-page card migration continues incrementally
-
-## Deferred
-
-- Twilio / STT / TTS voice runtime
-- THROUGHPUTS model IDs
-- VoiceShield AASIST host (non-Vercel)
-
-## Tests
-
-```bash
-npm run typecheck
-npm run lint
-npm run test:unit
-npm run test:e2e
-```
+Never label UI “Sent” solely because the HTTP request returned 200 without checking `status`.

@@ -3,9 +3,29 @@
 import { useState } from "react";
 import { Loader2, Send } from "lucide-react";
 
+function formatDeliveryStatus(data: {
+  status?: string;
+  skipped?: boolean;
+  messageId?: string | null;
+}): string {
+  const status = (data.status || "unknown").toLowerCase();
+  if (data.skipped) {
+    return `Not delivered (${status}) — dry-run / preview / suppressed`;
+  }
+  if (status === "sent") {
+    return data.messageId
+      ? `Accepted by email provider · ${data.messageId}`
+      : "Accepted by email provider (sent)";
+  }
+  if (status === "queued" || status === "processing") {
+    return "Queued for delivery — not yet confirmed by provider";
+  }
+  return `Status: ${status}`;
+}
+
 /**
  * Admin single-recipient message (transactional).
- * Not a multi-recipient marketing blast — that requires audience + suppression pipeline.
+ * Not a multi-recipient marketing blast.
  */
 export function BroadcastForm() {
   const [email, setEmail] = useState("");
@@ -42,10 +62,7 @@ export function BroadcastForm() {
         ].filter(Boolean);
         throw new Error(bits.join(" "));
       }
-      const skip = data.skipped
-        ? " — not delivered to provider (dry-run / preview)"
-        : "";
-      setSuccess(`Email ${data.status || "sent"} to ${email}${skip}`);
+      setSuccess(`${formatDeliveryStatus(data)} → ${email}`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Send failed");
     } finally {
@@ -56,9 +73,8 @@ export function BroadcastForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4 flex flex-col">
       <p className="text-xs text-zinc-500">
-        Sends one transactional message via the central email pipeline (SMTP +
-        outbox). For mass campaigns, use a dedicated audience tool — this form
-        is single-recipient only.
+        One transactional message via SMTP + outbox. Status reflects provider
+        outcome — not a generic “Sent” on HTTP 200 alone.
       </p>
       <div>
         <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2 block">
