@@ -29,7 +29,7 @@ export const PRICING_DISCLAIMER =
 
 export const PRICING_CONFIG: ProductPricing[] = [
   {
-    id: "ai-website-agents",
+    id: "ai-agent",
     name: "AI Agent",
     plans: [
       {
@@ -84,7 +84,7 @@ export const PRICING_CONFIG: ProductPricing[] = [
     ],
   },
   {
-    id: "ai-voice-agents",
+    id: "ai-voice-agent",
     name: "AI Voice Agent",
     plans: [
       {
@@ -154,6 +154,12 @@ export const PRICING_CONFIG: ProductPricing[] = [
   },
 ];
 
+/** Legacy id aliases — do not invent new product names */
+export const PRICING_ID_ALIASES: Record<string, string> = {
+  "ai-website-agents": "ai-agent",
+  "ai-voice-agents": "ai-voice-agent",
+};
+
 export function formatPrice(amount: number, currency: Currency): string {
   if (currency === "USD") {
     return new Intl.NumberFormat("en-US", {
@@ -170,5 +176,9 @@ export function formatPrice(amount: number, currency: Currency): string {
 }
 
 export function isCustomPlan(plan: PricingPlan): boolean {
-  return plan.name === "Enterprise" && plan.monthlyPrice.USD === 0 && !plan.setupFee;
+  return (
+    plan.name === "Enterprise" &&
+    plan.monthlyPrice.USD === 0 &&
+    !plan.setupFee
+  );
 }
