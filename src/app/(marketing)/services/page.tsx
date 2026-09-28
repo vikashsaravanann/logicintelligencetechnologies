@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
 import Link from "next/link";
-import { servicesData } from "@/data/servicesData";
+import { servicesData, getServiceVisual } from "@/data/servicesData";
 import { ArrowRight, CheckCircle2, Sparkles, Layers, ShieldCheck, Zap, Code, Hotel, Plane, Terminal, Gamepad, ShoppingCart, Smartphone, Search, Palette, Brush, Layout, UploadCloud, Building, Users, GraduationCap, Receipt, CodeSquare, Cloud } from "lucide-react";
 import SafeImage from "@/components/ui/safe-image";
 import PageHero from "@/components/ui/page-hero";
@@ -80,7 +80,7 @@ export default function ServicesPage() {
               >
                 <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/40">
                   <SafeImage
-                    src={`/images/services/${svc.slug}.jpg`}
+                    src={getServiceVisual(svc.slug)}
                     alt={`${svc.title} Visual Architecture`}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"

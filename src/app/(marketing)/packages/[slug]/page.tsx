@@ -1,5 +1,5 @@
 import { packagesData } from "@/data/packagesData";
-import { servicesData } from "@/data/servicesData";
+import { servicesData, getServiceVisual } from "@/data/servicesData";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import FloatingElements from "@/components/motion/floating-elements";
@@ -141,7 +141,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
         <div className="max-w-6xl mx-auto px-6 mb-12">
           <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black/50">
             <SafeImage
-              src={`/images/services/${srv.slug}.jpg`}
+              src={getServiceVisual(srv.slug)}
               alt={`${srv.title} Architecture Visual`}
               fill
               priority

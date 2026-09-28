@@ -15,7 +15,7 @@ interface SafeImageProps extends Omit<ImageProps, "onError"> {
 export default function SafeImage({
   src,
   alt,
-  fallbackSrc = "/assets/banner.jpg",
+  fallbackSrc = "/assets/og-banner.jpg",
   className = "",
   containerClassName = "",
   fill,

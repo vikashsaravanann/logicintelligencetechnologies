@@ -331,7 +331,7 @@ export default function AboutPage() {
             </div>
             <div className="relative h-[260px] sm:h-[320px] rounded-3xl overflow-hidden border border-white/10 order-1 md:order-2 shadow-[0_20px_50px_rgba(0,0,0,0.35)] bg-zinc-950">
               <SafeImage
-                src="/images/company/company-story-03.jpg"
+                src="/images/company/company-story-03.svg"
                 alt="Intelligent interface and AI product development"
                 fill
                 className="object-cover object-center"

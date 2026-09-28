@@ -247,7 +247,7 @@ export default function SupportChatWidget() {
             <div className="relative px-4 py-3 bg-gradient-to-r from-[#0A0F1E] to-[#12172B] border-b border-white/10 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 overflow-hidden border border-white/30 relative">
                 <Image
-                  src="/assets/image.png"
+                  src="/assets/logo-icon.webp"
                   alt="Logic Intelligence Technologies"
                   width={40}
                   height={40}
