@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { industriesData } from "@/data/industriesData";
+import { industriesData, getIndustryVisual } from "@/data/industriesData";
 import { ArrowLeft, CheckCircle2, AlertTriangle, ShieldCheck, ArrowRight, Building2, Layers, Sparkles } from "lucide-react";
 import SafeImage from "@/components/ui/safe-image";
 import CTASection from "@/components/ui/cta-section";
@@ -43,7 +43,7 @@ export default async function IndustryDetailPage({ params }: Props) {
     notFound();
   }
 
-  const visualSrc = `/images/industries/${slug}.jpg`;
+  const visualSrc = getIndustryVisual(slug);
 
   return (
     <div className="relative min-h-screen bg-[#060B18] text-white pt-28 pb-20 overflow-hidden">
