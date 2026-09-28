@@ -17,17 +17,19 @@ export default function VoiceShieldNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-
-  // Request page owns its own single header — avoid double nav
-  if (pathname?.startsWith("/voice-shield/request")) {
-    return null;
-  }
+  const hideOnRequest = pathname?.startsWith("/voice-shield/request") ?? false;
 
   useEffect(() => {
+    if (hideOnRequest) return;
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [hideOnRequest]);
+
+  // Request page owns a single product header — do not stack a second nav
+  if (hideOnRequest) {
+    return null;
+  }
 
   return (
     <header
