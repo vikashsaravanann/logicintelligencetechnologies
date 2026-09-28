@@ -156,7 +156,7 @@ export default function Navbar() {
                     >
                       {MORE_NAV_GROUPS.map((group) => (
                         <div key={group.id} className="min-w-0">
-                          <p className="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">
+                          <p className="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400">
                             {group.label}
                           </p>
                           <ul className="space-y-0.5">
@@ -168,11 +168,11 @@ export default function Navbar() {
                                   onClick={() => setMoreOpen(false)}
                                   className="block rounded-lg px-2 py-2 hover:bg-white/[0.06] transition-colors group"
                                 >
-                                  <span className="block text-[12px] font-semibold tracking-wide text-zinc-200 group-hover:text-white uppercase">
+                                  <span className="block text-[12px] font-semibold tracking-wide text-white group-hover:text-primary uppercase">
                                     {item.label}
                                   </span>
                                   {item.description && (
-                                    <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-400 mt-0.5 leading-snug uppercase tracking-wider">
+                                    <span className="block text-[11px] text-zinc-400 group-hover:text-zinc-300 mt-0.5 leading-snug uppercase tracking-wider">
                                       {item.description}
                                     </span>
                                   )}
@@ -251,11 +251,11 @@ export default function Navbar() {
                         }
                         aria-expanded={open}
                       >
-                        <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-500">
+                        <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-300">
                           {group.label}
                         </span>
                         <ChevronDown
-                          className={`w-4 h-4 text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`}
+                          className={`w-4 h-4 text-zinc-400 transition-transform ${open ? "rotate-180" : ""}`}
                         />
                       </button>
                       <AnimatePresence initial={false}>
@@ -274,11 +274,11 @@ export default function Navbar() {
                                     onClick={() => setIsOpen(false)}
                                     className="block rounded-lg px-2 py-2.5 hover:bg-white/[0.05] min-h-[44px]"
                                   >
-                                    <span className="block text-sm font-semibold text-zinc-200 uppercase">
+                                    <span className="block text-sm font-semibold text-white uppercase">
                                       {item.label}
                                     </span>
                                     {item.description && (
-                                      <span className="block text-xs text-zinc-500 mt-0.5 uppercase tracking-wider">
+                                      <span className="block text-xs text-zinc-400 mt-0.5 uppercase tracking-wider">
                                         {item.description}
                                       </span>
                                     )}
