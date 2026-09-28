@@ -74,19 +74,19 @@ const gallery = [
     caption: "Studio",
   },
   {
-    src: "/images/founder/founder-portrait-dessert.jpg",
+    src: "/images/founder/vikash-primary-square-v2.jpg",
     alt: `${FOUNDER.name} — portrait`,
     caption: "Portrait",
   },
   {
-    src: "/images/founder/founder-portrait-lounge.jpg",
+    src: "/images/founder/vikash-lion-lounge.jpg",
     alt: `${FOUNDER.name} — Coimbatore`,
     caption: "Coimbatore",
   },
   {
-    src: "/images/founder/founder-portrait-forest.jpg",
-    alt: `${FOUNDER.name} — outdoors`,
-    caption: "Outdoors",
+    src: "/images/founder/vikash-profile-square.jpg",
+    alt: `${FOUNDER.name} — profile`,
+    caption: "Profile",
   },
 ];
 
@@ -317,19 +317,9 @@ export default function FounderPage() {
             </ul>
           </div>
           <div className="lg:col-span-8 space-y-5 text-zinc-300 leading-relaxed text-[15px] sm:text-base">
-            <p>{FOUNDER.shortBio}</p>
-            <p>
-              Logic Intelligence Technologies is run as a focused digital engineering studio:
-              fixed-scope packages where they fit, custom architecture where they do not, and a free
-              demo path so buyers can see direction before payment. The work spans marketing sites,
-              operational software, and AI assistants grounded in company knowledge rather than open
-              internet guesses.
-            </p>
-            <p>
-              Outside client delivery, Vikash experiments with autonomous workflow engines and
-              evaluation discipline — golden-set checks for pricing answers, retrieval quality, and
-              the gap between a demo chatbot and something sales can trust.
-            </p>
+            {FOUNDER.longBio.split("\n\n").map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
           </div>
         </div>
       </section>
@@ -338,18 +328,20 @@ export default function FounderPage() {
       <section className="py-16 md:py-20 border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-2">
-            CAPABILITIES
+            EXPERTISE
           </p>
           <h2 className="uppercase text-2xl sm:text-3xl font-black tracking-tight mb-10">
-            Where the work lands
+            How he builds
           </h2>
-          <div className="grid sm:grid-cols-2 gap-4 md:gap-6">
+          <div className="grid sm:grid-cols-2 gap-5">
             {expertise.map((item) => (
               <div
                 key={item.title}
-                className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 hover:border-primary/30 hover:bg-white/[0.05] transition-colors"
+                className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-primary/30 transition-colors"
               >
-                <item.icon className="w-7 h-7 text-primary mb-4" />
+                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+                  <item.icon className="w-5 h-5 text-primary" />
+                </div>
                 <h3 className="text-sm font-bold uppercase tracking-wide text-white mb-2">
                   {item.title}
                 </h3>
@@ -364,18 +356,18 @@ export default function FounderPage() {
       <section className="py-16 md:py-20 border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-2">
-            OPERATING STYLE
+            PRINCIPLES
           </p>
           <h2 className="uppercase text-2xl sm:text-3xl font-black tracking-tight mb-10">
-            How decisions get made
+            Operating rules
           </h2>
-          <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid md:grid-cols-3 gap-5">
             {principles.map((p) => (
               <div
                 key={p.t}
-                className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-6"
+                className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent p-6"
               >
-                <h3 className="text-sm font-black uppercase tracking-wide text-white mb-3">
+                <h3 className="text-sm font-black uppercase tracking-wide text-primary mb-3">
                   {p.t}
                 </h3>
                 <p className="text-sm text-zinc-400 leading-relaxed">{p.d}</p>
@@ -387,35 +379,27 @@ export default function FounderPage() {
 
       {/* CTA */}
       <section className="py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-          <h2 className="uppercase text-2xl sm:text-4xl font-black tracking-tight mb-4">
-            Build with the same person who scopes the work
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <h2 className="uppercase text-2xl sm:text-3xl font-black tracking-tight mb-4">
+            Build with the founder
           </h2>
-          <p className="text-zinc-400 mb-8 max-w-2xl mx-auto">
-            Share the problem, the constraints, and the timeline. You will get a clear plan — and
-            when it fits, a free demo direction — before any payment.
+          <p className="text-zinc-400 mb-8 leading-relaxed">
+            Scope, architecture, and delivery from the same desk. Start with a project brief or
+            a consultation.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
-              href="/free-demo"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-primary text-black text-sm font-bold uppercase tracking-wide hover:bg-primary/90 transition-colors"
+              href="/contact"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-black text-sm font-bold uppercase tracking-wide hover:bg-primary/90 transition-colors"
             >
-              Request free demo <ArrowRight className="w-4 h-4" />
+              Start a project <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/about"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border border-white/15 text-sm font-bold uppercase tracking-wide hover:bg-white/5 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/15 bg-white/5 text-sm font-bold uppercase tracking-wide hover:bg-white/10 transition-colors"
             >
               About the company
             </Link>
-            <a
-              href={FOUNDER.linkedinUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border border-white/15 text-sm font-bold uppercase tracking-wide hover:bg-white/5 transition-colors"
-            >
-              LinkedIn <ExternalLink className="w-3.5 h-3.5" />
-            </a>
           </div>
         </div>
       </section>
