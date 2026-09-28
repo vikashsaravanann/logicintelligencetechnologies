@@ -11,9 +11,6 @@ import BackToHome from "@/components/ui/back-to-home";
 export default function PricingPage() {
   const [currency, setCurrency] = useState<Currency>('USD');
 
-  const allPlans = PRICING_CONFIG.flatMap((product) =>
-    product.plans.map((plan) => ({ product, plan }))
-  );
 
   return (
     <PageShell>
@@ -63,116 +60,142 @@ export default function PricingPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-32">
-          {allPlans.map(({ product, plan }, idx) => {
-            const isPopular = plan.popular;
-            return (
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.08 }}
-                key={`${product.id}-${plan.name}`}
-                className={`relative flex flex-col rounded-3xl border backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 ${
-                  isPopular
-                    ? 'border-yellow-500/50 bg-gradient-to-b from-yellow-950/40 via-black/60 to-black/60 shadow-[0_20px_60px_-20px_rgba(218,165,32,0.25)]'
-                    : 'border-white/8 bg-black/40 hover:border-white/15'
-                }`}
-              >
-                {isPopular && (
-                  <div className="absolute -top-4 inset-x-0 flex justify-center">
-                    <div className="bg-gradient-to-r from-yellow-600 to-yellow-400 text-black text-[10px] font-black tracking-widest uppercase px-5 py-1.5 rounded-full shadow-lg whitespace-nowrap">
-                      Most Popular
-                    </div>
-                  </div>
-                )}
+        {/* ── Grouped 3 + 3 pricing grid ── */}
+        <div className="space-y-16 mb-32">
+          {PRICING_CONFIG.map((product, productIdx) => (
+            <div key={product.id}>
+              {/* Product group label */}
+              <div className="flex items-center gap-4 mb-8">
+                <div className="h-px flex-1 bg-white/5" />
+                <span className="text-[10px] font-mono font-black tracking-[0.25em] text-yellow-500/60 uppercase px-4">
+                  {product.name}
+                </span>
+                <div className="h-px flex-1 bg-white/5" />
+              </div>
 
-                <div className="p-7 flex flex-col flex-1">
-                  <div className="text-[9px] font-mono font-bold tracking-[0.2em] text-yellow-500/70 uppercase mb-2 text-center">
-                    {product.name}
-                  </div>
-                  <h2 className="text-3xl font-black text-white mb-5 text-center">{plan.name}</h2>
-
-                  <div className="flex flex-col items-center gap-1 pb-6 mb-6 border-b border-white/8">
-                    <div className="flex items-baseline gap-1">
-                      {isCustomPlan(plan) ? (
-                        <span className={`text-4xl font-black ${isPopular ? 'text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 to-yellow-500' : 'text-white'}`}>
-                          Custom
-                        </span>
-                      ) : (
-                        <>
-                          <span className={`text-5xl font-black ${isPopular ? 'text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 to-yellow-500' : 'text-white'}`}>
-                            {formatPrice(plan.monthlyPrice[currency], currency)}
-                          </span>
-                          <span className="text-zinc-500 text-sm font-medium">/mo</span>
-                        </>
-                      )}
-                    </div>
-                    <div className="min-h-[44px] flex flex-col items-center justify-center gap-1 text-center">
-                      {plan.setupFee && (
-                        <span className="text-xs font-medium text-zinc-400">
-                          + {formatPrice(plan.setupFee[currency], currency)} one-time setup
-                        </span>
-                      )}
-                      {plan.usageFee && (
-                        <span className="text-xs font-semibold text-yellow-500/80">
-                          + {formatPrice(plan.usageFee[currency], currency)} {plan.usageFee.description}
-                        </span>
-                      )}
-                      {!plan.setupFee && !plan.usageFee && !isCustomPlan(plan) && (
-                        <span className="text-xs font-semibold text-emerald-400">No setup fees</span>
-                      )}
-                      {isCustomPlan(plan) && (
-                        <span className="text-xs font-semibold text-zinc-400">Quoted after scoping</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex-1 flex flex-col">
-                    <p className="text-[9px] font-black tracking-[0.2em] text-zinc-500 uppercase mb-5 text-center">
-                      What&apos;s included
-                    </p>
-                    <ul className="space-y-3 flex-1">
-                      {plan.features.map((feature, fIdx) => (
-                        <li key={fIdx} className="flex items-start gap-3">
-                          <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isPopular ? 'bg-yellow-500/20' : 'bg-white/5'}`}>
-                            <Check className={`w-2.5 h-2.5 ${isPopular ? 'text-yellow-400' : 'text-zinc-400'}`} />
-                          </div>
-                          <span className="text-sm text-zinc-300 leading-snug">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="mt-8 pt-6 border-t border-white/8">
-                    <Link
-                      href={
-                        plan.ctaHref ||
-                        (plan.name === 'Enterprise'
-                          ? product.id === 'voice-shield'
-                            ? '/voice-shield/request'
-                            : '/contact'
-                          : plan.name === 'Free'
-                            ? '/contact'
-                            : '/products/' + product.id)
-                      }
-                      className={`w-full flex items-center justify-center h-12 rounded-xl text-sm font-black tracking-widest uppercase transition-all ${
+              {/* 3-column row — fills up to 3 cards; centres when fewer */}
+              <div className={`grid gap-6 ${
+                product.plans.length === 1
+                  ? 'grid-cols-1 max-w-sm mx-auto'
+                  : product.plans.length === 2
+                  ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto'
+                  : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+              }`}>
+                {product.plans.map((plan, planIdx) => {
+                  const isPopular = plan.popular;
+                  const globalIdx = PRICING_CONFIG
+                    .slice(0, productIdx)
+                    .reduce((acc, p) => acc + p.plans.length, 0) + planIdx;
+                  return (
+                    <motion.div
+                      initial={{ opacity: 0, y: 24 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: globalIdx * 0.08 }}
+                      key={`${product.id}-${plan.name}`}
+                      className={`relative flex flex-col rounded-3xl border backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 ${
                         isPopular
-                          ? 'bg-gradient-to-r from-yellow-600 to-yellow-400 text-black hover:opacity-90 shadow-lg hover:shadow-yellow-500/20'
-                          : 'bg-white/5 text-white border border-white/10 hover:bg-white/10'
+                          ? 'border-yellow-500/50 bg-gradient-to-b from-yellow-950/40 via-black/60 to-black/60 shadow-[0_20px_60px_-20px_rgba(218,165,32,0.25)]'
+                          : 'border-white/8 bg-black/40 hover:border-white/15'
                       }`}
                     >
-                      {plan.ctaLabel ||
-                        (plan.name === 'Free'
-                          ? 'Start Free'
-                          : plan.name === 'Enterprise'
-                            ? 'Contact Sales'
-                            : 'Get Started')}
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
+                      {isPopular && (
+                        <div className="absolute -top-4 inset-x-0 flex justify-center">
+                          <div className="bg-gradient-to-r from-yellow-600 to-yellow-400 text-black text-[10px] font-black tracking-widest uppercase px-5 py-1.5 rounded-full shadow-lg whitespace-nowrap">
+                            Most Popular
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="p-7 flex flex-col flex-1">
+                        <div className="text-[9px] font-mono font-bold tracking-[0.2em] text-yellow-500/70 uppercase mb-2 text-center">
+                          {product.name}
+                        </div>
+                        <h2 className="text-3xl font-black text-white mb-5 text-center">{plan.name}</h2>
+
+                        <div className="flex flex-col items-center gap-1 pb-6 mb-6 border-b border-white/8">
+                          <div className="flex items-baseline gap-1">
+                            {isCustomPlan(plan) ? (
+                              <span className={`text-4xl font-black ${isPopular ? 'text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 to-yellow-500' : 'text-white'}`}>
+                                Custom
+                              </span>
+                            ) : (
+                              <>
+                                <span className={`text-5xl font-black ${isPopular ? 'text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 to-yellow-500' : 'text-white'}`}>
+                                  {formatPrice(plan.monthlyPrice[currency], currency)}
+                                </span>
+                                <span className="text-zinc-500 text-sm font-medium">/mo</span>
+                              </>
+                            )}
+                          </div>
+                          <div className="min-h-[44px] flex flex-col items-center justify-center gap-1 text-center">
+                            {plan.setupFee && (
+                              <span className="text-xs font-medium text-zinc-400">
+                                + {formatPrice(plan.setupFee[currency], currency)} one-time setup
+                              </span>
+                            )}
+                            {plan.usageFee && (
+                              <span className="text-xs font-semibold text-yellow-500/80">
+                                + {formatPrice(plan.usageFee[currency], currency)} {plan.usageFee.description}
+                              </span>
+                            )}
+                            {!plan.setupFee && !plan.usageFee && !isCustomPlan(plan) && (
+                              <span className="text-xs font-semibold text-emerald-400">No setup fees</span>
+                            )}
+                            {isCustomPlan(plan) && (
+                              <span className="text-xs font-semibold text-zinc-400">Quoted after scoping</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex-1 flex flex-col">
+                          <p className="text-[9px] font-black tracking-[0.2em] text-zinc-500 uppercase mb-5 text-center">
+                            What&apos;s included
+                          </p>
+                          <ul className="space-y-3 flex-1">
+                            {plan.features.map((feature, fIdx) => (
+                              <li key={fIdx} className="flex items-start gap-3">
+                                <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isPopular ? 'bg-yellow-500/20' : 'bg-white/5'}`}>
+                                  <Check className={`w-2.5 h-2.5 ${isPopular ? 'text-yellow-400' : 'text-zinc-400'}`} />
+                                </div>
+                                <span className="text-sm text-zinc-300 leading-snug">{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="mt-8 pt-6 border-t border-white/8">
+                          <Link
+                            href={
+                              plan.ctaHref ||
+                              (plan.name === 'Enterprise'
+                                ? product.id === 'voice-shield'
+                                  ? '/voice-shield/request'
+                                  : '/contact'
+                                : plan.name === 'Free'
+                                  ? '/contact'
+                                  : '/products/' + product.id)
+                            }
+                            className={`w-full flex items-center justify-center h-12 rounded-xl text-sm font-black tracking-widest uppercase transition-all ${
+                              isPopular
+                                ? 'bg-gradient-to-r from-yellow-600 to-yellow-400 text-black hover:opacity-90 shadow-lg hover:shadow-yellow-500/20'
+                                : 'bg-white/5 text-white border border-white/10 hover:bg-white/10'
+                            }`}
+                          >
+                            {plan.ctaLabel ||
+                              (plan.name === 'Free'
+                                ? 'Start Free'
+                                : plan.name === 'Enterprise'
+                                  ? 'Contact Sales'
+                                  : 'Get Started')}
+                          </Link>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
 
         <section className="mb-32">
