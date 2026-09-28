@@ -53,12 +53,12 @@ export default function InvestorsPage() {
           <Link href="/ai" className="inline-flex items-center justify-center gap-2 h-12 rounded-xl font-bold text-black bg-primary">
             Open Logic AI <ArrowRight className="w-4 h-4" />
           </Link>
-          <Link href="/ai-assistant" className="inline-flex items-center justify-center h-12 rounded-xl font-bold border border-white/15 hover:bg-white/5">
+          <Link href="/ai-assistant" className="inline-flex items-center justify-center h-12 rounded-xl font-bold text-white border border-white/15 hover:bg-white/5">
             Knowledge Assistant
           </Link>
           <a
             href={`https://wa.me/${COMPANY.whatsappNumber}?text=${encodeURIComponent("Hi LIT — I read the investor briefing.")}`}
-            className="inline-flex items-center justify-center gap-2 h-12 rounded-xl font-bold border border-white/15 hover:bg-white/5"
+            className="inline-flex items-center justify-center gap-2 h-12 rounded-xl font-bold text-white border border-white/15 hover:bg-white/5"
           >
             <Phone className="w-4 h-4" /> WhatsApp
           </a>

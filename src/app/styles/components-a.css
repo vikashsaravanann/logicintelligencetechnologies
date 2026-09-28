@@ -1,10 +1,15 @@
 /* components-a: core layout + body */
 html.light body { color: #1C140E; }
 body {
-  background: transparent;
-  color: #FFFFFF;
-  font-family: var(--font-primary, Inter, system-ui, sans-serif);
+  background: var(--bg-primary);
+  color: #ffffff;
+  font-family: var(--font-primary), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-* { box-sizing: border-box; }
-img, video, canvas, svg { max-width: 100%; height: auto; }
+
+/* Outline CTAs on dark marketing surfaces must stay legible in light mode */
+html.light a.font-bold.border-white\/15,
+html.light button.font-bold.border-white\/15 {
+  color: #ffffff;
+}

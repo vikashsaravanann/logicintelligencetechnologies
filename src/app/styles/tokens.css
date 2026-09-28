@@ -82,6 +82,8 @@
 }
 
 html.light {
+  /* Readable body ink; interactive CTAs still set explicit colors */
+  --color-foreground: #1C140E;
   --bg-primary: #F4EFE8;
   --bg-secondary: #FFFDF9;
   --bg-card: rgba(28, 20, 14, 0.04);
