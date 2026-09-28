@@ -1,14 +1,13 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import BackToHome from "@/components/ui/back-to-home";
+import { ArrowRight, Phone } from "lucide-react";
 import PageBackdrop from "@/components/ui/page-backdrop";
 import { COMPANY } from "@/config/company";
-import { ArrowRight, Phone } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Investor Briefing",
+  title: "Investor Briefing | Logic Intelligence Technologies",
   description:
-    "LOGIC INTELLIGENCE TECHNOLOGIES operating update. Coimbatore technology startup. Not a priced round. Walk the live stack.",
+    "Operating update for Logic Intelligence Technologies. Not raising. Walk the live stack.",
 };
 
 const points = [
@@ -23,9 +22,8 @@ const points = [
 export default function InvestorsPage() {
   return (
     <main className="min-h-screen bg-transparent text-white pt-24 sm:pt-28">
-      <BackToHome />
       <section className="relative px-6 lg:px-8 overflow-hidden">
-        <PageBackdrop src="/assets/jobs/studio-hero.jpg" />
+        <PageBackdrop src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&h=900&q=80" />
         <div className="relative z-10 max-w-4xl mx-auto text-center pb-12 pt-6">
         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-4">
           LOGIC INTELLIGENCE TECHNOLOGIES
