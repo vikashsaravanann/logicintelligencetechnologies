@@ -15,9 +15,8 @@ export type PortfolioProject = {
 };
 
 /**
- * Portfolio imagery: distinct, realistic Unsplash sources (next.config remotePatterns
- * already allows images.unsplash.com). Local /images/work/* paths were 404 in production
- * and several shared identical binary blobs — each project must have a unique image.
+ * Portfolio imagery: local /images/work/* assets (verified present in production).
+ * Each project uses a distinct file — no shared binary blobs, no remote dependency.
  */
 export const portfolioProjects: PortfolioProject[] = [
   {
@@ -28,7 +27,7 @@ export const portfolioProjects: PortfolioProject[] = [
     category: "E-Commerce",
     tags: ["Next.js", "Payments", "Supabase", "Tailwind CSS"],
     image:
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&h=800&q=80",
+      "/images/work/work-freshbite.webp",
     client: "FreshBite Restaurants",
     problem:
       "Phone and WhatsApp orders were error-prone during peak hours. Staff juggled handwritten tickets, payment confirmation lagged, and kitchen throughput stalled when volume spiked.",
@@ -50,7 +49,7 @@ export const portfolioProjects: PortfolioProject[] = [
     category: "SaaS",
     tags: ["React", "Node.js", "PostgreSQL", "AWS"],
     image:
-      "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&h=800&q=80",
+      "/images/work/work-vaulthr.webp",
     client: "Mid-market services firm",
     problem:
       "HR data lived in disconnected sheets. Leave requests stalled in email threads, onboarding checklists were incomplete, and payroll prep consumed days each cycle.",
@@ -72,7 +71,7 @@ export const portfolioProjects: PortfolioProject[] = [
     category: "Marketing",
     tags: ["Next.js", "CMS", "Tailwind CSS", "Vercel"],
     image:
-      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&h=800&q=80",
+      "/images/work/work-luxe-interiors.webp",
     client: "Luxe Interiors Studio",
     problem:
       "Work lived in Instagram and PDFs. Prospects could not browse projects by room type or budget, and inquiries lacked structured context.",
@@ -94,7 +93,7 @@ export const portfolioProjects: PortfolioProject[] = [
     category: "Healthcare",
     tags: ["Next.js", "FastAPI", "PostgreSQL", "SMS"],
     image:
-      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&h=800&q=80",
+      "/images/work/work-mediconnect.webp",
     client: "Regional outpatient clinics",
     problem:
       "Double-bookings and no-shows were common. Patients could not self-schedule; staff spent hours confirming appointments by phone.",
@@ -116,7 +115,7 @@ export const portfolioProjects: PortfolioProject[] = [
     category: "E-Commerce",
     tags: ["Next.js", "Payments", "Sanity CMS", "Vercel"],
     image:
-      "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&h=800&q=80",
+      "/images/work/greenleaf.jpg",
     client: "GreenLeaf Organics",
     problem:
       "Marketplace commissions eroded margin, and the brand lacked a owned channel for subscriptions and product storytelling.",
@@ -138,7 +137,7 @@ export const portfolioProjects: PortfolioProject[] = [
     category: "SaaS",
     tags: ["React", "FastAPI", "PostgreSQL", "Razorpay"],
     image:
-      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&h=800&q=80",
+      "/images/work/urbanfit.jpg",
     client: "UrbanFit Gyms",
     problem:
       "Memberships were tracked offline; class capacity was oversold; payments did not reconcile cleanly with attendance.",
