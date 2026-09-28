@@ -7,10 +7,8 @@ import Image from "next/image";
 
 /**
  * Site-wide ambient background.
- * - Image background by default
- * - Video for AI product pages
- * - VoiceShield overview: dark + subtle radar
- * - VoiceShield /request: solid only (no ambient bleed through form UI)
+ * - Shows an image background by default for all pages
+ * - Shows video background for Voice Shield and AI/AI Agent pages
  */
 const VIDEOS = [
   "/assets/backdrops/bg-vid-1.mp4",
@@ -52,13 +50,9 @@ export default function GlobalBackground() {
     return Math.abs(hash) % 5;
   }, [pathname]);
 
-  const isVoiceShieldRequest = useMemo(() => {
-    return pathname === "/voice-shield/request" || pathname?.startsWith("/voice-shield/request/");
-  }, [pathname]);
-
   const isVoiceShieldPage = useMemo(() => {
-    return pathname?.startsWith("/voice-shield") && !isVoiceShieldRequest;
-  }, [pathname, isVoiceShieldRequest]);
+    return pathname?.startsWith("/voice-shield");
+  }, [pathname]);
 
   const isVideoPage = useMemo(() => {
     if (!pathname) return false;
@@ -72,7 +66,7 @@ export default function GlobalBackground() {
 
   useEffect(() => {
     if (!isVideoPage) return;
-
+    
     const v = videoRef.current;
     if (!v || reduced) return;
     v.muted = true;
@@ -101,10 +95,7 @@ export default function GlobalBackground() {
       className="fixed inset-0 z-[-50] overflow-hidden pointer-events-none bg-[#0A0F1E] max-w-[100vw]"
       aria-hidden
     >
-      {isVoiceShieldRequest ? (
-        /* Solid gate background — no image, no radar, no bleed */
-        <div className="absolute inset-0 bg-[#030712]" />
-      ) : isVideoPage ? (
+      {isVideoPage ? (
         <>
           {!reduced && (
             <AnimatePresence mode="popLayout">
@@ -139,6 +130,7 @@ export default function GlobalBackground() {
           <div className="absolute inset-0 bg-[#020617]" />
           <div className="absolute inset-0 bg-[url('/company-bg.png')] bg-cover bg-center mix-blend-overlay opacity-30 brightness-50" />
           <div className="absolute top-[-20%] left-[-10%] w-[120%] h-[120%] bg-[radial-gradient(ellipse_at_center,_rgba(14,165,233,0.15)_0%,_rgba(2,6,23,1)_70%)]" />
+          {/* Subtle shield-like radar rings */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-cyan-500/10" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] rounded-full border border-cyan-500/5" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-cyan-500/5 blur-[100px]" />

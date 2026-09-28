@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Careers at Logic Intelligence Technologies",
     description: "Join a Coimbatore-based startup building production AI, web, and enterprise software. Real equity, direct founder mentorship, and cutting-edge tech.",
-    images: [{ url: "/assets/og-banner.jpg", width: 1200, height: 630, alt: "Careers at Logic Intelligence Technologies" }],
+    images: [{ url: "/assets/og-banner.png", width: 1200, height: 630, alt: "Careers at Logic Intelligence Technologies" }],
   },
 };
 

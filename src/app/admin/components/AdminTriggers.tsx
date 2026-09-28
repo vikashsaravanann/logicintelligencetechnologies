@@ -1,46 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Send,
-  Loader2,
-  FileText,
-  CheckCircle,
-  Rocket,
-  CheckSquare,
-  FileCheck,
-} from "lucide-react";
-
-function formatDeliveryStatus(data: {
-  status?: string;
-  skipped?: boolean;
-  messageId?: string | null;
-  outboxId?: string | null;
-}): string {
-  const status = (data.status || "unknown").toLowerCase();
-  if (data.skipped) {
-    if (status === "skipped" || status === "suppressed") {
-      return `Not delivered (${status}) — dry-run, preview isolation, or suppression`;
-    }
-    return `Not delivered to provider (${status})`;
-  }
-  switch (status) {
-    case "sent":
-      return data.messageId
-        ? `Accepted by email provider (sent) · id ${data.messageId}`
-        : "Accepted by email provider (sent)";
-    case "queued":
-    case "processing":
-      return "Queued for delivery — not yet confirmed by provider";
-    case "retrying":
-      return "Retrying delivery — provider error; will retry";
-    case "failed":
-    case "dead_letter":
-      return `Delivery ${status}`;
-    default:
-      return `Status: ${status}`;
-  }
-}
+import { Send, Loader2, FileText, CheckCircle, Rocket, CheckSquare, FileCheck } from "lucide-react";
 
 export function AdminTriggers() {
   const [activeTab, setActiveTab] = useState("invoice");
@@ -73,7 +34,9 @@ export function AdminTriggers() {
     try {
       const res = await fetch("/api/admin/send-trigger", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         credentials: "same-origin",
         body: JSON.stringify({
           type: activeTab,
@@ -93,12 +56,13 @@ export function AdminTriggers() {
         throw new Error(bits.join(" "));
       }
 
-      setSuccessMsg(
-        `${formatDeliveryStatus(data)} → ${formData.email} (${activeTab})` +
-          (data.outboxId ? ` · outbox ${data.outboxId}` : "")
-      );
-    } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : "Send failed");
+      const status = data.status || "queued";
+      const skipNote = data.skipped
+        ? " — not delivered to provider (dry-run / preview / suppressed)"
+        : "";
+      setSuccessMsg(`Email ${status} to ${formData.email} (${activeTab})${skipNote}`);
+    } catch (err: any) {
+      setErrorMsg(err.message);
     } finally {
       setLoading(false);
     }
@@ -109,29 +73,27 @@ export function AdminTriggers() {
       <div className="mb-6">
         <h2 className="text-xl font-bold text-white mb-2">Manual Email Triggers</h2>
         <p className="text-sm text-neutral-400">
-          Transactional dispatch via central pipeline. UI never claims “Sent”
-          unless provider status is <code className="text-emerald-400/90">sent</code>.
-          SMTP 535 = Zoho app password / env issue.
+          Dispatch transactional emails. Failures show SMTP/config reasons (e.g. 535 auth) — not silent.
         </p>
       </div>
 
       <div className="flex flex-wrap gap-2 mb-8">
         {(
           [
-            ["invoice", "Send Invoice", FileText],
-            ["payment", "Payment Received", CheckCircle],
-            ["kickoff", "Project Kickoff", Rocket],
-            ["delivered", "Delivered", CheckSquare],
-            ["proposal", "Proposal", FileCheck],
+            ["invoice", "Send Invoice", FileText, "indigo"],
+            ["payment", "Payment Received", CheckCircle, "emerald"],
+            ["kickoff", "Project Kickoff", Rocket, "blue"],
+            ["delivered", "Delivered", CheckSquare, "fuchsia"],
+            ["proposal", "Proposal", FileCheck, "amber"],
           ] as const
-        ).map(([id, label, Icon]) => (
+        ).map(([id, label, Icon, color]) => (
           <button
             key={id}
             type="button"
             onClick={() => setActiveTab(id)}
             className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors ${
               activeTab === id
-                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                ? `bg-${color}-500/20 text-${color}-400 border border-${color}-500/30`
                 : "bg-neutral-800/50 text-neutral-400 hover:text-white border border-transparent"
             }`}
           >

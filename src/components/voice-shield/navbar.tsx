@@ -17,9 +17,6 @@ export default function VoiceShieldNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const isRequest =
-    pathname === "/voice-shield/request" ||
-    pathname?.startsWith("/voice-shield/request/");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -27,17 +24,12 @@ export default function VoiceShieldNavbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Request page owns its own chrome — do not render this bar (avoids double header + bleed)
-  if (isRequest) return null;
-
-  const solid = scrolled;
-
   return (
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        solid
-          ? "bg-[#050A15]/95 backdrop-blur-xl border-b border-emerald-500/10"
-          : "bg-[#050A15]/70 backdrop-blur-md border-b border-white/5"
+        scrolled
+          ? "bg-black/80 backdrop-blur-xl border-b border-emerald-500/10"
+          : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -83,7 +75,7 @@ export default function VoiceShieldNavbar() {
         </div>
 
         {isOpen && (
-          <div className="md:hidden pb-4 space-y-2 border-t border-white/5 pt-3 bg-[#050A15]">
+          <div className="md:hidden pb-4 space-y-2 border-t border-white/5 pt-3">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
