@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  Brain,
+  ExternalLink,
   Shield,
   Mic,
   Sparkles,
@@ -11,28 +11,29 @@ import {
 import Link from "next/link";
 
 /**
- * Homepage product band — three commercial products only:
- * AI Agent · AI Voice Agent · VoiceShield
- * AI Assistant (/ai) is the interactive experience under AI Agent — not a fourth product.
- * No invented accuracy, uptime, or latency claims.
+ * Homepage product band — two launched flagship products of Logic Intelligence Technologies:
+ * 1. Logic Voice (AI Voice Assistant / Personal AI Assistant)
+ * 2. VoiceShield (Voice Security & Risk Intelligence)
  */
 const PRODUCTS = [
   {
-    id: "ai-agent",
-    name: "AI Agent",
-    badge: "Business Intelligence",
-    href: "/products/ai-website-agents",
-    experienceHref: "/ai",
-    cta: "Explore AI Agent",
-    icon: Brain,
+    id: "logic-voice",
+    name: "Logic Voice",
+    badge: "AI Voice Assistant",
+    href: "/products/logic-voice",
+    liveHref: "https://logicvoice.logicintelligencetechnologies.in/",
+    cta: "Explore Logic Voice",
+    liveCta: "Launch Live Product",
+    icon: Mic,
     description:
-      "An intelligent AI agent that understands your business, answers questions, works with approved knowledge, qualifies opportunities, and helps turn conversations into action.",
+      "A voice-first personal AI assistant developed by Logic Intelligence Technologies, designed to let users interact naturally through speech, understanding, reasoning, planning, and executing approved tools under explicit authorization.",
     capabilities: [
-      "Business knowledge via RAG (approved content — not model training)",
-      "Conversations, lead capture and qualification",
-      "Tool-assisted workflows and human handoff where configured",
+      "Voice-first speech recognition and natural speech understanding",
+      "Contextual reasoning, multi-step planning, and intelligent automation",
+      "Approved tool execution with confirmations for sensitive actions",
+      "Direction toward a personal AI operating system interface",
     ],
-    suited: "SMB, professional services, SaaS, education, local services",
+    suited: "Personal productivity, voice-driven workflows, intelligent automation",
     cardClass:
       "bg-[#050B14] border-blue-900/50 shadow-[0_0_40px_rgba(5,15,40,0.8)]",
     gradient: "from-blue-900/30 via-[#050B14] to-[#050B14]",
@@ -49,51 +50,24 @@ const PRODUCTS = [
     btn: "text-blue-50 bg-blue-600/20 border-blue-500/30 group-hover:bg-cyan-500 group-hover:text-black group-hover:border-cyan-400",
   },
   {
-    id: "ai-voice-agent",
-    name: "AI Voice Agent",
-    badge: "Phone Conversations",
-    href: "/products/ai-voice-agents",
-    cta: "Explore AI Voice Agent",
-    icon: Mic,
-    description:
-      "Your AI-powered front desk for calls, enquiries and appointments — inbound handling, qualification and structured capture with human escalation.",
-    capabilities: [
-      "Inbound call handling and lead qualification",
-      "Appointment and calendar workflows where integrated",
-      "Transcription, structured extraction and human escalation",
-    ],
-    suited: "Contact centres, service businesses, high-enquiry teams",
-    cardClass:
-      "bg-[#0D0514] border-purple-900/50 shadow-[0_0_40px_rgba(20,5,35,0.8)]",
-    gradient: "from-purple-900/40 via-[#0D0514] to-[#0D0514]",
-    glow: "bg-fuchsia-600/10 group-hover:bg-fuchsia-600/20",
-    iconWrap: "bg-purple-950/50 border-purple-800/50",
-    iconColor: "text-fuchsia-400",
-    badgeClass: "bg-purple-900/40 border-purple-800/50 text-fuchsia-400",
-    textMuted: "text-purple-100/60",
-    capTitle: "text-fuchsia-500",
-    capIcon: "text-fuchsia-400",
-    capText: "text-purple-50/80",
-    suitedText: "text-purple-100/50",
-    borderTop: "border-purple-900/50",
-    btn: "text-purple-50 bg-purple-600/20 border-purple-500/30 group-hover:bg-fuchsia-500 group-hover:text-black group-hover:border-fuchsia-400",
-  },
-  {
     id: "voice-shield",
     name: "VoiceShield",
-    badge: "AI Security",
+    badge: "Voice Security & Risk",
     href: "/voice-shield",
+    liveHref: "https://voiceshield.logicintelligencetechnologies.in/",
     cta: "Explore VoiceShield",
+    liveCta: "VoiceShield Platform",
     icon: Shield,
     description:
-      "An AI security product by Logic Intelligence Technologies Pvt. Ltd. Analyze eligible voice interactions for configurable fraud-risk, security, compliance and quality signals.",
+      "A voice-security and voice-risk intelligence product developed by Logic Intelligence Technologies, designed to analyze voice interactions and produce structured intelligence around security, fraud, and compliance-related signals.",
     capabilities: [
-      "Real-time risk signals (detection path without LLM in the loop)",
-      "Async analysis with structured evidence for enterprise workflows",
-      "API-first integration and configurable retention",
+      "Real-time acoustic analysis and synthetic speech anomaly indicators",
+      "Deterministic detection path without an LLM in the hot loop",
+      "Async forensic review lab for transcription and structured evidence",
+      "API-first architecture for high-volume enterprise telephony environments",
     ],
     suited:
-      "BPOs, contact centres, financial services, telecom, enterprise support",
+      "BPOs, contact centres, financial services, telecom, enterprise fraud teams",
     cardClass:
       "bg-[#05140D] border-emerald-900/50 shadow-[0_0_40px_rgba(5,40,20,0.8)]",
     gradient: "from-emerald-900/40 via-[#05140D] to-[#05140D]",
@@ -131,7 +105,7 @@ export default function ServicesSection() {
           >
             <span className="h-px w-8 bg-white/20" />
             <span className="text-sm font-bold tracking-[0.2em] uppercase text-primary">
-              AI Products
+              Flagship Products
             </span>
             <span className="h-px w-8 bg-white/20" />
           </motion.div>
@@ -140,10 +114,10 @@ export default function ServicesSection() {
             initial={{ opacity: 1, y: 0 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-6"
+            className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-6 uppercase"
           >
-            Three products.{" "}
-            <span className="font-light opacity-90">One platform.</span>
+            Two Launched Products.{" "}
+            <span className="font-light opacity-90">One Company.</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 1, y: 0 }}
@@ -151,13 +125,12 @@ export default function ServicesSection() {
             viewport={{ once: true, amount: 0.2 }}
             className="text-zinc-400 max-w-2xl mx-auto text-lg leading-relaxed"
           >
-            Logic Intelligence Technologies builds AI systems for real business
-            operations — intelligent agents, voice conversations, and voice
-            security intelligence.
+            Logic Intelligence Technologies develops intelligent AI products and automation solutions.
+            Our two launched products operate independently with dedicated architectures.
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
           {PRODUCTS.map((p, i) => {
             const Icon = p.icon;
             return (
@@ -167,7 +140,7 @@ export default function ServicesSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className={`group relative rounded-3xl p-8 lg:p-10 flex flex-col h-full border overflow-hidden hover:-translate-y-2 transition-transform duration-500 ${p.cardClass}`}
+                className={`group relative rounded-3xl p-8 lg:p-10 flex flex-col justify-between h-full border overflow-hidden hover:-translate-y-2 transition-transform duration-500 ${p.cardClass}`}
               >
                 <div
                   className={`absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] ${p.gradient} pointer-events-none`}
@@ -234,21 +207,21 @@ export default function ServicesSection() {
                 <div
                   className={`relative z-10 mt-10 pt-6 border-t space-y-3 ${p.borderTop}`}
                 >
-                  <Link
-                    href={p.href}
+                  <a
+                    href={p.liveHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`inline-flex items-center justify-center w-full gap-2 text-sm font-bold border rounded-xl py-4 transition-all duration-300 ${p.btn}`}
                   >
-                    {p.cta}
-                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                    <span>{p.liveCta}</span>
+                    <ExternalLink className="w-4 h-4 transform group-hover:translate-x-0.5 transition-transform" />
+                  </a>
+                  <Link
+                    href={p.href}
+                    className="block text-center text-xs font-mono tracking-wider uppercase text-zinc-400 hover:text-cyan-400 transition-colors py-1"
+                  >
+                    {p.cta} Specifications →
                   </Link>
-                  {"experienceHref" in p && p.experienceHref ? (
-                    <Link
-                      href={p.experienceHref}
-                      className="block text-center text-xs font-mono tracking-wider uppercase text-zinc-500 hover:text-cyan-400 transition-colors"
-                    >
-                      Open AI Assistant experience →
-                    </Link>
-                  ) : null}
                 </div>
               </motion.div>
             );

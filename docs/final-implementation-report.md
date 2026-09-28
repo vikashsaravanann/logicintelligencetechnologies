@@ -36,7 +36,7 @@ Security:
 [IMPLEMENTED] Added the formal `api/data/delete/route.ts` API orchestrating complete object storage, DB row, and embedding deletion requests in adherence with the configured retention policies. Upload MIME and size limits strictly enforced.
 
 Legal:
-[IMPLEMENTED] Created `/privacy-policy` and `/terms-of-service` correctly outlining Logic Intelligence Technologies Pvt. Ltd., and distinctly referring to VoiceShield as an "AI security product by Logic Intelligence Technologies Pvt. Ltd."
+[IMPLEMENTED] Created `/privacy-policy` and `/terms-of-service` correctly outlining Logic Intelligence Technologies, and distinctly referring to VoiceShield as an "AI security product by Logic Intelligence Technologies"
 
 PDFs:
 [IMPLEMENTED] Updated the generator script and produced exactly the 5 requested corporate PDFs matching the company template style and requested 32 structural subsections into the public resources dir.

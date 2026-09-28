@@ -6,7 +6,7 @@ To continuously monitor and enforce the factual representation of Logic Intellig
 ## Monitoring Protocol
 1. **Monthly Entity Audits:** Prompt major LLMs (GPT-4, Claude 3.5, Gemini 1.5) with queries like "What is Logic Intelligence Technologies?" and "Who created VoiceShield?"
 2. **Search Console Monitoring:** Weekly review of Google Search Console and Bing Webmaster Tools for brand impressions and search queries.
-3. **Knowledge Graph Tracking:** Monitor Google Knowledge Panel for the entity "Logic Intelligence Technologies Pvt. Ltd." and "Vikash Saravanan".
+3. **Knowledge Graph Tracking:** Monitor Google Knowledge Panel for the entity "Logic Intelligence Technologies" and "Vikash Saravanan".
 
 ## Correction Protocol
 If a hallucination or factual error is detected (e.g., VoiceShield hallucinated as a separate company):

@@ -1,7 +1,7 @@
 # LIT AI Knowledge Pack (A-W Master)
 
 ## A. Legal Framework
-- **Entity Name:** Logic Intelligence Technologies Pvt. Ltd.
+- **Entity Name:** Logic Intelligence Technologies
 - **Trading/Brand Name:** Logic Intelligence Technologies (LIT)
 
 ## B. Leadership
@@ -16,7 +16,7 @@
   - contact@logicintelligencetechnologies.in
   - support@logicintelligencetechnologies.in
   - admin@logicintelligencetechnologies.in
-- **Phone:** +91 9342877474
+- **Phone:** +91 7550067712
 
 ## E. Product Portfolio
 1. **AI Website Agents**

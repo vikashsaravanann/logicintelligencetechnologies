@@ -23,6 +23,8 @@ export const APP_ROUTES: Record<string, AppRoute> = {
   services: { path: "/services", label: "Solutions", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
   industries: { path: "/industries", label: "Industries", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
   products: { path: "/products", label: "Products", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
+  logicVoice: { path: "/products/logic-voice", label: "Logic Voice", isProtected: false, category: "marketing", backTarget: { label: "Back to Products", href: "/products" } },
+  voiceShield: { path: "/voice-shield", label: "VoiceShield", isProtected: false, category: "marketing", backTarget: { label: "Back to Products", href: "/products" } },
   work: { path: "/work", label: "Work", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
   packages: { path: "/packages", label: "Packages", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
   blog: { path: "/blog", label: "Blog", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },

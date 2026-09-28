@@ -1,7 +1,7 @@
 # Logic Intelligence Technologies - Single Source of Truth
 
 ## Overview
-Logic Intelligence Technologies Pvt. Ltd. (LIT) is an AI technology company founded by Vikash Saravanan. The company is headquartered in Coimbatore, Tamil Nadu, India.
+Logic Intelligence Technologies (LIT) is an AI technology company founded by Vikash Saravanan. The company is headquartered in Coimbatore, Tamil Nadu, India.
 
 ## Products
 LIT specializes in advanced artificial intelligence solutions:
@@ -15,7 +15,7 @@ LIT specializes in advanced artificial intelligence solutions:
   - contact@logicintelligencetechnologies.in
   - support@logicintelligencetechnologies.in
   - admin@logicintelligencetechnologies.in
-- **Phone:** +91 9342877474
+- **Phone:** +91 7550067712
 
 ## Governance Note
 This document serves as the unalterable factual baseline for the company's identity. No speculative, unverified, or manipulated claims may be added to this knowledge base.

@@ -5,7 +5,7 @@ import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'Privacy Policy for Logic Intelligence Technologies Pvt. Ltd.',
+  description: 'Privacy Policy for Logic Intelligence Technologies',
 };
 
 export default function PrivacyPolicyPage() {
@@ -21,7 +21,7 @@ export default function PrivacyPolicyPage() {
 
         <div className="prose prose-invert prose-emerald mt-12">
           <p>
-            At Logic Intelligence Technologies Pvt. Ltd., we take your privacy seriously. This Privacy Policy describes how we collect, use, and protect your information when you use our website and services, including VoiceShield, an AI security product by Logic Intelligence Technologies Pvt. Ltd.
+            At Logic Intelligence Technologies, we take your privacy seriously. This Privacy Policy describes how we collect, use, and protect your information when you use our website and services, including VoiceShield, an AI security product by Logic Intelligence Technologies
           </p>
 
           <h2>1. Information We Collect</h2>

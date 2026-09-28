@@ -99,7 +99,7 @@ export default function ProfileForm({
               type="tel"
               name="phoneNumber"
               defaultValue={initialPhoneNumber}
-              placeholder="+91 93428 77474"
+              placeholder="+91 75500 67712"
               className={fieldClass}
             />
           </div>

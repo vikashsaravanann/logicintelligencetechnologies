@@ -38,7 +38,7 @@ export const BroadcastEmail = ({
             </React.Fragment>
           ))}
         </EmailBody>
-        <EmailMuted>— Logic Intelligence Technologies Pvt. Ltd.</EmailMuted>
+        <EmailMuted>— Logic Intelligence Technologies</EmailMuted>
       </EmailContent>
       <EmailFooter />
     </EmailLayout>

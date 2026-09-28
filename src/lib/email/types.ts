@@ -23,7 +23,7 @@ export type EmailErrorCategory =
   | "suppressed"
   | "unknown";
 
-export type SenderKey = "noReply" | "vikash" | "hello" | "admin" | "support";
+export type SenderKey = "noReply" | "vikash" | "hello" | "admin" | "support" | "contact";
 
 export type EmailResponse = {
   success: boolean;

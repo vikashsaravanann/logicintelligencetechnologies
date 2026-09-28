@@ -5,7 +5,7 @@ import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'Terms of Service for Logic Intelligence Technologies Pvt. Ltd.',
+  description: 'Terms of Service for Logic Intelligence Technologies',
 };
 
 export default function TermsOfServicePage() {
@@ -21,7 +21,7 @@ export default function TermsOfServicePage() {
 
         <div className="prose prose-invert prose-emerald mt-12">
           <p>
-            Welcome to Logic Intelligence Technologies Pvt. Ltd. These Terms of Service govern your use of our website and products, including VoiceShield, an AI security product by Logic Intelligence Technologies Pvt. Ltd.
+            Welcome to Logic Intelligence Technologies These Terms of Service govern your use of our website and products, including VoiceShield, an AI security product by Logic Intelligence Technologies
           </p>
 
           <h2>1. Acceptance of Terms</h2>
@@ -36,12 +36,12 @@ export default function TermsOfServicePage() {
 
           <h2>3. Intellectual Property</h2>
           <p>
-            All content, software, and intellectual property on this site are owned by Logic Intelligence Technologies Pvt. Ltd.
+            All content, software, and intellectual property on this site are owned by Logic Intelligence Technologies
           </p>
 
           <h2>4. Limitation of Liability</h2>
           <p>
-            Our services, including VoiceShield, are provided "as is". Logic Intelligence Technologies Pvt. Ltd. is not liable for any damages arising from your use of the services.
+            Our services, including VoiceShield, are provided "as is". Logic Intelligence Technologies is not liable for any damages arising from your use of the services.
           </p>
 
           <h2>5. Governing Law</h2>

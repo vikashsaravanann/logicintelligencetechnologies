@@ -6,29 +6,75 @@ export interface ProductItem {
   description: string;
   features: string[];
   techStack: string[];
-  status: "Live" | "Beta" | "Enterprise Ready";
+  status: "Live" | "Beta" | "Enterprise Ready" | "Active Development";
   metrics: { label: string; value: string }[];
+  websiteUrl?: string;
+  repositoryUrl?: string;
 }
 
 export const productsData: ProductItem[] = [
+  {
+    slug: "logic-voice",
+    name: "Logic Voice",
+    tagline: "Voice-First Personal AI Assistant & Intelligent Automation",
+    category: "AI Voice Assistant",
+    description: "A voice-first personal AI assistant developed by Logic Intelligence Technologies, designed to let users interact naturally through speech with intelligent reasoning, planning, and approved tool execution.",
+    features: [
+      "Voice-first natural speech recognition and understanding",
+      "Contextual reasoning, multi-step planning, and goal execution",
+      "Approved tool execution with confirmations for sensitive actions",
+      "Research synthesis, intelligent automation, and voice output"
+    ],
+    techStack: ["Python", "FastAPI", "STT / Speech Recognition", "TTS / Speech Synthesis", "Supabase", "Render"],
+    status: "Active Development",
+    metrics: [
+      { label: "Interface", value: "Voice-First" },
+      { label: "Action Model", value: "Tool-Assisted" },
+      { label: "Target State", value: "Personal AI OS" }
+    ],
+    websiteUrl: "https://logicvoice.logicintelligencetechnologies.in/",
+    repositoryUrl: "https://github.com/vikashsaravanann/logic-voice"
+  },
+  {
+    slug: "voice-shield",
+    name: "VoiceShield",
+    tagline: "Voice Security & Risk Intelligence",
+    category: "Voice Security & Risk Intelligence",
+    description: "Enterprise voice-security and voice-risk intelligence product developed by Logic Intelligence Technologies, designed to analyze voice interactions and produce structured intelligence around security, fraud, and compliance signals.",
+    features: [
+      "Real-time acoustic analysis and synthetic speech anomaly indicators",
+      "Structured risk intelligence and evidence generation for enterprise workflows",
+      "Deterministic detection path without an LLM in the critical loop",
+      "Async forensic review lab for transcription and audit trails"
+    ],
+    techStack: ["Python", "FastAPI", "Acoustic Signal Processing", "DSP Feature Extraction", "WebRTC", "Supabase"],
+    status: "Beta",
+    metrics: [
+      { label: "Detection Loop", value: "Streaming DSP" },
+      { label: "Forensic Lab", value: "Async Queue" },
+      { label: "Integration", value: "API-First" }
+    ],
+    websiteUrl: "https://voiceshield.logicintelligencetechnologies.in/",
+    repositoryUrl: "https://github.com/vikashsaravanann/voice-shield"
+  },
   {
     slug: "omni-publisher",
     name: "OmniPublisher AI",
     tagline: "Autonomous Multi-Platform Content Distribution & Social Orchestration",
     category: "AI Marketing & Automation",
-    description: "An intelligent autonomous distribution engine that drafts, schedules, optimizes, and broadcasts enterprise content across social networks, newsletters, and developer blogs with zero manual overhead.",
+    description: "An intelligent autonomous distribution engine that drafts, schedules, optimizes, and broadcasts enterprise content across social networks, newsletters, and developer blogs with centralized approval.",
     features: [
       "AI Copy Adaptation for LinkedIn, Twitter/X, and Medium",
       "Automated UTM & Lead Attribution Tracking",
       "Dynamic Trend Analysis & Hashtag Optimization",
       "Multi-Brand Management Workspace"
     ],
-    techStack: ["Next.js", "Supabase", "OpenAI / Claude 3.5", "Tailwind CSS", "Redis"],
+    techStack: ["Next.js", "Supabase", "FastAPI", "Tailwind CSS", "Redis"],
     status: "Enterprise Ready",
     metrics: [
-      { label: "Publishing Velocity", value: "10x Faster" },
-      { label: "Audience Engagement", value: "+184%" },
-      { label: "Manual Hours Saved", value: "25 hrs/wk" }
+      { label: "Publishing Workflow", value: "Autonomous" },
+      { label: "Platform Adaptation", value: "Multi-Channel" },
+      { label: "Editorial Control", value: "Centralized" }
     ]
   },
   {
@@ -36,9 +82,9 @@ export const productsData: ProductItem[] = [
     name: "Nexus Enterprise CRM",
     tagline: "High-Throughput Lead Intelligence & Predictive Pipeline Management",
     category: "Sales & Enterprise Ops",
-    description: "Next-generation customer relationship management platform built for modern B2B organizations. Real-time lead scoring, automated multi-channel sequences, and Kanban contract tracking.",
+    description: "Customer relationship and pipeline management platform engineered natively into the platform with deterministic lead scoring, automated nurture sequences, and digital proposal acceptance.",
     features: [
-      "Instant Deterministic Intent Scoring (0–100)",
+      "Deterministic Intent Scoring (0–100)",
       "Automated Email & WhatsApp Sequence Automation",
       "Contract & Proposal Digital Acceptance",
       "Interactive Financial Forecasting Dashboards"
@@ -46,29 +92,9 @@ export const productsData: ProductItem[] = [
     techStack: ["PostgreSQL", "React 19", "Node.js", "Serverless Vercel", "Payments"],
     status: "Live",
     metrics: [
-      { label: "Lead Response Time", value: "< 2 mins" },
-      { label: "Close Rate Increase", value: "+38%" },
-      { label: "Data Accuracy", value: "99.9%" }
-    ]
-  },
-  {
-    slug: "voice-shield",
-    name: "VoiceShield AI",
-    tagline: "Real-Time Deepfake Detection & Voice Verification Firewall",
-    category: "Cybersecurity & Identity",
-    description: "Enterprise acoustic verification middleware that authenticates caller identity in real time, neutralizing audio deepfakes and social engineering attempts against call centers and financial institutions.",
-    features: [
-      "Sub-200ms Acoustic Feature Extraction",
-      "Spectral Anomaly & Synthetic Speech Detection",
-      "Biometric Voice Enrollment & Hash Verification",
-      "Zero-Knowledge Biometric Vault"
-    ],
-    techStack: ["Python FastSpeech", "WebAssembly", "TensorFlow Lite", "WebRTC"],
-    status: "Beta",
-    metrics: [
-      { label: "Synthetic Audio Recall", value: "99.4%" },
-      { label: "Detection Latency", value: "160ms" },
-      { label: "False Alarm Rate", value: "< 0.01%" }
+      { label: "Lead Scoring", value: "Deterministic" },
+      { label: "Nurture Engine", value: "Automated" },
+      { label: "Security", value: "PostgreSQL RLS" }
     ]
   }
 ];

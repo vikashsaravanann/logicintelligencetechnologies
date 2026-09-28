@@ -78,7 +78,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
             <Link href="/contact" className="px-8 py-4 rounded-xl font-bold text-black bg-primary neon-btn w-full sm:w-auto">Start Project</Link>
-            <a href="https://wa.me/919342877474" target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-xl font-bold text-white bg-white/10 hover:bg-white/20 transition-colors w-full sm:w-auto border border-white/10">WhatsApp Us</a>
+            <a href="https://wa.me/917550067712" target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-xl font-bold text-white bg-white/10 hover:bg-white/20 transition-colors w-full sm:w-auto border border-white/10">WhatsApp Us</a>
           </div>
         </section>
 
@@ -162,7 +162,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
               <p className="text-xl text-zinc-300 mb-8 max-w-2xl">{srv.subtitle}</p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/contact" className="px-8 py-4 rounded-xl font-bold text-black bg-primary neon-btn w-full sm:w-auto text-center">Start Project</Link>
-                <a href="https://wa.me/919342877474" target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-xl font-bold text-white bg-white/10 hover:bg-white/20 transition-colors w-full sm:w-auto border border-white/10 text-center">Chat on WhatsApp</a>
+                <a href="https://wa.me/917550067712" target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-xl font-bold text-white bg-white/10 hover:bg-white/20 transition-colors w-full sm:w-auto border border-white/10 text-center">Chat on WhatsApp</a>
               </div>
             </div>
           </div>

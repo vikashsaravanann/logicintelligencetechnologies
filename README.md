@@ -1,8 +1,27 @@
 # Logic Intelligence Technologies
 
-**Full-stack web development, AI integration, and enterprise software for businesses in Coimbatore, India.**
+**Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions.**
 
-> "Where Logic Meets Innovation"
+- **Headquarters:** Coimbatore, Tamil Nadu, India
+- **Founder & CEO:** Vikash Saravanan
+- **Official Website:** [https://www.logicintelligencetechnologies.in/](https://www.logicintelligencetechnologies.in/)
+- **Documentation:** [docs/company-information.md](docs/company-information.md) · [docs/infrastructure.md](docs/infrastructure.md)
+
+---
+
+## Flagship Launched Products
+
+1. **[Logic Voice](https://logicvoice.logicintelligencetechnologies.in/)** — Voice-First Personal AI Assistant
+   - Category: AI Voice Assistant / Personal AI Assistant (long-term: Personal AI Operating System)
+   - Repository: [vikashsaravanann/logic-voice](https://github.com/vikashsaravanann/logic-voice)
+   - Internal Overview: `/products/logic-voice`
+
+2. **[VoiceShield](https://voiceshield.logicintelligencetechnologies.in/)** — Voice Security & Risk Intelligence
+   - Category: Voice Security, Voice Risk Intelligence, Compliance Intelligence
+   - Repository: [vikashsaravanann/voice-shield](https://github.com/vikashsaravanann/voice-shield) *(renamed from voiceshield-sih-2026)*
+   - Internal Overview: `/voice-shield`
+
+> **Note:** Both Logic Voice and VoiceShield are products of Logic Intelligence Technologies and are managed in separate repositories. Product implementations are kept decoupled from this corporate website codebase.
 
 ---
 
@@ -18,7 +37,6 @@
 | Email | Zoho SMTP via Nodemailer |
 | Email Templates | React Email |
 | Deployment | Vercel |
-| AI Chat | Groq API (Qwen model) |
 
 ---
 

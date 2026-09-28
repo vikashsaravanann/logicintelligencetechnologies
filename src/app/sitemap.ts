@@ -17,14 +17,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
     { url: `${baseUrl}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/about/founder`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${baseUrl}/company/facts`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/services`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/industries`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/products`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/products/ai-website-agents`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/products/ai-voice-agents`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${baseUrl}/voice-shield`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/products/facts`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/voice-shield`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${baseUrl}/voice-shield/demo`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/voice-shield/request`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/products/logic-voice`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
     { url: `${baseUrl}/pricing`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${baseUrl}/company`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/resources`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/packages`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
     { url: `${baseUrl}/work`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
@@ -41,11 +45,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/ai`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/investors`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/privacy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${baseUrl}/privacy-policy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/security`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${baseUrl}/terms-of-service`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/refund-policy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/accessibility`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/cookie-policy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${baseUrl}/sales`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${baseUrl}/help-center`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/roi-calculator`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/status`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.5 },
+    { url: `${baseUrl}/knowledge-base`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${baseUrl}/ai-ethics`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.5 },
+    { url: `${baseUrl}/ai-assistant`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/certifications`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/community`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/investor-brief`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/ai-discovery`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/expertise`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
   ];
 
   const serviceRoutes: MetadataRoute.Sitemap = servicesData.map((svc) => ({
@@ -97,7 +115,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [
+  const allRoutes = [
     ...staticRoutes,
     ...serviceRoutes,
     ...industryRoutes,
@@ -107,4 +125,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...workRoutes,
     ...blogRoutes,
   ];
+
+  const seen = new Set<string>();
+  return allRoutes.filter((item) => {
+    if (seen.has(item.url)) return false;
+    seen.add(item.url);
+    return true;
+  });
 }

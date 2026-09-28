@@ -32,20 +32,29 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'Logic Intelligence Technologies | Premium Web & Software Development',
+    default: 'Logic Intelligence Technologies | AI Products & Automation Solutions',
     template: '%s | Logic Intelligence Technologies',
   },
   description:
-    'Full-stack web development, mobile apps, and enterprise software for businesses. Based in Coimbatore, India. Free demo available.',
+    'Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions, including Logic Voice and VoiceShield. Based in Coimbatore, Tamil Nadu, India.',
   keywords: [
-    'web development',
-    'mobile app development',
-    'custom software',
+    'Logic Intelligence Technologies',
+    'AI technology company',
+    'AI products',
+    'AI automation',
+    'AI agents',
+    'Logic Voice',
+    'AI voice assistant',
+    'personal AI assistant',
+    'voice-first AI',
+    'VoiceShield',
+    'voice security',
+    'voice risk intelligence',
+    'voice fraud intelligence',
+    'AI-powered automation',
+    'Vikash Saravanan',
     'Coimbatore',
     'India',
-    'React',
-    'Next.js',
-    'full stack',
   ],
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.logicintelligencetechnologies.in'
@@ -57,6 +66,9 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     siteName: COMPANY.legalName,
+    title: 'Logic Intelligence Technologies | Where Logic Meets Innovation',
+    description:
+      'Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions, including Logic Voice and VoiceShield.',
     images: [
       {
         url: COMPANY.bannerPath,
@@ -68,6 +80,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    title: 'Logic Intelligence Technologies | Where Logic Meets Innovation',
+    description:
+      'Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions, including Logic Voice and VoiceShield.',
     images: [COMPANY.bannerPath],
   },
   icons: {

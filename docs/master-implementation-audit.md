@@ -1,5 +1,5 @@
 # Master Implementation Audit
-## Logic Intelligence Technologies Pvt. Ltd.
+## Logic Intelligence Technologies
 
 - **Framework**: Next.js 16.2.4 (React 19)
 - **Package Manager**: npm

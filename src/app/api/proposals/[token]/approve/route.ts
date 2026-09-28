@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { enqueueEmail } from "@/lib/email/outbox";
+import { COMPANY } from "@/config/company";
 
 export async function POST(
   req: NextRequest,
@@ -59,7 +60,7 @@ export async function POST(
     // 4. Notify admin via outbox email
     try {
       await enqueueEmail({
-        recipient: "info@logicintelligencetechnologies.in",
+        recipient: COMPANY.adminEmail,
         subject: `🎉 PROPOSAL APPROVED: ${proposal.title} by ${proposal.client_name}`,
         templateId: "proposal_approved_notification",
         metadata: {

@@ -108,7 +108,7 @@ export default function PackagesSection() {
             </span>
             Not sure which package fits you?{" "}
             <a
-              href="https://wa.me/919342877474?text=Hi%20LIT%20—%20I%20need%20help%20choosing%20a%20package"
+              href="https://wa.me/917550067712?text=Hi%20LIT%20—%20I%20need%20help%20choosing%20a%20package"
               className="inline-flex items-center gap-2 px-4 py-2 mx-1 rounded-xl bg-[#25D366] text-[#04120a] font-bold text-sm hover:bg-[#20bd5c] transition-colors cursor-pointer align-middle"
               target="_blank"
               rel="noopener noreferrer"

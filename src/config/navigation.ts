@@ -19,12 +19,12 @@ export type NavGroup = {
 /** Always-visible desktop primary links. */
 export const PRIMARY_NAV: NavItem[] = [
   { href: "/", label: "HOME" },
-  { href: "/ai", label: "AI AGENT" },
+  { href: "/products/logic-voice", label: "LOGIC VOICE" },
   { href: "/voice-shield", label: "VOICESHIELD" },
+  { href: "/products", label: "PRODUCTS" },
   { href: "/services", label: "SOLUTIONS" },
   { href: "/industries", label: "INDUSTRIES" },
   { href: "/work", label: "WORK" },
-  { href: "/resources", label: "RESOURCES" },
   { href: "/about", label: "COMPANY" },
   { href: "/contact", label: "CONTACT" },
 ];
@@ -48,26 +48,30 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    id: "ai-products",
-    label: "AI PRODUCTS",
+    id: "products",
+    label: "PRODUCTS",
     items: [
       {
-        href: "/products/ai-website-agents",
-        label: "AI AGENT",
-        description: "INTELLIGENT BUSINESS AI — ASSISTANT AT /AI",
-        highlight: true,
-      },
-      {
-        href: "/products/ai-voice-agents",
-        label: "AI VOICE AGENT",
-        description: "AI-POWERED PHONE CONVERSATIONS",
+        href: "/products/logic-voice",
+        label: "LOGIC VOICE",
+        description: "VOICE-FIRST PERSONAL AI ASSISTANT",
         highlight: true,
       },
       {
         href: "/voice-shield",
         label: "VOICESHIELD",
-        description: "AI VOICE SECURITY & COMPLIANCE — LIT PRODUCT",
+        description: "AI VOICE SECURITY & RISK INTELLIGENCE",
         highlight: true,
+      },
+      {
+        href: "/products",
+        label: "ALL PRODUCTS",
+        description: "INTELLIGENT AI PRODUCTS OVERVIEW",
+      },
+      {
+        href: "/ai",
+        label: "AI ASSISTANT",
+        description: "INTERACTIVE AI ASSISTANT EXPERIENCE",
       },
       {
         href: "/pricing",

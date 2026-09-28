@@ -13,8 +13,8 @@ logicintelligencetechnologies/          # this repo — company website (Vercel)
 ├── apps/voiceshield/                   # THIS FOLDER — gated UI only (admin / post-demo)
 └── (no Torch / WebSocket server here)
 
-voiceshield-sih-2026/                   # separate repo — deploy FastAPI elsewhere
-└── apps/api/                           # WebSocket + AASIST + Torch (Railway/Render/VPS)
+voice-shield/                           # separate repo (vikashsaravanann/voice-shield)
+└── apps/api/                           # WebSocket + AASIST + Torch (Render backend: voiceshield-sih-2026.onrender.com)
 ```
 
 ## Access model
@@ -26,14 +26,14 @@ voiceshield-sih-2026/                   # separate repo — deploy FastAPI elsew
 | Admin / approved demo | Future: gated app under admin or tokenized link | Full UI only after auth or demo approval |
 | Live mic detection | Requires `FASTAPI_INFERENCE_URL` | Not hosted on Vercel |
 
-## What belongs here vs SIH repo
+## What belongs here vs separate product repo
 
 **Copy into LIT (this monorepo area) only:**
 - Marketing-aligned UI components (already under `src/components/voice-shield`)
 - Docs, env variable names, integration notes
 - Optional future gated Next.js client pages (no long-lived WebSocket server)
 
-**Keep in VoiceShield SIH repo / separate host:**
+**Keep in VoiceShield product repo (vikashsaravanann/voice-shield) / separate host:**
 - FastAPI
 - AASIST / TorchScript
 - WebSocket PCM pipeline

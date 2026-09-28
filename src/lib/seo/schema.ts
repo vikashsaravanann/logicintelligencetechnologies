@@ -26,11 +26,11 @@ export function organizationNode() {
   return {
     "@type": ["Organization", "Corporation", "LocalBusiness"],
     "@id": ORG_ID,
-    name: "Logic Intelligence Technologies Pvt. Ltd.",
+    name: "Logic Intelligence Technologies",
     alternateName: "Logic Intelligence Technologies",
     url: SITE,
-    email: "hello@logicintelligencetechnologies.in",
-    telephone: "+91 9342877474",
+    email: COMPANY.email,
+    telephone: COMPANY.phone,
     image: LOGO_512,
     logo: {
       "@type": "ImageObject",
@@ -39,10 +39,10 @@ export function organizationNode() {
       contentUrl: LOGO_192,
       width: 192,
       height: 192,
-      caption: "Logic Intelligence Technologies Pvt. Ltd.",
+      caption: "Logic Intelligence Technologies",
     },
     description:
-      "Logic Intelligence Technologies Pvt. Ltd. is an AI technology company based in Coimbatore, Tamil Nadu, India, building AI-powered business products including AI Agent, AI Voice Agent and VoiceShield, an AI security product for voice-risk, fraud, compliance and quality intelligence.",
+      "Logic Intelligence Technologies is an AI technology company based in Coimbatore, Tamil Nadu, India, developing intelligent AI products and automation solutions including Logic Voice and VoiceShield.",
     foundingDate: "2025",
     address: {
       "@type": "PostalAddress",
@@ -56,21 +56,31 @@ export function organizationNode() {
       longitude: 76.9558,
     },
     areaServed: ["Coimbatore", "Tamil Nadu", "India"],
-    sameAs: [COMPANY.linkedinUrl, COMPANY.instagramUrl, COMPANY.facebookUrl],
+    sameAs: [
+      COMPANY.linkedinUrl,
+      COMPANY.instagramUrl,
+      COMPANY.twitterUrl,
+      COMPANY.facebookUrl,
+      COMPANY.youtubeUrl,
+      COMPANY.telegramUrl,
+      COMPANY.threadsUrl,
+      COMPANY.whatsappGroupUrl,
+      COMPANY.githubUrl,
+    ].filter(Boolean),
     founder: { "@id": FOUNDER_ID },
     contactPoint: [
       {
         "@type": "ContactPoint",
         contactType: "sales",
-        telephone: "+91 9342877474",
-        email: "contact@logicintelligencetechnologies.in",
+        telephone: COMPANY.phone,
+        email: COMPANY.contactEmail,
         availableLanguage: ["English", "Tamil"],
       },
       {
         "@type": "ContactPoint",
         contactType: "customer support",
-        telephone: "+91 9342877474",
-        email: "support@logicintelligencetechnologies.in",
+        telephone: COMPANY.phone,
+        email: COMPANY.supportEmail,
         availableLanguage: ["English", "Tamil"],
       },
     ],
@@ -289,6 +299,22 @@ export const AI_FAQ: Array<{ q: string; a: string }> = [
   },
 ];
 
+export function logicVoiceProductNode() {
+  return {
+    "@type": "Product",
+    "@id": `${SITE}/products/logic-voice/#product`,
+    name: "Logic Voice",
+    brand: {
+      "@type": "Brand",
+      name: "Logic Intelligence Technologies",
+    },
+    description:
+      "Logic Voice is a voice-first personal AI assistant product developed by Logic Intelligence Technologies, designed for speech interaction, reasoning, planning, tool authorization, and intelligent automation toward a personal AI operating system.",
+    url: `${SITE}/products/logic-voice`,
+    manufacturer: { "@id": ORG_ID },
+  };
+}
+
 export function voiceShieldProductNode() {
   return {
     "@type": "Product",
@@ -299,7 +325,7 @@ export function voiceShieldProductNode() {
       name: "Logic Intelligence Technologies",
     },
     description:
-      "VoiceShield is an AI-powered voice security and compliance intelligence product by Logic Intelligence Technologies Pvt. Ltd., designed to analyze eligible voice interactions for configurable fraud-risk, security, compliance and quality signals and produce structured evidence for enterprise workflows.",
+      "VoiceShield is an AI voice security and risk intelligence product by Logic Intelligence Technologies, designed to analyze voice interactions and produce structured intelligence around security, fraud, risk, and compliance signals.",
     url: `${SITE}/voice-shield`,
     manufacturer: { "@id": ORG_ID },
   };

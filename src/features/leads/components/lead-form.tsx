@@ -98,7 +98,7 @@ export default function LeadForm() {
               </div>
               <h3 className="text-4xl font-black text-white mb-4">Request Received!</h3>
               <p className="text-lg text-zinc-400 mb-8">Thanks — we've received your request and will follow up on the channel(s) you selected.</p>
-              <a href="https://wa.me/919342877474" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#25D366]/10 text-[#25D366] font-bold text-sm border border-[#25D366]/20 hover:bg-[#25D366] hover:text-black transition-all">
+              <a href="https://wa.me/917550067712" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#25D366]/10 text-[#25D366] font-bold text-sm border border-[#25D366]/20 hover:bg-[#25D366] hover:text-black transition-all">
                 <MessageSquare className="w-4 h-4" /> Message on WhatsApp
               </a>
             </motion.div>

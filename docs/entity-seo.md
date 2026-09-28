@@ -8,7 +8,7 @@ The following JSON-LD structure represents the strict semantic relationships of 
 {
   "@context": "https://schema.org",
   "@type": "Corporation",
-  "name": "Logic Intelligence Technologies Pvt. Ltd.",
+  "name": "Logic Intelligence Technologies",
   "alternateName": "Logic Intelligence Technologies",
   "founder": {
     "@type": "Person",
@@ -25,7 +25,7 @@ The following JSON-LD structure represents the strict semantic relationships of 
   },
   "contactPoint": {
     "@type": "ContactPoint",
-    "telephone": "+91 9342877474",
+    "telephone": "+91 7550067712",
     "email": [
       "hello@logicintelligencetechnologies.in",
       "contact@logicintelligencetechnologies.in",

@@ -3,12 +3,12 @@
 This document strictly tracks any modifications to the core company facts.
 
 ## [Initial Commit] - Master Provisioning
-- **Legal Name:** Logic Intelligence Technologies Pvt. Ltd.
+- **Legal Name:** Logic Intelligence Technologies
 - **Brand Name:** Logic Intelligence Technologies
 - **Founder:** Vikash Saravanan
 - **Location:** Coimbatore, Tamil Nadu, India
 - **Contact Emails:** hello@, contact@, support@, admin@logicintelligencetechnologies.in
-- **Contact Phone:** +91 9342877474
+- **Contact Phone:** +91 7550067712
 - **Products:** AI Website Agents, AI Voice Agents, VoiceShield
 - **Clarification:** VoiceShield is an AI security product by LIT, NOT a separate company.
 

@@ -25,16 +25,16 @@ import {
 import { SafeImage } from "@/components/ui/safe-image";
 
 export const metadata: Metadata = {
-  title: "About Us | Technology Startup in Coimbatore",
+  title: "About Us | Logic Intelligence Technologies",
   description:
-    "Logic Intelligence Technologies is a Coimbatore-based technology startup building production web apps, e-commerce, and practical AI systems — transparent pricing, free demo before you pay.",
+    "Logic Intelligence Technologies is an AI technology company based in Coimbatore, Tamil Nadu, India, developing intelligent AI products and automation solutions including Logic Voice and VoiceShield.",
   openGraph: {
-    title: "About Logic Intelligence Technologies — Coimbatore Tech Startup",
+    title: "About Logic Intelligence Technologies",
     description:
-      "Meet the team behind Logic Intelligence Technologies. Founded by Vikash Saravanan, we build production web apps, e-commerce platforms, and AI systems for businesses across India.",
+      "Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions including Logic Voice and VoiceShield.",
     images: [
       {
-        url: "/api/og?title=About%20Logic%20Intelligence%20Technologies&category=Coimbatore%20Tech%20Startup",
+        url: "/api/og?title=About%20Logic%20Intelligence%20Technologies&category=AI%20Technology%20Company",
         width: 1200,
         height: 630,
         alt: "Logic Intelligence Technologies About Us",
@@ -43,10 +43,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "About Logic Intelligence Technologies — Coimbatore Tech Startup",
+    title: "About Logic Intelligence Technologies",
     description:
-      "Meet the team behind Logic Intelligence Technologies. Founded by Vikash Saravanan, we build production web apps, e-commerce platforms, and AI systems.",
-    images: ["/api/og?title=About%20Logic%20Intelligence%20Technologies&category=Coimbatore%20Tech%20Startup"],
+      "Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions including Logic Voice and VoiceShield.",
+    images: ["/api/og?title=About%20Logic%20Intelligence%20Technologies&category=AI%20Technology%20Company"],
   },
 };
 
@@ -263,8 +263,9 @@ export default function AboutPage() {
                 for clear scope, honest timelines, and measurable outcomes.
               </p>
               <p className="text-zinc-400 leading-relaxed text-sm sm:text-base">
-                We remain an independent technology startup — lean, accountable, and close to
-                the work — not a private limited corporate shell.
+                As a Private Limited Company based in Coimbatore, Tamil Nadu, we operate with a lean,
+                engineering-first mindset — fast, accountable, and deeply focused on developing intelligent
+                AI products and automation solutions including Logic Voice and VoiceShield.
               </p>
             </div>
             <div className="relative h-[260px] sm:h-[320px] rounded-3xl overflow-hidden border border-white/10 order-1 md:order-2 shadow-[0_20px_50px_rgba(0,0,0,0.35)] bg-zinc-950">
