@@ -74,7 +74,7 @@ const gallery = [
     caption: "Studio",
   },
   {
-    src: "/images/founder/vikash-primary-square-v2.jpg",
+    src: "/images/founder/founder-about-card.jpg",
     alt: `${FOUNDER.name} — portrait`,
     caption: "Portrait",
   },
@@ -84,7 +84,7 @@ const gallery = [
     caption: "Coimbatore",
   },
   {
-    src: "/images/founder/vikash-profile-square.jpg",
+    src: "/images/founder/vikash-banner.jpg",
     alt: `${FOUNDER.name} — profile`,
     caption: "Profile",
   },
@@ -168,7 +168,7 @@ export default function FounderPage() {
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <GraduationCap className="w-3.5 h-3.5 text-primary" />
-                  B.Tech AI &amp; Data Science
+                  B.Tech AI & Data Science
                 </span>
               </p>
               <p className="text-base text-zinc-300 leading-relaxed max-w-xl mb-8">
@@ -241,7 +241,7 @@ export default function FounderPage() {
                     Logic Intelligence Technologies
                   </p>
                   <p className="text-sm text-white/90 font-medium">
-                    Founder &amp; Lead Systems Engineer · Coimbatore
+                    Founder & Lead Systems Engineer · Coimbatore
                   </p>
                 </div>
               </div>
