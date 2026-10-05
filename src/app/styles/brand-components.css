@@ -1,0 +1,93 @@
+/* Brand component classes used by live markup (skip link, .lit-btn family,
+   .lit-card, .lit-eyebrow, .lit-rise). Ported verbatim from styles/brand.css,
+   which is not imported: without these rules the skip link rendered as a
+   visible plain link and secondary/ghost .lit-btn buttons rendered as bare
+   text. brand.css's global type scale, glass overrides and .lit-bg are
+   intentionally NOT ported, to avoid restyling unrelated pages.
+   Kept in @layer components so Tailwind utilities and the existing unlayered
+   .lit-btn-primary/.lit-btn-secondary rules (components-b.css) still win. */
+
+:root {
+  --lit-navy: #0D1B3E;
+  --lit-navy-deep: #0A1530;
+  --lit-navy-raised: #132147;
+  --lit-turquoise: #45D9D2;
+  --lit-azure: #0894DE;
+  --lit-border: rgba(255, 255, 255, 0.09);
+  --lit-border-strong: rgba(69, 217, 210, 0.35);
+  --lit-radius-card: 1rem;
+  --lit-radius-control: 0.625rem;
+  --lit-shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 10px 30px -12px rgba(2, 8, 24, 0.6);
+  --lit-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer components {
+  /* Skip link: hidden until keyboard focus */
+  .lit-skip {
+    position: fixed; left: 1rem; top: -4rem; z-index: 200;
+    padding: 0.625rem 1rem; border-radius: 0.5rem;
+    background: var(--lit-turquoise); color: var(--lit-navy); font-weight: 700; font-size: 0.875rem;
+    transition: top 0.2s var(--lit-ease);
+  }
+  .lit-skip:focus { top: 1rem; }
+
+  /* Surfaces */
+  .lit-card {
+    background: linear-gradient(180deg, rgba(19, 33, 71, 0.72), rgba(13, 27, 62, 0.72));
+    border: 1px solid var(--lit-border);
+    border-radius: var(--lit-radius-card);
+    box-shadow: var(--lit-shadow-card);
+    transition: border-color 0.25s var(--lit-ease), transform 0.25s var(--lit-ease), background-color 0.25s;
+  }
+  .lit-card:hover { border-color: var(--lit-border-strong); }
+  .lit-card-interactive:hover { transform: translateY(-2px); }
+
+  /* Buttons */
+  .lit-btn {
+    --btn-bg: transparent; --btn-fg: #fff; --btn-bd: transparent; --btn-bg-h: rgba(255,255,255,0.08);
+    position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    min-height: 44px; padding: 0 1.25rem; border-radius: var(--lit-radius-control);
+    font-family: var(--font-primary); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.01em; line-height: 1;
+    white-space: nowrap; text-decoration: none; cursor: pointer;
+    color: var(--btn-fg); background: var(--btn-bg); border: 1px solid var(--btn-bd);
+    transition: background-color 0.2s var(--lit-ease), border-color 0.2s var(--lit-ease), color 0.2s, box-shadow 0.2s, transform 0.12s;
+  }
+  .lit-btn:hover { background: var(--btn-bg-h); }
+  .lit-btn:active { transform: translateY(1px); }
+  .lit-btn:disabled, .lit-btn[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+  .lit-btn[data-loading="true"] { pointer-events: none; color: transparent; }
+  .lit-btn[data-loading="true"]::after {
+    content: ""; position: absolute; width: 1rem; height: 1rem; border-radius: 50%;
+    border: 2px solid var(--lit-navy); border-top-color: transparent; animation: lit-spin 0.7s linear infinite;
+  }
+  .lit-btn-sm { min-height: 40px; padding: 0 1rem; font-size: 0.8125rem; }
+  .lit-btn-lg { min-height: 52px; padding: 0 1.75rem; font-size: 0.9375rem; }
+  .lit-btn--primary { --btn-bg: var(--lit-turquoise); --btn-fg: var(--lit-navy); --btn-bg-h: #6DE6E0; font-weight: 700; }
+  .lit-btn--secondary { --btn-bg: rgba(255,255,255,0.04); --btn-bd: rgba(255,255,255,0.18); --btn-bg-h: rgba(255,255,255,0.09); }
+  .lit-btn--azure { --btn-bg: var(--lit-azure); --btn-fg: #fff; --btn-bg-h: #2AA6EA; }
+  .lit-btn--tertiary { --btn-fg: var(--lit-turquoise); --btn-bd: rgba(69,217,210,0.35); --btn-bg-h: rgba(69,217,210,0.1); }
+  .lit-btn--ghost { --btn-fg: #D3DBE8; }
+  .lit-btn--text { --btn-fg: var(--lit-turquoise); padding: 0; min-height: 44px; }
+  .lit-btn--text:hover { background: transparent; text-decoration: underline; text-underline-offset: 4px; }
+  .lit-btn--destructive { --btn-bg: #B42339; --btn-fg: #fff; --btn-bg-h: #CC2D45; }
+
+  /* Eyebrow / chip */
+  .lit-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.3125rem 0.75rem;
+    border: 1px solid rgba(69, 217, 210, 0.28); background: rgba(69, 217, 210, 0.07);
+    color: var(--lit-turquoise); border-radius: 999px;
+    font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  }
+
+  /* Entrance motion */
+  .lit-rise { animation: lit-rise 0.7s var(--lit-ease) both; }
+  .lit-rise-1 { animation-delay: 0.06s; } .lit-rise-2 { animation-delay: 0.12s; }
+  .lit-rise-3 { animation-delay: 0.18s; } .lit-rise-4 { animation-delay: 0.26s; }
+}
+
+@keyframes lit-spin { to { transform: rotate(360deg); } }
+@keyframes lit-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lit-rise { animation: none; }
+}

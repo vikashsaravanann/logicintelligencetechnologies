@@ -1,0 +1,71 @@
+/* Procedural ambient background (components/motion/ambient-tech-background.tsx).
+   Layered so Tailwind utilities on the same elements still win. */
+@layer components {
+  .lit-ambient-grid {
+    background-image:
+      linear-gradient(rgba(69, 217, 210, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(69, 217, 210, 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 85% 70% at 50% 35%, #000 25%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 85% 70% at 50% 35%, #000 25%, transparent 80%);
+  }
+
+  .lit-ambient-net {
+    animation: lit-ambient-drift 90s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  .lit-ambient-node {
+    animation: lit-ambient-pulse 6s ease-in-out infinite;
+  }
+
+  .lit-ambient-light {
+    width: 60vmax;
+    height: 60vmax;
+    border-radius: 9999px;
+    filter: blur(40px);
+    will-change: transform;
+  }
+
+  .lit-ambient-light-a {
+    top: -20vmax;
+    left: -10vmax;
+    background: radial-gradient(circle, rgba(69, 217, 210, 0.10), transparent 65%);
+    animation: lit-ambient-float-a 48s ease-in-out infinite alternate;
+  }
+
+  .lit-ambient-light-b {
+    bottom: -25vmax;
+    right: -15vmax;
+    background: radial-gradient(circle, rgba(8, 148, 222, 0.12), transparent 65%);
+    animation: lit-ambient-float-b 62s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes lit-ambient-drift {
+  from { transform: translate3d(-1.5%, -1%, 0) scale(1.04); }
+  to   { transform: translate3d(1.5%, 1%, 0) scale(1.04); }
+}
+
+@keyframes lit-ambient-pulse {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 1; }
+}
+
+@keyframes lit-ambient-float-a {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(12vmax, 8vmax, 0); }
+}
+
+@keyframes lit-ambient-float-b {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-10vmax, -6vmax, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lit-ambient-net,
+  .lit-ambient-node,
+  .lit-ambient-light {
+    animation: none !important;
+  }
+}

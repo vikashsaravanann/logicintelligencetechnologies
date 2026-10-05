@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function SecurityPage() {
   return (
-    <div className="container mx-auto px-4 py-16 max-w-4xl">
+    <div className="container mx-auto px-4 pt-28 pb-16 max-w-4xl">
       <BackToHome />
       <h1 className="text-4xl font-bold mb-8">Security Practices</h1>
       <ul className="list-disc list-inside space-y-4 text-lg">

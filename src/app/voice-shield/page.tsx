@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function VoiceShieldProductPage() {
   return (
-    <main className="relative min-h-screen bg-transparent text-slate-100 overflow-x-hidden font-sans">
+    <main id="main-content" tabIndex={-1} className="relative min-h-screen bg-transparent text-slate-100 overflow-x-hidden font-sans">
       <LiquidBackground />
 
       <script

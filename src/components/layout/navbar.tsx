@@ -25,7 +25,7 @@ const NavLink = ({
     <Link
       href={href}
       onClick={onClick}
-      className={`relative inline-flex items-center h-11 px-2 text-xs font-semibold tracking-[0.14em] whitespace-nowrap transition-colors ${
+      className={`relative inline-flex items-center h-11 px-2 text-xs font-semibold tracking-[0.06em] whitespace-nowrap transition-colors ${
         isActive ? "text-primary" : "text-zinc-200 hover:text-primary"
       }`}
     >
@@ -117,12 +117,12 @@ export default function Navbar() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <span className="text-xs font-bold text-white tracking-[0.14em] hidden lg:inline">
+              <span className="text-xs font-bold text-white tracking-[0.14em] hidden min-[1800px]:inline">
                 {COMPANY.displayName.toUpperCase()}
               </span>
             </Link>
 
-            <div className="hidden lg:flex items-center justify-center gap-0.5 flex-1 min-w-0">
+            <div className="hidden xl:flex items-center justify-center gap-0.5 flex-1 min-w-0">
               {PRIMARY_NAV.map((item) => (
                 <NavLink key={item.href} href={item.href}>
                   {item.label.toUpperCase()}
@@ -132,7 +132,7 @@ export default function Navbar() {
               <div className="relative" ref={moreRef}>
                 <button
                   type="button"
-                  className="inline-flex items-center h-11 px-2 text-xs font-semibold tracking-[0.14em] text-zinc-200 hover:text-primary transition-colors"
+                  className="inline-flex items-center h-11 px-2 text-xs font-semibold tracking-[0.06em] text-zinc-200 hover:text-primary transition-colors"
                   onClick={() => setMoreOpen((v) => !v)}
                   aria-expanded={moreOpen}
                   aria-haspopup="true"
@@ -192,23 +192,24 @@ export default function Navbar() {
               <AuthNavControl />
               <Link
                 href={PRIMARY_CTA.href}
-                className="hidden lg:inline-flex h-8 px-4 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
+                className="hidden min-[1800px]:inline-flex h-8 px-4 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] border border-white/20 bg-white/5 hover:bg-white/10 transition-colors"
               >
                 Book Consultation
               </Link>
               <Link
                 href="/contact"
-                className="hidden lg:inline-flex h-8 px-4 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-90 transition-opacity"
+                className="hidden xl:inline-flex h-8 px-4 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.14em] bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-90 transition-opacity"
               >
                 Start Project
               </Link>
-              <ThemeToggle className="hidden lg:grid" />
+              <ThemeToggle className="hidden xl:grid" />
               <button
                 type="button"
-                className="lg:hidden text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="xl:hidden text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={isOpen ? "Close menu" : "Open menu"}
                 aria-expanded={isOpen}
+                aria-controls="mobile-menu"
               >
                 {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
@@ -219,11 +220,13 @@ export default function Navbar() {
         <AnimatePresence>
           {isOpen && (
             <motion.div
+              id="mobile-menu"
+              aria-label="Site navigation"
               initial={{ opacity: 0, x: "100%" }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 320 }}
-              className="fixed top-0 right-0 w-[min(88vw,380px)] h-[100dvh] bg-[rgba(10,15,30,0.98)] border-l border-white/10 lg:hidden z-40 overflow-y-auto"
+              className="fixed top-0 right-0 w-[min(88vw,380px)] h-[100dvh] bg-[rgba(10,15,30,0.98)] border-l border-white/10 xl:hidden z-40 overflow-y-auto"
             >
               <div className="flex flex-col px-5 pt-16 pb-10">
                 <div className="space-y-1 mb-6">
@@ -320,7 +323,7 @@ export default function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/60 z-30 lg:hidden"
+              className="fixed inset-0 bg-black/60 z-30 xl:hidden"
               aria-hidden
             />
           )}
