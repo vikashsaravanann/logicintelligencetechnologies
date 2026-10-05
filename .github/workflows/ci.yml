@@ -53,7 +53,7 @@ jobs:
 
       - name: Verify PDFs (informational until assets uploaded)
         run: npm run verify:pdfs
-        continue-on-error: false
+        continue-on-error: true
 
       - name: Verify environment shape (informational in CI)
         run: npm run verify:environment
