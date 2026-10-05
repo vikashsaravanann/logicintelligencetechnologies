@@ -37,12 +37,12 @@ export default function PackagesSection() {
                 key={pkg.slug}
                 className={`relative rounded-3xl p-8 md:p-10 flex flex-col h-full bg-zinc-900/60 backdrop-blur-xl border transition-transform duration-200 will-change-transform hover:-translate-y-1 ${
                   isPopular
-                    ? "lg:-mt-6 lg:mb-6 border-accent/50 shadow-[0_0_30px_rgba(123,47,190,0.15)]"
+                    ? "lg:-mt-6 lg:mb-6 border-accent/50 shadow-[0_0_30px_rgba(8,148,222,0.15)]"
                     : "border-white/10"
                 }`}
               >
                 {isPopular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.2em] text-white bg-accent shadow-[0_0_15px_rgba(123,47,190,0.5)]">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.2em] text-white bg-accent shadow-[0_0_15px_rgba(8,148,222,0.5)]">
                     Most Popular
                   </div>
                 )}
@@ -90,7 +90,7 @@ export default function PackagesSection() {
                   href={`/packages/${pkg.slug}`}
                   className={`flex items-center justify-center w-full py-4 rounded-xl text-sm font-bold transition-colors cursor-pointer ${
                     isPopular
-                      ? "bg-accent text-white hover:bg-accent/90 shadow-[0_0_15px_rgba(123,47,190,0.4)]"
+                      ? "bg-accent text-white hover:bg-accent/90 shadow-[0_0_15px_rgba(8,148,222,0.4)]"
                       : "bg-white/10 text-white hover:bg-white/20"
                   }`}
                 >

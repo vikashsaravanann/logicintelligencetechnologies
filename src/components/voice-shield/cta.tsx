@@ -237,7 +237,7 @@ export default function VoiceShieldCTA() {
                 <button
                   type="submit"
                   disabled={submitting || !form.fullName || !form.email}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-gradient-to-r from-cyan-500/80 to-blue-600/80 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm tracking-widest uppercase transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_24px_rgba(6,182,212,0.4)] hover:shadow-[0_0_35px_rgba(6,182,212,0.6)] backdrop-blur-md border border-cyan-400/30"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-primary hover:bg-[#6DE6E0] text-[#0D1B3E] font-bold text-sm tracking-widest uppercase transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_24px_rgba(6,182,212,0.4)] hover:shadow-[0_0_35px_rgba(6,182,212,0.6)] backdrop-blur-md border border-cyan-400/30"
                 >
                   {submitting ? (
                     <>

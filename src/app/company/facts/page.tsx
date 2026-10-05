@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function CompanyFactsPage() {
   return (
-    <main className="min-h-screen bg-[#060B18] text-slate-100 pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#0A1530] text-slate-100 pt-28 pb-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-12">
         <BackToHome />
 

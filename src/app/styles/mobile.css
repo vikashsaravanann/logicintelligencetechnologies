@@ -26,21 +26,10 @@ img, video, canvas, iframe, svg {
   }
 }
 
-/* Custom Root Font Sizes for denser typography on smaller screens */
+/* Mobile root size: 14px keeps rem layouts proportional while staying readable */
 @media screen and (max-width: 768px) {
-  html { font-size: 12px !important; }
+  html { font-size: 14px; }
 }
-
-@media screen and (max-width: 430px) {
-  html { font-size: 11.5px !important; }
-}
-
 @media screen and (max-width: 360px) {
-  html { font-size: 11px !important; }
-}
-
-@media (max-width: 640px) {
-  html, body {
-    font-size: 12px !important;
-  }
+  html { font-size: 13.5px; }
 }

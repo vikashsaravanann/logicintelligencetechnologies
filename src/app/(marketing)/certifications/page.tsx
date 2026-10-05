@@ -59,7 +59,7 @@ export default function CertificationsPage() {
           {certifications.map((cert) => (
             <div 
               key={cert.title}
-              className="group rounded-3xl border border-white/10 bg-white/[0.02] overflow-hidden hover:bg-white/[0.04] transition-all hover:border-primary/30 hover:shadow-[0_0_30px_rgba(0,191,255,0.1)] flex flex-col"
+              className="group rounded-3xl border border-white/10 bg-white/[0.02] overflow-hidden hover:bg-white/[0.04] transition-all hover:border-primary/30 hover: flex flex-col"
             >
               <div className="relative aspect-[4/3] w-full bg-[#070b16] border-b border-white/10 overflow-hidden p-6 flex items-center justify-center">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />

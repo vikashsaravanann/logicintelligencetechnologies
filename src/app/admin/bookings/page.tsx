@@ -33,7 +33,7 @@ export default async function AdminBookingsPage() {
         <Link
           href="/book-consultation"
           target="_blank"
-          className="px-4 py-2 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_15px_rgba(0,191,255,0.3)]"
+          className="px-4 py-2 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all "
         >
           View Public Booking Form
         </Link>

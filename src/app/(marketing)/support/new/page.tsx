@@ -51,7 +51,7 @@ export default function NewSupportTicketPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20">
       <div className="max-w-3xl mx-auto px-6">
         <div className="mb-8">
           <BackButton fallbackHref="/support" label="Back to Support" inline />
@@ -152,7 +152,7 @@ export default function NewSupportTicketPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.4)] flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full py-4 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all  flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {loading ? (
               <>

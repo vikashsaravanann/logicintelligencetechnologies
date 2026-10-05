@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 const CATEGORY_STYLES: Record<string, { color: string; bg: string; border: string; Icon: React.ComponentType<{ className?: string }> }> = {
-  "Corporate":       { color: "#00BFFF", bg: "rgba(0,191,255,0.08)",  border: "rgba(0,191,255,0.2)",  Icon: Briefcase },
+  "Corporate":       { color: "#45D9D2", bg: "rgba(69,217,210,0.08)",  border: "rgba(69,217,210,0.2)",  Icon: Briefcase },
   "Services":        { color: "#8B5CF6", bg: "rgba(139,92,246,0.08)", border: "rgba(139,92,246,0.2)", Icon: Code2 },
   "Technical Guide": { color: "#10B981", bg: "rgba(16,185,129,0.08)", border: "rgba(16,185,129,0.2)", Icon: FileCheck },
   "AI & Data":       { color: "#F59E0B", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)", Icon: Brain },
@@ -28,7 +28,7 @@ const CATEGORY_STYLES: Record<string, { color: string; bg: string; border: strin
 
 export default function ResourcesPage() {
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20 overflow-hidden">
       <BackToHome href="/" label="Back to Home" />
       {/* Background glow */}
       <div className="absolute top-10 right-1/4 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
@@ -52,15 +52,15 @@ export default function ResourcesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {PDF_RESOURCES.map((res) => {
             const catStyle = CATEGORY_STYLES[res.category] ?? {
-              color: "#00BFFF",
-              bg: "rgba(0,191,255,0.08)",
-              border: "rgba(0,191,255,0.2)",
+              color: "#45D9D2",
+              bg: "rgba(69,217,210,0.08)",
+              border: "rgba(69,217,210,0.2)",
               Icon: FileText,
             };
             return (
               <div
                 key={res.id}
-                className="group rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.12)] overflow-hidden"
+                className="group rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover: overflow-hidden"
               >
                 {/* Visual Cover Thumbnail */}
                 <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/40">

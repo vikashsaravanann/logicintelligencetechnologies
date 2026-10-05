@@ -79,7 +79,7 @@ export default function ResourceDownloadForm({ resource }: Props) {
         <a
           href={secureToken ? `/api/resources/download?token=${secureToken}` : "#"}
           download={resource.filename}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.4)]"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all "
         >
           <Download className="w-4 h-4" />
           <span>Download Again</span>
@@ -139,7 +139,7 @@ export default function ResourceDownloadForm({ resource }: Props) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-3.5 rounded-xl bg-primary text-black font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-[0_0_20px_rgba(0,191,255,0.3)] mt-2"
+        className="w-full py-3.5 rounded-xl bg-primary text-black font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50  mt-2"
       >
         {loading ? (
           <>

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function SupportHubPage() {
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20 overflow-hidden">
       <BackToHome href="/" label="Back to Home" />
       {/* Glow */}
       <div className="absolute top-10 left-1/3 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
@@ -35,7 +35,7 @@ export default function SupportHubPage() {
           <div className="mt-8 flex justify-center gap-4">
             <Link
               href="/support/new"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-primary text-black font-bold hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.4)]"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-primary text-black font-bold hover:bg-primary/90 transition-all "
             >
               <Plus className="w-4 h-4" />
               <span>Submit Support Ticket</span>

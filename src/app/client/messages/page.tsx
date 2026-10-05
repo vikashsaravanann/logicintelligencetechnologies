@@ -44,7 +44,7 @@ export default function ClientMessagesPage() {
           />
           <button
             type="button"
-            className="px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(0,191,255,0.3)]"
+            className="px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center gap-1.5 "
           >
             <Send className="w-3.5 h-3.5" />
             <span>Send</span>

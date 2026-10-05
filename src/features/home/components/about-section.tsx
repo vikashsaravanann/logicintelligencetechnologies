@@ -71,9 +71,9 @@ export default function AboutSection() {
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-black to-accent/20 opacity-50" />
             <div className="absolute inset-0 flex items-center justify-center p-6 md:p-12">
               <div className="w-full h-full border border-white/5 rounded-full animate-[spin_60s_linear_infinite] relative">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-primary rounded-full shadow-[0_0_20px_rgba(0,191,255,1)]" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-primary rounded-full " />
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-4 h-4 bg-accent rounded-full shadow-[0_0_20px_rgba(238,42,123,1)]" />
-                <div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-primary rounded-full shadow-[0_0_20px_rgba(0,191,255,1)]" />
+                <div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-primary rounded-full " />
                 <div className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-accent rounded-full shadow-[0_0_20px_rgba(238,42,123,1)]" />
               </div>
               <div className="absolute w-[60%] h-[60%] border border-white/10 rounded-full animate-[spin_40s_linear_infinite_reverse]" />
@@ -82,7 +82,7 @@ export default function AboutSection() {
             
             <div className="absolute bottom-8 left-8 right-8 p-6 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-black p-[2px] border border-primary/30 shadow-[0_0_15px_rgba(0,191,255,0.2)] relative">
+                <div className="w-12 h-12 rounded-full overflow-hidden bg-black p-[2px] border border-primary/30  relative">
                   <Image
                     src={COMPANY.logoIconPath}
                     alt="Logic Intelligence Technologies Logo"

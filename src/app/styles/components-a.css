@@ -1,7 +1,7 @@
 /* components-a: core layout + body */
 html.light body { color: #1C140E; }
 body {
-  background: var(--bg-primary);
+  background: #0D1B3E;
   color: #ffffff;
   font-family: var(--font-primary), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;

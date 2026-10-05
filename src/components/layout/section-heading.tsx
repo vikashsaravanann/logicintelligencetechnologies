@@ -27,7 +27,7 @@ export function SectionHeading({
       {badge && (
         <div
           className={cn(
-            "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-[0.14em] bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-sm",
+            "lit-eyebrow",
             align === "center" && "mx-auto"
           )}
         >
@@ -35,7 +35,7 @@ export function SectionHeading({
         </div>
       )}
 
-      <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight leading-[1.15]">
         {title}
       </h2>
 

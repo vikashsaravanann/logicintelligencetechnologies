@@ -7,7 +7,7 @@ export default function TechStackMarqueeSection() {
   ];
 
   return (
-    <section className="py-12 bg-[#060B18] border-y border-white/5 overflow-hidden">
+    <section className="py-12 bg-[#0A1530] border-y border-white/5 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 mb-8 text-center">
         <p className="text-sm font-bold tracking-[0.2em] uppercase text-zinc-400">Trusted Technologies & Partner Stack</p>
       </div>

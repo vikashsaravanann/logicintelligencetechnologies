@@ -113,7 +113,7 @@ export default function BookConsultationPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20 overflow-hidden">
       <BackToHome href="/" label="Back to Home" />
       <div className="absolute top-10 left-1/3 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 
@@ -151,7 +151,7 @@ export default function BookConsultationPage() {
                     onClick={() => setSelectedType(type)}
                     className={`p-4 rounded-xl border cursor-pointer transition-all ${
                       selectedType.id === type.id
-                        ? "border-primary bg-primary/10 shadow-[0_0_20px_rgba(0,191,255,0.1)]"
+                        ? "border-primary bg-primary/10 "
                         : "border-white/10 bg-white/5 hover:border-white/20"
                     }`}
                   >
@@ -219,7 +219,7 @@ export default function BookConsultationPage() {
                       onClick={() => setSelectedSlot(slot)}
                       className={`py-3 rounded-xl border text-xs font-bold transition-all ${
                         selectedSlot === slot
-                          ? "border-primary bg-primary text-black shadow-[0_0_15px_rgba(0,191,255,0.4)]"
+                          ? "border-primary bg-primary text-black "
                           : "border-white/10 bg-white/5 text-zinc-300 hover:border-white/20"
                       }`}
                     >
@@ -317,7 +317,7 @@ export default function BookConsultationPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 rounded-xl bg-primary text-black font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,191,255,0.4)] disabled:opacity-50"
+                className="w-full py-4 rounded-xl bg-primary text-black font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center justify-center gap-2  disabled:opacity-50"
               >
                 {loading ? (
                   <>

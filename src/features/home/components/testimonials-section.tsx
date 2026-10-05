@@ -8,7 +8,7 @@ export default function TestimonialsSection() {
   const hasTestimonials = testimonials.length > 0;
 
   return (
-    <section id="testimonials" className="py-16 md:py-24 bg-[#060B18] border-y border-white/5 relative overflow-hidden">
+    <section id="testimonials" className="py-16 md:py-24 bg-[#0A1530] border-y border-white/5 relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">

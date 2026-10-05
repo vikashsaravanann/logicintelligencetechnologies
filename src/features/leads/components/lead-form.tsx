@@ -93,7 +93,7 @@ export default function LeadForm() {
       <div className="max-w-3xl mx-auto relative z-10">
         {sent ? (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-20 bg-[#12172b] rounded-3xl border border-white/10 shadow-2xl p-6 md:p-12">
-              <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(0,191,255,0.2)]">
+              <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8 ">
                 <CheckCircle2 className="h-12 w-12 text-primary" />
               </div>
               <h3 className="text-4xl font-black text-white mb-4">Request Received!</h3>
@@ -324,7 +324,7 @@ export default function LeadForm() {
                     {error}
                   </div>
                 )}
-                <button type="submit" disabled={isSubmitting} className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-black bg-white hover:bg-primary transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(0,191,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="submit" disabled={isSubmitting} className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-black bg-white hover:bg-primary transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover: disabled:opacity-50 disabled:cursor-not-allowed">
                   {isSubmitting ? (
                     <><span className="w-4 h-4 border-2 border-black/40 border-t-black rounded-full animate-spin" /> Submitting…</>
                   ) : (

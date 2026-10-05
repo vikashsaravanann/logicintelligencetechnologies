@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 import { COMPANY } from '@/config/company';
@@ -18,6 +18,19 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-space-grotesk',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: false,
+  variable: '--font-jetbrains-mono',
+});
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -25,7 +38,7 @@ export const viewport: Viewport = {
   userScalable: true,
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: dark)', color: '#0A0F1E' },
+    { media: '(prefers-color-scheme: dark)', color: '#0D1B3E' },
     { media: '(prefers-color-scheme: light)', color: '#F7F4EE' },
   ],
 };
@@ -106,7 +119,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="overflow-x-hidden w-full max-w-[100vw]">
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} overflow-x-hidden w-full max-w-[100vw]`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href="/icon-48.png" type="image/png" sizes="48x48" />
@@ -124,9 +137,10 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} m-0 p-0 w-full max-w-[100vw] overflow-x-hidden`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <a href="#main-content" className="lit-skip">Skip to main content</a>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           <GlobalBackground />
-          <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
+          <Toaster position="top-right" toastOptions={{ style: { background: '#132147', color: '#fff', border: '1px solid rgba(255,255,255,0.12)' } }} />
           {children}
           <SpeedInsights />
           <Analytics />

@@ -28,7 +28,7 @@ export default async function TicketDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20">
       <div className="max-w-4xl mx-auto px-6 space-y-8">
         <div>
           <BackButton fallbackHref="/support" label="Back to Support" inline />

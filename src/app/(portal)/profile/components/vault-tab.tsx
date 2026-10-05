@@ -93,7 +93,7 @@ export function VaultTab({ files, user }: { files: any[], user: any }) {
       {/* Upload Area */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-        className="relative group p-6 md:p-10 border-2 border-dashed border-white/20 rounded-3xl bg-[rgba(10,15,30,0.6)] backdrop-blur-2xl text-center hover:bg-[rgba(20,30,50,0.6)] hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.2)] transition-all duration-300 overflow-hidden"
+        className="relative group p-6 md:p-10 border-2 border-dashed border-white/20 rounded-3xl bg-[rgba(10,15,30,0.6)] backdrop-blur-2xl text-center hover:bg-[rgba(20,30,50,0.6)] hover:border-blue-500/50 hover: transition-all duration-300 overflow-hidden"
       >
         <input 
           type="file" 

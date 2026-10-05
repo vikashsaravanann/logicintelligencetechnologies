@@ -38,7 +38,7 @@ const instagramPosts = [
 
 export default function InstagramFeedSection() {
   return (
-    <section className="py-16 md:py-24 bg-[#060B18]">
+    <section className="py-16 md:py-24 bg-[#0A1530]">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <motion.div

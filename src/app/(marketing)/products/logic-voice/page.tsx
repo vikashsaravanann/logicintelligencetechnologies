@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 
 export default function LogicVoiceProductPage() {
   return (
-    <main className="relative min-h-screen bg-[#060B18] text-slate-100 overflow-x-hidden font-sans pt-28 pb-20">
+    <main className="relative min-h-screen bg-[#0A1530] text-slate-100 overflow-x-hidden font-sans pt-28 pb-20">
       <BackToHome href="/products" label="Back to Products" />
 
       {/* Decorative Glow */}
@@ -82,7 +82,7 @@ export default function LogicVoiceProductPage() {
               href="https://logicvoice.logicintelligencetechnologies.in/"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:opacity-95 text-white font-bold text-sm tracking-wider uppercase transition-all shadow-[0_0_30px_rgba(0,191,255,0.3)]"
+              className="group flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-[#0D1B3E] hover:bg-[#6DE6E0] hover:opacity-95  font-bold text-sm tracking-wider uppercase transition-all "
             >
               <Zap className="w-4 h-4" />
               <span>Launch Logic Voice</span>

@@ -180,7 +180,7 @@ export function MobileMenu({
             <Link
               href="/contact"
               onClick={onClose}
-              className="w-full h-12 px-4 text-center rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 flex items-center justify-center gap-2 tracking-wider uppercase text-xs shadow-lg transition-all"
+              className="w-full h-12 px-4 text-center rounded-xl font-bold  bg-primary text-[#0D1B3E] hover:bg-[#6DE6E0]  flex items-center justify-center gap-2 tracking-wider uppercase text-xs shadow-lg transition-all"
             >
               <Mail className="w-4 h-4" />
               Start Project

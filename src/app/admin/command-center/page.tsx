@@ -87,7 +87,7 @@ export default async function AdminCommandCenterPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Link href="/admin/proposals/new" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_15px_rgba(0,191,255,0.3)]">
+            <Link href="/admin/proposals/new" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all ">
               <Plus className="w-4 h-4" /> Draft Proposal
             </Link>
             <Link href="/admin/leads" className="px-4 py-2 rounded-xl bg-white/8 hover:bg-white/12 text-white font-bold text-xs uppercase tracking-wider transition-all border border-white/10">

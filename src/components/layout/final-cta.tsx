@@ -48,7 +48,7 @@ export function FinalCTA({
             <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
               <Link
                 href={primaryHref}
-                className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 active:scale-[0.98] transition-all shadow-[0_4px_20px_rgba(6,182,212,0.3)] text-sm uppercase tracking-wider"
+                className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-bold  bg-primary text-[#0D1B3E] hover:bg-[#6DE6E0]  active:scale-[0.98] transition-all shadow-[0_4px_20px_rgba(6,182,212,0.3)] text-sm uppercase tracking-wider"
               >
                 <Calendar className="w-4 h-4" />
                 <span>{primaryLabel}</span>

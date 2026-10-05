@@ -226,7 +226,7 @@ export default function FounderPage() {
             </div>
 
             <div className="lg:col-span-7 order-1 lg:order-2">
-              <div className="relative aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5] max-h-[560px] w-full mx-auto rounded-3xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(0,191,255,0.12)]">
+              <div className="relative aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5] max-h-[560px] w-full mx-auto rounded-3xl overflow-hidden border border-white/10 ">
                 <Image
                   src="/images/founder/founder-about-main.jpg"
                   alt={`${FOUNDER.name} — Founder of ${FOUNDER.company}`}
@@ -235,7 +235,7 @@ export default function FounderPage() {
                   className="object-cover object-top sm:object-center"
                   sizes="(max-width: 1024px) 100vw, 48vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E]/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B3E]/80 via-transparent to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-1">
                     Logic Intelligence Technologies

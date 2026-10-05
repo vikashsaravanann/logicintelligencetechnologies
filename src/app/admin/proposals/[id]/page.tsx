@@ -47,7 +47,7 @@ export default async function AdminProposalDetailPage({ params }: Props) {
         <Link
           href={`/proposal/${proposal.secure_token}`}
           target="_blank"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_15px_rgba(0,191,255,0.3)]"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all "
         >
           <span>Open Public Link</span>
           <ArrowRight className="w-4 h-4" />

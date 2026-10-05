@@ -56,7 +56,7 @@ export default function FloatingElements() {
             {...presence}
             transition={{ duration: 0.2 }}
             onClick={scrollToTop}
-            className="fixed bottom-24 left-6 z-50 p-3 bg-[rgba(0,191,255,0.1)] border border-primary/50 rounded-full text-primary hover:bg-primary hover:text-black shadow-[0_0_15px_rgba(0,191,255,0.3)] transition-colors cursor-pointer"
+            className="fixed bottom-24 left-6 z-50 p-3 bg-[rgba(69,217,210,0.1)] border border-primary/50 rounded-full text-primary hover:bg-primary hover:text-black  transition-colors cursor-pointer"
             aria-label="Back to top"
             type="button"
           >

@@ -220,7 +220,7 @@ export default function ProposalViewerClient({ proposal }: Props) {
                 type="button"
                 onClick={handleApprove}
                 disabled={loading || !signerName.trim() || !agreeTerms}
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-black font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_25px_rgba(0,191,255,0.4)] disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-black font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-all  disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
