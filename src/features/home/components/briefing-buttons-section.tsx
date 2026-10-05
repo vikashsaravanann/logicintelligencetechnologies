@@ -20,7 +20,7 @@ const ITEMS = [
     href: "/jobs",
     title: "CAREERS",
     icon: Building2,
-    image: "/assets/careers_bg.jpg",
+    image: "/assets/jobs/studio-hero.jpg",
   },
 ] as const;
 

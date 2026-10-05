@@ -23,7 +23,7 @@ export default function WorkPage() {
     <main className="min-h-screen bg-transparent text-white pt-32">
       <BackToHome href="/" label="Back to Home" />
       <section className="relative py-16 px-6 lg:px-8 overflow-hidden">
-        <PageBackdrop src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&h=900&q=80" />
+        <PageBackdrop src="/assets/jobs/eng-desk.jpg" />
         <div className="relative z-10 max-w-7xl mx-auto">
         <div className="text-center mb-16 max-w-3xl mx-auto">
           <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">

@@ -90,7 +90,7 @@ export default function AiAssistantPage() {
         {/* Visual Architecture Banner */}
         <div className="max-w-4xl mx-auto aspect-[21/9] relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0A1530]/50">
           <SafeImage
-            src="/assets/knowledge_assistant_bg.jpg"
+            src="/assets/jobs/ai-lab.jpg"
             alt="LIT Knowledge Assistant Architecture"
             fill
             priority

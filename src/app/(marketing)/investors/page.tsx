@@ -23,7 +23,7 @@ export default function InvestorsPage() {
   return (
     <main className="min-h-screen bg-transparent text-white pt-24 sm:pt-28">
       <section className="relative px-6 lg:px-8 overflow-hidden">
-        <PageBackdrop src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&h=900&q=80" />
+        <PageBackdrop src="/assets/investors_bg.jpg" />
         <div className="relative z-10 max-w-4xl mx-auto text-center pb-12 pt-6">
         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-4">
           LOGIC INTELLIGENCE TECHNOLOGIES

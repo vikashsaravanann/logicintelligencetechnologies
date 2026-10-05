@@ -49,7 +49,7 @@ export default function AboutPage() {
     <main className="min-h-screen bg-transparent text-white pt-28 sm:pt-32">
       <BackToHome />
       <section className="relative py-14 sm:py-20 px-6 lg:px-8 overflow-hidden">
-        <PageBackdrop src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&h=900&q=80" />
+        <PageBackdrop src="/assets/backdrops/about-hero.jpg" />
         <div className="relative z-10 max-w-7xl mx-auto text-center">
           <span className="inline-flex items-center gap-2 text-primary font-bold tracking-widest uppercase text-xs sm:text-sm mb-5 px-3 py-1.5 rounded-full border border-primary/25 bg-primary/10">
             <Rocket className="w-3.5 h-3.5" />
