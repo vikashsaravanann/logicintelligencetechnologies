@@ -39,10 +39,11 @@ export default function BriefingButtonsSection() {
           >
             {/* Real Image Background */}
             <div className="absolute inset-0 opacity-60 transition-opacity duration-300 group-hover:opacity-100">
-              <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+              <img src={item.image} alt="" loading="lazy" className="w-full h-full object-cover" />
             </div>
             
             {/* Vignette Overlay to ensure text readability */}
+            <div className="absolute inset-0 bg-[#0D1B3E]/50" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B3E] via-[#0D1B3E]/80 to-transparent" />
             
             <div className="absolute inset-0 flex flex-col justify-end p-5">

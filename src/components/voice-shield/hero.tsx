@@ -34,7 +34,7 @@ const STATS = [
     value: "Zero",
     note: "Default configuration: STORE_RAW_AUDIO=false",
     icon: Lock,
-    color: "text-emerald-400",
+    color: "text-primary",
   },
   {
     label: "Risk Levels",

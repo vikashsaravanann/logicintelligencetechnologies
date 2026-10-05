@@ -15,12 +15,12 @@ export default function SalesPage() {
   };
 
   const inputClass =
-    "w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-500 font-mono focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 transition-colors";
+    "w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-500 font-mono focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-colors";
   const labelClass =
     "block text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-slate-400 mb-2";
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 pt-32 pb-24">
+    <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-primary selection:text-slate-950 pt-32 pb-24">
       <BackToHome />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_left,_rgba(16,185,129,0.08),_transparent_40%)]" />
 
@@ -30,11 +30,11 @@ export default function SalesPage() {
           
           {/* Left Column: Context */}
           <div className="space-y-8 lg:pr-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl border border-slate-800 bg-slate-900/50 shadow-2xl backdrop-blur-xl mb-4">
-              <Briefcase className="w-8 h-8 text-emerald-400" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl border border-slate-800 bg-slate-900/50 shadow-2xl backdrop-blur-md mb-4">
+              <Briefcase className="w-8 h-8 text-primary" />
             </div>
             
-            <h1 className="text-3xl sm:text-5xl font-black tracking-[0.12em] text-white uppercase">
+            <h1 className="text-3xl sm:text-5xl font-bold tracking-[0.12em] text-white uppercase">
               Enterprise Inquiries
             </h1>
             
@@ -44,7 +44,7 @@ export default function SalesPage() {
 
             <div className="pt-8 space-y-6">
               <div className="flex items-start gap-4">
-                <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
+                <CheckCircle2 className="w-6 h-6 text-primary shrink-0" />
                 <div>
                   <h3 className="text-sm font-mono font-bold tracking-widest text-white uppercase mb-1">
                     Rapid Architectural Review
@@ -56,7 +56,7 @@ export default function SalesPage() {
               </div>
               
               <div className="flex items-start gap-4">
-                <ShieldCheck className="w-6 h-6 text-emerald-500 shrink-0" />
+                <ShieldCheck className="w-6 h-6 text-primary shrink-0" />
                 <div>
                   <h3 className="text-sm font-mono font-bold tracking-widest text-white uppercase mb-1">
                     Enterprise SLA Guarantees
@@ -71,9 +71,9 @@ export default function SalesPage() {
             <div className="pt-8 border-t border-slate-800">
               <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-4">Trusted By</p>
               <div className="flex flex-wrap gap-8 opacity-50 grayscale">
-                <div className="text-lg font-black tracking-widest uppercase text-white">Acme Corp</div>
-                <div className="text-lg font-black tracking-widest uppercase text-white">FinSec</div>
-                <div className="text-lg font-black tracking-widest uppercase text-white">GlobalBank</div>
+                <div className="text-lg font-bold tracking-widest uppercase text-white">Acme Corp</div>
+                <div className="text-lg font-bold tracking-widest uppercase text-white">FinSec</div>
+                <div className="text-lg font-bold tracking-widest uppercase text-white">GlobalBank</div>
               </div>
             </div>
           </div>
@@ -81,8 +81,8 @@ export default function SalesPage() {
           {/* Right Column: Form */}
           <div className="relative">
             {submitted ? (
-              <div className="rounded-2xl border border-emerald-900/50 bg-emerald-950/10 backdrop-blur-xl p-10 shadow-2xl h-full flex flex-col items-center justify-center text-center">
-                <CheckCircle2 className="w-16 h-16 text-emerald-400 mb-6" />
+              <div className="rounded-2xl border border-primary/50 bg-primary/10 backdrop-blur-md p-10 shadow-2xl h-full flex flex-col items-center justify-center text-center">
+                <CheckCircle2 className="w-16 h-16 text-primary mb-6" />
                 <h3 className="text-2xl font-mono font-bold tracking-widest text-white uppercase mb-4">
                   Request Received
                 </h3>
@@ -91,7 +91,7 @@ export default function SalesPage() {
                 </p>
               </div>
             ) : (
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-xl p-8 sm:p-10 shadow-2xl">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md p-8 sm:p-10 shadow-2xl">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -142,7 +142,7 @@ export default function SalesPage() {
 
                   <button
                     type="submit"
-                    className="w-full inline-flex items-center justify-center gap-2 py-4 px-8 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-mono font-bold text-xs tracking-[0.15em] uppercase shadow-lg shadow-emerald-500/25 transition-all mt-4"
+                    className="w-full inline-flex items-center justify-center gap-2 py-4 px-8 rounded-xl bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary text-slate-950 font-mono font-bold text-xs tracking-[0.15em] uppercase shadow-lg shadow-primary/25 transition-all mt-4"
                   >
                     Submit Inquiry <ArrowRight className="w-4 h-4" />
                   </button>

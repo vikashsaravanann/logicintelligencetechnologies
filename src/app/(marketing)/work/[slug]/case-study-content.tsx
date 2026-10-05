@@ -62,7 +62,7 @@ export default function CaseStudyContent({
               {project.category}
               {project.client ? ` · ${project.client}` : ""}
             </span>
-            <h1 className="uppercase text-4xl md:text-5xl lg:text-7xl font-black text-white leading-[1.1] mb-6 tracking-tight">
+            <h1 className="uppercase text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-[1.1] mb-6 tracking-tight">
               {project.title}
             </h1>
             <p className="text-xl md:text-2xl text-zinc-300 leading-relaxed font-light">
@@ -107,7 +107,7 @@ export default function CaseStudyContent({
                   className="p-6 md:p-8 rounded-[2rem] border border-primary/20 bg-primary/5 flex flex-col items-center justify-center text-center relative overflow-hidden group"
                 >
                   <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <p className="text-3xl md:text-5xl font-black text-white mb-2 relative z-10">{m.value}</p>
+                  <p className="text-3xl md:text-5xl font-bold text-white mb-2 relative z-10">{m.value}</p>
                   <p className="text-xs md:text-sm text-zinc-400 uppercase tracking-widest font-semibold relative z-10">{m.label}</p>
                 </div>
               ))}
@@ -123,7 +123,7 @@ export default function CaseStudyContent({
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h2 className="text-3xl md:text-4xl font-black text-white mb-6 flex items-center gap-4">
+                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 flex items-center gap-4">
                     <span className="w-12 h-[2px] bg-primary block" />
                     The Challenge
                   </h2>
@@ -140,7 +140,7 @@ export default function CaseStudyContent({
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 0.8 }}
                 >
-                  <h2 className="text-3xl md:text-4xl font-black text-white mb-6 flex items-center gap-4">
+                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 flex items-center gap-4">
                     <span className="w-12 h-[2px] bg-primary block" />
                     The Solution
                   </h2>
@@ -161,7 +161,7 @@ export default function CaseStudyContent({
                   <div className="absolute top-0 right-0 p-8 opacity-10">
                     <CheckCircle2 className="w-32 h-32 text-primary" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-black text-white mb-6 relative z-10">The Impact</h2>
+                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 relative z-10">The Impact</h2>
                   <p className="text-lg md:text-xl text-zinc-300 leading-relaxed font-light relative z-10">
                     {project.results}
                   </p>
@@ -180,7 +180,7 @@ export default function CaseStudyContent({
                 <div className="absolute top-0 right-0 p-8 opacity-10">
                   <CheckCircle2 className="w-32 h-32 text-primary" />
                 </div>
-                <h2 className="text-2xl md:text-3xl font-black text-white mb-6 relative z-10">The Impact</h2>
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 relative z-10">The Impact</h2>
                 <p className="text-lg md:text-xl text-zinc-300 leading-relaxed font-light relative z-10">
                   {project.results}
                 </p>
@@ -231,7 +231,7 @@ export default function CaseStudyContent({
           >
             <Link
               href="/contact"
-              className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-black bg-primary neon-btn text-center"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-black bg-primary text-center"
             >
               Start a Similar Project
             </Link>

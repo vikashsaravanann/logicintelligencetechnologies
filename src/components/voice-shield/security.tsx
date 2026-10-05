@@ -67,7 +67,7 @@ export default function VoiceShieldSecurity() {
     <section className="py-24 px-6" aria-labelledby="vs-security-heading">
       <div className="mx-auto max-w-6xl">
         <div className="mb-4">
-          <span className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-400">
+          <span className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
             Security & Privacy
           </span>
         </div>
@@ -101,13 +101,13 @@ export default function VoiceShieldSecurity() {
             >
               <GlassSurface variant="card" className="p-5 h-full">
                 <div className="flex items-start gap-3 mb-3">
-                  <ctrl.icon className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" aria-hidden />
+                  <ctrl.icon className="w-4 h-4 text-primary shrink-0 mt-0.5" aria-hidden />
                   <h3 className="text-sm font-bold text-white leading-tight">{ctrl.title}</h3>
                 </div>
                 <p className="text-xs text-zinc-400 leading-relaxed">{ctrl.description}</p>
                 <div className="mt-3 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" aria-hidden />
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary" aria-hidden />
+                  <span className="text-[10px] font-bold text-primary uppercase tracking-wider">
                     Implemented
                   </span>
                 </div>
@@ -138,7 +138,7 @@ export default function VoiceShieldSecurity() {
               {COMPLIANCE_SUPPORT.map((c) => (
                 <span
                   key={c}
-                  className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-400"
+                  className="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] text-primary"
                 >
                   {c}
                 </span>

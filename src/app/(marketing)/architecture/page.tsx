@@ -39,16 +39,16 @@ export default function ArchitecturePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 pt-32 pb-24">
+    <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-primary selection:text-slate-950 pt-32 pb-24">
       <BackToHome />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(16,185,129,0.15),_transparent_60%)]" />
 
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
         <div className="mb-16 text-center space-y-4">
-          <p className="text-[11px] font-mono font-bold tracking-[0.28em] text-emerald-400 uppercase">
+          <p className="text-[11px] font-mono font-bold tracking-[0.28em] text-primary uppercase">
             VoiceShield Internal Systems
           </p>
-          <h1 className="text-3xl sm:text-5xl font-black tracking-[0.12em] text-white uppercase">
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-[0.12em] text-white uppercase">
             System Architecture
           </h1>
           <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
@@ -60,14 +60,14 @@ export default function ArchitecturePage() {
           {steps.map((step) => (
             <div 
               key={step.id}
-              className="relative p-8 rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-xl shadow-2xl hover:border-emerald-500/50 hover:bg-slate-900/80 transition-all group"
+              className="relative p-8 rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md shadow-2xl hover:border-primary/50 hover:bg-slate-900/80 transition-all group"
             >
-              <div className="absolute top-8 right-8 text-5xl font-black text-slate-800/50 group-hover:text-emerald-900/30 transition-colors pointer-events-none">
+              <div className="absolute top-8 right-8 text-5xl font-bold text-slate-800/50 group-hover:text-primary/30 transition-colors pointer-events-none">
                 {step.id}
               </div>
               
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 mb-6 group-hover:scale-110 transition-transform">
-                <step.icon className="w-6 h-6 text-emerald-400" />
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 mb-6 group-hover:scale-110 transition-transform">
+                <step.icon className="w-6 h-6 text-primary" />
               </div>
               
               <h3 className="text-lg font-mono font-bold tracking-widest text-white uppercase mb-3">
@@ -81,10 +81,10 @@ export default function ArchitecturePage() {
           ))}
         </div>
 
-        <div className="mt-16 rounded-2xl border border-emerald-900/50 bg-emerald-950/10 backdrop-blur-xl p-8 sm:p-10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="mt-16 rounded-2xl border border-primary/50 bg-primary/10 backdrop-blur-md p-8 sm:p-10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-4 max-w-xl">
             <h2 className="text-xl font-mono font-bold tracking-widest text-white uppercase flex items-center gap-3">
-              <Lock className="w-5 h-5 text-emerald-400" />
+              <Lock className="w-5 h-5 text-primary" />
               Enterprise Data Security
             </h2>
             <p className="text-sm text-slate-400 leading-relaxed">
@@ -94,7 +94,7 @@ export default function ArchitecturePage() {
           
           <Link
             href="/docs/api"
-            className="shrink-0 inline-flex items-center justify-center gap-2 py-4 px-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 hover:border-emerald-500/50 font-mono font-bold text-xs tracking-[0.15em] uppercase transition-all"
+            className="shrink-0 inline-flex items-center justify-center gap-2 py-4 px-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 hover:border-primary/50 font-mono font-bold text-xs tracking-[0.15em] uppercase transition-all"
           >
             View API Docs <Database className="w-4 h-4" />
           </Link>

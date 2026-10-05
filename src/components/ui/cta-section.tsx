@@ -42,7 +42,7 @@ export default function CTASection({
               <span>Direct Engineering Engagement</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-6">
               {title}
             </h2>
 

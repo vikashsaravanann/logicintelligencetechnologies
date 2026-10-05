@@ -22,10 +22,10 @@ export default function PricingPage() {
 
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 md:py-40">
         <div className="text-center mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs font-bold tracking-widest uppercase mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold tracking-widest uppercase mb-4">
             <Star className="w-3.5 h-3.5" /> Transparent Pricing
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight">
+          <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight">
             Simple, Transparent Pricing
           </h1>
           <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto">
@@ -34,13 +34,13 @@ export default function PricingPage() {
         </div>
 
         <div className="flex justify-center mb-20">
-          <div className="bg-black/60 backdrop-blur-md border border-yellow-500/20 rounded-full p-1 inline-flex shadow-[0_0_20px_rgba(218,165,32,0.1)]">
+          <div className="bg-[#0A1530]/60 backdrop-blur-md border border-accent/20 rounded-full p-1 inline-flex shadow-[0_0_20px_rgba(218,165,32,0.1)]">
             <button
               onClick={() => setCurrency('USD')}
               aria-pressed={currency === 'USD'}
               className={`px-8 py-3 rounded-full text-sm font-bold tracking-wide transition-all duration-300 ${
                 currency === 'USD'
-                  ? 'bg-gradient-to-r from-yellow-600 to-yellow-400 text-black shadow-lg'
+                  ? 'bg-gradient-to-r from-accent to-accent text-black shadow-lg'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -51,7 +51,7 @@ export default function PricingPage() {
               aria-pressed={currency === 'INR'}
               className={`px-8 py-3 rounded-full text-sm font-bold tracking-wide transition-all duration-300 ${
                 currency === 'INR'
-                  ? 'bg-gradient-to-r from-yellow-600 to-yellow-400 text-black shadow-lg'
+                  ? 'bg-gradient-to-r from-accent to-accent text-black shadow-lg'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -67,7 +67,7 @@ export default function PricingPage() {
               {/* Product group label */}
               <div className="flex items-center gap-4 mb-8">
                 <div className="h-px flex-1 bg-white/5" />
-                <span className="text-[10px] font-mono font-black tracking-[0.25em] text-yellow-500/60 uppercase px-4">
+                <span className="text-[10px] font-mono font-bold tracking-[0.25em] text-accent/60 uppercase px-4">
                   {product.name}
                 </span>
                 <div className="h-px flex-1 bg-white/5" />
@@ -92,35 +92,35 @@ export default function PricingPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: globalIdx * 0.08 }}
                       key={`${product.id}-${plan.name}`}
-                      className={`relative flex flex-col rounded-3xl border backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 ${
+                      className={`relative flex flex-col rounded-3xl border backdrop-blur-md transition-all duration-300 hover:-translate-y-2 ${
                         isPopular
-                          ? 'border-yellow-500/50 bg-gradient-to-b from-yellow-950/40 via-black/60 to-black/60 shadow-[0_20px_60px_-20px_rgba(218,165,32,0.25)]'
-                          : 'border-white/8 bg-black/40 hover:border-white/15'
+                          ? 'border-accent/50 bg-gradient-to-b from-accent/40 via-black/60 to-black/60 shadow-[0_20px_60px_-20px_rgba(218,165,32,0.25)]'
+                          : 'border-white/8 bg-[#0A1530]/40 hover:border-white/15'
                       }`}
                     >
                       {isPopular && (
                         <div className="absolute -top-4 inset-x-0 flex justify-center">
-                          <div className="bg-gradient-to-r from-yellow-600 to-yellow-400 text-black text-[10px] font-black tracking-widest uppercase px-5 py-1.5 rounded-full shadow-lg whitespace-nowrap">
+                          <div className="bg-gradient-to-r from-accent to-accent text-black text-[10px] font-bold tracking-widest uppercase px-5 py-1.5 rounded-full shadow-lg whitespace-nowrap">
                             Most Popular
                           </div>
                         </div>
                       )}
 
                       <div className="p-7 flex flex-col flex-1">
-                        <div className="text-[9px] font-mono font-bold tracking-[0.2em] text-yellow-500/70 uppercase mb-2 text-center">
+                        <div className="text-[9px] font-mono font-bold tracking-[0.2em] text-accent/70 uppercase mb-2 text-center">
                           {product.name}
                         </div>
-                        <h2 className="text-3xl font-black text-white mb-5 text-center">{plan.name}</h2>
+                        <h2 className="text-3xl font-bold text-white mb-5 text-center">{plan.name}</h2>
 
                         <div className="flex flex-col items-center gap-1 pb-6 mb-6 border-b border-white/8">
                           <div className="flex items-baseline gap-1">
                             {isCustomPlan(plan) ? (
-                              <span className={`text-4xl font-black ${isPopular ? 'text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 to-yellow-500' : 'text-white'}`}>
+                              <span className={`text-4xl font-bold ${isPopular ? 'text-transparent bg-clip-text bg-gradient-to-br from-accent to-accent' : 'text-white'}`}>
                                 Custom
                               </span>
                             ) : (
                               <>
-                                <span className={`text-5xl font-black ${isPopular ? 'text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 to-yellow-500' : 'text-white'}`}>
+                                <span className={`text-5xl font-bold ${isPopular ? 'text-transparent bg-clip-text bg-gradient-to-br from-accent to-accent' : 'text-white'}`}>
                                   {formatPrice(plan.monthlyPrice[currency], currency)}
                                 </span>
                                 <span className="text-zinc-500 text-sm font-medium">/mo</span>
@@ -134,12 +134,12 @@ export default function PricingPage() {
                               </span>
                             )}
                             {plan.usageFee && (
-                              <span className="text-xs font-semibold text-yellow-500/80">
+                              <span className="text-xs font-semibold text-accent/80">
                                 + {formatPrice(plan.usageFee[currency], currency)} {plan.usageFee.description}
                               </span>
                             )}
                             {!plan.setupFee && !plan.usageFee && !isCustomPlan(plan) && (
-                              <span className="text-xs font-semibold text-emerald-400">No setup fees</span>
+                              <span className="text-xs font-semibold text-primary">No setup fees</span>
                             )}
                             {isCustomPlan(plan) && (
                               <span className="text-xs font-semibold text-zinc-400">Quoted after scoping</span>
@@ -148,14 +148,14 @@ export default function PricingPage() {
                         </div>
 
                         <div className="flex-1 flex flex-col">
-                          <p className="text-[9px] font-black tracking-[0.2em] text-zinc-500 uppercase mb-5 text-center">
+                          <p className="text-[9px] font-bold tracking-[0.2em] text-zinc-500 uppercase mb-5 text-center">
                             What&apos;s included
                           </p>
                           <ul className="space-y-3 flex-1">
                             {plan.features.map((feature, fIdx) => (
                               <li key={fIdx} className="flex items-start gap-3">
-                                <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isPopular ? 'bg-yellow-500/20' : 'bg-white/5'}`}>
-                                  <Check className={`w-2.5 h-2.5 ${isPopular ? 'text-yellow-400' : 'text-zinc-400'}`} />
+                                <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isPopular ? 'bg-accent/20' : 'bg-white/5'}`}>
+                                  <Check className={`w-2.5 h-2.5 ${isPopular ? 'text-accent' : 'text-zinc-400'}`} />
                                 </div>
                                 <span className="text-sm text-zinc-300 leading-snug">{feature}</span>
                               </li>
@@ -175,9 +175,9 @@ export default function PricingPage() {
                                   ? '/contact'
                                   : '/products/' + product.id)
                             }
-                            className={`w-full flex items-center justify-center h-12 rounded-xl text-sm font-black tracking-widest uppercase transition-all ${
+                            className={`w-full flex items-center justify-center h-12 rounded-xl text-sm font-bold tracking-widest uppercase transition-all ${
                               isPopular
-                                ? 'bg-gradient-to-r from-yellow-600 to-yellow-400 text-black hover:opacity-90 shadow-lg hover:shadow-yellow-500/20'
+                                ? 'bg-gradient-to-r from-accent to-accent text-black hover:opacity-90 shadow-lg hover:shadow-accent/20'
                                 : 'bg-white/5 text-white border border-white/10 hover:bg-white/10'
                             }`}
                           >
@@ -200,17 +200,17 @@ export default function PricingPage() {
 
         <section className="mb-32">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Compare All Plans</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Compare All Plans</h2>
             <p className="text-zinc-400 text-lg">A clear breakdown of included usage and commercial tiers.</p>
           </div>
-          <div className="overflow-x-auto rounded-3xl border border-white/8 bg-black/40 backdrop-blur-xl">
+          <div className="overflow-x-auto rounded-3xl border border-white/8 bg-[#0A1530]/40 backdrop-blur-md">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/8">
                   <th className="text-left p-5 text-zinc-400 font-semibold w-1/3">Feature</th>
                   <th className="p-5 text-white font-bold text-center">Free</th>
-                  <th className="p-5 text-yellow-400 font-bold text-center bg-yellow-500/5">Pro (Web)</th>
-                  <th className="p-5 text-yellow-400 font-bold text-center bg-yellow-500/5">Pro (Voice)</th>
+                  <th className="p-5 text-accent font-bold text-center bg-accent/5">Pro (Web)</th>
+                  <th className="p-5 text-accent font-bold text-center bg-accent/5">Pro (Voice)</th>
                   <th className="p-5 text-white font-bold text-center">VoiceShield</th>
                 </tr>
               </thead>
@@ -232,7 +232,7 @@ export default function PricingPage() {
                       <td
                         key={j}
                         className={`p-5 text-center font-semibold ${
-                          j === 1 || j === 2 ? 'text-yellow-400 bg-yellow-500/[0.03]' : 'text-zinc-300'
+                          j === 1 || j === 2 ? 'text-accent bg-accent/[0.03]' : 'text-zinc-300'
                         } ${val === '—' ? 'text-zinc-600' : ''}`}
                       >
                         {val}
@@ -250,7 +250,7 @@ export default function PricingPage() {
 
         <section className="mb-32">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Security & Privacy</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Security & Privacy</h2>
             <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
               Designed with privacy and access-control considerations. Actual compliance depends on deployment configuration, providers and contracts.
             </p>
@@ -274,8 +274,8 @@ export default function PricingPage() {
               },
             ].map((item, idx) => (
               <div key={idx} className="flex flex-col items-center text-center bg-white/[0.02] border border-white/8 p-8 rounded-3xl hover:bg-white/[0.04] transition-all group">
-                <div className="w-14 h-14 rounded-2xl bg-yellow-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <item.icon className="w-6 h-6 text-yellow-400" />
+                <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <item.icon className="w-6 h-6 text-accent" />
                 </div>
                 <h4 className="text-xl font-bold text-white mb-3">{item.title}</h4>
                 <p className="text-zinc-400 leading-relaxed text-sm">{item.desc}</p>
@@ -285,14 +285,14 @@ export default function PricingPage() {
         </section>
 
         <section className="mb-32">
-          <div className="relative bg-gradient-to-r from-yellow-950/30 via-black/80 to-yellow-950/30 border border-yellow-500/20 rounded-3xl p-10 md:p-14 overflow-hidden">
+          <div className="relative bg-gradient-to-r from-accent/30 via-black/80 to-accent/30 border border-accent/20 rounded-3xl p-10 md:p-14 overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(218,165,32,0.08)_0%,_transparent_70%)] pointer-events-none" />
             <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10 text-center lg:text-left">
               <div className="space-y-4 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 text-xs font-bold tracking-widest uppercase">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold tracking-widest uppercase">
                   Enterprise
                 </div>
-                <h3 className="text-3xl md:text-4xl font-black text-white">Need a custom solution?</h3>
+                <h3 className="text-3xl md:text-4xl font-bold text-white">Need a custom solution?</h3>
                 <p className="text-lg text-zinc-400">
                   For complex workflows, higher volume, or stricter security requirements, we scope Enterprise agreements after discovery — without inventing fixed enterprise list prices.
                 </p>
@@ -306,8 +306,8 @@ export default function PricingPage() {
                     'Enterprise support options',
                   ].map((f, i) => (
                     <li key={i} className="flex items-center gap-2.5 text-sm text-zinc-300">
-                      <div className="w-4 h-4 rounded-full bg-yellow-500/20 flex items-center justify-center shrink-0">
-                        <Check className="w-2.5 h-2.5 text-yellow-400" />
+                      <div className="w-4 h-4 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+                        <Check className="w-2.5 h-2.5 text-accent" />
                       </div>
                       {f}
                     </li>
@@ -317,7 +317,7 @@ export default function PricingPage() {
               <div className="shrink-0 flex flex-col items-center gap-4 w-full lg:w-auto">
                 <Link
                   href="/contact"
-                  className="w-full lg:w-64 text-center px-8 py-4 bg-gradient-to-r from-yellow-600 to-yellow-400 text-black font-black tracking-wide uppercase text-sm rounded-xl hover:opacity-90 transition-all shadow-lg shadow-yellow-500/20"
+                  className="w-full lg:w-64 text-center px-8 py-4 bg-gradient-to-r from-accent to-accent text-black font-bold tracking-wide uppercase text-sm rounded-xl hover:opacity-90 transition-all shadow-lg shadow-accent/20"
                 >
                   Contact Sales
                 </Link>
@@ -329,7 +329,7 @@ export default function PricingPage() {
 
         <section className="max-w-4xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Frequently Asked Questions</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Frequently Asked Questions</h2>
             <p className="text-zinc-400 text-lg">Pricing and billing fundamentals.</p>
           </div>
 
@@ -365,7 +365,7 @@ export default function PricingPage() {
                 className="bg-white/[0.02] border border-white/8 rounded-2xl p-6 hover:bg-white/[0.04] transition-colors"
               >
                 <div className="flex items-start gap-3">
-                  <HelpCircle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
+                  <HelpCircle className="w-5 h-5 text-accent shrink-0 mt-0.5" />
                   <div>
                     <h4 className="text-base font-bold text-white mb-2">{faq.q}</h4>
                     <p className="text-sm text-zinc-400 leading-relaxed">{faq.a}</p>

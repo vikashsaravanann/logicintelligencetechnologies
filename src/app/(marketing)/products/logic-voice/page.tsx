@@ -63,7 +63,7 @@ export default function LogicVoiceProductPage() {
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-tight">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-tight">
             Logic Voice
           </h1>
 
@@ -119,12 +119,12 @@ export default function LogicVoiceProductPage() {
             {
               value: "Controlled",
               label: "Confirmations for sensitive tool actions",
-              color: "text-emerald-400",
+              color: "text-primary",
             },
             {
               value: "Long-Term",
               label: "Personal AI Operating System direction",
-              color: "text-amber-400",
+              color: "text-accent",
             },
           ].map((item) => (
             <div
@@ -132,7 +132,7 @@ export default function LogicVoiceProductPage() {
               className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 md:p-8 text-center backdrop-blur-md"
             >
               <div
-                className={`text-2xl md:text-3xl font-black font-mono mb-2 ${item.color}`}
+                className={`text-2xl md:text-3xl font-bold font-mono mb-2 ${item.color}`}
               >
                 {item.value}
               </div>
@@ -146,7 +146,7 @@ export default function LogicVoiceProductPage() {
         {/* Product Architecture & Capabilities */}
         <section className="space-y-12">
           <div className="text-center space-y-3">
-            <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight uppercase">
+            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight uppercase">
               Architecture &amp; Product Direction
             </h2>
             <p className="text-sm font-mono tracking-[0.15em] text-cyan-400 uppercase">
@@ -174,8 +174,8 @@ export default function LogicVoiceProductPage() {
                 icon: ShieldCheck,
                 title: "Controlled Authorization & Tool Boundaries",
                 desc: "Consequential and sensitive actions strictly require explicit user confirmation before any tool or integration performs state modification.",
-                color: "text-emerald-400",
-                bg: "bg-emerald-500/10 border-emerald-500/20",
+                color: "text-primary",
+                bg: "bg-primary/10 border-primary/20",
               },
               {
                 icon: Sparkles,
@@ -188,15 +188,15 @@ export default function LogicVoiceProductPage() {
                 icon: Cpu,
                 title: "Intelligent Automation Workflows",
                 desc: "Executes approved automation pipelines deterministically, eliminating repetitive operational digital tasks under user oversight.",
-                color: "text-amber-400",
-                bg: "bg-amber-500/10 border-amber-500/20",
+                color: "text-accent",
+                bg: "bg-accent/10 border-accent/20",
               },
               {
                 icon: Layers,
                 title: "Personal AI Operating System Vision",
                 desc: "Being actively developed toward a unified, voice-first AI interface capable of understanding the user and acting through approved tools across services.",
-                color: "text-fuchsia-400",
-                bg: "bg-fuchsia-500/10 border-fuchsia-500/20",
+                color: "text-accent",
+                bg: "bg-accent/10 border-accent/20",
               },
             ].map((f) => (
               <div
@@ -239,7 +239,7 @@ export default function LogicVoiceProductPage() {
         <section className="relative rounded-3xl overflow-hidden border border-cyan-500/20 bg-slate-900/80 backdrop-blur-md p-8 md:p-14 text-center">
           <div className="absolute inset-0 bg-gradient-to-t from-cyan-900/20 via-transparent to-transparent pointer-events-none" />
           <div className="relative z-10 space-y-6">
-            <h2 className="text-2xl md:text-4xl font-black text-white uppercase tracking-tight">
+            <h2 className="text-2xl md:text-4xl font-bold text-white uppercase tracking-tight">
               Experience Logic Voice
             </h2>
             <p className="text-slate-300 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">

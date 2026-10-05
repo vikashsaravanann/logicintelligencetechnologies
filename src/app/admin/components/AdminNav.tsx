@@ -77,7 +77,7 @@ export function AdminNav() {
 
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
-        <div className="absolute top-16 left-0 right-0 bg-neutral-950/95 backdrop-blur-xl border-b border-neutral-800 shadow-2xl lg:hidden flex flex-col z-50">
+        <div className="absolute top-16 left-0 right-0 bg-neutral-950/95 backdrop-blur-md border-b border-neutral-800 shadow-2xl lg:hidden flex flex-col z-50">
           <nav className="flex flex-col p-3 gap-1">
             {ADMIN_NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href || (item.href !== "/admin/command-center" && pathname?.startsWith(item.href));

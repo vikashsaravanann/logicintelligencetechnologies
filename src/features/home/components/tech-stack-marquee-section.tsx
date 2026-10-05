@@ -14,7 +14,7 @@ export default function TechStackMarqueeSection() {
       <div className="relative flex overflow-x-hidden group">
         <div className="animate-marquee whitespace-nowrap flex gap-8 md:gap-16 py-4 items-center">
           {[...technologies, ...technologies, ...technologies].map((tech, i) => (
-            <span key={i} className="text-2xl font-black text-zinc-800 hover:text-white transition-colors cursor-default select-none">
+            <span key={i} className="text-2xl font-bold text-zinc-800 hover:text-white transition-colors cursor-default select-none">
               {tech}
             </span>
           ))}

@@ -25,12 +25,12 @@ export default function ClientPortalLayout({
           {/* Brand header */}
           <Link href="/" className="flex items-center gap-3 mb-8">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-accent p-0.5 flex items-center justify-center">
-              <div className="w-full h-full bg-[#0A1530] rounded-[10px] flex items-center justify-center font-black text-xs text-white">
+              <div className="w-full h-full bg-[#0A1530] rounded-[10px] flex items-center justify-center font-bold text-xs text-white">
                 LIT
               </div>
             </div>
             <div>
-              <span className="text-xs font-black tracking-widest text-white block uppercase">
+              <span className="text-xs font-bold tracking-widest text-white block uppercase">
                 Client Portal
               </span>
               <span className="text-[9px] text-primary tracking-wider uppercase block">

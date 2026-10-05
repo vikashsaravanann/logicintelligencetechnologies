@@ -34,8 +34,8 @@ const LAYERS = [
     label: "PERSISTENCE LAYER",
     title: "Supabase / PostgreSQL",
     desc: "Shared LIT Supabase project extended with VoiceShield tables (vs_ prefix). Row-Level Security enforced. Sessions, detection events, challenges, and audit logs persisted.",
-    color: "text-emerald-400",
-    bg: "border-emerald-500/30",
+    color: "text-primary",
+    bg: "border-primary/30",
   },
   {
     icon: Cloud,

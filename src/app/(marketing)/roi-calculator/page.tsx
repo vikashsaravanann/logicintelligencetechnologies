@@ -28,24 +28,24 @@ export default function ROICalculator() {
   };
 
   const inputClass =
-    "w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-500 font-mono focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 transition-colors";
+    "w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-500 font-mono focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-colors";
   const labelClass =
     "block text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-slate-400 mb-2";
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 pt-32 pb-16">
+    <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-primary selection:text-slate-950 pt-32 pb-16">
       <BackToHome />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.1),_transparent_45%)]" />
 
       <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6">
         <div className="mb-12 text-center space-y-4">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full border-2 border-emerald-500/50 bg-slate-950 shadow-lg shadow-emerald-500/20 mb-2">
-            <Calculator className="w-7 h-7 text-emerald-400" />
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full border-2 border-primary/50 bg-slate-950 shadow-lg shadow-primary/20 mb-2">
+            <Calculator className="w-7 h-7 text-primary" />
           </div>
-          <p className="text-[11px] font-mono font-bold tracking-[0.28em] text-emerald-400 uppercase">
+          <p className="text-[11px] font-mono font-bold tracking-[0.28em] text-primary uppercase">
             Logic Intelligence Technologies
           </p>
-          <h1 className="text-3xl sm:text-4xl font-black tracking-[0.12em] text-white uppercase">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-[0.12em] text-white uppercase">
             VoiceShield ROI
           </h1>
           <p className="text-sm text-slate-400 leading-relaxed max-w-2xl mx-auto">
@@ -55,9 +55,9 @@ export default function ROICalculator() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Inputs */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-xl p-6 sm:p-8 shadow-2xl shadow-emerald-950/20 h-fit">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md p-6 sm:p-8 shadow-2xl shadow-primary/20 h-fit">
             <h2 className="text-sm font-mono font-bold tracking-widest text-white uppercase mb-6 flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-emerald-400" />
+              <ShieldAlert className="w-4 h-4 text-primary" />
               Current Exposure
             </h2>
             
@@ -72,7 +72,7 @@ export default function ROICalculator() {
                     step="10000"
                     value={calls}
                     onChange={(e) => setCalls(Number(e.target.value))}
-                    className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                    className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary"
                   />
                   <div className="mt-4 flex justify-between items-center">
                     <input 
@@ -96,10 +96,10 @@ export default function ROICalculator() {
                     step="0.001"
                     value={fraudRate}
                     onChange={(e) => setFraudRate(Number(e.target.value))}
-                    className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                    className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary"
                   />
                   <div className="mt-4 flex justify-between items-center">
-                    <span className="text-lg font-mono text-emerald-400">{(fraudRate * 100).toFixed(2)}%</span>
+                    <span className="text-lg font-mono text-primary">{(fraudRate * 100).toFixed(2)}%</span>
                     <span className="text-xs text-slate-500 font-mono">Industry avg: 0.5%</span>
                   </div>
                 </div>
@@ -115,10 +115,10 @@ export default function ROICalculator() {
                     step="500"
                     value={lossPerIncident}
                     onChange={(e) => setLossPerIncident(Number(e.target.value))}
-                    className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                    className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary"
                   />
                   <div className="mt-4 flex justify-between items-center">
-                    <span className="text-lg font-mono text-emerald-400">{formatCurrency(lossPerIncident)}</span>
+                    <span className="text-lg font-mono text-primary">{formatCurrency(lossPerIncident)}</span>
                   </div>
                 </div>
               </div>
@@ -126,9 +126,9 @@ export default function ROICalculator() {
           </div>
 
           {/* Outputs */}
-          <div className="rounded-2xl border border-emerald-900/50 bg-emerald-950/10 backdrop-blur-xl p-6 sm:p-8 shadow-2xl shadow-emerald-900/20 flex flex-col justify-between">
+          <div className="rounded-2xl border border-primary/50 bg-primary/10 backdrop-blur-md p-6 sm:p-8 shadow-2xl shadow-primary/20 flex flex-col justify-between">
             <div>
-              <h2 className="text-sm font-mono font-bold tracking-widest text-emerald-400 uppercase mb-8 flex items-center gap-2">
+              <h2 className="text-sm font-mono font-bold tracking-widest text-primary uppercase mb-8 flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4" />
                 VoiceShield Impact
               </h2>
@@ -138,7 +138,7 @@ export default function ROICalculator() {
                   <p className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-slate-400 mb-2">
                     Current Monthly Fraud Loss
                   </p>
-                  <p className="text-3xl font-black text-slate-300 font-mono">
+                  <p className="text-3xl font-bold text-slate-300 font-mono">
                     {formatCurrency(currentLoss)}
                   </p>
                 </div>
@@ -146,10 +146,10 @@ export default function ROICalculator() {
                 <div className="h-px w-full bg-slate-800/50" />
 
                 <div>
-                  <p className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-emerald-500 mb-2">
+                  <p className="text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-primary mb-2">
                     Projected Monthly Savings
                   </p>
-                  <p className="text-5xl sm:text-6xl font-black text-emerald-400 font-mono tracking-tight drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">
+                  <p className="text-5xl sm:text-6xl font-bold text-primary font-mono tracking-tight drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">
                     {formatCurrency(preventedLoss)}
                   </p>
                 </div>
@@ -173,7 +173,7 @@ export default function ROICalculator() {
             <div className="mt-10">
               <Link
                 href="/voice-shield"
-                className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-mono font-bold text-xs tracking-[0.15em] uppercase shadow-lg shadow-emerald-500/25 transition-all"
+                className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary text-slate-950 font-mono font-bold text-xs tracking-[0.15em] uppercase shadow-lg shadow-primary/25 transition-all"
               >
                 Request Enterprise Pilot <ArrowRight className="w-4 h-4" />
               </Link>

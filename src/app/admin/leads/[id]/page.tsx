@@ -47,7 +47,7 @@ export default async function AdminLeadDetailPage({ params }: Props) {
           <span className="text-[10px] uppercase font-bold text-primary tracking-widest block mb-1">
             CRM Lead Dossier · ID: {lead.id.slice(0, 8)}
           </span>
-          <h1 className="text-3xl font-black text-white">{lead.name}</h1>
+          <h1 className="text-3xl font-bold text-white">{lead.name}</h1>
           <p className="text-xs text-zinc-400 mt-1">{lead.email}</p>
         </div>
 
@@ -68,7 +68,7 @@ export default async function AdminLeadDetailPage({ params }: Props) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="p-6 rounded-2xl border border-neutral-800 bg-neutral-900/50">
           <span className="text-xs font-bold text-zinc-500 uppercase block mb-1">Intent Score</span>
-          <div className="text-3xl font-black text-white">{scoring.score} / 100</div>
+          <div className="text-3xl font-bold text-white">{scoring.score} / 100</div>
           <span className="text-xs text-primary font-bold uppercase mt-1 block">
             Category: {scoring.category.replace("_", " ")}
           </span>

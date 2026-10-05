@@ -71,33 +71,33 @@ export default function VoiceShieldAccessRequest() {
 
   return (
     <div
-      className="min-h-[100dvh] lg:h-[100dvh] w-full flex flex-col bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 overflow-x-hidden lg:overflow-hidden"
+      className="min-h-[100dvh] lg:h-[100dvh] w-full flex flex-col bg-[#0A1530] text-slate-100 selection:bg-primary selection:text-slate-950 overflow-x-hidden lg:overflow-hidden"
       style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
     >
-      <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border-b border-emerald-500/20 py-1.5 lg:py-2.5 px-2 lg:px-4 text-center">
-        <div className="inline-flex items-center gap-1.5 lg:gap-2 text-[10px] lg:text-xs font-mono font-medium text-emerald-300">
-          <span className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-emerald-400 animate-pulse" />
+      <div className="bg-gradient-to-r from-primary via-slate-900 to-primary border-b border-primary/20 py-1.5 lg:py-2.5 px-2 lg:px-4 text-center">
+        <div className="inline-flex items-center gap-1.5 lg:gap-2 text-[10px] lg:text-xs font-mono font-medium text-primary">
+          <span className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-primary animate-pulse" />
           <span>A LOGIC INTELLIGENCE TECHNOLOGIES PRODUCT | AI SECURITY</span>
         </div>
       </div>
 
-      <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-[#030712]/90 border-b border-slate-800/80 shadow-2xl">
+      <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-[#0A1530]/90 border-b border-slate-800/80 shadow-2xl">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-12 sm:h-16 flex items-center justify-between gap-2">
           <Link href="/voice-shield" className="flex items-center gap-2 group shrink-0">
             <div className="relative shrink-0">
-              <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full border-2 border-emerald-500/60 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:border-emerald-400 transition-all overflow-hidden bg-slate-950">
-                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+              <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full border-2 border-primary/60 flex items-center justify-center shadow-lg shadow-primary/20 group-hover:border-primary transition-all overflow-hidden bg-slate-950">
+                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
               </div>
               <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
               </span>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="text-sm sm:text-base font-black tracking-[0.12em] text-white uppercase group-hover:text-emerald-300 transition-colors">
+              <span className="text-sm sm:text-base font-bold tracking-[0.12em] text-white uppercase group-hover:text-primary transition-colors">
                 VOICESHIELD
               </span>
-              <span className="px-1 py-0.5 rounded text-[8px] sm:text-[9px] font-mono font-bold tracking-widest bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 uppercase">
+              <span className="px-1 py-0.5 rounded text-[8px] sm:text-[9px] font-mono font-bold tracking-widest bg-primary/80 text-primary border border-primary/30 uppercase">
                 LIT
               </span>
             </div>
@@ -118,14 +118,14 @@ export default function VoiceShieldAccessRequest() {
             </Link>
           </div>
         </div>
-        <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
+        <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       </header>
 
       <main className="flex-1 flex flex-col px-3 py-3 lg:px-4 lg:py-2 overflow-y-auto lg:overflow-hidden">
         <div className="w-full max-w-6xl mx-auto flex-1 flex flex-col justify-evenly lg:justify-center gap-4 lg:gap-8">
           <div className="text-center shrink-0">
             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 lg:px-3.5 lg:py-1.5 rounded-full border border-slate-800 bg-slate-900/90 text-[9px] lg:text-xs text-slate-300 font-mono mb-1.5 lg:mb-2 backdrop-blur-md">
-              <Lock className="w-2.5 h-2.5 lg:w-3.5 lg:h-3.5 text-emerald-400" />
+              <Lock className="w-2.5 h-2.5 lg:w-3.5 lg:h-3.5 text-primary" />
               <span>Gated Enterprise Access</span>
             </div>
             <h1 className="text-xl sm:text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-1 leading-tight uppercase">
@@ -146,14 +146,14 @@ export default function VoiceShieldAccessRequest() {
                   { value: "API", label: "Integration" },
                 ].map((s) => (
                   <div key={s.label} className="bg-slate-900/60 border border-slate-800 rounded-lg lg:rounded-2xl p-2 lg:p-4 text-center">
-                    <div className="text-[10px] lg:text-xl font-extrabold font-mono text-emerald-400">{s.value}</div>
+                    <div className="text-[10px] lg:text-xl font-extrabold font-mono text-primary">{s.value}</div>
                     <div className="text-[7px] lg:text-[10px] text-slate-400 uppercase tracking-wider font-mono mt-0.5">{s.label}</div>
                   </div>
                 ))}
               </div>
 
               <div className="hidden lg:block bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
-                <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-emerald-400 mb-2">
+                <h3 className="text-xs font-mono font-bold uppercase tracking-widest text-primary mb-2">
                   What you get access to
                 </h3>
                 {[
@@ -163,8 +163,8 @@ export default function VoiceShieldAccessRequest() {
                   { icon: UserCheck, label: "Product Brief", desc: "Architecture and security design details" },
                 ].map((f) => (
                   <div key={f.label} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
-                      <f.icon className="w-4 h-4 text-emerald-400" />
+                    <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                      <f.icon className="w-4 h-4 text-primary" />
                     </div>
                     <div>
                       <div className="text-sm font-bold text-white">{f.label}</div>
@@ -187,20 +187,20 @@ export default function VoiceShieldAccessRequest() {
             </div>
 
             <div className="lg:col-span-3">
-              <div className="bg-slate-900/60 border border-slate-800 rounded-xl lg:rounded-3xl p-3 sm:p-5 lg:p-6 shadow-2xl shadow-emerald-950/20">
+              <div className="bg-slate-900/60 border border-slate-800 rounded-xl lg:rounded-3xl p-3 sm:p-5 lg:p-6 shadow-2xl shadow-primary/20">
                 {sent ? (
                   <div className="flex flex-col items-center justify-center text-center space-y-2 lg:space-y-4 py-4 lg:py-8">
-                    <div className="w-10 h-10 lg:w-16 lg:h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.2)]">
-                      <CheckCircle2 className="w-5 h-5 lg:w-8 lg:h-8 text-emerald-400" />
+                    <div className="w-10 h-10 lg:w-16 lg:h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.2)]">
+                      <CheckCircle2 className="w-5 h-5 lg:w-8 lg:h-8 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-base lg:text-xl font-black text-white mb-1 lg:mb-2 uppercase tracking-tight">Application Submitted</h2>
+                      <h2 className="text-base lg:text-xl font-bold text-white mb-1 lg:mb-2 uppercase tracking-tight">Application Submitted</h2>
                       <p className="text-slate-400 leading-relaxed max-w-sm mx-auto text-[9px] lg:text-xs px-2">
-                        Our team will review your request. If approved, you will receive an <strong className="text-emerald-400">encrypted private link</strong> to the VoiceShield console at your work email.
+                        Our team will review your request. If approved, you will receive an <strong className="text-primary">encrypted private link</strong> to the VoiceShield console at your work email.
                       </p>
                     </div>
                     <div className="flex items-center gap-1.5 text-[8px] lg:text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-                      <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="w-1 h-1 rounded-full bg-primary animate-pulse" />
                       Typical response: within 24 hours
                     </div>
                     <Link
@@ -212,7 +212,7 @@ export default function VoiceShieldAccessRequest() {
                   </div>
                 ) : (
                   <>
-                    <div className="flex items-center gap-1.5 lg:gap-2 text-[8px] lg:text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-emerald-400 mb-2 lg:mb-4 pb-1.5 lg:pb-3 border-b border-slate-800">
+                    <div className="flex items-center gap-1.5 lg:gap-2 text-[8px] lg:text-[10px] font-mono font-bold tracking-[0.2em] uppercase text-primary mb-2 lg:mb-4 pb-1.5 lg:pb-3 border-b border-slate-800">
                       <Lock className="w-2.5 h-2.5 lg:w-3.5 lg:h-3.5" />
                       Gated Access Application
                     </div>
@@ -221,24 +221,24 @@ export default function VoiceShieldAccessRequest() {
                       <div className="grid grid-cols-2 gap-2 lg:gap-4">
                         <div>
                           <label className="block text-[8px] lg:text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1 lg:mb-1.5" htmlFor="fullName">
-                            Full Name <span className="text-emerald-400">*</span>
+                            Full Name <span className="text-primary">*</span>
                           </label>
                           <input
                             id="fullName" name="fullName" required
                             value={form.fullName} onChange={onChange}
                             placeholder="John Doe"
-                            className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all"
+                            className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-primary/60 focus:bg-slate-950 transition-all"
                           />
                         </div>
                         <div>
                           <label className="block text-[8px] lg:text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1 lg:mb-1.5" htmlFor="email">
-                            Work Email <span className="text-emerald-400">*</span>
+                            Work Email <span className="text-primary">*</span>
                           </label>
                           <input
                             id="email" name="email" type="email" required
                             value={form.email} onChange={onChange}
                             placeholder="you@company.com"
-                            className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all"
+                            className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-primary/60 focus:bg-slate-950 transition-all"
                           />
                         </div>
                       </div>
@@ -252,7 +252,7 @@ export default function VoiceShieldAccessRequest() {
                             id="companyName" name="companyName"
                             value={form.companyName} onChange={onChange}
                             placeholder="Organisation Ltd."
-                            className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all"
+                            className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-primary/60 focus:bg-slate-950 transition-all"
                           />
                         </div>
                         <div>
@@ -263,7 +263,7 @@ export default function VoiceShieldAccessRequest() {
                             id="role" name="role"
                             value={form.role} onChange={onChange}
                             placeholder="e.g. CISO, CTO"
-                            className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all"
+                            className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-primary/60 focus:bg-slate-950 transition-all"
                           />
                         </div>
                       </div>
@@ -277,17 +277,17 @@ export default function VoiceShieldAccessRequest() {
                             id="phone" name="phone"
                             value={form.phone} onChange={onChange}
                             placeholder="+91 ..."
-                            className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all"
+                            className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-primary/60 focus:bg-slate-950 transition-all"
                           />
                         </div>
                         <div>
                           <label className="block text-[8px] lg:text-[10px] font-mono font-bold tracking-[0.15em] uppercase text-slate-400 mb-1 lg:mb-1.5" htmlFor="accessType">
-                            Access Type <span className="text-emerald-400">*</span>
+                            Access Type <span className="text-primary">*</span>
                           </label>
                           <select
                             id="accessType" name="accessType" required
                             value={form.accessType} onChange={onChange}
-                            className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all appearance-none cursor-pointer"
+                            className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 font-mono focus:outline-none focus:border-primary/60 focus:bg-slate-950 transition-all appearance-none cursor-pointer"
                           >
                             <option value="Demo" className="bg-slate-900">Live Demo Access</option>
                             <option value="Beta" className="bg-slate-900">Beta Programme</option>
@@ -304,7 +304,7 @@ export default function VoiceShieldAccessRequest() {
                           id="useCase" name="useCase" rows={2}
                           value={form.useCase} onChange={onChange}
                           placeholder="Describe your intended use..."
-                          className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-emerald-500/60 focus:bg-slate-950 transition-all resize-none"
+                          className="w-full px-2 py-1.5 lg:px-4 lg:py-3 rounded-lg lg:rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] lg:text-sm text-slate-100 placeholder:text-slate-600 font-mono focus:outline-none focus:border-primary/60 focus:bg-slate-950 transition-all resize-none"
                         />
                       </div>
 
@@ -317,7 +317,7 @@ export default function VoiceShieldAccessRequest() {
                       <button
                         type="submit"
                         disabled={busy}
-                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 lg:py-3.5 rounded-lg lg:rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-[10px] lg:text-sm tracking-widest uppercase transition-all disabled:opacity-50"
+                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 lg:py-3.5 rounded-lg lg:rounded-xl bg-primary hover:bg-primary text-slate-950 font-mono font-bold text-[10px] lg:text-sm tracking-widest uppercase transition-all disabled:opacity-50"
                       >
                         {busy ? (
                           <Loader2 className="w-4 h-4 animate-spin" />

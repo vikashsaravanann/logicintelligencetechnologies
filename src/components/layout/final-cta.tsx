@@ -26,7 +26,7 @@ export function FinalCTA({
   return (
     <section className={cn("py-20 sm:py-28 relative overflow-hidden", className)}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/40 via-[#0a1128]/80 to-[#050814] p-8 sm:p-12 md:p-16 shadow-[0_24px_80px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur-xl overflow-hidden">
+        <div className="relative rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/40 via-[#0a1128]/80 to-[#050814] p-8 sm:p-12 md:p-16 shadow-[0_24px_80px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur-md overflow-hidden">
           {/* Subtle background glow */}
           <div className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full bg-cyan-500/15 blur-[100px]" />
           <div className="pointer-events-none absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-blue-600/15 blur-[100px]" />
@@ -37,7 +37,7 @@ export function FinalCTA({
               Direct Engineering Consultation
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight">
               {title}
             </h2>
 

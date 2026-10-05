@@ -75,14 +75,14 @@ export default function LeadForm() {
   const sectionNumClass = "w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm shrink-0";
 
   return (
-    <section id="demo" className="py-24 px-6 lg:px-8 relative bg-black overflow-hidden border-t border-white/5">
+    <section id="demo" className="py-24 px-6 lg:px-8 relative bg-[#0A1530] overflow-hidden border-t border-white/5">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[300px] opacity-[0.1] blur-[100px] bg-gradient-to-r from-primary to-accent pointer-events-none" />
 
       <div className="max-w-4xl mx-auto relative z-10 text-center mb-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-6">
           <Sparkles className="w-4 h-4" /> Start Your Project
         </motion.div>
-        <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ delay: 0.1 }} className="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight">
+        <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ delay: 0.1 }} className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight">
           Ready to see your <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">vision come alive?</span>
         </motion.h2>
         <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ delay: 0.2 }} className="text-lg text-zinc-400 max-w-2xl mx-auto">
@@ -96,7 +96,7 @@ export default function LeadForm() {
               <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8 ">
                 <CheckCircle2 className="h-12 w-12 text-primary" />
               </div>
-              <h3 className="text-4xl font-black text-white mb-4">Request Received!</h3>
+              <h3 className="text-4xl font-bold text-white mb-4">Request Received!</h3>
               <p className="text-lg text-zinc-400 mb-8">Thanks — we've received your request and will follow up on the channel(s) you selected.</p>
               <a href="https://wa.me/917550067712" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#25D366]/10 text-[#25D366] font-bold text-sm border border-[#25D366]/20 hover:bg-[#25D366] hover:text-black transition-all">
                 <MessageSquare className="w-4 h-4" /> Message on WhatsApp
@@ -105,7 +105,6 @@ export default function LeadForm() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-12">
             <div className="bg-[#12172b] p-8 md:p-10 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
               
               {/* 1. Contact details */}
               <div className="mb-12">

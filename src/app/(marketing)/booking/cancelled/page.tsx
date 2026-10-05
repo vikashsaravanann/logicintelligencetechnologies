@@ -11,11 +11,11 @@ export default function BookingCancelledPage() {
   return (
     <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20 flex items-center justify-center">
       <div className="max-w-md mx-auto px-6 w-full text-center">
-        <div className="w-16 h-16 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center mx-auto mb-6">
+        <div className="w-16 h-16 rounded-full bg-accent/20 text-accent border border-accent/30 flex items-center justify-center mx-auto mb-6">
           <XCircle className="w-8 h-8" />
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white uppercase tracking-tight mb-2">
           CONSULTATION CANCELLED
         </h1>
         <p className="text-sm text-zinc-400 mb-8 leading-relaxed">

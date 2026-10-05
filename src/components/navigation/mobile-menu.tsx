@@ -130,7 +130,7 @@ export function MobileMenu({
                     </span>
                   </button>
 
-                  <div className="t-acc-panel bg-black/20">
+                  <div className="t-acc-panel bg-[#0A1530]/20">
                     <div className="t-acc-panel-inner">
                       <ul className="px-3 pb-2 space-y-0.5">
                         {group.items.map((item) => (

@@ -31,7 +31,7 @@ export default function CareersPage() {
             <Users className="w-3.5 h-3.5" />
             <span>Join Our Engineering & Leadership Team</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 uppercase">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 uppercase">
             BUILD THE FUTURE OF <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">INTELLIGENT SYSTEMS</span>
           </h1>
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
@@ -48,7 +48,7 @@ export default function CareersPage() {
           </div>
 
           {/* Careers Visual Banner */}
-          <div className="max-w-4xl mx-auto aspect-[21/9] relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black/50">
+          <div className="max-w-4xl mx-auto aspect-[21/9] relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0A1530]/50">
             <SafeImage
               src="/images/careers/tech-culture.svg"
               alt="LIT Engineering Culture & Careers"

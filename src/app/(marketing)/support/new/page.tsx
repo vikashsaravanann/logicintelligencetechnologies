@@ -58,7 +58,7 @@ export default function NewSupportTicketPage() {
         </div>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-black text-white uppercase tracking-tight mb-2">
+          <h1 className="text-3xl font-bold text-white uppercase tracking-tight mb-2">
             SUBMIT SUPPORT TICKET
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400">
@@ -67,7 +67,7 @@ export default function NewSupportTicketPage() {
         </div>
 
         {error && (
-          <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs mb-6">
+          <div className="p-4 rounded-xl bg-accent/10 border border-accent/20 text-accent text-xs mb-6">
             {error}
           </div>
         )}

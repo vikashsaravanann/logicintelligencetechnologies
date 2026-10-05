@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 export default function StatusPage() {
   return (
     <div className="container mx-auto p-8 max-w-5xl">
-      <h1 className="text-3xl font-black text-white mb-6">System Status</h1>
+      <h1 className="text-3xl font-bold text-white mb-6">System Status</h1>
       <p className="text-zinc-400">Monitor system health, error logs, and performance.</p>
       
       <div className="mt-8 p-12 border border-dashed border-neutral-800 rounded-2xl text-center flex flex-col items-center">

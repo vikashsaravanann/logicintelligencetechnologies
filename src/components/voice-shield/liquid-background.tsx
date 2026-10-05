@@ -17,9 +17,9 @@ export default function LiquidBackground({ className }: { className?: string }) 
 
       {/* Animated Liquid Orbs (Emerald / Green / Cyan Theme) — clamped to viewport */}
       <div className="absolute inset-0 opacity-50">
-        <div className="absolute top-[5%] left-[5%] w-[50vw] h-[45vw] rounded-[40%_60%_70%_30%] bg-emerald-500/60 blur-[80px] animate-[spin_20s_linear_infinite] mix-blend-screen will-change-transform transform-gpu" />
+        <div className="absolute top-[5%] left-[5%] w-[50vw] h-[45vw] rounded-[40%_60%_70%_30%] bg-primary/60 blur-[80px] animate-[spin_20s_linear_infinite] mix-blend-screen will-change-transform transform-gpu" />
         <div className="absolute top-[20%] right-[5%] w-[45vw] h-[55vw] rounded-[60%_40%_30%_70%] bg-cyan-500/50 blur-[70px] animate-[spin_25s_linear_infinite_reverse] mix-blend-screen will-change-transform transform-gpu" />
-        <div className="absolute bottom-[5%] left-[20%] w-[50vw] h-[40vw] rounded-[50%_50%_60%_40%] bg-teal-400/50 blur-[90px] animate-[spin_30s_linear_infinite] mix-blend-screen will-change-transform transform-gpu" />
+        <div className="absolute bottom-[5%] left-[20%] w-[50vw] h-[40vw] rounded-[50%_50%_60%_40%] bg-primary/50 blur-[90px] animate-[spin_30s_linear_infinite] mix-blend-screen will-change-transform transform-gpu" />
       </div>
       
       {/* Noise Overlay for texture */}

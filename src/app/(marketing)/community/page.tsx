@@ -18,7 +18,7 @@ export default function CommunityPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 pt-32 pb-24">
+    <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-primary selection:text-slate-950 pt-32 pb-24">
       <BackToHome />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_right,_rgba(16,185,129,0.05),_transparent_40%)]" />
 
@@ -26,10 +26,10 @@ export default function CommunityPage() {
         
         {/* Header Section */}
         <div className="text-center space-y-6 mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl border border-slate-800 bg-slate-900/50 shadow-2xl backdrop-blur-xl mb-4">
-            <Users2 className="w-8 h-8 text-emerald-400" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl border border-slate-800 bg-slate-900/50 shadow-2xl backdrop-blur-md mb-4">
+            <Users2 className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black tracking-[0.12em] text-white uppercase">
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-[0.12em] text-white uppercase">
             Architect Community
           </h1>
           <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
@@ -42,7 +42,7 @@ export default function CommunityPage() {
           {/* Main Forum View */}
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between mb-2 px-2">
-              <h2 className="text-sm font-mono font-bold tracking-widest text-emerald-400 uppercase">
+              <h2 className="text-sm font-mono font-bold tracking-widest text-primary uppercase">
                 Trending Discussions
               </h2>
               <button className="text-[10px] font-mono font-bold text-slate-400 hover:text-white uppercase tracking-widest transition-colors">
@@ -52,18 +52,18 @@ export default function CommunityPage() {
 
             <div className="space-y-4">
               {topics.map((topic, idx) => (
-                <div key={idx} className="flex items-center justify-between p-5 rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-xl hover:border-emerald-500/30 transition-colors group cursor-pointer">
+                <div key={idx} className="flex items-center justify-between p-5 rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md hover:border-primary/30 transition-colors group cursor-pointer">
                   <div className="flex items-start gap-4">
                     <div className="shrink-0 mt-1">
-                      <topic.icon className="w-5 h-5 text-slate-500 group-hover:text-emerald-400 transition-colors" />
+                      <topic.icon className="w-5 h-5 text-slate-500 group-hover:text-primary transition-colors" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-white mb-1 group-hover:text-emerald-300 transition-colors">{topic.title}</h3>
+                      <h3 className="text-sm font-bold text-white mb-1 group-hover:text-primary transition-colors">{topic.title}</h3>
                       <p className="text-[11px] font-mono text-slate-500">Posted by @{topic.author}</p>
                     </div>
                   </div>
                   <div className="shrink-0 text-center ml-4">
-                    <div className="text-lg font-mono font-bold text-emerald-400">{topic.replies}</div>
+                    <div className="text-lg font-mono font-bold text-primary">{topic.replies}</div>
                     <div className="text-[9px] uppercase tracking-wider text-slate-500">Replies</div>
                   </div>
                 </div>
@@ -75,33 +75,33 @@ export default function CommunityPage() {
           <div className="lg:col-span-1 space-y-6">
             
             {/* Join CTA */}
-            <div className="rounded-2xl border border-emerald-900/50 bg-emerald-950/10 backdrop-blur-xl p-6 shadow-xl">
+            <div className="rounded-2xl border border-primary/50 bg-primary/10 backdrop-blur-md p-6 shadow-xl">
               <h3 className="text-sm font-mono font-bold tracking-widest text-white uppercase mb-4">
                 Join the Network
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed mb-6">
                 Create an account to post questions, share your code, and interact with the engineers building VoiceShield.
               </p>
-              <button className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-[10px] tracking-widest uppercase transition-colors">
+              <button className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary hover:bg-primary text-slate-950 font-mono font-bold text-[10px] tracking-widest uppercase transition-colors">
                 Sign Up / Login
               </button>
             </div>
 
             {/* Top Contributors */}
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-xl p-6 shadow-xl">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md p-6 shadow-xl">
               <h3 className="text-sm font-mono font-bold tracking-widest text-white uppercase mb-4 flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-emerald-400" />
+                <Trophy className="w-4 h-4 text-primary" />
                 Top Contributors
               </h3>
               <ul className="space-y-4">
                 <li className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-emerald-500/30">
-                      <span className="text-[10px] font-bold text-emerald-400">AM</span>
+                    <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-primary/30">
+                      <span className="text-[10px] font-bold text-primary">AM</span>
                     </div>
                     <span className="text-xs font-mono text-slate-300">alex_m</span>
                   </div>
-                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">2.4k pts</span>
+                  <span className="text-[10px] font-mono text-primary bg-primary/10 px-2 py-1 rounded">2.4k pts</span>
                 </li>
                 <li className="flex items-center justify-between">
                   <div className="flex items-center gap-3">

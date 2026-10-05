@@ -47,7 +47,7 @@ const TECH_STACK = [
       { name: "httpx", role: "Async HTTP client for external services" },
     ],
     icon: GitBranch,
-    color: "text-emerald-400",
+    color: "text-primary",
   },
   {
     category: "Frontend",

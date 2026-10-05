@@ -18,9 +18,9 @@ export default function AIVoiceAgentsPage() {
     <main className="relative min-h-screen bg-[#0A0515] text-slate-100 overflow-hidden font-sans">
       <BackToHome />
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[50%] bg-fuchsia-600/20 blur-[150px] rounded-full mix-blend-screen" />
+        <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[50%] bg-accent/20 blur-[150px] rounded-full mix-blend-screen" />
         <div className="absolute top-[40%] -left-[10%] w-[40%] h-[60%] bg-purple-600/20 blur-[150px] rounded-full mix-blend-screen" />
-        <div className="absolute bottom-0 right-[20%] w-[50%] h-[40%] bg-pink-500/10 blur-[150px] rounded-full mix-blend-screen" />
+        <div className="absolute bottom-0 right-[20%] w-[50%] h-[40%] bg-accent/10 blur-[150px] rounded-full mix-blend-screen" />
         <div className="absolute inset-0 bg-[url('/assets/noise.png')] opacity-[0.03] mix-blend-overlay" />
       </div>
 
@@ -36,12 +36,12 @@ export default function AIVoiceAgentsPage() {
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-32">
         <section className="text-center space-y-8 pt-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-400 text-sm font-medium tracking-wide uppercase">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium tracking-wide uppercase">
             <Mic className="w-4 h-4" />
             <span>Enterprise Voice Intelligence</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white via-fuchsia-100 to-fuchsia-500 max-w-4xl mx-auto leading-tight">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white via-accent to-accent max-w-4xl mx-auto leading-tight">
             Your autonomous AI front desk for business calls.
           </h1>
           
@@ -50,12 +50,12 @@ export default function AIVoiceAgentsPage() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
-            <Button asChild size="lg" className="bg-fuchsia-600 hover:bg-fuchsia-500 text-white px-8 py-6 rounded-full text-lg w-full sm:w-auto transition-all shadow-[0_0_40px_-10px_rgba(192,38,211,0.5)] hover:shadow-[0_0_60px_-10px_rgba(192,38,211,0.7)]">
+            <Button asChild size="lg" className="bg-accent hover:bg-accent text-white px-8 py-6 rounded-full text-lg w-full sm:w-auto transition-all shadow-[0_0_40px_-10px_rgba(192,38,211,0.5)] hover:shadow-[0_0_60px_-10px_rgba(192,38,211,0.7)]">
               <Link href="/pricing">
                 View Pricing & Plans <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-fuchsia-500/30 text-fuchsia-400 hover:bg-fuchsia-500/10 px-8 py-6 rounded-full text-lg w-full sm:w-auto transition-all">
+            <Button asChild variant="outline" size="lg" className="border-accent/30 text-accent hover:bg-accent/10 px-8 py-6 rounded-full text-lg w-full sm:w-auto transition-all">
               <Link href="/contact">
                 Talk to an Expert
               </Link>
@@ -69,8 +69,8 @@ export default function AIVoiceAgentsPage() {
             { value: "Voice-first", label: "STT · LLM · TTS path", icon: Zap },
             { value: "Structured", label: "Extraction & handoff", icon: Activity }
           ].map((stat, i) => (
-            <div key={i} className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 text-center backdrop-blur-xl hover:bg-white/[0.04] transition-colors">
-              <stat.icon className="w-8 h-8 text-fuchsia-400 mx-auto mb-4 opacity-80" />
+            <div key={i} className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 text-center backdrop-blur-md hover:bg-white/[0.04] transition-colors">
+              <stat.icon className="w-8 h-8 text-accent mx-auto mb-4 opacity-80" />
               <div className="text-4xl md:text-5xl font-bold text-white mb-2">{stat.value}</div>
               <div className="text-slate-400 font-medium">{stat.label}</div>
             </div>
@@ -118,9 +118,9 @@ export default function AIVoiceAgentsPage() {
                 icon: Zap
               }
             ].map((feature, i) => (
-              <div key={i} className="bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 rounded-3xl p-8 hover:border-fuchsia-500/30 transition-all group">
-                <div className="w-12 h-12 rounded-2xl bg-fuchsia-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <feature.icon className="w-6 h-6 text-fuchsia-400" />
+              <div key={i} className="bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 rounded-3xl p-8 hover:border-accent/30 transition-all group">
+                <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <feature.icon className="w-6 h-6 text-accent" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
                 <p className="text-slate-400 leading-relaxed">{feature.desc}</p>
@@ -138,7 +138,7 @@ export default function AIVoiceAgentsPage() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-            <div className="hidden md:block absolute top-1/2 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-fuchsia-500/20 to-transparent -translate-y-1/2 z-0" />
+            <div className="hidden md:block absolute top-1/2 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent/20 to-transparent -translate-y-1/2 z-0" />
             
             {[
               {
@@ -157,8 +157,8 @@ export default function AIVoiceAgentsPage() {
                 desc: "Connect a phone number via your telephony provider. The agent answers inbound calls according to plan capacity."
               }
             ].map((item, i) => (
-              <div key={i} className="relative z-10 bg-[#0A0515] border border-white/10 rounded-3xl p-8 hover:border-fuchsia-500/30 transition-all text-center group">
-                <div className="w-16 h-16 rounded-full bg-fuchsia-950 border border-fuchsia-500/20 flex items-center justify-center mx-auto mb-6 text-2xl font-black text-fuchsia-400 shadow-[0_0_30px_-10px_rgba(192,38,211,0.3)]">
+              <div key={i} className="relative z-10 bg-[#0A0515] border border-white/10 rounded-3xl p-8 hover:border-accent/30 transition-all text-center group">
+                <div className="w-16 h-16 rounded-full bg-accent border border-accent/20 flex items-center justify-center mx-auto mb-6 text-2xl font-bold text-accent shadow-[0_0_30px_-10px_rgba(192,38,211,0.3)]">
                   {item.step}
                 </div>
                 <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
@@ -180,25 +180,25 @@ export default function AIVoiceAgentsPage() {
             <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 hover:bg-white/[0.04] transition-all">
               <h3 className="text-xl font-bold text-white mb-4">Healthcare & Clinics</h3>
               <ul className="space-y-3 text-slate-400">
-                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Patient appointment scheduling (administrative)</li>
-                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Pre-appointment reminders via voice</li>
-                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> FAQ for clinic hours and locations</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-accent" /> Patient appointment scheduling (administrative)</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-accent" /> Pre-appointment reminders via voice</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-accent" /> FAQ for clinic hours and locations</li>
               </ul>
             </div>
             <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 hover:bg-white/[0.04] transition-all">
               <h3 className="text-xl font-bold text-white mb-4">Logistics & Delivery</h3>
               <ul className="space-y-3 text-slate-400">
-                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Automated delivery status updates</li>
-                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Driver dispatch coordination</li>
-                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Rescheduling missed deliveries</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-accent" /> Automated delivery status updates</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-accent" /> Driver dispatch coordination</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-accent" /> Rescheduling missed deliveries</li>
               </ul>
             </div>
             <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 hover:bg-white/[0.04] transition-all">
               <h3 className="text-xl font-bold text-white mb-4">Local Services & Hospitality</h3>
               <ul className="space-y-3 text-slate-400">
-                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Restaurant reservations</li>
-                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Hotel booking and room service queries</li>
-                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-fuchsia-500" /> Handling overflow calls during peak hours</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-accent" /> Restaurant reservations</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-accent" /> Hotel booking and room service queries</li>
+                <li className="flex items-center gap-2"><ArrowRight className="w-4 h-4 text-accent" /> Handling overflow calls during peak hours</li>
               </ul>
             </div>
           </div>
@@ -225,17 +225,17 @@ export default function AIVoiceAgentsPage() {
           </div>
         </section>
 
-        <section className="relative rounded-[3rem] overflow-hidden border border-fuchsia-500/20 bg-fuchsia-950/20 backdrop-blur-md p-10 md:p-20 text-center">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-fuchsia-900/40 via-transparent to-transparent" />
+        <section className="relative rounded-[3rem] overflow-hidden border border-accent/20 bg-accent/20 backdrop-blur-md p-10 md:p-20 text-center">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-accent/40 via-transparent to-transparent" />
           <div className="relative z-10 space-y-8">
             <h2 className="text-3xl md:text-5xl font-bold text-white max-w-3xl mx-auto">
               Deploy your first AI Voice Agent.
             </h2>
-            <p className="text-lg text-fuchsia-200/70 max-w-2xl mx-auto">
+            <p className="text-lg text-accent/70 max-w-2xl mx-auto">
               From $149/mo + setup under current commercial pricing. Automate front-desk telephony with conversational AI after provider activation.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8">
-              <Button asChild size="lg" className="bg-white text-fuchsia-950 hover:bg-fuchsia-50 px-8 py-6 rounded-full text-lg">
+              <Button asChild size="lg" className="bg-white text-accent hover:bg-accent px-8 py-6 rounded-full text-lg">
                 <Link href="/contact">Request Voice Demo</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/10 px-8 py-6 rounded-full text-lg">

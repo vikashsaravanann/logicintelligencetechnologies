@@ -44,7 +44,7 @@ export default function MasonryGrid({ projects }: { projects: PortfolioProject[]
                     </a>
                   )}
                 </div>
-                <h2 className="text-2xl font-black text-white group-hover:text-primary transition-colors drop-shadow-md">
+                <h2 className="text-2xl font-bold text-white group-hover:text-primary transition-colors drop-shadow-md">
                   {project.title}
                 </h2>
               </div>

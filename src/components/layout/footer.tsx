@@ -52,7 +52,7 @@ const GithubIcon = ({ className }: { className?: string }) => (
 const socialLinks = [
   { icon: LinkedinIcon, label: "LINKEDIN", href: COMPANY.linkedinUrl, hoverColor: "group-hover:text-[#0a66c2]" },
   { icon: TwitterXIcon, label: "X (TWITTER)", href: COMPANY.twitterUrl, hoverColor: "group-hover:text-primary" },
-  { icon: InstagramIcon, label: "INSTAGRAM", href: COMPANY.instagramUrl, hoverColor: "group-hover:text-[#e1306c]" },
+  { icon: InstagramIcon, label: "INSTAGRAM", href: COMPANY.instagramUrl, hoverColor: "group-hover:text-primary" },
   { icon: YoutubeIcon, label: "YOUTUBE", href: COMPANY.youtubeUrl, hoverColor: "group-hover:text-[#ff0000]" },
   { icon: FacebookIcon, label: "FACEBOOK", href: COMPANY.facebookUrl, hoverColor: "group-hover:text-[#1877f2]" },
   { icon: ThreadsIcon, label: "THREADS", href: COMPANY.threadsUrl, hoverColor: "group-hover:text-white" },
@@ -122,7 +122,7 @@ export default function Footer() {
                 </div>
               </div>
               <div className="flex items-center min-w-0">
-                <span className="text-[10px] lg:text-[11px] xl:text-xs font-black text-white tracking-widest leading-tight uppercase">
+                <span className="text-[10px] lg:text-[11px] xl:text-xs font-bold text-white tracking-widest leading-tight uppercase">
                   LOGIC INTELLIGENCE TECHNOLOGIES
                 </span>
               </div>
@@ -280,9 +280,9 @@ export default function Footer() {
         </div>
 
         {/* Bottom Banner */}
-        <div className="pt-8 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="pt-8 pb-20 md:pb-16 md:px-16 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse " />
+             <div className="w-2 h-2 rounded-full bg-primary " />
              <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">ALL SYSTEMS OPERATIONAL</p>
           </div>
 

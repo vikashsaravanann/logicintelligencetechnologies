@@ -23,7 +23,7 @@ export default function PressPage() {
             <Newspaper className="w-3.5 h-3.5" />
             <span>Newsroom & Media Assets</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 uppercase">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 uppercase">
             PRESS & <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">MEDIA HUB</span>
           </h1>
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">

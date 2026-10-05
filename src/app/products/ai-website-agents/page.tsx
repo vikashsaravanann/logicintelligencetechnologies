@@ -20,7 +20,7 @@ export default function AIWebsiteAgentsPage() {
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-cyan-600/20 blur-[150px] rounded-full mix-blend-screen" />
         <div className="absolute top-[40%] -right-[10%] w-[40%] h-[60%] bg-blue-600/20 blur-[150px] rounded-full mix-blend-screen" />
-        <div className="absolute bottom-0 left-[20%] w-[60%] h-[40%] bg-emerald-500/10 blur-[150px] rounded-full mix-blend-screen" />
+        <div className="absolute bottom-0 left-[20%] w-[60%] h-[40%] bg-primary/10 blur-[150px] rounded-full mix-blend-screen" />
         <div className="absolute inset-0 bg-[url('/assets/noise.png')] opacity-[0.03] mix-blend-overlay" />
       </div>
 
@@ -66,7 +66,7 @@ export default function AIWebsiteAgentsPage() {
             { value: "24/7", label: "Conversations when configured for always-on", icon: Zap },
             { value: "/ai", label: "Live AI Assistant experience", icon: MessageSquare }
           ].map((stat, i) => (
-            <div key={i} className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 text-center backdrop-blur-xl hover:bg-white/[0.04] transition-colors">
+            <div key={i} className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 text-center backdrop-blur-md hover:bg-white/[0.04] transition-colors">
               <stat.icon className="w-8 h-8 text-cyan-400 mx-auto mb-4 opacity-80" />
               <div className="text-4xl md:text-5xl font-bold text-white mb-2">{stat.value}</div>
               <div className="text-slate-400 font-medium">{stat.label}</div>
@@ -152,7 +152,7 @@ export default function AIWebsiteAgentsPage() {
               }
             ].map((item, i) => (
               <div key={i} className="relative z-10 bg-[#050A15] border border-white/10 rounded-3xl p-8 hover:border-cyan-500/30 transition-all text-center group">
-                <div className="w-16 h-16 rounded-full bg-cyan-950 border border-cyan-500/20 flex items-center justify-center mx-auto mb-6 text-2xl font-black text-cyan-400 shadow-[0_0_30px_-10px_rgba(6,182,212,0.3)]">
+                <div className="w-16 h-16 rounded-full bg-cyan-950 border border-cyan-500/20 flex items-center justify-center mx-auto mb-6 text-2xl font-bold text-cyan-400 shadow-[0_0_30px_-10px_rgba(6,182,212,0.3)]">
                   {item.step}
                 </div>
                 <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>

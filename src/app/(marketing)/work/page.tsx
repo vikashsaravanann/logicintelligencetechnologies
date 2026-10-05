@@ -29,7 +29,7 @@ export default function WorkPage() {
           <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">
             Our Portfolio
           </span>
-          <h1 className="uppercase text-3xl md:text-4xl lg:text-6xl font-black text-white mb-6">OUR WORK</h1>
+          <h1 className="uppercase text-3xl md:text-4xl lg:text-6xl font-bold text-white mb-6">OUR WORK</h1>
           <p className="text-lg text-zinc-400 leading-relaxed">
             Explore our curated selection of high-performance web applications, scalable enterprise platforms, and bespoke digital solutions designed to drive business growth and operational excellence.
           </p>
@@ -39,7 +39,7 @@ export default function WorkPage() {
 
         <div className="mt-20 text-center">
           <p className="text-zinc-400 mb-6">Want something similar built for your business?</p>
-          <Link href="/free-demo" className="inline-flex px-8 py-4 rounded-xl text-sm font-bold text-black bg-primary neon-btn">
+          <Link href="/free-demo" className="inline-flex px-8 py-4 rounded-xl text-sm font-bold text-black bg-primary">
             Request a Free Demo
           </Link>
         </div>

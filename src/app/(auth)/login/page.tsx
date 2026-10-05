@@ -263,7 +263,7 @@ export default function LoginPage() {
           <BackToHome href="/" label="Back to Home" />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-2xl sm:rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-xl overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.4)]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-2xl sm:rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-md overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.4)]">
           <aside className="hidden lg:flex flex-col justify-between p-10 bg-gradient-to-br from-cyan-500/15 via-transparent to-blue-900/40 border-r border-white/10">
             <div>
               <div className="flex items-center gap-3 mb-8">
@@ -277,7 +277,7 @@ export default function LoginPage() {
                   </p>
                 </div>
               </div>
-              <h2 className="text-3xl font-black tracking-tight mb-4">
+              <h2 className="text-3xl font-bold tracking-tight mb-4">
                 Where logic meets innovation.
               </h2>
               <p className="text-zinc-300 text-sm leading-relaxed">

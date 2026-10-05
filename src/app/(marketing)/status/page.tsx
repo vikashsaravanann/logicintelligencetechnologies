@@ -19,7 +19,7 @@ export default function StatusPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 pt-32 pb-24">
+    <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-primary selection:text-slate-950 pt-32 pb-24">
       <BackToHome />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.05),_transparent_40%)]" />
 
@@ -27,20 +27,20 @@ export default function StatusPage() {
         
         {/* Header Section */}
         <div className="text-center space-y-6 mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl border border-slate-800 bg-slate-900/50 shadow-2xl backdrop-blur-xl mb-4 relative">
-            <Activity className="w-8 h-8 text-emerald-400" />
-            <div className="absolute top-0 right-0 w-3 h-3 bg-emerald-400 rounded-full animate-ping" />
-            <div className="absolute top-0 right-0 w-3 h-3 bg-emerald-500 rounded-full" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl border border-slate-800 bg-slate-900/50 shadow-2xl backdrop-blur-md mb-4 relative">
+            <Activity className="w-8 h-8 text-primary" />
+            <div className="absolute top-0 right-0 w-3 h-3 bg-primary rounded-full animate-ping" />
+            <div className="absolute top-0 right-0 w-3 h-3 bg-primary rounded-full" />
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black tracking-[0.12em] text-white uppercase">
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-[0.12em] text-white uppercase">
             System Status
           </h1>
           
-          <div className="max-w-xl mx-auto rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4">
-            <h2 className="text-lg font-mono font-bold text-emerald-400 tracking-widest uppercase">
+          <div className="max-w-xl mx-auto rounded-xl border border-primary/20 bg-primary/10 p-4">
+            <h2 className="text-lg font-mono font-bold text-primary tracking-widest uppercase">
               All Systems Operational
             </h2>
-            <p className="text-xs font-mono text-emerald-500/80 mt-1">
+            <p className="text-xs font-mono text-primary/80 mt-1">
               Last updated: Just now
             </p>
           </div>
@@ -48,25 +48,25 @@ export default function StatusPage() {
 
         {/* Global Metric */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-xl text-center">
+          <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md text-center">
             <Globe2 className="w-6 h-6 text-slate-500 mx-auto mb-3" />
-            <div className="text-2xl font-black font-mono text-white mb-1">99.99%</div>
+            <div className="text-2xl font-bold font-mono text-white mb-1">99.99%</div>
             <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Global Uptime (30d)</div>
           </div>
-          <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-xl text-center">
+          <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md text-center">
             <Server className="w-6 h-6 text-slate-500 mx-auto mb-3" />
-            <div className="text-2xl font-black font-mono text-white mb-1">12ms</div>
+            <div className="text-2xl font-bold font-mono text-white mb-1">12ms</div>
             <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Avg Edge Latency</div>
           </div>
-          <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-xl text-center">
+          <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md text-center">
             <Shield className="w-6 h-6 text-slate-500 mx-auto mb-3" />
-            <div className="text-2xl font-black font-mono text-white mb-1">0</div>
+            <div className="text-2xl font-bold font-mono text-white mb-1">0</div>
             <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Active Incidents</div>
           </div>
         </div>
 
         {/* Services List */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-xl overflow-hidden shadow-2xl mb-12">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md overflow-hidden shadow-2xl mb-12">
           <div className="px-6 py-4 border-b border-slate-800 bg-[#0a0e17]">
             <h3 className="text-xs font-mono font-bold tracking-widest text-slate-400 uppercase">
               Service Health
@@ -80,8 +80,8 @@ export default function StatusPage() {
                   <p className="text-[10px] font-mono text-slate-500 mt-1">Uptime: {service.uptime}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest">Operational</span>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <span className="text-xs font-mono font-bold text-primary uppercase tracking-widest">Operational</span>
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
                 </div>
               </div>
             ))}
@@ -89,7 +89,7 @@ export default function StatusPage() {
         </div>
 
         {/* Incident History */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-xl p-8 text-center shadow-xl">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md p-8 text-center shadow-xl">
           <h3 className="text-sm font-mono font-bold tracking-widest text-slate-400 uppercase mb-4">
             Past Incidents
           </h3>

@@ -51,7 +51,7 @@ export default async function ProductDetailPage({ params }: Props) {
       <div className="max-w-6xl mx-auto px-6 relative z-10">
 
         {/* Product Visual Banner */}
-        <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden mb-12 border border-white/10 shadow-2xl bg-black/50">
+        <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden mb-12 border border-white/10 shadow-2xl bg-[#0A1530]/50">
           <SafeImage
             src={visualSrc}
             alt={`${prod.name} Architecture Visual`}
@@ -72,7 +72,7 @@ export default async function ProductDetailPage({ params }: Props) {
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight uppercase mb-4">
+          <h1 className="text-3xl sm:text-5xl font-bold text-white tracking-tight uppercase mb-4">
             {prod.name}
           </h1>
           <p className="text-lg text-primary font-semibold mb-6">
@@ -103,7 +103,7 @@ export default async function ProductDetailPage({ params }: Props) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
           {prod.metrics.map((m, idx) => (
             <div key={idx} className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 text-center">
-              <div className="text-3xl font-black text-primary mb-1">{m.value}</div>
+              <div className="text-3xl font-bold text-primary mb-1">{m.value}</div>
               <div className="text-xs uppercase tracking-wider font-semibold text-zinc-400">{m.label}</div>
             </div>
           ))}

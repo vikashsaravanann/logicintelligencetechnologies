@@ -32,7 +32,7 @@ export default function AIDiscoveryPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-emerald-500 selection:text-slate-950 pt-32 pb-24">
+    <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-primary selection:text-slate-950 pt-32 pb-24">
       <BackToHome />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_right,_rgba(16,185,129,0.08),_transparent_50%)]" />
 
@@ -40,13 +40,13 @@ export default function AIDiscoveryPage() {
         
         {/* Header */}
         <div className="mb-16 space-y-4 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl border border-slate-800 bg-slate-900/50 shadow-2xl backdrop-blur-xl mb-4">
-            <Compass className="w-8 h-8 text-emerald-400" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl border border-slate-800 bg-slate-900/50 shadow-2xl backdrop-blur-md mb-4">
+            <Compass className="w-8 h-8 text-primary" />
           </div>
-          <p className="text-[11px] font-mono font-bold tracking-[0.28em] text-emerald-400 uppercase">
+          <p className="text-[11px] font-mono font-bold tracking-[0.28em] text-primary uppercase">
             Enterprise Consulting
           </p>
-          <h1 className="text-3xl sm:text-5xl font-black tracking-[0.12em] text-white uppercase">
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-[0.12em] text-white uppercase">
             AI Discovery Process
           </h1>
           <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
@@ -57,12 +57,12 @@ export default function AIDiscoveryPage() {
         {/* Phases */}
         <div className="space-y-6 max-w-4xl mx-auto mb-16">
           {phases.map((phase, idx) => (
-            <div key={idx} className="relative rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-xl p-8 shadow-xl flex flex-col md:flex-row gap-8 items-start hover:border-emerald-500/30 transition-colors">
-              <div className="shrink-0 flex items-center justify-center w-14 h-14 rounded-full bg-[#0a0e17] border border-emerald-900/50 shadow-inner">
-                <phase.icon className="w-6 h-6 text-emerald-400" />
+            <div key={idx} className="relative rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md p-8 shadow-xl flex flex-col md:flex-row gap-8 items-start hover:border-primary/30 transition-colors">
+              <div className="shrink-0 flex items-center justify-center w-14 h-14 rounded-full bg-[#0a0e17] border border-primary/50 shadow-inner">
+                <phase.icon className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
-                <div className="text-[10px] font-mono font-bold text-emerald-500 mb-2 uppercase tracking-widest">Phase {phase.step}</div>
+                <div className="text-[10px] font-mono font-bold text-primary mb-2 uppercase tracking-widest">Phase {phase.step}</div>
                 <h3 className="text-xl font-mono font-bold tracking-widest text-white uppercase mb-3">
                   {phase.title}
                 </h3>
@@ -75,8 +75,8 @@ export default function AIDiscoveryPage() {
         </div>
 
         {/* Call to action */}
-        <div className="max-w-4xl mx-auto rounded-2xl border border-emerald-900/50 bg-emerald-950/10 backdrop-blur-xl p-8 sm:p-10 shadow-2xl text-center">
-          <ShieldCheck className="w-10 h-10 text-emerald-400 mx-auto mb-6" />
+        <div className="max-w-4xl mx-auto rounded-2xl border border-primary/50 bg-primary/10 backdrop-blur-md p-8 sm:p-10 shadow-2xl text-center">
+          <ShieldCheck className="w-10 h-10 text-primary mx-auto mb-6" />
           <h2 className="text-2xl font-mono font-bold tracking-widest text-white uppercase mb-4">
             Ready to secure your infrastructure?
           </h2>
@@ -85,7 +85,7 @@ export default function AIDiscoveryPage() {
           </p>
           <Link
             href="/book-consultation"
-            className="inline-flex items-center justify-center gap-2 py-4 px-8 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-mono font-bold text-xs tracking-[0.15em] uppercase shadow-lg shadow-emerald-500/25 transition-all"
+            className="inline-flex items-center justify-center gap-2 py-4 px-8 rounded-xl bg-gradient-to-r from-primary to-primary hover:from-primary hover:to-primary text-slate-950 font-mono font-bold text-xs tracking-[0.15em] uppercase shadow-lg shadow-primary/25 transition-all"
           >
             Schedule Discovery Call <ArrowRight className="w-4 h-4" />
           </Link>

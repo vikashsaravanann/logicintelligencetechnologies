@@ -21,7 +21,7 @@ export interface BackButtonProps {
 }
 
 const PILL_CLASSES =
-  "group pointer-events-auto inline-flex items-center gap-2 h-9 px-4 rounded-full text-[11px] font-black uppercase tracking-[0.16em] " +
+  "group pointer-events-auto inline-flex items-center gap-2 h-9 px-4 rounded-full text-[11px] font-bold uppercase tracking-[0.16em] " +
   "bg-white/95 hover:bg-white text-zinc-950 dark:bg-zinc-900/90 dark:text-zinc-100 dark:hover:bg-zinc-800 " +
   "border border-white/20 dark:border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.25)] " +
   "hover:shadow-[0_6px_24px_rgba(0,0,0,0.35)] active:scale-[0.98] transition-all duration-200 " +

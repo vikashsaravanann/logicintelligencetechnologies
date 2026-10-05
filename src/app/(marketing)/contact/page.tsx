@@ -142,11 +142,11 @@ export default function ContactPage() {
 
         <div className="max-w-3xl mx-auto w-full relative z-10">
           <div className="text-center mb-12">
-            <h1 className="uppercase text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">START YOUR PROJECT</h1>
+            <h1 className="uppercase text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">START YOUR PROJECT</h1>
             <p className="text-zinc-400">Tell us about your requirements and we'll get back to you within 24 hours.</p>
           </div>
 
-          <div className="bg-zinc-900/40 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
+          <div className="bg-zinc-900/40 backdrop-blur-md border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
             {sent ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -156,7 +156,7 @@ export default function ContactPage() {
                 <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8 ">
                   <CheckCircle2 className="h-12 w-12 text-primary" />
                 </div>
-                <h3 className="text-3xl font-black text-white mb-4">Inquiry Submitted!</h3>
+                <h3 className="text-3xl font-bold text-white mb-4">Inquiry Submitted!</h3>
                 <p className="text-zinc-400 max-w-sm mx-auto mb-8">
                   Thank you for sharing your project details. We will review them and contact you within 24 hours.
                 </p>

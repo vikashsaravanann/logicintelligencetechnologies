@@ -22,7 +22,7 @@ export default function CompanyFactsPage() {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
             Authoritative Record
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+          <h1 className="text-3xl sm:text-5xl font-bold text-white tracking-tight">
             Company Fact Sheet
           </h1>
           <p className="text-slate-400 text-base sm:text-lg">
@@ -118,11 +118,11 @@ export default function CompanyFactsPage() {
             </div>
 
             <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-6 space-y-3">
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
                 Product of Logic Intelligence Technologies
               </span>
               <h3 className="text-lg font-bold text-white">VoiceShield</h3>
-              <p className="text-xs text-emerald-400 font-semibold uppercase tracking-wider">
+              <p className="text-xs text-primary font-semibold uppercase tracking-wider">
                 Voice Security & Risk Intelligence
               </p>
               <p className="text-sm text-slate-300 leading-relaxed">

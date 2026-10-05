@@ -35,7 +35,7 @@ export default function DashboardLayout({
       <motion.aside
         initial={false}
         animate={{ width: isSidebarOpen ? 280 : 80 }}
-        className={`bg-[#0a0f1c]/95 backdrop-blur-xl border-r border-white/5 flex flex-col h-screen transition-transform duration-300 z-40 shadow-2xl fixed lg:static inset-y-0 left-0 w-[280px] ${mobileNav ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+        className={`bg-[#0a0f1c]/95 backdrop-blur-md border-r border-white/5 flex flex-col h-screen transition-transform duration-300 z-40 shadow-2xl fixed lg:static inset-y-0 left-0 w-[280px] ${mobileNav ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
         <div className="p-6 flex items-center justify-between cursor-pointer" onClick={() => setSidebarOpen(!isSidebarOpen)}>
           {isSidebarOpen ? (
@@ -43,7 +43,7 @@ export default function DashboardLayout({
               <div className="w-10 h-10 relative overflow-hidden rounded-full shadow-lg">
                 <Image src={COMPANY.logoIconPath} alt={COMPANY.displayName} fill className="object-cover" />
               </div>
-              <span className="text-lg font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-400 leading-tight flex-1">
+              <span className="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-400 leading-tight flex-1">
                 {COMPANY.displayName}
               </span>
             </motion.div>
@@ -119,7 +119,7 @@ export default function DashboardLayout({
             <button type="button" className="lg:hidden h-10 w-10 rounded-xl border border-white/10 grid place-items-center shrink-0" onClick={() => setMobileNav(true)} aria-label="Open menu">
               <Menu className="w-5 h-5" />
             </button>
-            <h1 className="text-lg sm:text-2xl font-black tracking-tight text-white truncate">
+            <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-white truncate">
               Command <span className="text-indigo-500">Center</span>
             </h1>
             <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20">

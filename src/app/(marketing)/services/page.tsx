@@ -19,21 +19,21 @@ export const metadata: Metadata = {
 
 const SERVICE_ACCENT: Record<string, string> = {
   "full-stack-development":     "#45D9D2",
-  "hotel-website":              "#F59E0B",
-  "travel-agency-website":      "#10B981",
-  "ecommerce-website":          "#8B5CF6",
-  "software-development":       "#10B981",
-  "game-development":           "#EC4899",
-  "mobile-app-development":     "#3B82F6",
-  "seo-optimization":           "#22C55E",
+  "hotel-website":              "#0894DE",
+  "travel-agency-website":      "#45D9D2",
+  "ecommerce-website":          "#0894DE",
+  "software-development":       "#45D9D2",
+  "game-development":           "#0894DE",
+  "mobile-app-development":     "#0894DE",
+  "seo-optimization":           "#45D9D2",
   "ui-ux-design":               "#F472B6",
-  "logo-branding":              "#F97316",
+  "logo-branding":              "#0894DE",
   "web-designing":              "#6366F1",
   "web-deployment":             "#0EA5E9",
   "business-website":           "#45D9D2",
-  "crm-software":               "#10B981",
+  "crm-software":               "#45D9D2",
   "school-management-software": "#84CC16",
-  "billing-software":           "#F59E0B",
+  "billing-software":           "#0894DE",
   "api-development":            "#45D9D2",
   "cloud-deployment":           "#0EA5E9",
 };
@@ -78,7 +78,7 @@ export default function ServicesPage() {
                 key={svc.slug}
                 className="group relative flex flex-col justify-between rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-300 hover:border-primary/50 hover: overflow-hidden"
               >
-                <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/40">
+                <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-[#0A1530]/40">
                   <SafeImage
                     src={getServiceVisual(svc.slug)}
                     alt={`${svc.title} Visual Architecture`}
@@ -139,7 +139,7 @@ export default function ServicesPage() {
         </div>
 
         <div className="mt-24 rounded-3xl border border-primary/30 bg-gradient-to-r from-primary/10 via-white/[0.02] to-accent/10 p-10 lg:p-16 text-center relative overflow-hidden">
-          <h2 className="text-3xl lg:text-4xl font-black text-white uppercase tracking-tight mb-4">
+          <h2 className="text-3xl lg:text-4xl font-bold text-white uppercase tracking-tight mb-4">
             Need a Custom Architecture or Scalable System?
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto mb-8 text-sm sm:text-base">

@@ -39,7 +39,7 @@ const USE_CASES = [
     description:
       "Detect AI-generated voice impersonation of executives in phone-based authorisation flows. Protect wire transfer approvals and sensitive data access.",
     signals: ["CEO fraud", "Wire transfer fraud", "Social engineering"],
-    color: "text-emerald-400",
+    color: "text-primary",
   },
   {
     icon: ShieldCheck,
@@ -66,7 +66,7 @@ export default function VoiceShieldUseCases() {
     <section className="py-24 px-6 relative" aria-labelledby="vs-usecases-heading">
       <div className="mx-auto max-w-6xl relative z-10">
         <div className="mb-4">
-          <span className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-400">
+          <span className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
             Use Cases
           </span>
         </div>

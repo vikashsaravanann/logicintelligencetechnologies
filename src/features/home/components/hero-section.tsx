@@ -39,7 +39,7 @@ export default function HeroSection() {
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-7 flex flex-col items-start text-left">
             <div className="lit-rise flex items-center gap-3 mb-7">
-              <div className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-full ring-1 ring-white/20 bg-black">
+              <div className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-full ring-1 ring-white/20 bg-[#0A1530]">
                 <picture>
                   <source srcSet="/assets/logo-icon.webp 128w, /assets/logo-icon-256.webp 256w" type="image/webp" sizes="56px" />
                   <img

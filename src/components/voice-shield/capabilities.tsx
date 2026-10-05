@@ -32,8 +32,8 @@ const CAPABILITIES = [
     description:
       "Each detection result includes explainability markers: high-frequency energy ratio (vocoder leakage indicator), phase inconsistency (splice marker), and prosody irregularity.",
     tag: "INTERPRETABLE",
-    color: "from-emerald-500/20 to-teal-500/10",
-    accent: "text-emerald-400",
+    color: "from-primary/20 to-primary/10",
+    accent: "text-primary",
   },
   {
     icon: FileSearch,
@@ -77,8 +77,8 @@ const CAPABILITIES = [
     description:
       "Row-Level Security policies ensure users can only access their own sessions and detection events. Admin roles access all records. No cross-tenant data leakage.",
     tag: "SECURITY",
-    color: "from-teal-500/20 to-emerald-500/10",
-    accent: "text-teal-400",
+    color: "from-primary/20 to-primary/10",
+    accent: "text-primary",
   },
 ] as const;
 

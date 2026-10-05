@@ -56,7 +56,7 @@ export default function ProposalViewerClient({ proposal }: Props) {
             <span className="text-[10px] font-bold text-primary tracking-widest uppercase block mb-1">
               LOGIC INTELLIGENCE TECHNOLOGIES · STATEMENT OF WORK
             </span>
-            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight uppercase">
+            <h1 className="text-2xl sm:text-4xl font-bold text-white tracking-tight uppercase">
               {proposal.title}
             </h1>
           </div>
@@ -65,7 +65,7 @@ export default function ProposalViewerClient({ proposal }: Props) {
             <span
               className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
                 isApproved
-                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                  ? "bg-primary/20 text-primary border border-primary/30"
                   : "bg-primary/20 text-primary border border-primary/30"
               }`}
             >
@@ -100,7 +100,7 @@ export default function ProposalViewerClient({ proposal }: Props) {
 
           <div>
             <span className="text-zinc-500 font-bold uppercase block mb-1">Total Project Investment</span>
-            <span className="text-primary font-black text-xl">
+            <span className="text-primary font-bold text-xl">
               {proposal.currency === "INR" ? "₹" : "$"}{Number(proposal.pricing).toLocaleString()}
             </span>
             <span className="text-zinc-400 block">Taxes as applicable</span>
@@ -153,7 +153,7 @@ export default function ProposalViewerClient({ proposal }: Props) {
       {/* Terms & Conditions */}
       <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8">
         <h2 className="text-lg font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-          <ShieldCheck className="w-5 h-5 text-emerald-400" />
+          <ShieldCheck className="w-5 h-5 text-primary" />
           <span>3. Commercial Terms & IP Assignment</span>
         </h2>
         <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed whitespace-pre-line mb-6">
@@ -164,7 +164,7 @@ export default function ProposalViewerClient({ proposal }: Props) {
       {/* Digital Acceptance Section */}
       <div className="rounded-3xl border border-primary/40 bg-gradient-to-r from-primary/10 via-white/[0.02] to-accent/10 p-8 sm:p-12 relative overflow-hidden shadow-2xl">
         <div className="max-w-2xl">
-          <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight mb-2">
+          <h3 className="text-xl sm:text-2xl font-bold text-white uppercase tracking-tight mb-2">
             Digital Acceptance & Authorization
           </h3>
           <p className="text-xs sm:text-sm text-zinc-300 mb-6">
@@ -172,17 +172,17 @@ export default function ProposalViewerClient({ proposal }: Props) {
           </p>
 
           {error && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs mb-4">
+            <div className="p-3 rounded-xl bg-accent/10 border border-accent/20 text-accent text-xs mb-4">
               {error}
             </div>
           )}
 
           {isApproved ? (
-            <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center gap-4">
-              <CheckCircle2 className="w-8 h-8 text-emerald-400 shrink-0" />
+            <div className="p-6 rounded-2xl bg-primary/10 border border-primary/30 text-primary flex items-center gap-4">
+              <CheckCircle2 className="w-8 h-8 text-primary shrink-0" />
               <div>
                 <p className="font-bold text-sm">Proposal Successfully Accepted & Approved</p>
-                <p className="text-xs text-emerald-400/80">
+                <p className="text-xs text-primary/80">
                   Our onboarding team will contact you within 2 business hours to coordinate developer sprints.
                 </p>
               </div>
