@@ -2,37 +2,10 @@ import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { safeNextPath } from "@/lib/auth/safe-next";
+import { isPublicPath } from "@/lib/routing/public-paths";
 
 function isCompanyEmail(email: string): boolean {
   return email.toLowerCase().endsWith("@logicintelligencetechnologies.in");
-}
-
-function isPublicPath(path: string): boolean {
-  if (path === "/") return true;
-  if (path.startsWith("/login")) return true;
-  if (path.startsWith("/reset-password")) return true;
-  if (path.startsWith("/auth/")) return true;
-  if (path.startsWith("/api/")) return true;
-  if (path.startsWith("/unsubscribe")) return true;
-  if (path.startsWith("/_next/")) return true;
-  if (path.startsWith("/assets/")) return true;
-  if (path.startsWith("/images/")) return true;
-  if (path.startsWith("/favicon")) return true;
-  if (path.startsWith("/icon")) return true;
-  if (path.startsWith("/apple-")) return true;
-  if (path.startsWith("/sitemap")) return true;
-  if (path.startsWith("/robots")) return true;
-  if (path.startsWith("/manifest")) return true;
-  const marketing = [
-    "/about", "/services", "/industries", "/products", "/work", "/packages",
-    "/blog", "/resources", "/careers", "/jobs", "/press", "/investors", "/contact",
-    "/book-consultation", "/free-demo", "/discovery", "/checklist", "/support",
-    "/search", "/ai", "/ai-assistant", "/privacy", "/terms", "/refund-policy",
-    "/cookie-policy", "/accessibility", "/certifications", "/expertise",
-    "/booking", "/proposal",
-  ];
-  if (marketing.some((p) => path === p || path.startsWith(p + "/"))) return true;
-  return false;
 }
 
 export async function middleware(req: NextRequest) {
