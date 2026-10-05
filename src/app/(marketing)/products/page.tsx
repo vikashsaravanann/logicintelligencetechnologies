@@ -22,7 +22,7 @@ export default function ProductsPage() {
   );
 
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-28 pb-20 overflow-hidden">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-28 pb-20 overflow-hidden">
       <BackToHome href="/" label="Back to Home" />
 
       {/* Glow Effect */}
@@ -59,7 +59,7 @@ export default function ProductsPage() {
             return (
               <div
                 key={prod.slug}
-                className="group relative rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] p-8 sm:p-10 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_40px_rgba(0,191,255,0.15)]"
+                className="group relative rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] p-8 sm:p-10 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:"
               >
                 <div>
                   <div className="flex items-center justify-between mb-6">
@@ -113,7 +113,7 @@ export default function ProductsPage() {
                       href={liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.25)]"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all "
                     >
                       <span>Live Product</span>
                       <ExternalLink className="w-3.5 h-3.5" />

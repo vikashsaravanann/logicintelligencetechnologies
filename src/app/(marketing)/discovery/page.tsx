@@ -161,7 +161,7 @@ export default function DiscoveryPage() {
         <div className="max-w-3xl mx-auto">
           {sent ? (
              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-20 bg-[#12172b] rounded-3xl border border-white/10 shadow-2xl p-6 md:p-12">
-               <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(0,191,255,0.2)]">
+               <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8 ">
                  <CheckCircle2 className="h-12 w-12 text-primary" />
                </div>
                <h3 className="text-4xl font-black text-white mb-4">Discovery Form Submitted!</h3>
@@ -201,7 +201,7 @@ export default function DiscoveryPage() {
                       transition={{ duration: 0.3 }}
                     >
                       <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-4">
-                        <span className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black text-xl shrink-0 border border-primary/20 shadow-[0_0_15px_rgba(0,191,255,0.15)]">
+                        <span className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black text-xl shrink-0 border border-primary/20 ">
                           {currentStep + 1}
                         </span> 
                         {sections[currentStep].title}
@@ -242,7 +242,7 @@ export default function DiscoveryPage() {
                       transition={{ duration: 0.3 }}
                       className="flex flex-col items-center justify-center text-center py-6 md:py-10"
                     >
-                      <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(0,191,255,0.2)] border border-primary/20">
+                      <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6  border border-primary/20">
                         <CheckCircle2 className="w-12 h-12 text-primary" />
                       </div>
                       <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Almost Done!</h2>
@@ -270,7 +270,7 @@ export default function DiscoveryPage() {
                           <button 
                             type="submit" 
                             disabled={isSubmitting} 
-                            className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-black bg-white hover:bg-primary transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(0,191,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-black bg-white hover:bg-primary transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover: disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             {isSubmitting ? 'Submitting...' : <><Send className="w-5 h-5" /> Send Answers</>}
                           </button>
@@ -304,7 +304,7 @@ export default function DiscoveryPage() {
                   <button
                     type="button"
                     onClick={nextStep}
-                    className="flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-sm bg-primary/10 text-primary hover:bg-primary hover:text-black transition-all border border-primary/20 hover:shadow-[0_0_20px_rgba(0,191,255,0.3)]"
+                    className="flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-sm bg-primary/10 text-primary hover:bg-primary hover:text-black transition-all border border-primary/20 hover:"
                   >
                     Next Step <ChevronRight className="w-4 h-4" />
                   </button>

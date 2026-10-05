@@ -29,7 +29,7 @@ export default function WhyUsSection() {
   return (
     <section className="py-16 md:py-24 bg-transparent relative overflow-hidden">
       {/* Background blueprint/grid styling */}
-      <div className="absolute inset-0 bg-[url('https://res.cloudinary.com/dbuznxrrm/image/upload/v1704285811/grid-pattern_q5aocu.svg')] opacity-5" />
+      <div className="absolute inset-0 bg-[none] opacity-5" />
       <div className="absolute right-0 top-0 w-1/2 h-full opacity-10 pointer-events-none">
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full stroke-primary" strokeWidth="0.5" fill="none">
           <path d="M0,100 L20,80 L20,20 L40,0 L60,20 L60,60 L80,40 L100,60" />

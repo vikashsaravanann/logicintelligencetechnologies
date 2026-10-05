@@ -59,7 +59,7 @@ export default function InitialLoader() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.35, ease: "easeInOut" }}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0A0F1E] text-white pointer-events-none select-none"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0D1B3E] text-white pointer-events-none select-none"
           aria-hidden="true"
         >
           {/* Subtle Ambient Radial Glow */}
@@ -71,7 +71,7 @@ export default function InitialLoader() {
               initial={{ scale: 0.92, opacity: 0.85 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.4, ease: "easeOut" }}
-              className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-cyan-500/30 shadow-[0_0_25px_rgba(0,191,255,0.25)] bg-[#070b16] mb-5 p-1.5 flex items-center justify-center"
+              className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-cyan-500/30  bg-[#070b16] mb-5 p-1.5 flex items-center justify-center"
             >
               <Image
                 src="/assets/logo-icon.webp"

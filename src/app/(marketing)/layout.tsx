@@ -12,7 +12,7 @@ export default function MarketingLayout({
     <>
       <InitialLoader />
       <Navbar />
-      <main className="relative min-h-screen min-h-[100dvh] overflow-x-hidden bg-transparent">
+      <main id="main-content" tabIndex={-1} className="relative outline-none min-h-screen min-h-[100dvh] overflow-x-hidden bg-transparent">
         <div className="relative z-[1] w-full max-w-[100vw] overflow-x-hidden">
           {children}
         </div>

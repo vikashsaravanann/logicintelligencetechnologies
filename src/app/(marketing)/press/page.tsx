@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function PressPage() {
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20 overflow-hidden">
       <BackToHome href="/" label="Back to Home" />
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         {/* Header */}
@@ -74,7 +74,7 @@ export default function PressPage() {
               <a
                 href="/resources/press-kit.pdf"
                 download="press-kit.pdf"
-                className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.3)]"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all "
               >
                 <Download className="w-4 h-4" />
                 <span>Download Press Kit (PDF)</span>

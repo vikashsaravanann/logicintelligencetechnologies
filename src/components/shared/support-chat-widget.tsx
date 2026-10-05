@@ -209,7 +209,7 @@ export default function SupportChatWidget() {
         className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 transition-all duration-300 hover:scale-105 mb-safe ${
           open
             ? "w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-primary text-black shadow-xl shadow-primary/30 flex items-center justify-center"
-            : "h-11 sm:h-14 pl-1.5 pr-2.5 sm:pl-2 sm:pr-4 rounded-full bg-[#0A0F1E]/95 border border-primary/40 backdrop-blur-xl shadow-[0_10px_35px_rgba(0,191,255,0.25)] hover:border-primary flex items-center gap-2 sm:gap-3 text-white group"
+            : "h-11 sm:h-14 pl-1.5 pr-2.5 sm:pl-2 sm:pr-4 rounded-full bg-[#0D1B3E]/95 border border-primary/40 backdrop-blur-xl shadow-[0_10px_35px_rgba(69,217,210,0.25)] hover:border-primary flex items-center gap-2 sm:gap-3 text-white group"
         }`}
       >
         {open ? (
@@ -242,9 +242,9 @@ export default function SupportChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 z-50 w-[min(92vw,360px)] h-[min(70dvh,560px)] sm:max-h-[600px] rounded-2xl border border-white/10 bg-[#060B18]/95 backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden pb-safe"
+            className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 z-50 w-[min(92vw,360px)] h-[min(70dvh,560px)] sm:max-h-[600px] rounded-2xl border border-white/10 bg-[#0A1530]/95 backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden pb-safe"
           >
-            <div className="relative px-4 py-3 bg-gradient-to-r from-[#0A0F1E] to-[#12172B] border-b border-white/10 flex items-center gap-3">
+            <div className="relative px-4 py-3 bg-gradient-to-r from-[#0D1B3E] to-[#12172B] border-b border-white/10 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 overflow-hidden border border-white/30 relative">
                 <Image
                   src="/assets/logo-icon.webp"
@@ -310,7 +310,7 @@ export default function SupportChatWidget() {
               ))}
             </div>
 
-            <div className="p-3 bg-[#0A0F1E] border-t border-white/5">
+            <div className="p-3 bg-[#0D1B3E] border-t border-white/5">
               {showLead && !leadOk && (
                 <form
                   className="mb-2 flex gap-1"

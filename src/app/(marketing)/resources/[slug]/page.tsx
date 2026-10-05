@@ -44,7 +44,7 @@ export default async function ResourceDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-28 pb-20 overflow-hidden">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-28 pb-20 overflow-hidden">
       <BackToHome href="/resources" label="Back to Resources" />
       {/* Background Lighting */}
       <div className="absolute top-10 right-1/4 w-[500px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />

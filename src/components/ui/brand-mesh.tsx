@@ -3,8 +3,8 @@
  */
 export default function BrandMesh({
   seed = "lit",
-  accent = "#00BFFF",
-  secondary = "#7B2FBE",
+  accent = "#45D9D2",
+  secondary = "#0894DE",
   label,
   className = "",
 }: {
@@ -33,7 +33,7 @@ export default function BrandMesh({
         </linearGradient>
         <radialGradient id={`r-${seed}`} cx="50%" cy="20%" r="80%">
           <stop offset="0%" stopColor={accent} stopOpacity="0.28" />
-          <stop offset="100%" stopColor="#0A0F1E" stopOpacity="0" />
+          <stop offset="100%" stopColor="#0D1B3E" stopOpacity="0" />
         </radialGradient>
       </defs>
       <rect width="640" height="420" fill="#070B16" />

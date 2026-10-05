@@ -96,7 +96,7 @@ export default function VoiceShieldHero() {
             <div className="flex flex-col sm:flex-row gap-4 mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500 fill-mode-both">
               <Link
                 href="/voice-shield/request"
-                className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500/80 to-blue-600/80 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs sm:text-sm tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_35px_rgba(6,182,212,0.6)] backdrop-blur-lg border border-cyan-300/30"
+                className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-primary hover:bg-[#6DE6E0] text-[#0D1B3E] font-bold text-xs sm:text-sm tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_35px_rgba(6,182,212,0.6)] backdrop-blur-lg border border-cyan-300/30"
               >
                 <Waves className="w-4 h-4" aria-hidden />
                 Request Access

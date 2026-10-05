@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function BookingCancelledPage() {
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 flex items-center justify-center">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20 flex items-center justify-center">
       <div className="max-w-md mx-auto px-6 w-full text-center">
         <div className="w-16 h-16 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center mx-auto mb-6">
           <XCircle className="w-8 h-8" />

@@ -56,7 +56,7 @@ export default async function AdminLeadDetailPage({ params }: Props) {
           
           <Link
             href="/admin/proposals/new"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_15px_rgba(0,191,255,0.3)]"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all "
           >
             <Plus className="w-4 h-4" />
             <span>Generate Proposal</span>

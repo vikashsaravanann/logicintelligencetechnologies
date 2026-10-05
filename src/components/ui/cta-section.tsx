@@ -53,7 +53,7 @@ export default function CTASection({
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href={primaryCta.href}
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-black font-bold text-sm hover:bg-primary/90 transition-all shadow-[0_0_25px_rgba(0,191,255,0.4)] flex items-center justify-center gap-2 group"
+                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-black font-bold text-sm hover:bg-primary/90 transition-all  flex items-center justify-center gap-2 group"
               >
                 <span>{primaryCta.label}</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

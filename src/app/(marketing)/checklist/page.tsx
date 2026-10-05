@@ -85,7 +85,7 @@ export default function ChecklistLeadMagnet() {
         <div className="max-w-md mx-auto relative z-10">
           {isSubmitted ? (
              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#12172b] rounded-3xl border border-white/10 shadow-2xl p-8 md:p-12 text-center">
-               <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(0,191,255,0.2)]">
+               <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6 ">
                  <CheckCircle2 className="h-10 w-10 text-primary" />
                </div>
                <h3 className="text-2xl font-black text-white mb-3">Request Verified!</h3>
@@ -138,7 +138,7 @@ export default function ChecklistLeadMagnet() {
                 <button 
                   type="submit" 
                   disabled={isSubmitting} 
-                  className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-black bg-white hover:bg-primary transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(0,191,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-black bg-white hover:bg-primary transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover: disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? 'Sending...' : <>Get the Free Checklist <ArrowRight className="w-5 h-5" /></>}
                 </button>

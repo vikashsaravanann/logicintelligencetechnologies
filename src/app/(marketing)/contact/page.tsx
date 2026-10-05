@@ -153,7 +153,7 @@ export default function ContactPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center py-16"
               >
-                <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(0,191,255,0.2)]">
+                <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8 ">
                   <CheckCircle2 className="h-12 w-12 text-primary" />
                 </div>
                 <h3 className="text-3xl font-black text-white mb-4">Inquiry Submitted!</h3>
@@ -190,7 +190,7 @@ export default function ContactPage() {
                       key={s}
                       className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 ${
                         step >= s
-                          ? "bg-primary text-black shadow-[0_0_15px_rgba(0,191,255,0.4)]"
+                          ? "bg-primary text-black "
                           : "bg-transparent text-zinc-500 border border-white/10"
                       }`}
                     >
@@ -336,7 +336,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-8 py-4 rounded-xl text-sm font-bold text-black bg-white hover:bg-primary transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(0,191,255,0.4)] flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-8 py-4 rounded-xl text-sm font-bold text-black bg-white hover:bg-primary transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover: flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <>

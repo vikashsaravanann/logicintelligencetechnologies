@@ -108,7 +108,7 @@ export function OnboardingTab({ onboarding }: { onboarding: any[] }) {
           <button 
             type="submit" 
             disabled={isLoading}
-            className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white rounded-xl font-bold tracking-wide transition-all flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(0,191,255,0.3)] hover:shadow-[0_0_30px_rgba(0,191,255,0.5)] disabled:opacity-50 disabled:cursor-not-allowed group"
+            className="w-full sm:w-auto px-8 py-4 bg-primary text-[#0D1B3E] hover:bg-[#6DE6E0]   rounded-xl font-bold tracking-wide transition-all flex items-center justify-center gap-3  hover: disabled:opacity-50 disabled:cursor-not-allowed group"
           >
             {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
             Submit Project Details

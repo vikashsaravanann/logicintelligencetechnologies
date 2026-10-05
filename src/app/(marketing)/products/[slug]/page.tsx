@@ -46,7 +46,7 @@ export default async function ProductDetailPage({ params }: Props) {
   const visualSrc = `/images/products/${slug}.svg`;
 
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-28 pb-20 overflow-hidden">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-28 pb-20 overflow-hidden">
       <BackButton fallbackHref="/products" label="Back to Products" />
       <div className="max-w-6xl mx-auto px-6 relative z-10">
 
@@ -85,7 +85,7 @@ export default async function ProductDetailPage({ params }: Props) {
           <div className="flex flex-wrap gap-4">
             <Link
               href="/book-consultation"
-              className="px-7 py-3.5 rounded-xl bg-primary text-black font-bold text-sm hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.4)] flex items-center gap-2 group"
+              className="px-7 py-3.5 rounded-xl bg-primary text-black font-bold text-sm hover:bg-primary/90 transition-all  flex items-center gap-2 group"
             >
               <span>Schedule Live Walkthrough</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />

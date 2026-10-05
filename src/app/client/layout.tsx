@@ -18,14 +18,14 @@ export default function ClientPortalLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#060B18] text-white flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#0A1530] text-white flex flex-col md:flex-row">
       {/* Sidebar Navigation */}
       <aside className="w-full md:w-64 border-r border-white/10 bg-neutral-950/80 p-6 flex flex-col justify-between shrink-0">
         <div>
           {/* Brand header */}
           <Link href="/" className="flex items-center gap-3 mb-8">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-accent p-0.5 flex items-center justify-center">
-              <div className="w-full h-full bg-[#060B18] rounded-[10px] flex items-center justify-center font-black text-xs text-white">
+              <div className="w-full h-full bg-[#0A1530] rounded-[10px] flex items-center justify-center font-black text-xs text-white">
                 LIT
               </div>
             </div>

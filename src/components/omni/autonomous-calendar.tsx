@@ -123,7 +123,7 @@ export default function AutonomousCalendar({
   };
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#0A0F1E] text-white shadow-xl">
+    <div className="rounded-2xl border border-white/10 bg-[#0D1B3E] text-white shadow-xl">
       {/* Channel toggles */}
       <div className="flex flex-wrap gap-2 border-b border-white/10 p-4">
         {CHANNELS.map((ch) => {
@@ -168,7 +168,7 @@ export default function AutonomousCalendar({
 
       <div className="grid grid-cols-7 gap-px bg-white/10 border-t border-white/10">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-          <div key={d} className="bg-[#0A0F1E] px-2 py-2 text-center text-[11px] font-bold uppercase text-zinc-500">
+          <div key={d} className="bg-[#0D1B3E] px-2 py-2 text-center text-[11px] font-bold uppercase text-zinc-500">
             {d}
           </div>
         ))}

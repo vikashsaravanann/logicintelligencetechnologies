@@ -35,7 +35,7 @@ export default function BriefingButtonsSection() {
           <Link
             key={item.href}
             href={item.href}
-            className="group relative isolate block h-44 overflow-hidden rounded-2xl border border-white/10 md:h-52 bg-[#0D1117] transition-colors hover:border-white/20"
+            className="group relative isolate block h-44 overflow-hidden rounded-2xl border border-white/10 md:h-52 bg-[#0A1530] transition-colors hover:border-white/20"
           >
             {/* Real Image Background */}
             <div className="absolute inset-0 opacity-60 transition-opacity duration-300 group-hover:opacity-100">
@@ -43,7 +43,7 @@ export default function BriefingButtonsSection() {
             </div>
             
             {/* Vignette Overlay to ensure text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/80 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B3E] via-[#0D1B3E]/80 to-transparent" />
             
             <div className="absolute inset-0 flex flex-col justify-end p-5">
               <div className="mb-auto flex justify-end">

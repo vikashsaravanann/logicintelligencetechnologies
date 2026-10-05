@@ -80,7 +80,7 @@ export default function VoiceShieldDemoGate({
                 href={`${apiUrl.replace(/\/$/, "")}/demo`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm transition-all shadow-[0_0_24px_rgba(6,182,212,0.25)]"
+                className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-primary text-[#0D1B3E] hover:bg-[#6DE6E0]   font-bold text-sm transition-all shadow-[0_0_24px_rgba(6,182,212,0.25)]"
               >
                 Launch Live Demo
               </a>
@@ -122,7 +122,7 @@ export default function VoiceShieldDemoGate({
               <div className="space-y-3">
                 <Link
                   href="/voice-shield#request-demo"
-                  className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-sm transition-all"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-primary text-[#0D1B3E] hover:bg-[#6DE6E0]   font-bold text-sm transition-all"
                 >
                   Request a Demo Session
                 </Link>

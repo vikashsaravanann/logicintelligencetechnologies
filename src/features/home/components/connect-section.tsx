@@ -6,7 +6,7 @@ import { COMPANY } from "@/config/company";
 export default function ConnectSection() {
   return (
     <section className="py-16 md:py-24 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,191,255,0.05)_0%,transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(69,217,210,0.05)_0%,transparent_70%)]" />
       <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
         <motion.div
           initial={{ opacity: 1, y: 0 }}

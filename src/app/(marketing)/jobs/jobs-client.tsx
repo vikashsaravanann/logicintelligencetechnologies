@@ -271,7 +271,7 @@ export default function JobsClient() {
                 quality={75}
                 className="object-cover object-[center_18%] transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-transparent to-transparent opacity-60" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B3E] via-transparent to-transparent opacity-60" />
               <div className="absolute bottom-4 left-4 right-4 text-center">
                 <span className="inline-block text-[10px] font-bold uppercase tracking-[0.2em] rounded-full border border-white/20 bg-black/70 backdrop-blur-md px-3 py-1 text-zinc-300">
                   Seat Status: Filled
@@ -383,7 +383,7 @@ export default function JobsClient() {
             quality={72}
             className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/85 to-[#0A0F1E]/25 lg:bg-gradient-to-r lg:from-transparent lg:via-[#0A0F1E]/60 lg:to-[#0A0F1E]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B3E] via-[#0D1B3E]/85 to-[#0D1B3E]/25 lg:bg-gradient-to-r lg:from-transparent lg:via-[#0D1B3E]/60 lg:to-[#0D1B3E]" />
           
           <div className="absolute top-5 left-5 z-20 flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] rounded-full border border-cyan-300/50 bg-black/70 backdrop-blur-md px-3.5 py-1 text-cyan-200 shadow-lg">
@@ -434,7 +434,7 @@ export default function JobsClient() {
               <button
                 type="button"
                 onClick={() => goApply("ceo")}
-                className="h-12 px-8 rounded-xl bg-primary text-black font-black text-xs uppercase tracking-[0.16em] w-full sm:w-auto shadow-[0_10px_30px_rgba(0,191,255,0.3)] hover:brightness-110 transition-all"
+                className="h-12 px-8 rounded-xl bg-primary text-black font-black text-xs uppercase tracking-[0.16em] w-full sm:w-auto shadow-[0_10px_30px_rgba(69,217,210,0.3)] hover:brightness-110 transition-all"
               >
                 Apply for CEO Seat
               </button>
@@ -459,7 +459,7 @@ export default function JobsClient() {
                 quality={70}
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-transparent to-transparent opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B3E] via-transparent to-transparent opacity-80" />
               <span className="absolute top-3 left-3 text-[9px] font-black uppercase tracking-[0.18em] rounded-full bg-black/60 border border-white/15 px-3 py-1 text-cyan-200 backdrop-blur-md">
                 Directorship Open
               </span>
@@ -685,7 +685,7 @@ export default function JobsClient() {
                 quality={70}
                 className="object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/90 via-[#0A0F1E]/50 to-[#0A0F1E]/80" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#0D1B3E]/90 via-[#0D1B3E]/50 to-[#0D1B3E]/80" />
               
               <div className="relative z-10 p-8 sm:p-10 flex flex-col justify-between h-full gap-6">
                 <div>
@@ -930,7 +930,7 @@ export default function JobsClient() {
                   <button
                     type="submit"
                     disabled={busy}
-                    className="h-14 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-black uppercase tracking-[0.18em] text-xs shadow-[0_12px_40px_rgba(0,191,255,0.35)] hover:brightness-110 active:scale-[0.99] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                    className="h-14 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-black uppercase tracking-[0.18em] text-xs shadow-[0_12px_40px_rgba(69,217,210,0.35)] hover:brightness-110 active:scale-[0.99] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                   >
                     <Lock className="w-4 h-4" />
                     <span>{busy ? "Transmitting Application…" : "Submit Confidential Application"}</span>

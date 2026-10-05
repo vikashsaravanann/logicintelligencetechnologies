@@ -26,7 +26,7 @@ export function ProjectsTab({ projects }: { projects: any[] }) {
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
         className="flex flex-col items-center justify-center min-h-[320px] p-10 text-center border rounded-3xl bg-white/[0.05] border-white/15 backdrop-blur-xl"
       >
-        <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(0,191,255,0.2)]">
+        <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mb-6 ">
           <Briefcase className="w-10 h-10 text-cyan-400" />
         </div>
         <h3 className="text-2xl font-bold text-white mb-3">No Active Projects</h3>
@@ -78,7 +78,7 @@ export function ProjectsTab({ projects }: { projects: any[] }) {
                 initial={{ width: 0 }}
                 animate={{ width: `${project.progress}%` }}
                 transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-                className="h-full bg-gradient-to-r from-blue-600 to-cyan-400 rounded-full shadow-[0_0_15px_rgba(0,191,255,0.6)]"
+                className="h-full bg-gradient-to-r from-blue-600 to-cyan-400 rounded-full "
               />
             </div>
           </div>

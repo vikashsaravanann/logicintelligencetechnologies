@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 const SERVICE_ACCENT: Record<string, string> = {
-  "full-stack-development":     "#00BFFF",
+  "full-stack-development":     "#45D9D2",
   "hotel-website":              "#F59E0B",
   "travel-agency-website":      "#10B981",
   "ecommerce-website":          "#8B5CF6",
@@ -30,11 +30,11 @@ const SERVICE_ACCENT: Record<string, string> = {
   "logo-branding":              "#F97316",
   "web-designing":              "#6366F1",
   "web-deployment":             "#0EA5E9",
-  "business-website":           "#00BFFF",
+  "business-website":           "#45D9D2",
   "crm-software":               "#10B981",
   "school-management-software": "#84CC16",
   "billing-software":           "#F59E0B",
-  "api-development":            "#00BFFF",
+  "api-development":            "#45D9D2",
   "cloud-deployment":           "#0EA5E9",
 };
 
@@ -46,7 +46,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 
 export default function ServicesPage() {
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20 overflow-hidden">
       <BackToHome href="/" label="Back to Home" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 right-0 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[160px] pointer-events-none" />
@@ -71,12 +71,12 @@ export default function ServicesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {servicesData.map((svc) => {
-            const accent = SERVICE_ACCENT[svc.slug] ?? "#00BFFF";
+            const accent = SERVICE_ACCENT[svc.slug] ?? "#45D9D2";
             const Icon = iconMap[svc.icon] ?? Layers;
             return (
               <div
                 key={svc.slug}
-                className="group relative flex flex-col justify-between rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)] overflow-hidden"
+                className="group relative flex flex-col justify-between rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-300 hover:border-primary/50 hover: overflow-hidden"
               >
                 <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/40">
                   <SafeImage
@@ -148,7 +148,7 @@ export default function ServicesPage() {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/book-consultation"
-              className="px-8 py-4 rounded-xl bg-primary text-black font-bold hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.4)]"
+              className="px-8 py-4 rounded-xl bg-primary text-black font-bold hover:bg-primary/90 transition-all "
             >
               Book Consultation
             </Link>

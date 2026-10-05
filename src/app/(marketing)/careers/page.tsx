@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function CareersPage() {
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20 overflow-hidden">
       <BackToHome href="/" label="Back to Home" />
       {/* Ambient background */}
       <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
@@ -40,7 +40,7 @@ export default function CareersPage() {
           <div className="mt-8 mb-12 flex justify-center gap-4">
             <Link
               href="/jobs"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-primary text-black font-bold hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.4)]"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-primary text-black font-bold hover:bg-primary/90 transition-all "
             >
               <span>View Open Leadership & Engineering Roles</span>
               <ArrowRight className="w-4 h-4" />
@@ -120,7 +120,7 @@ export default function CareersPage() {
           <p className="text-zinc-400 text-sm mb-8">Review current openings and submit your portfolio directly.</p>
           <Link
             href="/jobs"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-primary text-black font-bold hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.4)]"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-primary text-black font-bold hover:bg-primary/90 transition-all "
           >
             <span>Explore Open Positions</span>
             <ArrowRight className="w-4 h-4" />
