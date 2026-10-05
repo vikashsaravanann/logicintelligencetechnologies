@@ -62,6 +62,15 @@ export function runConfigChecks(): ConfigCheckReport {
         note: "No unsubscribe secret configured — opt-out tokens cannot be generated",
       };
 
+  // ── Rate limiting (Upstash Redis) ─────────────────────────────────────────
+  const redisSet = Boolean(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
+  checks.rateLimit = redisSet
+    ? { status: "ok" }
+    : {
+        status: "degraded",
+        note: "UPSTASH_REDIS_REST_URL / _TOKEN not set — in production the rate limiter fails closed, so AI, contact, booking, support and download requests are rejected",
+      };
+
   // ── Overall status ────────────────────────────────────────────────────────
   const statuses = Object.values(checks).map((c) => c.status);
   const healthy = statuses.every((s) => s === "ok");

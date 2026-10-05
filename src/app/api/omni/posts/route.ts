@@ -31,7 +31,8 @@ export async function GET() {
     .limit(200);
 
   if (error) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    console.error("[omni/posts]", error);
+    return NextResponse.json({ success: false, message: "Request failed" }, { status: 500 });
   }
   return NextResponse.json({ success: true, posts: data ?? [] });
 }
@@ -84,8 +85,9 @@ export async function POST(request: Request) {
     .single();
 
   if (postErr || !post) {
+    console.error("[omni/posts]", postErr);
     return NextResponse.json(
-      { success: false, message: postErr?.message || "Failed to create post" },
+      { success: false, message: "Failed to create post" },
       { status: 500 }
     );
   }
@@ -103,7 +105,8 @@ export async function POST(request: Request) {
 
   const { error: varErr } = await supabase.from("omni_post_variants").insert(variants);
   if (varErr) {
-    return NextResponse.json({ success: false, message: varErr.message }, { status: 500 });
+    console.error("[omni/posts]", varErr);
+    return NextResponse.json({ success: false, message: "Request failed" }, { status: 500 });
   }
 
   const jobs = channels.map((channel) => ({
@@ -117,7 +120,8 @@ export async function POST(request: Request) {
 
   const { error: jobErr } = await supabase.from("omni_publish_jobs").insert(jobs);
   if (jobErr) {
-    return NextResponse.json({ success: false, message: jobErr.message }, { status: 500 });
+    console.error("[omni/posts]", jobErr);
+    return NextResponse.json({ success: false, message: "Request failed" }, { status: 500 });
   }
 
   return NextResponse.json({

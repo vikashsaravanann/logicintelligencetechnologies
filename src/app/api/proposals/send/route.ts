@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
     }
     console.error("Send proposal error:", err);
     return NextResponse.json(
-      { error: err?.message || "Internal error" },
+      { error: "Internal error" },
       { status: 500 }
     );
   }

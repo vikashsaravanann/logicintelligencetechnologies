@@ -10,8 +10,9 @@ export async function GET() {
       .limit(1);
 
     if (error) {
+      console.error("[health/database]", error);
       return NextResponse.json(
-        { status: "error", error: error.message, latencyMs: Date.now() - start },
+        { status: "error", latencyMs: Date.now() - start },
         { status: 500 }
       );
     }
@@ -22,8 +23,9 @@ export async function GET() {
       timestamp: new Date().toISOString(),
     });
   } catch (err: any) {
+    console.error("[health/database]", err);
     return NextResponse.json(
-      { status: "down", error: err?.message, latencyMs: Date.now() - start },
+      { status: "down", latencyMs: Date.now() - start },
       { status: 500 }
     );
   }

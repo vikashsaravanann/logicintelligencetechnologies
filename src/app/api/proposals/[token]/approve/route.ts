@@ -39,7 +39,8 @@ export async function POST(
       .single();
 
     if (updateError) {
-      return NextResponse.json({ error: updateError.message }, { status: 500 });
+      console.error("[proposals/[token]/approve]", updateError);
+      return NextResponse.json({ error: "Request failed" }, { status: 500 });
     }
 
     // 3. Create Project record automatically in CRM
@@ -78,6 +79,7 @@ export async function POST(
 
     return NextResponse.json({ success: true, proposal: updated });
   } catch (err: any) {
-    return NextResponse.json({ error: err?.message || "Internal error" }, { status: 500 });
+    console.error("[proposals/[token]/approve]", err);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 }

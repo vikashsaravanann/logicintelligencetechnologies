@@ -6,8 +6,9 @@ export async function GET() {
     const { data: buckets, error } = await supabaseAdmin.storage.listBuckets();
 
     if (error) {
+      console.error("[health/storage]", error);
       return NextResponse.json(
-        { status: "error", error: error.message },
+        { status: "error" },
         { status: 500 }
       );
     }
@@ -18,8 +19,9 @@ export async function GET() {
       timestamp: new Date().toISOString(),
     });
   } catch (err: any) {
+    console.error("[health/storage]", err);
     return NextResponse.json(
-      { status: "down", error: err?.message },
+      { status: "down" },
       { status: 500 }
     );
   }

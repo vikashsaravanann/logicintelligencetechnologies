@@ -9,8 +9,9 @@ export async function GET() {
       .eq("status", "pending");
 
     if (error) {
+      console.error("[health/email]", error);
       return NextResponse.json(
-        { status: "degraded", error: error.message },
+        { status: "degraded" },
         { status: 500 }
       );
     }
@@ -22,8 +23,9 @@ export async function GET() {
       timestamp: new Date().toISOString(),
     });
   } catch (err: any) {
+    console.error("[health/email]", err);
     return NextResponse.json(
-      { status: "down", error: err?.message },
+      { status: "down" },
       { status: 500 }
     );
   }

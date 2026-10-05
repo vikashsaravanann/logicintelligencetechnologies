@@ -6,6 +6,7 @@ import { isSupabaseLive, isEmailDryRun } from "@/lib/email/config";
 import { sendEmail } from "@/lib/email/send-email";
 import { marketingSendGuard } from "@/lib/outreach/send-guard";
 import { personalize, firstNameFrom } from "@/lib/outreach/personalize";
+import { escapeHtml } from "@/lib/email/validation";
 import { recordLeadActivity } from "@/lib/outreach/activity";
 import OutreachSequenceEmail from "@/emails/outreach-sequence-email";
 
@@ -111,12 +112,14 @@ export async function GET(request: Request) {
       fullName,
       firstNameBlock,
     });
+    // Names come from public forms; escape them before they enter email HTML.
+    const firstNameBlockHtml = escapeHtml(firstNameBlock);
     let bodyHtml = personalize(step.body_html, {
-      firstName: first,
-      fullName,
-      firstNameBlock,
+      firstName: escapeHtml(first),
+      fullName: escapeHtml(fullName),
+      firstNameBlock: firstNameBlockHtml,
     });
-    bodyHtml = bodyHtml.replace(/\{\{firstNameBlock\}\}/g, firstNameBlock);
+    bodyHtml = bodyHtml.replace(/\{\{firstNameBlock\}\}/g, firstNameBlockHtml);
 
     const idempotencyKey = `outreach:${row.campaign_id}:${row.id}:step:${row.current_step}`;
 

@@ -28,12 +28,14 @@ export async function GET(req: NextRequest) {
       .order("created_at", { ascending: false });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      console.error("[proposals]", error);
+      return NextResponse.json({ error: "Request failed" }, { status: 500 });
     }
 
     return NextResponse.json({ proposals: proposals || [] });
   } catch (err: any) {
-    return NextResponse.json({ error: err?.message || "Internal error" }, { status: 500 });
+    console.error("[proposals]", err);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 }
 
@@ -67,7 +69,8 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      console.error("[proposals]", error);
+      return NextResponse.json({ error: "Request failed" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, proposal }, { status: 201 });
@@ -75,6 +78,7 @@ export async function POST(req: NextRequest) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: "Validation failed", details: err.issues }, { status: 400 });
     }
-    return NextResponse.json({ error: err?.message || "Internal error" }, { status: 500 });
+    console.error("[proposals]", err);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 }
