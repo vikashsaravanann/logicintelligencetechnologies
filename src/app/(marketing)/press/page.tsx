@@ -47,7 +47,7 @@ const ASSETS = [
 
 export default function PressPage() {
   return (
-    <main className="min-h-screen bg-[#0A0D1A] text-white pt-24">
+    <div className="min-h-screen bg-[#0A0D1A] text-white pt-24">
       <BackToHome />
       <section className="relative py-16 px-6 lg:px-8 overflow-hidden">
         <PageBackdrop src="/assets/jobs/studio-hero.jpg" />
@@ -167,6 +167,6 @@ export default function PressPage() {
           </p>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

@@ -28,7 +28,7 @@ export const COMPANY = {
   facebookUrl: 'https://www.facebook.com/logicintelligencetechnologies/',
   youtubeUrl: 'https://www.youtube.com/@logicintelligencetechnologies',
   threadsUrl: 'https://www.threads.com/@logicintelligencetechnologies/',
-  githubUrl: 'https://github.com/vikashsaravanann/Logic-Intelligence',
+  githubUrl: 'https://github.com/vikashsaravanann',
   websiteUrl: 'https://www.logicintelligencetechnologies.in',
   logoIconPath: '/assets/logo-icon.jpg',
   logoFullPath: '/assets/logo.jpg',

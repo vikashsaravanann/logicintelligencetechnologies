@@ -3,6 +3,7 @@ import PageShell from '@/components/layout/page-shell';
 import SectionHeader from '@/components/ui/section-header';
 import BackToHome from "@/components/ui/back-to-home";
 
+import PageHelpBar from "@/components/ui/page-help-bar";
 export const metadata: Metadata = {
   title: 'Terms of Service',
   description: 'Terms of Service for Logic Intelligence Technologies',
@@ -55,6 +56,7 @@ export default function TermsOfServicePage() {
           </p>
         </div>
       </div>
+      <PageHelpBar title="Questions about these terms?" />
     </PageShell>
   );
 }

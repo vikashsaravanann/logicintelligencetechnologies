@@ -85,6 +85,12 @@ export default function LoginPage() {
   const [serverSuccess, setServerSuccess] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
+  // Allow links such as /login?mode=signup to open the sign-up form directly.
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("mode");
+    if (requested === "signup" || requested === "forgot") setMode(requested);
+  }, []);
+
   useEffect(() => {
     setReady(true);
     if (!supabase) {

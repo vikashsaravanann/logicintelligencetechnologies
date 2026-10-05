@@ -110,7 +110,7 @@ export default function ChecklistLeadMagnet() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0A0D1A] text-white pt-24">
+    <div className="min-h-screen bg-[#0A0D1A] text-white pt-24">
       <BackToHome />
       <section className="relative py-16 px-6 lg:px-8 overflow-hidden">
         <PageBackdrop src="/assets/jobs/studio-hero.jpg" />
@@ -188,15 +188,10 @@ export default function ChecklistLeadMagnet() {
                 <p className="text-sm text-zinc-400 mb-4">
                   Production-grade quality assurance framework — five phases, mapped gates, written for founders who refuse rework.
                 </p>
-                <a
-                  href="/resources/website-development-checklist.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-accent transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                  Download PDF directly
-                </a>
+                <p className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
+                  <Download className="w-4 h-4" aria-hidden />
+                  Enter your email and we send the PDF straight to your inbox.
+                </p>
               </div>
               <div>
                 {sent ? (
@@ -233,6 +228,6 @@ export default function ChecklistLeadMagnet() {
           </p>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

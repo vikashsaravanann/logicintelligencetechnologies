@@ -4,6 +4,7 @@ import FloatingElements from "@/components/motion/floating-elements";
 import { FOUNDER } from "@/config/founder";
 import { SafeImage } from "@/components/ui/safe-image";
 import { Award, ShieldCheck } from "lucide-react";
+import CTASection from "@/components/ui/cta-section";
 
 export const metadata: Metadata = {
   title: "Professional Certifications | Logic Intelligence Technologies",
@@ -34,7 +35,7 @@ export default function CertificationsPage() {
   const certifications = FOUNDER.credentials.filter(hasImage);
   
   return (
-    <main className="min-h-screen bg-transparent text-white pt-28 sm:pt-32 pb-20">
+    <div className="min-h-screen bg-transparent text-white pt-28 sm:pt-32 pb-20">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-8">
         <BackButton fallbackHref="/about" label="Back to About" inline />
       </div>
@@ -89,7 +90,14 @@ export default function CertificationsPage() {
         </div>
       </section>
 
+      <CTASection
+        title="Put this expertise to work"
+        subtitle="Book a consultation with the founder or see the projects these skills have shipped."
+        primaryCta={{ label: "Book a consultation", href: "/book-consultation" }}
+        secondaryCta={{ label: "See our work", href: "/work" }}
+      />
+
       <FloatingElements />
-    </main>
+    </div>
   );
 }

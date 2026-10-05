@@ -5,6 +5,7 @@ import BackToHome from "@/components/ui/back-to-home";
 import { COMPANY } from "@/config/company";
 import { Cpu, Mic, ShieldCheck, ExternalLink, GitBranch, ArrowRight } from "lucide-react";
 
+import CTASection from "@/components/ui/cta-section";
 export const metadata: Metadata = {
   title: "Product Facts | Logic Intelligence Technologies",
   description:
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function ProductFactsPage() {
   return (
-    <main className="min-h-screen bg-[#0A1530] text-slate-100 pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#0A1530] text-slate-100 pt-28 pb-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-12">
         <BackToHome />
 
@@ -73,14 +74,9 @@ export default function ProductFactsPage() {
             </div>
             <div>
               <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Repository</p>
-              <a
-                href={COMPANY.products.logicVoice.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-cyan-400 hover:underline flex items-center gap-1 mt-1 font-mono text-xs"
-              >
-                vikashsaravanann/logic-voice <GitBranch className="w-3.5 h-3.5" />
-              </a>
+              <p className="flex items-center gap-1 mt-1 font-mono text-xs text-slate-300">
+                Private repository <GitBranch className="w-3.5 h-3.5" aria-hidden />
+              </p>
             </div>
           </div>
 
@@ -169,6 +165,7 @@ export default function ProductFactsPage() {
           </div>
         </section>
       </div>
-    </main>
+      <CTASection title="See the products in action" subtitle="Explore Logic Voice and VoiceShield, or talk to us about your use case." primaryCta={{ label: "Explore products", href: "/products" }} secondaryCta={{ label: "Contact us", href: "/contact" }} />
+    </div>
   );
 }

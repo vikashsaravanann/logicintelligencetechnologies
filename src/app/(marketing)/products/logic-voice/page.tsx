@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 
 export default function LogicVoiceProductPage() {
   return (
-    <main className="relative min-h-screen bg-[#0A1530] text-slate-100 overflow-x-hidden font-sans pt-28 pb-20">
+    <div className="relative min-h-screen bg-[#0A1530] text-slate-100 overflow-x-hidden font-sans pt-28 pb-20">
       <BackToHome href="/products" label="Back to Products" />
 
       {/* Decorative Glow */}
@@ -275,6 +275,6 @@ export default function LogicVoiceProductPage() {
           </div>
         </section>
       </div>
-    </main>
+    </div>
   );
 }

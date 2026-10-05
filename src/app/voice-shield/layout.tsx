@@ -1,5 +1,6 @@
 import React from "react";
 import VoiceShieldNavbar from "@/components/voice-shield/navbar";
+import Footer from "@/components/layout/footer";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Inter, JetBrains_Mono } from "next/font/google";
 
@@ -38,6 +39,7 @@ export default function VoiceShieldLayout({
       `}} />
       <VoiceShieldNavbar />
       {children}
+      <Footer />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
 
+import CTASection from "@/components/ui/cta-section";
 export const metadata: Metadata = {
   title: "AI Knowledge Hub | Logic Intelligence Technologies",
   description: "Centralized hub for understanding AI concepts, capabilities, and product guides at Logic Intelligence Technologies.",
@@ -94,6 +95,7 @@ export default function KnowledgeBasePage() {
         </div>
 
       </div>
+      <CTASection title="Didn't find your answer?" subtitle="Ask the AI assistant for an instant answer, or open a support ticket and our team will follow up." primaryCta={{ label: "Ask the AI assistant", href: "/ai-assistant" }} secondaryCta={{ label: "Open a support ticket", href: "/support/new" }} />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { BackButton } from "@/components/navigation/back-button";
 import FloatingElements from "@/components/motion/floating-elements";
 import { FOUNDER } from "@/config/founder";
+import CTASection from "@/components/ui/cta-section";
 import {
   Code2,
   Database,
@@ -72,7 +73,7 @@ const EXPERTISE_DOMAINS = [
 
 export default function ExpertisePage() {
   return (
-    <main className="min-h-screen bg-transparent text-white pt-28 sm:pt-32 pb-20">
+    <div className="min-h-screen bg-transparent text-white pt-28 sm:pt-32 pb-20">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-8">
         <BackButton fallbackHref="/about" label="Back to About" inline />
       </div>
@@ -130,6 +131,7 @@ export default function ExpertisePage() {
       </section>
 
       <FloatingElements />
-    </main>
+      <CTASection />
+    </div>
   );
 }

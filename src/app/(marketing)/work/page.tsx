@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function WorkPage() {
   return (
-    <main className="min-h-screen bg-transparent text-white pt-32">
+    <div className="min-h-screen bg-transparent text-white pt-32">
       <BackToHome href="/" label="Back to Home" />
       <section className="relative py-16 px-6 lg:px-8 overflow-hidden">
         <PageBackdrop src="/assets/jobs/eng-desk.jpg" />
@@ -47,6 +47,6 @@ export default function WorkPage() {
       </section>
 
       <FloatingElements />
-    </main>
+    </div>
   );
 }

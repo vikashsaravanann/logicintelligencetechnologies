@@ -3,6 +3,7 @@ import PageShell from '@/components/layout/page-shell';
 import SectionHeader from '@/components/ui/section-header';
 import BackToHome from "@/components/ui/back-to-home";
 
+import PageHelpBar from "@/components/ui/page-help-bar";
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description: 'Privacy Policy for Logic Intelligence Technologies',
@@ -50,6 +51,7 @@ export default function PrivacyPolicyPage() {
           </p>
         </div>
       </div>
+      <PageHelpBar title="Questions about your data?" />
     </PageShell>
   );
 }

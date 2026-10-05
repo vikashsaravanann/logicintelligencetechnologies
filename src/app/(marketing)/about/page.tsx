@@ -46,7 +46,7 @@ const focusAreas = [
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-transparent text-white pt-28 sm:pt-32">
+    <div className="min-h-screen bg-transparent text-white pt-28 sm:pt-32">
       <BackToHome />
       <section className="relative py-14 sm:py-20 px-6 lg:px-8 overflow-hidden">
         <PageBackdrop src="/assets/backdrops/about-hero.jpg" />
@@ -104,10 +104,10 @@ export default function AboutPage() {
                 </p>
               </div>
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2">
-                <a href={FOUNDER.linkedinUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 text-xs text-zinc-400 hover:text-white hover:border-white/30 transition-all">
+                <a href={FOUNDER.linkedinUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center gap-1.5 px-4 rounded-full border border-white/15 text-sm text-zinc-300 hover:text-white hover:border-white/30 transition-all">
                   <ExternalLink className="w-3 h-3" /> LinkedIn
                 </a>
-                <a href={`mailto:${COMPANY.email}`} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 text-xs text-zinc-400 hover:text-primary hover:border-primary/30 transition-all">
+                <a href={`mailto:${COMPANY.email}`} className="inline-flex min-h-[44px] items-center gap-1.5 px-4 rounded-full border border-white/15 text-sm text-zinc-300 hover:text-primary hover:border-primary/30 transition-all">
                   <Mail className="w-3 h-3" /> Email
                 </a>
               </div>
@@ -172,6 +172,6 @@ export default function AboutPage() {
       </section>
 
       <FloatingElements />
-    </main>
+    </div>
   );
 }

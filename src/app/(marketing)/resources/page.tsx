@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
 import Link from "next/link";
 import { PDF_RESOURCES } from "@/config/pdfs";
-import { ArrowRight, Download, FileText, Sparkles, BookOpen, Code2, Brain, BarChart3, Briefcase, FileCheck, Archive } from "lucide-react";
+import { ArrowRight, Download, FileText, BookOpen, Code2, Brain, BarChart3, Briefcase, FileCheck, Archive, Lock, MessageSquare } from "lucide-react";
 import SafeImage from "@/components/ui/safe-image";
 
 export const metadata: Metadata = {
@@ -42,11 +42,35 @@ export default function ResourcesPage() {
             RESOURCES, FRAMEWORKS & <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TECHNICAL BRIEFS</span>
           </h1>
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
-            Curated blueprints, checklists, and templates from real-world enterprise deployments. Complete the access form to receive each resource.
+            Company documents, guides and references. Free for signed-in members: choose a document and we email you the PDF.
           </p>
+          <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+            <a
+              href="#library"
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold uppercase tracking-wider text-black hover:bg-primary/90 transition-colors"
+            >
+              <BookOpen className="h-4 w-4" aria-hidden />
+              Browse documents
+            </a>
+            <Link
+              href="/contact"
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 text-sm font-bold uppercase tracking-wider text-white hover:border-primary/60 hover:bg-white/10 transition-colors"
+            >
+              <MessageSquare className="h-4 w-4" aria-hidden />
+              Request a custom brief
+            </Link>
+          </div>
+          <ol className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left" aria-label="How to get a document">
+            {["Sign in or create a free account", "Open a document and confirm your details", "Receive the PDF link by email"].map((step, i) => (
+              <li key={step} className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/15 text-xs font-bold text-primary">{i + 1}</span>
+                {step}
+              </li>
+            ))}
+          </ol>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div id="library" className="scroll-mt-28 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {PDF_RESOURCES.map((res) => {
             const catStyle = CATEGORY_STYLES[res.category] ?? {
               color: "#00BFFF",
@@ -77,29 +101,29 @@ export default function ResourcesPage() {
                 </div>
 
                 <div className="p-6 sm:p-8 flex flex-col flex-1">
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">
+                  <h2 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">
                     {res.title}
-                  </h3>
+                  </h2>
                   <p className="text-sm text-zinc-400 mb-6 leading-relaxed flex-grow">
                     {res.description}
                   </p>
 
-                  <div className="pt-6 border-t border-white/10 flex items-center justify-between mt-auto">
+                  <div className="pt-6 border-t border-white/10 mt-auto space-y-3">
                     <Link
                       href={`/resources/${res.slug}`}
-                      className="inline-flex items-center gap-2 text-sm font-bold text-white group-hover:text-primary transition-colors"
+                      aria-label={`${res.accessType === "public" ? "Open" : "Get"} ${res.title}`}
+                      className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold uppercase tracking-wider text-black hover:bg-primary/90 transition-colors"
                     >
-                      <span>View resource</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <Download className="w-4 h-4" aria-hidden />
+                      <span>{res.accessType === "public" ? "Open PDF" : "Get this PDF"}</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden />
                     </Link>
-                    <Link
-                      href={`/resources/${res.slug}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all border text-zinc-300 hover:text-black hover:bg-primary"
-                      style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }}
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>{res.accessType === "public" ? "Open" : "Get access"}</span>
-                    </Link>
+                    {res.accessType !== "public" && (
+                      <p className="flex items-center justify-center gap-1.5 text-xs text-zinc-400">
+                        <Lock className="w-3.5 h-3.5" aria-hidden />
+                        Free with an account
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

@@ -56,7 +56,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
 
   if (pkg) {
     return (
-      <main className="min-h-screen bg-transparent text-white pt-28 pb-20">
+      <div className="min-h-screen bg-transparent text-white pt-28 pb-20">
       <BackToHome href="/packages" label="Back to Packages" />
 
         <section className="px-6 lg:px-8 max-w-5xl mx-auto text-center relative">
@@ -127,7 +127,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
         )}
 
         <FloatingElements />
-      </main>
+      </div>
     );
   }
 
@@ -135,7 +135,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
     const Icon = iconMap[srv.icon] || Code;
     
     return (
-      <main className="min-h-screen bg-transparent text-white pt-28 pb-20">
+      <div className="min-h-screen bg-transparent text-white pt-28 pb-20">
 
         {/* Visual Banner */}
         <div className="max-w-6xl mx-auto px-6 mb-12">
@@ -281,7 +281,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
         )}
 
         <FloatingElements />
-      </main>
+      </div>
     );
   }
 }

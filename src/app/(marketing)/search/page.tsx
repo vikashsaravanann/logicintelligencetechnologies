@@ -32,7 +32,7 @@ export default async function SearchPage({
     : blogPosts.slice(0, 6);
 
   return (
-    <main className="min-h-screen bg-transparent text-white pt-32 pb-24 px-6">
+    <div className="min-h-screen bg-transparent text-white pt-32 pb-24 px-6">
       <BackToHome href="/" label="Back to Home" />
       <JsonLd data={breadcrumb([{ name: "Home", path: "/" }, { name: "Search", path: "/search" }])} />
       <div className="max-w-3xl mx-auto">
@@ -77,6 +77,6 @@ export default async function SearchPage({
           </ul>
         </section>
       </div>
-    </main>
+    </div>
   );
 }

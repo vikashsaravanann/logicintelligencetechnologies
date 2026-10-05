@@ -134,7 +134,7 @@ export default function ContactPage() {
   const labelClass = "block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2";
 
   return (
-    <main className="min-h-screen bg-transparent text-white pt-24">
+    <div className="min-h-screen bg-transparent text-white pt-24">
       <BackToHome />
 
       <section className="relative py-16 px-6 lg:px-8 overflow-hidden min-h-[80vh] flex flex-col justify-center">
@@ -357,6 +357,6 @@ export default function ContactPage() {
       </section>
 
       <FloatingElements />
-    </main>
+    </div>
   );
 }

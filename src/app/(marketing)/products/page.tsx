@@ -51,9 +51,8 @@ export default function ProductsPage() {
             const liveUrl = isLogicVoice
               ? "https://logicvoice.logicintelligencetechnologies.in/"
               : "https://voiceshield.logicintelligencetechnologies.in/";
-            const gitHubUrl = isLogicVoice
-              ? "https://github.com/vikashsaravanann/logic-voice"
-              : "https://github.com/vikashsaravanann/voice-shield";
+            // Logic Voice's repository is private, so only VoiceShield links to code.
+            const gitHubUrl = isLogicVoice ? null : "https://github.com/vikashsaravanann/voice-shield";
             const internalPage = isLogicVoice ? "/products/logic-voice" : "/voice-shield";
 
             return (
@@ -113,21 +112,23 @@ export default function ProductsPage() {
                       href={liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all "
+                      className="inline-flex min-h-[44px] items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all"
                     >
                       <span>Live Product</span>
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
-                    <a
-                      href={gitHubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-zinc-200 font-mono text-xs uppercase tracking-wider transition-colors"
-                      title="GitHub Repository"
-                    >
-                      <Terminal className="w-3.5 h-3.5 text-primary" />
-                      <span>Code</span>
-                    </a>
+                    {gitHubUrl && (
+                      <a
+                        href={gitHubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex min-h-[44px] items-center gap-2 px-4 py-2.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-zinc-200 font-mono text-xs uppercase tracking-wider transition-colors"
+                        title="GitHub Repository"
+                      >
+                        <Terminal className="w-3.5 h-3.5 text-primary" aria-hidden />
+                        <span>Code</span>
+                      </a>
+                    )}
                   </div>
 
                   <Link

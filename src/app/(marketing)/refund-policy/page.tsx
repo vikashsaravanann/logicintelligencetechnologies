@@ -3,6 +3,7 @@ import FloatingElements from "@/components/motion/floating-elements";
 import BackToHome from "@/components/ui/back-to-home";
 import { companyConfig, LEGAL_LAST_UPDATED } from "@/config/company";
 
+import PageHelpBar from "@/components/ui/page-help-bar";
 export const metadata: Metadata = {
   title: "Refund & Cancellation Policy",
   description:
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function RefundPolicyPage() {
   return (
-    <main className="min-h-screen bg-[#0A0D1A] text-white pt-24 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0A0D1A] text-white pt-24 relative overflow-hidden">
       <div className="absolute top-0 right-1/4 w-[800px] h-[600px] bg-red-500/5 blur-[150px] rounded-full pointer-events-none" />
       <BackToHome />
       <section className="py-20 px-6 lg:px-8 max-w-4xl mx-auto relative z-10">
@@ -79,6 +80,7 @@ export default function RefundPolicyPage() {
         </div>
       </section>
       <FloatingElements />
-    </main>
+      <PageHelpBar title="Questions about refunds?" />
+    </div>
   );
 }

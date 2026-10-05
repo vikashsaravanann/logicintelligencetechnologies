@@ -4,6 +4,7 @@ import Link from "next/link";
 import { COMPANY } from "@/config/company";
 import { CheckCircle2, ShieldCheck } from "lucide-react";
 
+import PageHelpBar from "@/components/ui/page-help-bar";
 export const metadata: Metadata = {
   title: "Accessibility Statement | Logic Intelligence Technologies",
   description: "Our commitment to digital accessibility, WCAG 2.2 AA conformance, keyboard navigation, and inclusive design standards.",
@@ -83,6 +84,7 @@ export default function AccessibilityPage() {
           </section>
         </div>
       </div>
+      <PageHelpBar title="Questions or accessibility issues?" text="Tell us what blocked you and we will fix it." />
     </div>
   );
 }

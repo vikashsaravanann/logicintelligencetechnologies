@@ -6,6 +6,7 @@ import { COMPANY } from "@/config/company";
 import { FOUNDER } from "@/config/founder";
 import { Building2, User, MapPin, Globe, Mail, Phone, ShieldCheck, Cpu } from "lucide-react";
 
+import CTASection from "@/components/ui/cta-section";
 export const metadata: Metadata = {
   title: "Company Facts | Logic Intelligence Technologies",
   description:
@@ -176,6 +177,7 @@ export default function CompanyFactsPage() {
           </div>
         </section>
       </div>
+      <CTASection title="Work with Logic Intelligence Technologies" subtitle="Talk to us about a project, or explore the products we build." primaryCta={{ label: "Contact us", href: "/contact" }} secondaryCta={{ label: "Explore products", href: "/products" }} />
     </div>
   );
 }

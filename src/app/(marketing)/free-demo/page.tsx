@@ -192,7 +192,7 @@ export default function FreeDemoPage() {
 
   if (sent) {
     return (
-      <main className="min-h-screen bg-transparent text-white relative">
+      <div className="min-h-screen bg-transparent text-white relative">
         <PageBackdrop src="/assets/backdrops/home-hero.jpg" />
         <BackToHome />
         <div className="relative z-10 max-w-lg mx-auto px-6 py-32 text-center">
@@ -221,12 +221,12 @@ export default function FreeDemoPage() {
             </Link>
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-transparent text-white relative">
+    <div className="min-h-screen bg-transparent text-white relative">
       <PageBackdrop src="/assets/backdrops/home-hero.jpg" />
       <BackToHome />
       <section className="relative pt-28 pb-12 px-6 lg:px-8 overflow-hidden">
@@ -376,7 +376,7 @@ export default function FreeDemoPage() {
               <label className={labelClass}>Chatbot / messaging channels</label>
               <div className="grid sm:grid-cols-2 gap-3 mb-8">
                 {CHANNEL_OPTIONS.map((ch) => (
-                  <button key={ch.id} type="button" onClick={() => toggleList("channels", ch.id)} className={`text-left p-3 rounded-xl border transition-colors ${
+                  <button key={ch.id} type="button" aria-pressed={form.channels.includes(ch.id)} onClick={() => toggleList("channels", ch.id)} className={`text-left p-3 rounded-xl border transition-colors ${
                     form.channels.includes(ch.id) ? "border-primary/50 bg-primary/10 text-white" : "border-white/10 bg-white/[0.03] text-zinc-300 hover:border-white/20"
                   }`}>
                     <span className="block text-sm font-bold">{ch.label}</span>
@@ -387,8 +387,8 @@ export default function FreeDemoPage() {
               <label className={labelClass}>Features of interest</label>
               <div className="flex flex-wrap gap-2 mb-6">
                 {FEATURE_OPTIONS.map((f) => (
-                  <button key={f} type="button" onClick={() => toggleList("features", f)} className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-                    form.features.includes(f) ? "border-primary/50 bg-primary/15 text-primary" : "border-white/10 text-zinc-400 hover:border-white/25"
+                  <button key={f} type="button" aria-pressed={form.features.includes(f)} onClick={() => toggleList("features", f)} className={`min-h-[40px] px-4 py-2 rounded-full text-sm font-semibold border transition-colors ${
+                    form.features.includes(f) ? "border-primary/50 bg-primary/15 text-primary" : "border-white/15 text-zinc-300 hover:border-white/30"
                   }`}>{f}</button>
                 ))}
               </div>
@@ -433,6 +433,6 @@ export default function FreeDemoPage() {
           </form>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

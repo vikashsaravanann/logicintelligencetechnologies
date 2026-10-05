@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function AIVoiceAgentsPage() {
   return (
-    <main className="relative min-h-screen bg-[#0A0515] text-slate-100 overflow-hidden font-sans">
+    <div className="relative min-h-screen bg-[#0A0515] text-slate-100 overflow-hidden font-sans">
       <BackToHome />
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[50%] bg-accent/20 blur-[150px] rounded-full mix-blend-screen" />
@@ -55,7 +55,7 @@ export default function AIVoiceAgentsPage() {
                 View Pricing & Plans <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-accent/30 text-accent hover:bg-accent/10 px-8 py-6 rounded-full text-lg w-full sm:w-auto transition-all">
+            <Button asChild variant="outline" size="lg" className="border-white/30 bg-white/5 text-white hover:bg-white/10 hover:border-white/50 px-8 py-6 rounded-full text-lg w-full sm:w-auto transition-all">
               <Link href="/contact">
                 Talk to an Expert
               </Link>
@@ -246,6 +246,6 @@ export default function AIVoiceAgentsPage() {
         </section>
 
       </div>
-    </main>
+    </div>
   );
 }

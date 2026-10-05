@@ -3,6 +3,7 @@ import BackToHome from "@/components/ui/back-to-home";
 import Link from "next/link";
 import { COMPANY } from "@/config/company";
 
+import PageHelpBar from "@/components/ui/page-help-bar";
 export const metadata: Metadata = {
   title: "Cookie Policy | Logic Intelligence Technologies",
   description: "Learn how Logic Intelligence Technologies uses cookies, analytics trackers, and browser storage to optimize user experience.",
@@ -82,6 +83,7 @@ export default function CookiePolicyPage() {
           </section>
         </div>
       </div>
+      <PageHelpBar title="Questions about this policy?" />
     </div>
   );
 }

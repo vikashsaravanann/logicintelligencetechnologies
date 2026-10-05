@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function JobsPage() {
   return (
-    <main className="min-h-screen bg-transparent text-white">
+    <div className="min-h-screen bg-transparent text-white">
       <JsonLd
         data={[
           breadcrumb([
@@ -80,6 +80,6 @@ export default function JobsPage() {
         </div>
       </section>
       <JobsClient />
-    </main>
+    </div>
   );
 }

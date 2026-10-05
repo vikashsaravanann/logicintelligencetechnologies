@@ -142,7 +142,7 @@ export default function DiscoveryPage() {
   const inputClass = "w-full px-4 py-3 bg-zinc-900/50 border border-white/10 rounded-xl text-base md:text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner";
   
   return (
-    <main className="min-h-screen bg-[#0A0D1A] text-white pt-24 overflow-x-hidden">
+    <div className="min-h-screen bg-[#0A0D1A] text-white pt-24 overflow-x-hidden">
       <BackToHome />
       {/* Hero Section */}
       <section className="relative py-12 px-6 lg:px-8 overflow-hidden">
@@ -323,6 +323,6 @@ export default function DiscoveryPage() {
       </section>
 
       <FloatingElements />
-    </main>
+    </div>
   );
 }

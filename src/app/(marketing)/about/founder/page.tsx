@@ -196,7 +196,7 @@ export default function FounderPage() {
                   href={FOUNDER.linkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 text-xs font-semibold uppercase tracking-wide text-zinc-300 hover:text-white hover:border-white/25 transition-colors"
+                  className="inline-flex min-h-[44px] items-center gap-2 px-4 rounded-lg border border-white/15 text-xs font-semibold uppercase tracking-wide text-zinc-200 hover:text-white hover:border-white/30 transition-colors"
                 >
                   <ExternalLink className="w-3.5 h-3.5" /> LinkedIn
                 </a>
@@ -204,7 +204,7 @@ export default function FounderPage() {
                   href={FOUNDER.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 text-xs font-semibold uppercase tracking-wide text-zinc-300 hover:text-white hover:border-white/25 transition-colors"
+                  className="inline-flex min-h-[44px] items-center gap-2 px-4 rounded-lg border border-white/15 text-xs font-semibold uppercase tracking-wide text-zinc-200 hover:text-white hover:border-white/30 transition-colors"
                 >
                   <ExternalLink className="w-3.5 h-3.5" /> GitHub
                 </a>
@@ -212,13 +212,13 @@ export default function FounderPage() {
                   href={FOUNDER.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 text-xs font-semibold uppercase tracking-wide text-zinc-300 hover:text-white hover:border-white/25 transition-colors"
+                  className="inline-flex min-h-[44px] items-center gap-2 px-4 rounded-lg border border-white/15 text-xs font-semibold uppercase tracking-wide text-zinc-200 hover:text-white hover:border-white/30 transition-colors"
                 >
                   <ExternalLink className="w-3.5 h-3.5" /> Instagram
                 </a>
                 <a
                   href={`mailto:${COMPANY.email}`}
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 text-xs font-semibold uppercase tracking-wide text-zinc-300 hover:text-white hover:border-white/25 transition-colors"
+                  className="inline-flex min-h-[44px] items-center gap-2 px-4 rounded-lg border border-white/15 text-xs font-semibold uppercase tracking-wide text-zinc-200 hover:text-white hover:border-white/30 transition-colors"
                 >
                   <Mail className="w-3.5 h-3.5" /> Email
                 </a>

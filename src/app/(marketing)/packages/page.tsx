@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 
 export default function PackagesAndServicesPage() {
   return (
-    <main className="min-h-screen bg-transparent text-white pt-20">
+    <div className="min-h-screen bg-transparent text-white pt-20">
       <BackToHome href="/" label="Back to Home" />
       <JsonLd
         data={[
@@ -78,6 +78,6 @@ export default function PackagesAndServicesPage() {
       </section>
 
       <FloatingElements />
-    </main>
+    </div>
   );
 }

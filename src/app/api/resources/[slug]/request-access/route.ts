@@ -10,6 +10,7 @@ import {
   sanitizeHeaderValue,
 } from "@/lib/email/validation";
 import { insertLead } from "@/lib/forms/persist";
+import { createServerClient } from "@/lib/supabase/server";
 import { issueResourceAccessToken } from "@/lib/resources/access-token";
 import { sendEmail } from "@/lib/email/send-email";
 import { getLeadNotificationRecipients } from "@/lib/email/recipients";
@@ -22,7 +23,8 @@ export const runtime = "nodejs";
 
 const schema = z.object({
   fullName: z.string().min(1).max(120),
-  email: z.string().min(3).max(254),
+  // Ignored when present: the PDF is always sent to the signed-in account's email.
+  email: z.string().max(254).optional(),
   company: z.string().max(200).optional(),
   marketingConsent: z.boolean().optional(),
 });
@@ -50,17 +52,30 @@ export async function POST(
       );
     }
 
+    // Resources are for signed-in users. The link goes to the account's own
+    // email, so a request cannot send PDFs to someone else's address.
+    const supabase = await createServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user?.email) {
+      return NextResponse.json(
+        { success: false, message: "Please sign in to request this resource.", requiresLogin: true },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json().catch(() => ({}));
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: "Please provide a valid name and work email." },
+        { success: false, message: "Please provide your full name." },
         { status: 400 }
       );
     }
 
     const fullName = sanitizePersonName(parsed.data.fullName, 120);
-    const email = normalizeEmail(parsed.data.email);
+    const email = normalizeEmail(user.email);
     const company = sanitizeHeaderValue(parsed.data.company || "", 200);
 
     if (!fullName || fullName.length < 2) {
@@ -71,7 +86,7 @@ export async function POST(
     }
     if (!isValidEmail(email)) {
       return NextResponse.json(
-        { success: false, message: "Please enter a valid work email." },
+        { success: false, message: "Your account email is not valid for delivery. Update it in your profile." },
         { status: 400 }
       );
     }

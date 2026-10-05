@@ -3,6 +3,7 @@ import { Scale, Fingerprint, EyeOff, Users, CheckCircle2 } from "lucide-react";
 import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
 
+import PageHelpBar from "@/components/ui/page-help-bar";
 export const metadata: Metadata = {
   title: "Responsible AI Guidelines | Logic Intelligence Technologies",
   description: "Our strict ethical frameworks, privacy protocols, and bias mitigation strategies for enterprise AI.",
@@ -81,6 +82,7 @@ export default function AIEthicsPage() {
         </div>
 
       </div>
+      <PageHelpBar title="Questions about how we use AI?" />
     </div>
   );
 }

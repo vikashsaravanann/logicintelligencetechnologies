@@ -1,17 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Download, CheckCircle2, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { Download, CheckCircle2, Loader2, LogIn, UserPlus, Mail } from "lucide-react";
 import { PdfResource } from "@/config/pdfs";
 import { trackEvent } from "@/lib/analytics";
 
 interface Props {
   resource: PdfResource;
+  /** Signed-in visitor, or null. Resources are delivered to the account email. */
+  viewer: { name: string; email: string } | null;
 }
 
-export default function ResourceDownloadForm({ resource }: Props) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+export default function ResourceDownloadForm({ resource, viewer }: Props) {
+  const [name, setName] = useState(viewer?.name ?? "");
   const [company, setCompany] = useState("");
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -31,7 +33,6 @@ export default function ResourceDownloadForm({ resource }: Props) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             fullName: name.trim(),
-            email: email.trim(),
             company: company.trim() || undefined,
             marketingConsent,
           }),
@@ -39,6 +40,10 @@ export default function ResourceDownloadForm({ resource }: Props) {
       );
 
       const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        window.location.href = `/login?next=${encodeURIComponent(`/resources/${resource.slug}`)}`;
+        return;
+      }
       if (!res.ok || !data.success || !data.downloadUrl) {
         throw new Error(
           typeof data.message === "string"
@@ -75,8 +80,8 @@ export default function ResourceDownloadForm({ resource }: Props) {
         </div>
         <h3 className="mb-2 text-lg font-bold text-white">Your resource is ready</h3>
         <p className="mb-6 text-xs leading-relaxed text-zinc-400">
-          The download should start automatically. A secure link was also sent to
-          your email (expires shortly).
+          The download should start automatically. A secure link was also sent to{" "}
+          {viewer?.email ?? "your email"} and expires shortly.
         </p>
         <a
           href={downloadUrl}
@@ -89,12 +94,37 @@ export default function ResourceDownloadForm({ resource }: Props) {
     );
   }
 
+  if (!viewer) {
+    const next = encodeURIComponent(`/resources/${resource.slug}`);
+    return (
+      <div className="space-y-4">
+        <p className="text-sm leading-relaxed text-zinc-300">
+          Sign in or create a free account to request this document. We email the PDF to your account address.
+        </p>
+        <Link
+          href={`/login?next=${next}`}
+          className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold uppercase tracking-wider text-black shadow-[0_0_20px_rgba(0,191,255,0.3)] transition-all hover:bg-primary/90"
+        >
+          <LogIn className="h-4 w-4" aria-hidden />
+          Sign in to continue
+        </Link>
+        <Link
+          href={`/login?mode=signup&next=${next}`}
+          className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 text-sm font-bold uppercase tracking-wider text-white transition-all hover:border-primary/60 hover:bg-white/10"
+        >
+          <UserPlus className="h-4 w-4" aria-hidden />
+          Create a free account
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <h3 className="mb-1 text-base font-bold text-white">Get the resource</h3>
-        <p className="text-xs text-zinc-400">
-          Enter your details to access this resource.
+        <p className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-zinc-300">
+          <Mail className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+          <span className="min-w-0 break-all">Sending to <strong className="text-white font-semibold">{viewer.email}</strong></span>
         </p>
       </div>
 
@@ -117,22 +147,6 @@ export default function ResourceDownloadForm({ resource }: Props) {
           onChange={(e) => setName(e.target.value)}
           className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-primary/50 focus:outline-none"
           placeholder="Alex Morgan"
-        />
-      </div>
-
-      <div>
-        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-zinc-300" htmlFor="res-email">
-          Work email *
-        </label>
-        <input
-          id="res-email"
-          type="email"
-          required
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:border-primary/50 focus:outline-none"
-          placeholder="alex@company.com"
         />
       </div>
 
@@ -167,17 +181,17 @@ export default function ResourceDownloadForm({ resource }: Props) {
       <button
         type="submit"
         disabled={loading}
-        className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold uppercase tracking-wider text-black shadow-[0_0_20px_rgba(0,191,255,0.3)] transition-all hover:bg-primary/90 disabled:opacity-50"
+        className="mt-2 flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold uppercase tracking-wider text-black shadow-[0_0_20px_rgba(0,191,255,0.3)] transition-all hover:bg-primary/90 disabled:opacity-50"
       >
         {loading ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            <span>Granting access…</span>
+            <span>Sending…</span>
           </>
         ) : (
           <>
             <Download className="h-4 w-4" />
-            <span>Get the PDF</span>
+            <span>Email me the PDF</span>
           </>
         )}
       </button>

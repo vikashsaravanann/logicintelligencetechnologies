@@ -6,6 +6,7 @@ import { PDF_RESOURCES } from "@/config/pdfs";
 import { ArrowLeft, Download, FileText, CheckCircle2, ShieldCheck, ArrowRight, Sparkles } from "lucide-react";
 import ResourceDownloadForm from "./components/ResourceDownloadForm";
 import SafeImage from "@/components/ui/safe-image";
+import { getViewer } from "@/lib/auth/viewer";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -43,13 +44,15 @@ export default async function ResourceDetailPage({ params }: Props) {
     notFound();
   }
 
+  const viewer = await getViewer();
+
   return (
     <div className="relative min-h-screen bg-[#0A1530] text-white pt-28 pb-20 overflow-hidden">
-      <BackToHome href="/resources" label="Back to Resources" />
       {/* Background Lighting */}
       <div className="absolute top-10 right-1/4 w-[500px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
+        <BackToHome href="/resources" label="Back to Resources" inline className="mb-6" />
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
@@ -75,9 +78,17 @@ export default async function ResourceDetailPage({ params }: Props) {
               {res.title}
             </h1>
 
-            <p className="text-base sm:text-lg text-zinc-300 leading-relaxed mb-8">
+            <p className="text-base sm:text-lg text-zinc-300 leading-relaxed mb-6">
               {res.description}
             </p>
+
+            <a
+              href="#get-pdf"
+              className="lg:hidden mb-8 inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold uppercase tracking-wider text-black hover:bg-primary/90"
+            >
+              <Download className="h-4 w-4" aria-hidden />
+              Get this PDF
+            </a>
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 mb-8">
               <h2 className="text-sm font-bold uppercase tracking-wider text-white mb-4">
@@ -112,13 +123,13 @@ export default async function ResourceDetailPage({ params }: Props) {
           </div>
 
           {/* Right Column: Download Form */}
-          <div className="lg:col-span-5 rounded-3xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur-sm shadow-2xl sticky top-28">
-            <h2 className="text-xl font-bold text-white mb-2">Get Instant Access</h2>
-            <p className="text-xs text-zinc-400 mb-6 leading-relaxed">
-              Enter your corporate email to receive the direct download link and periodic technical whitepapers.
+          <div id="get-pdf" className="lg:col-span-5 scroll-mt-28 rounded-3xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 backdrop-blur-sm shadow-2xl lg:sticky lg:top-28">
+            <h2 className="text-xl font-bold text-white mb-2">Get this PDF</h2>
+            <p className="text-sm text-zinc-400 mb-6 leading-relaxed">
+              Free for signed-in members. Confirm your details and we email you a secure download link.
             </p>
 
-            <ResourceDownloadForm resource={res} />
+            <ResourceDownloadForm resource={res} viewer={viewer} />
           </div>
         </div>
       </div>
