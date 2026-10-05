@@ -5,7 +5,7 @@ import WebGLParticles from "@/components/motion/webgl-particles";
 
 /**
  * Site-wide tech ambient layer:
- * - looping muted video at 30% opacity
+ * - looping muted video with configurable opacity
  * - dark navy scrim so text never washes out
  * - WebGL particle field as secondary motion
  * - respects prefers-reduced-motion
@@ -31,7 +31,10 @@ export default function AmbientTechBackground({
     const v = videoRef.current;
     if (!v || reduced) return;
     v.muted = true;
+    v.defaultMuted = true;
     v.playsInline = true;
+    v.setAttribute("playsinline", "");
+    v.setAttribute("webkit-playsinline", "");
     const play = () => {
       v.play().then(() => setReady(true)).catch(() => setReady(false));
     };
@@ -50,7 +53,10 @@ export default function AmbientTechBackground({
         <video
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
-          style={{ opacity: ready ? opacity : 0, transition: "opacity 1.2s ease" }}
+          style={{
+            opacity: ready ? opacity : 0,
+            transition: "opacity 1s ease",
+          }}
           autoPlay
           muted
           loop
@@ -60,6 +66,10 @@ export default function AmbientTechBackground({
         >
           <source src="/assets/ambient/tech-loop.webm" type="video/webm" />
           <source src="/assets/ambient/tech-loop.mp4" type="video/mp4" />
+          <source
+            src="https://assets.mixkit.co/videos/34523/34523-720.mp4"
+            type="video/mp4"
+          />
         </video>
       )}
 
@@ -69,8 +79,8 @@ export default function AmbientTechBackground({
         </div>
       )}
 
-      <div className="absolute -top-32 left-1/4 h-72 w-72 rounded-full bg-primary/10 blur-[100px]" />
-      <div className="absolute top-1/3 right-0 h-80 w-80 rounded-full bg-accent/10 blur-[120px]" />
+      <div className="absolute -top-24 left-1/4 h-56 w-56 rounded-full bg-primary/10 blur-[90px] sm:h-72 sm:w-72" />
+      <div className="absolute top-1/3 right-0 h-64 w-64 rounded-full bg-accent/10 blur-[100px] sm:h-80 sm:w-80" />
       <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-primary/5 blur-[90px]" />
 
       <div className="absolute inset-0 bg-[#0A0F1E]/55" />
