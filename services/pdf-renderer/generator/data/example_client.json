@@ -1,0 +1,50 @@
+{
+  "_help": "Fill any key from data/FIELDS.md. 'common' applies to all 7 documents; '01'...'07' apply to one document only and override 'common'. 'Name' fills every occurrence of [Name]; 'Name#2' fills only the 2nd occurrence in that document. Empty or missing keys stay blank.",
+
+  "common": {
+    "Client Company": "Acme Retail Pvt. Ltd.",
+    "Client Company Legal Name": "Acme Retail Private Limited",
+    "CLIENT": "ACME",
+    "Project Name": "Acme Customer Portal",
+    "PROJECT": "PORTAL",
+    "PROJECT-ID": "000084",
+    "YEAR": "2026",
+    "Version": "1.0",
+    "V": "1.0",
+    "Registered Address": "12 MG Road, Bengaluru, Karnataka",
+    "Authorized Signatory": "Priya Sharma",
+    "Authorized Signatory, Title": "Priya Sharma, Director",
+    "Title": "Director",
+    "Client Email": "priya@acme.example",
+    "Client Phone": "+91 90000 00000",
+    "Single Point of Contact": "Priya Sharma",
+    "Client": "Client",
+    "Draft / Issued / Signed": "Issued",
+    "Date": "06 Oct 2026"
+  },
+
+  "01": {
+    "Project Summary": "Acme Retail needs a secure customer self-service portal where shoppers can track orders, manage returns and update their details, replacing today's email-based support process.",
+    "Fixed scope / Milestone-based / Time & materials": "Milestone-based",
+    "Web application / Mobile web / Automation / AI workflow": "Web application",
+    "Description#4": "Portal frontend, backend APIs and database",
+    "₹ / $#1": "₹ 1,20,000",
+    "Description#5": "Order system and payment gateway integration",
+    "₹ / $#2": "₹ 40,000",
+    "Description#6": "Vercel + Supabase production setup",
+    "Included / ₹ / $": "Included",
+    "Description#7": "30-day post-launch warranty",
+    "₹ / $#3": "Included",
+    "₹ / $#4": "₹ 1,60,000",
+    "GST as applicable": "18% GST as applicable",
+    "__%#1": "40%",
+    "₹ / $#5": "₹ 64,000",
+    "On signing": "On signing",
+    "Milestone M2 / M3": "M3 — Core build on staging",
+    "__%#2": "40%",
+    "₹ / $#6": "₹ 64,000",
+    "__%#3": "20%",
+    "₹ / $#7": "₹ 32,000",
+    "Within X days": "Within 7 days"
+  }
+}
