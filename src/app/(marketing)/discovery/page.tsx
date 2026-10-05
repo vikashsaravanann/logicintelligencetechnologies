@@ -146,7 +146,7 @@ export default function DiscoveryPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-6">
              Enterprise Onboarding
           </motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="uppercase text-3xl md:text-5xl lg:text-6xl font-black text-white mb-4 tracking-tight leading-tight">
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="uppercase text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 tracking-tight leading-tight">
             PROJECT DISCOVERY <br/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Questionnaire</span>
           </motion.h1>
@@ -164,7 +164,7 @@ export default function DiscoveryPage() {
                <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8 ">
                  <CheckCircle2 className="h-12 w-12 text-primary" />
                </div>
-               <h3 className="text-4xl font-black text-white mb-4">Discovery Form Submitted!</h3>
+               <h3 className="text-4xl font-bold text-white mb-4">Discovery Form Submitted!</h3>
                <p className="text-lg text-zinc-400 mb-8">Thanks for the details. Our team will review your requirements and reach out to you shortly.</p>
                <a href="https://wa.me/917550067712" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#25D366]/10 text-[#25D366] font-bold text-sm border border-[#25D366]/20 hover:bg-[#25D366] hover:text-black transition-all">
                  <MessageSquare className="w-4 h-4" /> Message on WhatsApp
@@ -172,7 +172,6 @@ export default function DiscoveryPage() {
              </motion.div>
           ) : (
             <div className="bg-[#12172b] rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
               
               {/* Progress Indicator */}
               <div className="px-6 py-5 md:px-10 md:py-6 border-b border-white/5 bg-white/[0.01]">
@@ -201,7 +200,7 @@ export default function DiscoveryPage() {
                       transition={{ duration: 0.3 }}
                     >
                       <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-4">
-                        <span className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-black text-xl shrink-0 border border-primary/20 ">
+                        <span className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xl shrink-0 border border-primary/20 ">
                           {currentStep + 1}
                         </span> 
                         {sections[currentStep].title}
@@ -245,7 +244,7 @@ export default function DiscoveryPage() {
                       <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6  border border-primary/20">
                         <CheckCircle2 className="w-12 h-12 text-primary" />
                       </div>
-                      <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Almost Done!</h2>
+                      <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Almost Done!</h2>
                       <p className="text-zinc-400 mb-10 max-w-md text-lg">
                         Please provide your email address to receive a copy of your requirements and submit the form.
                       </p>

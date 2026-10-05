@@ -67,7 +67,7 @@ export default async function ServiceDetailPage({ params }: Props) {
       <div className="max-w-6xl mx-auto px-6 relative z-10">
 
         {/* Hero Visual Banner */}
-        <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden mb-12 border border-white/10 shadow-2xl bg-black/50">
+        <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden mb-12 border border-white/10 shadow-2xl bg-[#0A1530]/50">
           <SafeImage
             src={serviceVisualSrc}
             alt={`${service.title} Architecture`}
@@ -82,7 +82,7 @@ export default async function ServiceDetailPage({ params }: Props) {
           <div className="inline-block px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-widest uppercase mb-4">
             {service.subtitle}
           </div>
-          <h1 className="uppercase text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight mb-6">
+          <h1 className="uppercase text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight mb-6">
             {service.title}
           </h1>
           <p className="text-base sm:text-lg text-zinc-300 max-w-4xl leading-relaxed whitespace-pre-line mb-8">
@@ -179,7 +179,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                     className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5"
                   >
                     <span className="font-bold text-sm text-white">{p.tier}</span>
-                    <span className="text-primary font-black text-sm">{p.price}</span>
+                    <span className="text-primary font-bold text-sm">{p.price}</span>
                   </div>
                 ))}
               </div>

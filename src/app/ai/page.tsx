@@ -536,28 +536,27 @@ export default function AiChatPage() {
       // eslint-disable-next-line @next/next/no-img-element
       <img src={userAvatar} alt="" className="w-8 h-8 rounded-full object-cover border border-white/20 shrink-0" />
     ) : (
-      <div className="w-8 h-8 rounded-full bg-[#E8651C] text-white text-xs font-bold grid place-items-center shrink-0" title={userEmail || "Guest"}>{initials(userEmail)}</div>
+      <div className="w-8 h-8 rounded-full bg-[#45D9D2] text-[#0D1B3E] text-xs font-bold grid place-items-center shrink-0" title={userEmail || "Guest"}>{initials(userEmail)}</div>
     );
 
   if (landed) {
     return (
       <div className="min-h-[100dvh] text-[color:var(--ai-ink)] relative overflow-hidden" style={{ background: glow }}>
         <style>{`@keyframes lit-marquee{from{transform:translate3d(-50%,0,0)}to{transform:translate3d(0,0,0)}}.lit-ticker{animation:lit-marquee 80s linear infinite;will-change:transform}@media (prefers-reduced-motion:reduce){.lit-ticker{animation:lit-marquee 80s linear infinite}}`}</style>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42vh] bg-gradient-to-t from-orange-600/40 via-orange-500/10 to-transparent blur-2xl" />
         <header className="relative z-30 grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center gap-2 px-3 sm:px-8 py-3 sm:py-5">
           <Link href="/" className="justify-self-start flex items-center gap-2 min-w-0 max-w-[70vw] sm:max-w-full">
             <Image src={COMPANY.logoIconPath} alt="Logic Intelligence Technologies" width={24} height={24} className="rounded-full object-cover border border-white/20 shrink-0 sm:w-7 sm:h-7" />
             <span className="hidden sm:inline text-[10px] sm:text-[13px] font-semibold tracking-[0.08em] uppercase truncate">LOGIC INTELLIGENCE TECHNOLOGIES</span>
           </Link>
-          <nav className="hidden md:flex justify-self-center items-center gap-1 rounded-full border border-white/10 bg-black/30 px-2 py-1.5 backdrop-blur-md">
+          <nav className="hidden md:flex justify-self-center items-center gap-1 rounded-full border border-white/10 bg-[#0A1530]/30 px-2 py-1.5 backdrop-blur-md">
             {LAND_NAV.filter(([, href]) => href !== "/contact").map(([label, href]) => (
               <Link key={href} href={href} className="px-3 py-1.5 text-[11px] font-semibold tracking-[0.14em] uppercase whitespace-nowrap text-[#E8DFD4]/80 hover:text-white">{label}</Link>
             ))}
           </nav>
           <div className="justify-self-end flex items-center gap-2 max-w-[62vw] sm:max-w-none overflow-x-auto no-scrollbar">
             <ThemeToggle />
-            <Link href="/contact" className="hidden md:inline-flex rounded-full border border-white/15 bg-black/30 px-4 py-2 text-[11px] font-semibold tracking-[0.14em] uppercase whitespace-nowrap">CONTACT US</Link>
-            <button type="button" onClick={() => setLandMenu((v) => !v)} className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-full border border-white/15 bg-black/30" aria-expanded={landMenu} aria-label={landMenu ? "Close menu" : "Open menu"}>
+            <Link href="/contact" className="hidden md:inline-flex rounded-full border border-white/15 bg-[#0A1530]/30 px-4 py-2 text-[11px] font-semibold tracking-[0.14em] uppercase whitespace-nowrap">CONTACT US</Link>
+            <button type="button" onClick={() => setLandMenu((v) => !v)} className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-full border border-white/15 bg-[#0A1530]/30" aria-expanded={landMenu} aria-label={landMenu ? "Close menu" : "Open menu"}>
               {landMenu ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
@@ -572,8 +571,8 @@ export default function AiChatPage() {
           </div>
         )}
         <main className="relative z-10 flex flex-col items-center text-center px-4 sm:px-6 pt-10 sm:pt-24 pb-24">
-          <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/35 px-3 py-1 text-[11px] sm:text-xs mb-6 sm:mb-8"><Sparkles className="w-3.5 h-3.5 text-orange-300" /> Logic AI</p>
-          <h1 className="uppercase max-w-5xl font-serif text-[1.7rem] sm:text-6xl lg:text-7xl leading-[1.12] tracking-tight text-[color:var(--ai-ink)]">The fastest way<br /> to Build and Grow<br /> your Website.</h1>
+          <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#0A1530]/35 px-3 py-1 text-[11px] sm:text-xs mb-6 sm:mb-8"><Sparkles className="w-3.5 h-3.5 text-accent" /> Logic AI</p>
+          <h1 className="uppercase max-w-5xl font-[family-name:var(--font-display-stack)] font-bold text-[1.7rem] sm:text-6xl lg:text-7xl leading-[1.12] tracking-tight text-[color:var(--ai-ink)]">The fastest way<br /> to Build and Grow<br /> your Website.</h1>
           <p className="mt-4 sm:mt-6 max-w-xl text-[13px] sm:text-base text-[color:var(--ai-muted)] leading-relaxed px-1">Logic Intelligence Technologies helps businesses build stunning websites and scale their online presence with AI-powered tools for design, automation, and growth.</p>
           <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row w-full max-w-xs sm:max-w-none items-stretch sm:items-center justify-center gap-2.5 sm:gap-3">
             <button
@@ -587,7 +586,7 @@ export default function AiChatPage() {
             >
               Coming Soon
             </button>
-            <Link href="/ai-assistant" className="rounded-full border border-white/15 bg-black/25 px-5 py-3 text-sm text-center">Learn More</Link>
+            <Link href="/ai-assistant" className="rounded-full border border-white/15 bg-[#0A1530]/25 px-5 py-3 text-sm text-center">Learn More</Link>
           </div>
         </main>
         <div className="absolute bottom-4 inset-x-0 overflow-hidden pointer-events-none">
@@ -611,18 +610,18 @@ export default function AiChatPage() {
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">History</p>
             <p className="text-[9px] uppercase tracking-[0.18em] text-zinc-600">{userId ? "Cloud · synced" : "This device"}</p>
           </div>
-          <button type="button" onClick={newChat} className="h-8 px-3 rounded-full bg-[#E8651C] text-[10px] font-bold uppercase tracking-wider text-white">New</button>
+          <button type="button" onClick={newChat} className="h-8 px-3 rounded-full bg-[#45D9D2] text-[10px] font-bold uppercase tracking-wider text-[#0D1B3E]">New</button>
         </div>
         <div className="relative mb-3">
           <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
-          <input value={railQuery} onChange={(e) => setRailQuery(e.target.value)} placeholder="Search threads" className="w-full h-9 bg-black/40 border border-white/10 rounded-full pl-9 pr-3 text-xs outline-none focus:border-orange-400/40" />
+          <input value={railQuery} onChange={(e) => setRailQuery(e.target.value)} placeholder="Search threads" className="w-full h-9 bg-[#0A1530]/40 border border-white/10 rounded-full pl-9 pr-3 text-xs outline-none focus:border-accent/40" />
         </div>
         <div className="flex-1 overflow-y-auto space-y-1 pr-1">
           {railSessions.length === 0 && <p className="text-[11px] text-zinc-600 px-2 py-6 text-center">No conversations yet.</p>}
           {railSessions.map((s) => (
             <div
               key={s.id}
-              className={`group flex items-start gap-2 rounded-xl px-2.5 py-2.5 cursor-pointer ${s.id === activeId ? "bg-orange-500/15 border border-orange-400/25" : "border border-transparent hover:bg-white/[0.04]"}`}
+              className={`group flex items-start gap-2 rounded-xl px-2.5 py-2.5 cursor-pointer ${s.id === activeId ? "bg-accent/15 border border-accent/25" : "border border-transparent hover:bg-white/[0.04]"}`}
               onClick={() => { setActiveId(s.id); onPick?.(); }}
             >
               {renamingId === s.id ? (
@@ -633,7 +632,7 @@ export default function AiChatPage() {
                   onClick={(e) => e.stopPropagation()}
                   onBlur={() => void commitRename(s.id, renameVal)}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void commitRename(s.id, renameVal); } if (e.key === "Escape") setRenamingId(null); }}
-                  className="flex-1 min-w-0 bg-black/40 border border-white/20 rounded px-1.5 py-1 text-xs outline-none"
+                  className="flex-1 min-w-0 bg-[#0A1530]/40 border border-white/20 rounded px-1.5 py-1 text-xs outline-none"
                 />
               ) : (
                 <div className="flex-1 min-w-0">
@@ -650,7 +649,7 @@ export default function AiChatPage() {
 
   return (
     <div className="min-h-[100dvh] text-[color:var(--ai-ink)] flex flex-col" style={{ background: glow }}>
-      <header className="ai-chrome sticky top-0 z-30 border-b border-[color:var(--ai-border)] bg-[color:var(--ai-header)] backdrop-blur-xl">
+      <header className="ai-chrome sticky top-0 z-30 border-b border-[color:var(--ai-border)] bg-[color:var(--ai-header)] backdrop-blur-md">
         <div className="h-12 sm:h-16 px-2 sm:px-5 flex items-center gap-2 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] xl:grid-cols-[minmax(220px,1fr)_auto_minmax(220px,1fr)] sm:gap-3">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <button type="button" className="lg:hidden h-8 w-8 rounded-full border border-white/15 grid place-items-center shrink-0 text-white" onClick={() => setSidebarOpen(true)} aria-label="Open history"><Menu className="w-4 h-4" /></button>
@@ -661,12 +660,12 @@ export default function AiChatPage() {
             </button>
           </div>
           <div className="hidden md:flex justify-self-center items-center rounded-full border border-[color:var(--ai-border)] bg-[color:var(--ai-panel)] p-0.5">
-            <button type="button" onClick={() => setMode("company")} className={`inline-flex items-center justify-center text-center h-8 min-w-[6.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "company" ? "bg-[#E8651C] text-white" : "text-[color:var(--ai-muted)]"}`}>COMPANY</button>
-            <button type="button" onClick={() => setMode("general")} className={`inline-flex items-center justify-center text-center h-8 min-w-[6.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "general" ? "bg-[#E8651C] text-white" : "text-[color:var(--ai-muted)]"}`}>GENERAL</button>
+            <button type="button" onClick={() => setMode("company")} className={`inline-flex items-center justify-center text-center h-8 min-w-[6.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "company" ? "bg-[#45D9D2] text-[#0D1B3E]" : "text-[color:var(--ai-muted)]"}`}>COMPANY</button>
+            <button type="button" onClick={() => setMode("general")} className={`inline-flex items-center justify-center text-center h-8 min-w-[6.5rem] px-4 rounded-full text-[10px] font-bold uppercase tracking-[0.16em] ${mode === "general" ? "bg-[#45D9D2] text-[#0D1B3E]" : "text-[color:var(--ai-muted)]"}`}>GENERAL</button>
           </div>
           <div className="flex items-center justify-end gap-1.5 shrink-0">
             <Link href="/" className="inline-flex items-center justify-center h-9 min-w-[3.25rem] px-3 rounded-full border border-white/15 text-[10px] font-bold uppercase tracking-wider text-white shrink-0">HOME</Link>
-            <button type="button" onClick={newChat} className="h-9 min-w-[3.25rem] px-3.5 rounded-full bg-[#E8651C] text-[10px] font-bold uppercase tracking-wider text-white shrink-0">NEW</button>
+            <button type="button" onClick={newChat} className="h-9 min-w-[3.25rem] px-3.5 rounded-full bg-[#45D9D2] text-[10px] font-bold uppercase tracking-wider text-[#0D1B3E] shrink-0">NEW</button>
             <span className="hidden sm:inline-flex"><ThemeToggle /></span>
             {userEmail ? (
               <>
@@ -677,9 +676,9 @@ export default function AiChatPage() {
                 >
                   {userAvatar ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={userAvatar} alt="" className="w-8 h-8 rounded-full object-cover border border-white/25 hover:ring-2 hover:ring-orange-400/50" />
+                    <img src={userAvatar} alt="" className="w-8 h-8 rounded-full object-cover border border-white/25 hover:ring-2 hover:ring-accent/50" />
                   ) : (
-                    <span className="w-8 h-8 rounded-full bg-[#E8651C] text-white text-[11px] font-bold grid place-items-center border border-white/20 hover:ring-2 hover:ring-orange-400/50">{initials(userEmail)}</span>
+                    <span className="w-8 h-8 rounded-full bg-[#45D9D2] text-[#0D1B3E] text-[11px] font-bold grid place-items-center border border-white/20 hover:ring-2 hover:ring-accent/50">{initials(userEmail)}</span>
                   )}
                 </Link>
                 <button
@@ -704,11 +703,11 @@ export default function AiChatPage() {
             )}
           </div>
         </div>
-        {!online && <div className="bg-amber-500/15 text-amber-200 text-xs px-4 py-2 flex items-center justify-center gap-2 uppercase tracking-wider"><WifiOff className="w-3.5 h-3.5" /> Offline</div>}
+        {!online && <div className="bg-accent/15 text-accent text-xs px-4 py-2 flex items-center justify-center gap-2 uppercase tracking-wider"><WifiOff className="w-3.5 h-3.5" /> Offline</div>}
       </header>
 
       <div className="flex-1 w-full grid lg:grid-cols-[260px_minmax(0,1fr)] min-h-0">
-        <aside className="hidden lg:flex flex-col border-r border-white/8 bg-black/25 py-4 px-3 max-h-[calc(100dvh-4rem)]">
+        <aside className="hidden lg:flex flex-col border-r border-white/8 bg-[#0A1530]/25 py-4 px-3 max-h-[calc(100dvh-4rem)]">
           {renderHistory()}
         </aside>
 
@@ -734,8 +733,8 @@ export default function AiChatPage() {
                   <p className="text-[12px] sm:text-sm text-zinc-400 mb-5">Packages, scoping, or general engineering questions.</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {STARTERS.map((q, i) => (
-                      <button key={q} type="button" onClick={() => void send(q)} className="text-left rounded-2xl border border-white/10 bg-white/[0.04] p-3 hover:border-orange-400/40 min-h-[72px]">
-                        <span className="mb-2 grid h-9 w-9 place-items-center rounded-xl bg-orange-500/15 text-[11px] font-black text-orange-200">{String(i + 1).padStart(2, "0")}</span>
+                      <button key={q} type="button" onClick={() => void send(q)} className="text-left rounded-2xl border border-white/10 bg-white/[0.04] p-3 hover:border-accent/40 min-h-[72px]">
+                        <span className="mb-2 grid h-9 w-9 place-items-center rounded-xl bg-accent/15 text-[11px] font-bold text-accent">{String(i + 1).padStart(2, "0")}</span>
                         <span className="block text-[12px] sm:text-sm leading-snug text-zinc-200">{q}</span>
                       </button>
                     ))}
@@ -745,9 +744,9 @@ export default function AiChatPage() {
               {active?.messages.map((m, i) => (
                 <div key={m.id} className={`flex gap-2 sm:gap-3 items-end ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                   {m.role === "assistant" && (
-                    <Image src={COMPANY.logoIconPath} alt="Logic AI" width={32} height={32} className="w-8 h-8 rounded-full object-cover border border-orange-400/30 shrink-0 mb-1 outline outline-1 -outline-offset-1 outline-white/10" />
+                    <Image src={COMPANY.logoIconPath} alt="Logic AI" width={32} height={32} className="w-8 h-8 rounded-full object-cover border border-accent/30 shrink-0 mb-1 outline outline-1 -outline-offset-1 outline-white/10" />
                   )}
-                  <div className={`rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-[14px] sm:text-[15px] leading-relaxed min-w-0 ${m.role === "user" ? "bg-[#E8651C] text-white max-w-[min(100%,34rem)]" : "bg-black/35 border border-white/10 w-full"}`}>
+                  <div className={`rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 text-[14px] sm:text-[15px] leading-relaxed min-w-0 ${m.role === "user" ? "bg-[#45D9D2] text-[#0D1B3E] max-w-[min(100%,34rem)]" : "bg-[#0A1530]/35 border border-white/10 w-full"}`}>
                     {m.role === "assistant" ? (
                       m.content ? (
                         <>
@@ -755,7 +754,7 @@ export default function AiChatPage() {
                           <InChatPackageCards text={m.content} />
                           {(m.badge || (m.citations && m.citations.length > 0)) && (
                             <div className="mt-3 flex flex-wrap gap-1.5">
-                              {m.badge === "catalog" && <span className="text-[10px] uppercase tracking-wider rounded-full border border-orange-400/30 px-2 py-0.5 text-orange-200">Prices from catalog</span>}
+                              {m.badge === "catalog" && <span className="text-[10px] uppercase tracking-wider rounded-full border border-accent/30 px-2 py-0.5 text-accent">Prices from catalog</span>}
                               {m.badge === "general" && <span className="text-[10px] uppercase tracking-wider rounded-full border border-white/15 px-2 py-0.5 text-zinc-400">General answer</span>}
                               {(m.citations || []).map((c) => <span key={c} className="text-[10px] rounded-full border border-white/10 px-2 py-0.5 text-zinc-400">From {c}</span>)}
                             </div>
@@ -796,7 +795,7 @@ export default function AiChatPage() {
               {!sending && lastAssistant && (
                 <div className="flex flex-wrap gap-2 pl-0 sm:pl-11">
                   {followUps(lastAssistant.content).map((q) => (
-                    <button key={q} type="button" onClick={() => void send(q)} className="text-[11px] rounded-full border border-white/12 px-3 py-1.5 hover:border-orange-400/50">{q}</button>
+                    <button key={q} type="button" onClick={() => void send(q)} className="text-[11px] rounded-full border border-white/12 px-3 py-1.5 hover:border-accent/50">{q}</button>
                   ))}
                   <button type="button" onClick={() => void openTicket()} className="text-[11px] rounded-full border border-white/12 px-3 py-1.5">{ticketOk ? "Ticket sent" : "Talk to a human"}</button>
                 </div>
@@ -805,14 +804,14 @@ export default function AiChatPage() {
             </div>
           </div>
 
-          <div className="border-t border-white/8 bg-black/35 backdrop-blur-xl">
+          <div className="border-t border-white/8 bg-[#0A1530]/35 backdrop-blur-md">
             <div className="w-full max-w-[48rem] mx-auto px-3 sm:px-6 pt-2 sm:pt-3" style={{ paddingBottom: `max(0.75rem, calc(env(safe-area-inset-bottom) + ${kbPad}px))` }}>
               {showLead && !leadOk && (
-                <form onSubmit={(e) => { e.preventDefault(); void submitLead(); }} className="mb-3 flex flex-col sm:flex-row gap-2 rounded-2xl border border-white/10 bg-black/40 px-3 py-2">
+                <form onSubmit={(e) => { e.preventDefault(); void submitLead(); }} className="mb-3 flex flex-col sm:flex-row gap-2 rounded-2xl border border-white/10 bg-[#0A1530]/40 px-3 py-2">
                   <p className="sm:sr-only text-[11px] text-zinc-400">Optional follow-up.</p>
                   <input value={leadName} onChange={(e) => setLeadName(e.target.value)} placeholder="Name" className="flex-1 bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm outline-none" />
                   <input value={leadEmail} onChange={(e) => setLeadEmail(e.target.value)} placeholder="Email" type="email" className="flex-1 bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm outline-none" />
-                  <button type="submit" disabled={leadBusy} className="h-11 px-4 rounded-full bg-[#E8651C] text-[11px] font-bold uppercase tracking-wider text-white disabled:opacity-50">{leadBusy ? "Saving" : "Send"}</button>
+                  <button type="submit" disabled={leadBusy} className="h-11 px-4 rounded-full bg-[#45D9D2] text-[11px] font-bold uppercase tracking-wider text-[#0D1B3E] disabled:opacity-50">{leadBusy ? "Saving" : "Send"}</button>
                   <button type="button" onClick={() => setShowLead(false)} className="h-11 px-3 text-[11px] uppercase tracking-wider text-zinc-400">Not now</button>
                 </form>
               )}
@@ -820,9 +819,9 @@ export default function AiChatPage() {
                 <p className="mb-2 text-[11px] text-zinc-500">Details received. We follow up within 24 hours.</p>
               )}
               {showDemo && (
-                <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-orange-400/30 bg-orange-500/10 px-3 py-2 text-xs">
+                <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-accent/30 bg-accent/10 px-3 py-2 text-xs">
                   <span>Ready for a scoped demo? We do not invent prices on a call.</span>
-                  <Link href="/free-demo" className="shrink-0 rounded-full bg-[#E8651C] px-3 py-1.5 font-bold text-white uppercase tracking-wider text-[10px]">Book demo</Link>
+                  <Link href="/free-demo" className="shrink-0 rounded-full bg-[#45D9D2] px-3 py-1.5 font-bold text-[#0D1B3E] uppercase tracking-wider text-[10px]">Book demo</Link>
                 </div>
               )}
               {attachError && <p className="mb-2 text-[11px] text-red-300">{attachError}</p>}
@@ -831,12 +830,12 @@ export default function AiChatPage() {
                 onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
                 onDragLeave={() => setDragging(false)}
                 onDrop={(e) => { e.preventDefault(); setDragging(false); void onPickFile(e.dataTransfer.files?.[0]); }}
-                className={`glass-bar ${dragging ? "ring-1 ring-orange-400/60" : ""}`}
+                className={`glass-bar ${dragging ? "ring-1 ring-accent/60" : ""}`}
               >
                 <input ref={fileRef} type="file" accept=".txt,.md,.pdf,image/png,image/jpeg,image/webp,image/gif,text/plain,text/markdown,application/pdf" className="hidden" onChange={(e) => void onPickFile(e.target.files?.[0])} />
-                {dragging && <p className="text-center text-[10px] uppercase tracking-wider text-orange-200 pb-1">Drop a PDF or image here</p>}
+                {dragging && <p className="text-center text-[10px] uppercase tracking-wider text-accent pb-1">Drop a PDF or image here</p>}
                 {attach && (
-                  <div className="glass-bar-inner mb-1.5 flex items-center gap-2 border border-white/10 bg-black/30 px-2 py-1">
+                  <div className="glass-bar-inner mb-1.5 flex items-center gap-2 border border-white/10 bg-[#0A1530]/30 px-2 py-1">
                     {attach.kind === "image" ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={attach.data} alt="" className="h-8 w-8 rounded-md object-cover" />
@@ -848,14 +847,14 @@ export default function AiChatPage() {
                   </div>
                 )}
                 {listening && (
-                  <div className="mb-1 flex items-center gap-2 px-1 text-[10px] uppercase tracking-wider text-orange-200">
+                  <div className="mb-1 flex items-center gap-2 px-1 text-[10px] uppercase tracking-wider text-accent">
                     <span className="lit-wave" aria-hidden><span /><span /><span /><span /><span /></span>
                     Listening
                   </div>
                 )}
                 <div className="flex items-center gap-1 min-w-0">
                   <button type="button" className="h-9 w-9 shrink-0 grid place-items-center text-zinc-200" onClick={() => fileRef.current?.click()} aria-label="Attach"><Paperclip className="w-4 h-4" /></button>
-                  <button type="button" className={`h-9 w-9 shrink-0 grid place-items-center ${listening ? "text-orange-400" : "text-zinc-200"}`} onClick={toggleMic} aria-label="Voice"><Mic className="w-4 h-4" /></button>
+                  <button type="button" className={`h-9 w-9 shrink-0 grid place-items-center ${listening ? "text-accent" : "text-zinc-200"}`} onClick={toggleMic} aria-label="Voice"><Mic className="w-4 h-4" /></button>
                   <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }} rows={1} placeholder={listening ? "Listening…" : "Message Logic AI"} className="glass-bar-inner flex-1 bg-transparent resize-none text-[15px] px-2 py-1.5 outline-none max-h-24 min-h-[36px] min-w-0 leading-5" />
                   <a href={waTranscript(active?.messages || [])} target="_blank" rel="noopener noreferrer" className="h-9 px-2.5 shrink-0 rounded-[10px] border border-white/15 grid place-items-center text-[10px] font-bold uppercase tracking-wider text-white" aria-label="WhatsApp with transcript">WA</a>
                   {sending ? (
@@ -867,8 +866,8 @@ export default function AiChatPage() {
               </form>
               <p className="mt-1.5 text-center text-[10px] text-zinc-500 tracking-wide">/price · /demo · /wa — last 6 turns go to WhatsApp</p>
               <div className="sm:hidden mt-2 flex items-stretch gap-2 w-full">
-                <button type="button" className={`flex-1 h-9 rounded-full text-[10px] font-bold uppercase tracking-wider text-center ${mode === "company" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("company")}>COMPANY</button>
-                <button type="button" className={`flex-1 h-9 rounded-full text-[10px] font-bold uppercase tracking-wider text-center ${mode === "general" ? "bg-[#E8651C] text-white" : "border border-white/15 text-white"}`} onClick={() => setMode("general")}>GENERAL</button>
+                <button type="button" className={`flex-1 h-9 rounded-full text-[10px] font-bold uppercase tracking-wider text-center ${mode === "company" ? "bg-[#45D9D2] text-[#0D1B3E]" : "border border-white/15 text-[#0D1B3E]"}`} onClick={() => setMode("company")}>COMPANY</button>
+                <button type="button" className={`flex-1 h-9 rounded-full text-[10px] font-bold uppercase tracking-wider text-center ${mode === "general" ? "bg-[#45D9D2] text-[#0D1B3E]" : "border border-white/15 text-[#0D1B3E]"}`} onClick={() => setMode("general")}>GENERAL</button>
               </div>
             </div>
           </div>

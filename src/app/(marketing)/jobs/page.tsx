@@ -29,7 +29,7 @@ export default function JobsPage() {
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] bg-cyan-600/15 blur-[150px] rounded-full" />
           <div className="absolute top-[30%] -right-[10%] w-[50%] h-[50%] bg-blue-600/15 blur-[150px] rounded-full" />
-          <div className="absolute bottom-0 left-[20%] w-[60%] h-[40%] bg-emerald-500/10 blur-[150px] rounded-full" />
+          <div className="absolute bottom-0 left-[20%] w-[60%] h-[40%] bg-primary/10 blur-[150px] rounded-full" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B3E] via-[#0D1B3E]/60 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-500/10 via-transparent to-transparent pointer-events-none" />
@@ -42,9 +42,9 @@ export default function JobsPage() {
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.02] max-w-4xl mb-6 uppercase">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.02] max-w-4xl mb-6 uppercase">
             Own a function.
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-200 to-white font-black text-2xl sm:text-4xl lg:text-5xl mt-2 tracking-tight">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-200 to-white font-bold text-2xl sm:text-4xl lg:text-5xl mt-2 tracking-tight">
               Not a title you buy.
             </span>
           </h1>
@@ -58,22 +58,22 @@ export default function JobsPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-6 border-t border-white/10">
             <div className="bg-white/[0.03] backdrop-blur-md border border-white/8 rounded-xl p-3.5 uppercase">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-400">Seats Open</p>
-              <p className="text-base sm:text-lg font-black text-white mt-0.5">CEO + 3 Directors</p>
+              <p className="text-base sm:text-lg font-bold text-white mt-0.5">CEO + 3 Directors</p>
               <p className="text-[11px] text-zinc-400 mt-0.5">Operations, Eng, Sales, AI</p>
             </div>
             <div className="bg-white/[0.03] backdrop-blur-md border border-white/8 rounded-xl p-3.5 uppercase">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-400">Headquarters</p>
-              <p className="text-base sm:text-lg font-black text-white mt-0.5">Coimbatore, TN</p>
+              <p className="text-base sm:text-lg font-bold text-white mt-0.5">Coimbatore, TN</p>
               <p className="text-[11px] text-zinc-400 mt-0.5">First 90 days in the room</p>
             </div>
             <div className="bg-white/[0.03] backdrop-blur-md border border-white/8 rounded-xl p-3.5 uppercase">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-400">Leadership</p>
-              <p className="text-base sm:text-lg font-black text-white mt-0.5">Beside Founder</p>
+              <p className="text-base sm:text-lg font-bold text-white mt-0.5">Beside Founder</p>
               <p className="text-[11px] text-zinc-400 mt-0.5">Direct partnership with Vikash</p>
             </div>
             <div className="bg-white/[0.03] backdrop-blur-md border border-white/8 rounded-xl p-3.5 uppercase">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-400">Governance</p>
-              <p className="text-base sm:text-lg font-black text-white mt-0.5">Letter of Intent</p>
+              <p className="text-base sm:text-lg font-bold text-white mt-0.5">Letter of Intent</p>
               <p className="text-[11px] text-zinc-400 mt-0.5">Formal 6-month trial terms</p>
             </div>
           </div>

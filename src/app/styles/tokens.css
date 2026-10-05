@@ -153,12 +153,12 @@
   --transition-slow: 0.8s cubic-bezier(0.4,0,0.2,1);
 
   /* Logic AI canvas (dark default) */
-  --ai-ink: #F3EDE4;
-  --ai-muted: #9a9086;
-  --ai-panel: rgba(0, 0, 0, 0.38);
+  --ai-ink: #F2F6FF;
+  --ai-muted: #9AA8C7;
+  --ai-panel: rgba(10, 21, 48, 0.72);
   --ai-border: rgba(255, 255, 255, 0.12);
-  --ai-header: rgba(0, 0, 0, 0.55);
-  --ai-user: #E8651C;
+  --ai-header: rgba(13, 27, 62, 0.88);
+  --ai-user: #45D9D2;
 
   /* Glassmorphism design tokens */
   --glass-bg: rgba(12, 18, 32, 0.72);
@@ -167,23 +167,23 @@
   --glass-blur: 16px;
   --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
   --glass-radius-lg: 1.5rem;
-  --ai-glow: radial-gradient(ellipse 70% 45% at 50% 115%, rgba(255,110,40,0.55), transparent 60%), radial-gradient(ellipse 40% 30% at 20% 100%, rgba(180,40,10,0.25), transparent), #0a0604;
+  --ai-glow: radial-gradient(ellipse 70% 40% at 50% -10%, rgba(69,217,210,0.12), transparent 65%), #0D1B3E;
 }
 
 html.light {
   /* Readable body ink; interactive CTAs still set explicit colors */
-  --color-foreground: #1C140E;
-  --bg-primary: #F4EFE8;
-  --bg-secondary: #FFFDF9;
-  --bg-card: rgba(28, 20, 14, 0.04);
-  --bg-card-hover: rgba(28, 20, 14, 0.08);
-  --bg-glass: rgba(255, 253, 249, 0.86);
-  --ai-ink: #1C140E;
-  --ai-muted: #6B625A;
-  --ai-panel: rgba(255, 253, 249, 0.86);
-  --ai-border: rgba(28, 20, 14, 0.12);
-  --ai-header: rgba(255, 253, 249, 0.86);
-  --ai-user: #E8651C;
+  --color-foreground: #0D1B3E;
+  --bg-primary: #F3F6FB;
+  --bg-secondary: #FFFFFF;
+  --bg-card: rgba(13, 27, 62, 0.04);
+  --bg-card-hover: rgba(13, 27, 62, 0.08);
+  --bg-glass: rgba(255, 255, 255, 0.86);
+  --ai-ink: #0D1B3E;
+  --ai-muted: #4A5878;
+  --ai-panel: rgba(255, 255, 255, 0.86);
+  --ai-border: rgba(13, 27, 62, 0.12);
+  --ai-header: rgba(255, 255, 255, 0.86);
+  --ai-user: #45D9D2;
 
   /* Glassmorphism design tokens */
   --glass-bg: rgba(12, 18, 32, 0.72);
@@ -192,5 +192,5 @@ html.light {
   --glass-blur: 16px;
   --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
   --glass-radius-lg: 1.5rem;
-  --ai-glow: radial-gradient(ellipse 70% 45% at 50% 115%, rgba(232,101,28,0.18), transparent 60%), #F4EFE8;
+  --ai-glow: #F3F6FB;
 }

@@ -69,7 +69,7 @@ export default function ResourceDownloadForm({ resource }: Props) {
   if (downloaded) {
     return (
       <div className="text-center py-8">
-        <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
+        <div className="w-12 h-12 rounded-full bg-primary/20 text-primary flex items-center justify-center mx-auto mb-4 border border-primary/30">
           <CheckCircle2 className="w-6 h-6" />
         </div>
         <h3 className="text-lg font-bold text-white mb-2">Download Started!</h3>
@@ -91,7 +91,7 @@ export default function ResourceDownloadForm({ resource }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs">
+        <div className="p-3 rounded-lg bg-accent/10 border border-accent/20 text-accent text-xs">
           {error}
         </div>
       )}

@@ -35,7 +35,7 @@ export default async function ClientProjectDetailPage({ params }: Props) {
           <span className="text-[10px] uppercase font-bold text-primary tracking-widest block mb-1">
             {project.project_code}
           </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white uppercase tracking-tight">
             {project.name}
           </h1>
           <p className="text-xs text-zinc-400 mt-1">Client: {project.client_name}</p>
@@ -49,12 +49,12 @@ export default async function ClientProjectDetailPage({ params }: Props) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="p-6 rounded-2xl border border-white/10 bg-white/[0.02]">
           <span className="text-xs text-zinc-500 font-bold uppercase block mb-1">Overall Progress</span>
-          <span className="text-3xl font-black text-white">{project.progress}%</span>
+          <span className="text-3xl font-bold text-white">{project.progress}%</span>
         </div>
 
         <div className="p-6 rounded-2xl border border-white/10 bg-white/[0.02]">
           <span className="text-xs text-zinc-500 font-bold uppercase block mb-1">Project Value</span>
-          <span className="text-3xl font-black text-white">₹{Number(project.value).toLocaleString()}</span>
+          <span className="text-3xl font-bold text-white">₹{Number(project.value).toLocaleString()}</span>
         </div>
 
         <div className="p-6 rounded-2xl border border-white/10 bg-white/[0.02]">

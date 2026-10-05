@@ -14,7 +14,7 @@ export default function ConnectSection() {
           viewport={{ once: true, amount: 0.2 }}
           className="mb-12"
         >
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-4">Let's Connect</h2>
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Let's Connect</h2>
           <p className="text-zinc-400">Reach out to us directly through any of these channels.</p>
         </motion.div>
 

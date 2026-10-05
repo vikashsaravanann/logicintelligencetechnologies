@@ -35,7 +35,7 @@ export default function ProductsPage() {
             <Box className="w-3.5 h-3.5" />
             <span>Products by Logic Intelligence Technologies</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 uppercase">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 uppercase">
             FLAGSHIP <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">AI PRODUCTS</span>
           </h1>
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
@@ -74,7 +74,7 @@ export default function ProductsPage() {
                   <p className="text-xs text-primary font-bold tracking-widest uppercase mb-2">
                     {prod.category}
                   </p>
-                  <h2 className="text-3xl font-black text-white mb-3 group-hover:text-primary transition-colors">
+                  <h2 className="text-3xl font-bold text-white mb-3 group-hover:text-primary transition-colors">
                     {prod.name}
                   </h2>
                   <p className="text-sm text-zinc-300 mb-6 font-medium leading-relaxed">
@@ -88,7 +88,7 @@ export default function ProductsPage() {
                   <div className="grid grid-cols-3 gap-2 p-3.5 rounded-2xl bg-white/5 border border-white/5 mb-8 text-center">
                     {prod.metrics.map((m, idx) => (
                       <div key={idx}>
-                        <div className="text-sm font-black text-white">{m.value}</div>
+                        <div className="text-sm font-bold text-white">{m.value}</div>
                         <div className="text-[9px] text-zinc-400 uppercase tracking-wider font-semibold mt-0.5">
                           {m.label}
                         </div>
@@ -147,7 +147,7 @@ export default function ProductsPage() {
         {otherSystems.length > 0 && (
           <div className="space-y-8 pt-8 border-t border-white/10">
             <div className="text-center">
-              <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider">
+              <h2 className="text-xl sm:text-2xl font-bold text-white uppercase tracking-wider">
                 Internal Automation Systems &amp; Infrastructure
               </h2>
               <p className="text-xs text-zinc-400 mt-2">

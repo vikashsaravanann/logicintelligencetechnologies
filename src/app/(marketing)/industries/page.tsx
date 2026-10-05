@@ -24,7 +24,7 @@ export default function IndustriesPage() {
             <Building2 className="w-3.5 h-3.5" />
             <span>Domain-Specific Engineering</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 uppercase">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 uppercase">
             SOFTWARE TAILORED TO <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">YOUR INDUSTRY</span>
           </h1>
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
@@ -40,7 +40,7 @@ export default function IndustriesPage() {
               className="group rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:"
             >
               <div>
-                <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-6 border border-white/10 bg-black/40">
+                <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-6 border border-white/10 bg-[#0A1530]/40">
                   <SafeImage
                     src={getIndustryVisual(ind.slug)}
                     alt={`${ind.title} — professional industry visual`}

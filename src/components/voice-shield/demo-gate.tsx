@@ -61,8 +61,8 @@ export default function VoiceShieldDemoGate({
             /* Backend configured — show launch state */
             <>
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                  <Wifi className="w-5 h-5 text-emerald-400" aria-hidden />
+                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                  <Wifi className="w-5 h-5 text-primary" aria-hidden />
                 </div>
                 <div>
                   <div className="text-sm font-bold text-white">Backend Connected</div>

@@ -38,8 +38,8 @@ const STEPS = [
     title: "AASIST Inference",
     description:
       "Features pass through the AASIST (Audio Anti-Spoofing using Integrated Spectro-Temporal graph attention network) model loaded as TorchScript. A sigmoid output produces a spoof probability score from 0 (genuine) to 1 (synthetic).",
-    color: "text-emerald-400",
-    border: "border-emerald-500/30",
+    color: "text-primary",
+    border: "border-primary/30",
   },
   {
     num: "05",

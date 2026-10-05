@@ -29,7 +29,7 @@ function StatCard({
           <Icon className={`w-4 h-4 ${color.includes("emerald") ? "text-emerald-400" : color.includes("blue") ? "text-blue-400" : color.includes("cyan") ? "text-cyan-400" : color.includes("rose") ? "text-rose-400" : color.includes("violet") ? "text-violet-400" : "text-yellow-400"}`} />
         </div>
       </div>
-      <div className="text-3xl font-black text-white mb-1 group-hover:scale-105 transition-transform origin-left">{value}</div>
+      <div className="text-3xl font-bold text-white mb-1 group-hover:scale-105 transition-transform origin-left">{value}</div>
       {sub && <p className="text-[10px] text-zinc-500 font-medium">{sub}</p>}
       {href && (
         <div className="mt-3 flex items-center gap-1 text-[10px] font-bold text-zinc-500 group-hover:text-primary transition-colors uppercase tracking-wider">
@@ -80,7 +80,7 @@ export default async function AdminCommandCenterPage() {
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-widest">Live</span>
             </div>
-            <h1 className="text-3xl font-black tracking-tight text-white">Executive Command Center</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-white">Executive Command Center</h1>
             <p className="text-zinc-400 text-sm mt-1">
               {new Date().toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
             </p>

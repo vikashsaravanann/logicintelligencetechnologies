@@ -93,7 +93,7 @@ export function VaultTab({ files, user }: { files: any[], user: any }) {
       {/* Upload Area */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-        className="relative group p-6 md:p-10 border-2 border-dashed border-white/20 rounded-3xl bg-[rgba(10,15,30,0.6)] backdrop-blur-2xl text-center hover:bg-[rgba(20,30,50,0.6)] hover:border-blue-500/50 hover: transition-all duration-300 overflow-hidden"
+        className="relative group p-6 md:p-10 border-2 border-dashed border-white/20 rounded-3xl bg-[rgba(10,15,30,0.6)] backdrop-blur-md text-center hover:bg-[rgba(20,30,50,0.6)] hover:border-blue-500/50 hover: transition-all duration-300 overflow-hidden"
       >
         <input 
           type="file" 
@@ -115,7 +115,7 @@ export function VaultTab({ files, user }: { files: any[], user: any }) {
         </div>
 
         {isUploading && (
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-30 flex flex-col items-center justify-center">
+          <div className="absolute inset-0 bg-[#0A1530]/80 backdrop-blur-sm z-30 flex flex-col items-center justify-center">
             <Loader2 className="w-10 h-10 text-cyan-400 animate-spin mb-4" />
             <p className="text-white font-medium tracking-widest text-sm uppercase">Uploading securely...</p>
           </div>
@@ -125,7 +125,7 @@ export function VaultTab({ files, user }: { files: any[], user: any }) {
       {/* Files List */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-        className="p-8 rounded-3xl border border-white/[0.08] bg-[rgba(10,15,30,0.6)] backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5),inset_0_0_80px_rgba(255,255,255,0.02)]"
+        className="p-8 rounded-3xl border border-white/[0.08] bg-[rgba(10,15,30,0.6)] backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.5),inset_0_0_80px_rgba(255,255,255,0.02)]"
       >
         <h3 className="text-2xl font-bold text-white mb-6 tracking-tight">Your Files</h3>
         
@@ -145,7 +145,7 @@ export function VaultTab({ files, user }: { files: any[], user: any }) {
               <motion.div 
                 key={file.id} 
                 variants={itemVariants}
-                className="flex items-center justify-between p-5 rounded-2xl border border-white/[0.05] bg-black/20 hover:bg-black/40 hover:border-white/10 transition-all group"
+                className="flex items-center justify-between p-5 rounded-2xl border border-white/[0.05] bg-[#0A1530]/20 hover:bg-[#0A1530]/40 hover:border-white/10 transition-all group"
               >
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-blue-500/10 text-cyan-400 rounded-xl shadow-inner group-hover:bg-blue-500/20 group-hover:text-white transition-colors">

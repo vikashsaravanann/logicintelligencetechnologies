@@ -123,7 +123,7 @@ export default function BookConsultationPage() {
             <CalendarIcon className="w-3.5 h-3.5" />
             <span>Direct Access to Principal Engineers</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white mb-4 uppercase">
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4 uppercase">
             Schedule a Technical <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Consultation</span>
           </h1>
           <p className="text-sm sm:text-base text-zinc-400">
@@ -132,7 +132,7 @@ export default function BookConsultationPage() {
         </div>
 
         {error && (
-          <div className="max-w-4xl mx-auto mb-8 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm text-center font-semibold">
+          <div className="max-w-4xl mx-auto mb-8 p-4 rounded-xl bg-accent/10 border border-accent/20 text-accent text-sm text-center font-semibold">
             {error}
           </div>
         )}
@@ -333,7 +333,7 @@ export default function BookConsultationPage() {
               </button>
 
               <div className="mt-4 flex items-center justify-center gap-2 text-[10px] text-zinc-500">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <ShieldCheck className="w-3.5 h-3.5 text-primary" />
                 <span>NDA & Confidentiality Protected</span>
               </div>
             </div>

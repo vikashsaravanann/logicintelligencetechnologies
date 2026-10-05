@@ -47,7 +47,7 @@ export default function ResetPasswordPage() {
         <Link href="/" className="text-[11px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white">
           {COMPANY.displayName}
         </Link>
-        <h1 className="text-3xl font-black tracking-tight">Set a new password</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Set a new password</h1>
         <p className="text-sm text-zinc-400">Choose a password you have not used on this portal before.</p>
         {error && (
           <p className="text-sm text-red-300 flex gap-2">

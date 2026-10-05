@@ -30,7 +30,7 @@ export function RelatedContent({
     <section className={cn("py-16 border-t border-white/[0.08]", className)}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
             {title}
           </h2>
           {subtitle && (

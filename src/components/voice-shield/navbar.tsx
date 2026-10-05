@@ -35,16 +35,16 @@ export default function VoiceShieldNavbar() {
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-black/80 backdrop-blur-xl border-b border-emerald-500/10"
+          ? "bg-[#0A1530]/80 backdrop-blur-md border-b border-primary/10"
           : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/voice-shield" className="flex items-center gap-2 group">
-            <ShieldCheck className="w-6 h-6 text-emerald-400 group-hover:text-emerald-300 transition-colors" />
+            <ShieldCheck className="w-6 h-6 text-primary group-hover:text-primary transition-colors" />
             <span className="font-bold text-white tracking-tight">
-              Voice<span className="text-emerald-400">Shield</span>
+              Voice<span className="text-primary">Shield</span>
             </span>
           </Link>
 
@@ -55,7 +55,7 @@ export default function VoiceShieldNavbar() {
                 href={link.href}
                 className={`text-xs font-bold tracking-widest uppercase transition-colors ${
                   pathname === link.href
-                    ? "text-emerald-400"
+                    ? "text-primary"
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
@@ -64,7 +64,7 @@ export default function VoiceShieldNavbar() {
             ))}
             <Link
               href="/voice-shield/request"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold tracking-widest uppercase hover:bg-emerald-500 hover:text-black transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-bold tracking-widest uppercase hover:bg-primary hover:text-black transition-all"
             >
               <Terminal className="w-3.5 h-3.5" />
               Request Access
@@ -88,7 +88,7 @@ export default function VoiceShieldNavbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="block px-2 py-2 text-sm text-zinc-300 hover:text-emerald-400"
+                className="block px-2 py-2 text-sm text-zinc-300 hover:text-primary"
               >
                 {link.label}
               </Link>
@@ -96,7 +96,7 @@ export default function VoiceShieldNavbar() {
             <Link
               href="/voice-shield/request"
               onClick={() => setIsOpen(false)}
-              className="block px-2 py-2 text-sm font-bold text-emerald-400"
+              className="block px-2 py-2 text-sm font-bold text-primary"
             >
               Request Access
             </Link>

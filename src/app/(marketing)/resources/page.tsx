@@ -17,13 +17,13 @@ export const metadata: Metadata = {
 
 const CATEGORY_STYLES: Record<string, { color: string; bg: string; border: string; Icon: React.ComponentType<{ className?: string }> }> = {
   "Corporate":       { color: "#45D9D2", bg: "rgba(69,217,210,0.08)",  border: "rgba(69,217,210,0.2)",  Icon: Briefcase },
-  "Services":        { color: "#8B5CF6", bg: "rgba(139,92,246,0.08)", border: "rgba(139,92,246,0.2)", Icon: Code2 },
-  "Technical Guide": { color: "#10B981", bg: "rgba(16,185,129,0.08)", border: "rgba(16,185,129,0.2)", Icon: FileCheck },
-  "AI & Data":       { color: "#F59E0B", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)", Icon: Brain },
-  "Strategy":        { color: "#EC4899", bg: "rgba(236,72,153,0.08)", border: "rgba(236,72,153,0.2)", Icon: BarChart3 },
+  "Services":        { color: "#0894DE", bg: "rgba(8,148,222,0.08)", border: "rgba(8,148,222,0.2)", Icon: Code2 },
+  "Technical Guide": { color: "#45D9D2", bg: "rgba(69,217,210,0.08)", border: "rgba(69,217,210,0.2)", Icon: FileCheck },
+  "AI & Data":       { color: "#0894DE", bg: "rgba(8,148,222,0.08)", border: "rgba(8,148,222,0.2)", Icon: Brain },
+  "Strategy":        { color: "#0894DE", bg: "rgba(8,148,222,0.08)", border: "rgba(8,148,222,0.2)", Icon: BarChart3 },
   "Templates":       { color: "#6366F1", bg: "rgba(99,102,241,0.08)", border: "rgba(99,102,241,0.2)", Icon: Archive },
-  "Legal & Contracts": { color: "#F97316", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.2)", Icon: FileText },
-  "Case Studies":    { color: "#22C55E", bg: "rgba(34,197,94,0.08)",  border: "rgba(34,197,94,0.2)",  Icon: BookOpen },
+  "Legal & Contracts": { color: "#0894DE", bg: "rgba(8,148,222,0.08)", border: "rgba(8,148,222,0.2)", Icon: FileText },
+  "Case Studies":    { color: "#45D9D2", bg: "rgba(69,217,210,0.08)",  border: "rgba(69,217,210,0.2)",  Icon: BookOpen },
 };
 
 export default function ResourcesPage() {
@@ -40,7 +40,7 @@ export default function ResourcesPage() {
             <BookOpen className="w-3.5 h-3.5" />
             <span>Executive &amp; Technical Knowledge Hub</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 uppercase">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 uppercase">
             RESOURCES, FRAMEWORKS &amp; <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TECHNICAL BRIEFS</span>
           </h1>
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
@@ -63,7 +63,7 @@ export default function ResourcesPage() {
                 className="group rounded-3xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover: overflow-hidden"
               >
                 {/* Visual Cover Thumbnail */}
-                <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/40">
+                <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-[#0A1530]/40">
                   <SafeImage
                     src={res.coverImage}
                     alt={`${res.title} Cover`}

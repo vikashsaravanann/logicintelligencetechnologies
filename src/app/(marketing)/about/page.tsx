@@ -55,7 +55,7 @@ export default function AboutPage() {
             <Rocket className="w-3.5 h-3.5" />
             Coimbatore technology startup
           </span>
-          <h1 className="uppercase text-3xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-[1.1] tracking-tight">
+          <h1 className="uppercase text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
             A startup built to ship
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
@@ -77,7 +77,7 @@ export default function AboutPage() {
             { label: "Focus", value: "Web · AI · Product" },
           ].map((item) => (
             <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-5 text-center">
-              <p className="text-lg sm:text-xl font-black text-white uppercase tracking-wide">{item.value}</p>
+              <p className="text-lg sm:text-xl font-bold text-white uppercase tracking-wide">{item.value}</p>
               <p className="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-widest mt-1 font-semibold">{item.label}</p>
             </div>
           ))}
@@ -96,7 +96,7 @@ export default function AboutPage() {
                 />
               </div>
               <div className="text-center lg:text-left">
-                <h2 className="text-2xl sm:text-3xl font-black text-white">{FOUNDER.name}</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white">{FOUNDER.name}</h2>
                 <p className="text-primary font-bold text-sm uppercase tracking-widest mt-1">{FOUNDER.title}</p>
                 <p className="text-zinc-500 text-xs mt-2 flex items-center justify-center lg:justify-start gap-1.5">
                   <MapPin className="w-3.5 h-3.5" />

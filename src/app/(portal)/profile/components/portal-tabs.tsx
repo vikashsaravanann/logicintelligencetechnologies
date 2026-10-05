@@ -75,7 +75,7 @@ export function PortalTabs({ portalData, profileDetails }: PortalTabsProps) {
 
   return (
     <div className="flex flex-col gap-4 w-full">
-      <nav className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 p-2 rounded-2xl border border-white/12 bg-white/[0.04] backdrop-blur-xl">
+      <nav className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 p-2 rounded-2xl border border-white/12 bg-white/[0.04] backdrop-blur-md">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

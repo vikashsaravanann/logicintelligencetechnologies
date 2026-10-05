@@ -70,7 +70,7 @@ export default function DashboardClient({
             <div className="flex justify-between items-start relative z-10">
               <div>
                 <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-2">{stat.label}</p>
-                <p className="text-4xl font-black text-white tracking-tight">{stat.value}</p>
+                <p className="text-4xl font-bold text-white tracking-tight">{stat.value}</p>
               </div>
               <div className={`w-12 h-12 rounded-2xl ${stat.bgClass} flex items-center justify-center ${stat.textClass} shadow-inner border ${stat.borderClass}`}>
                 <stat.icon className="w-6 h-6" />
@@ -261,7 +261,7 @@ export default function DashboardClient({
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <Lock className="w-5 h-5 text-pink-400" /> Secure Vault & Onboarding
+              <Lock className="w-5 h-5 text-primary" /> Secure Vault & Onboarding
             </h3>
             <p className="text-xs text-zinc-500 mt-1">Manage brand assets and sensitive credentials</p>
           </div>
@@ -272,7 +272,7 @@ export default function DashboardClient({
           <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 shadow-xl relative overflow-hidden group hover:border-pink-500/30 transition-all">
             <div className="absolute -right-10 -top-10 w-32 h-32 bg-pink-500/10 rounded-full blur-3xl group-hover:bg-pink-500/20 transition-all"></div>
             <div className="flex items-center gap-3 mb-6 relative z-10">
-              <div className="p-3 bg-pink-500/10 text-pink-400 rounded-xl">
+              <div className="p-3 bg-pink-500/10 text-primary rounded-xl">
                 <Palette className="w-5 h-5" />
               </div>
               <h4 className="text-white font-bold">Brand Colors</h4>

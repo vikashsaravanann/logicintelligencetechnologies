@@ -21,7 +21,7 @@ export default function ProductFactsPage() {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
             Authoritative Product Register
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+          <h1 className="text-3xl sm:text-5xl font-bold text-white tracking-tight">
             Public Product Fact Sheet
           </h1>
           <p className="text-slate-400 text-base sm:text-lg">
@@ -106,14 +106,14 @@ export default function ProductFactsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
             <div>
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                <ShieldCheck className="w-5 h-5 text-primary" />
                 <h2 className="text-2xl font-bold text-white">VoiceShield</h2>
               </div>
-              <p className="text-sm text-emerald-400 font-semibold mt-1">
+              <p className="text-sm text-primary font-semibold mt-1">
                 Voice Security & Risk Intelligence
               </p>
             </div>
-            <span className="text-xs px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 self-start sm:self-auto font-medium">
+            <span className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/30 self-start sm:self-auto font-medium">
               Product of Logic Intelligence Technologies
             </span>
           </div>
@@ -133,7 +133,7 @@ export default function ProductFactsPage() {
                 href={COMPANY.products.voiceShield.websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-emerald-400 hover:underline flex items-center gap-1 mt-1 font-mono text-xs"
+                className="text-primary hover:underline flex items-center gap-1 mt-1 font-mono text-xs"
               >
                 {COMPANY.products.voiceShield.websiteUrl} <ExternalLink className="w-3.5 h-3.5" />
               </a>
@@ -144,7 +144,7 @@ export default function ProductFactsPage() {
                 href={COMPANY.products.voiceShield.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-emerald-400 hover:underline flex items-center gap-1 mt-1 font-mono text-xs"
+                className="text-primary hover:underline flex items-center gap-1 mt-1 font-mono text-xs"
               >
                 vikashsaravanann/voice-shield <GitBranch className="w-3.5 h-3.5" />
               </a>
@@ -162,7 +162,7 @@ export default function ProductFactsPage() {
           <div className="pt-2">
             <Link
               href="/voice-shield"
-              className="inline-flex items-center gap-2 text-sm text-emerald-400 font-bold hover:underline"
+              className="inline-flex items-center gap-2 text-sm text-primary font-bold hover:underline"
             >
               Explore VoiceShield Architecture & Documentation <ArrowRight className="w-4 h-4" />
             </Link>

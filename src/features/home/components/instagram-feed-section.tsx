@@ -47,10 +47,10 @@ export default function InstagramFeedSection() {
           viewport={{ once: true, amount: 0.2 }}
           className="text-center mb-14"
         >
-          <div className="inline-flex items-center justify-center p-3 rounded-full bg-gradient-to-tr from-pink-500 to-purple-500 mb-5 shadow-[0_0_20px_rgba(236,72,153,0.3)]">
+          <div className="inline-flex items-center justify-center p-3 rounded-full bg-primary mb-5 ">
             <InstagramIcon className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-3">Follow Our Journey</h2>
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-3">Follow Our Journey</h2>
           <a
             href={COMPANY.instagramUrl}
             target="_blank"
@@ -74,7 +74,7 @@ export default function InstagramFeedSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ delay: i * 0.12 }}
-              className="group relative aspect-[4/5] rounded-2xl border border-white/10 overflow-hidden bg-black shadow-[0_4px_24px_rgba(0,0,0,0.3)] hover:border-pink-500/30 transition-all duration-300"
+              className="group relative aspect-[4/5] rounded-2xl border border-white/10 overflow-hidden bg-[#0A1530] shadow-[0_4px_24px_rgba(0,0,0,0.3)] hover:border-accent/30 transition-all duration-300"
             >
               {/* Post image */}
               <div className="relative w-full h-full">
@@ -92,13 +92,13 @@ export default function InstagramFeedSection() {
                 <p className="text-white text-sm font-medium leading-snug line-clamp-3">
                   {post.caption}
                 </p>
-                <span className="mt-2 inline-flex items-center gap-1 text-pink-400 text-xs font-semibold">
+                <span className="mt-2 inline-flex items-center gap-1 text-primary text-xs font-semibold">
                   View on Instagram <ExternalLink className="w-3 h-3" />
                 </span>
               </div>
 
               {/* Instagram badge */}
-              <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 to-purple-500 flex items-center justify-center shadow-md opacity-80 group-hover:opacity-100 transition-opacity">
+              <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-md opacity-80 group-hover:opacity-100 transition-opacity">
                 <InstagramIcon className="w-4 h-4 text-white" />
               </div>
             </motion.a>
@@ -117,7 +117,7 @@ export default function InstagramFeedSection() {
             href={COMPANY.instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white border border-white/10 bg-white/5 hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-500/20 hover:border-pink-500/30 transition-all duration-300"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white border border-white/10 bg-white/5 hover:bg-gradient-to-r hover:from-accent/20 hover:to-purple-500/20 hover:border-accent/30 transition-all duration-300"
           >
             <InstagramIcon className="w-4 h-4" />
             Follow on Instagram

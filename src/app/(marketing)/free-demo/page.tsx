@@ -186,9 +186,9 @@ export default function FreeDemoPage() {
   const labelClass =
     "block text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-400 mb-2";
   const sectionTitleClass =
-    "text-xl sm:text-2xl font-black text-white uppercase tracking-tight flex items-center gap-3 mb-2";
+    "text-xl sm:text-2xl font-bold text-white uppercase tracking-tight flex items-center gap-3 mb-2";
   const sectionNumClass =
-    "inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary/15 text-primary text-sm font-black shrink-0";
+    "inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary/15 text-primary text-sm font-bold shrink-0";
 
   if (sent) {
     return (
@@ -196,10 +196,10 @@ export default function FreeDemoPage() {
         <PageBackdrop src="/assets/backdrops/home-hero.jpg" />
         <BackToHome />
         <div className="relative z-10 max-w-lg mx-auto px-6 py-32 text-center">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+          <div className="w-16 h-16 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="uppercase text-3xl font-black tracking-tight mb-3">
+          <h1 className="uppercase text-3xl font-bold tracking-tight mb-3">
             Request received
           </h1>
           <p className="text-zinc-400 mb-8 leading-relaxed">
@@ -243,7 +243,7 @@ export default function FreeDemoPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
-            className="uppercase text-3xl md:text-5xl lg:text-6xl font-black text-white mb-5 tracking-tight leading-[1.08]"
+            className="uppercase text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-5 tracking-tight leading-[1.08]"
           >
             See your product direction
             <br />
@@ -300,7 +300,7 @@ export default function FreeDemoPage() {
       <section className="relative z-10 px-6 lg:px-8 pb-24">
         <div className="max-w-3xl mx-auto rounded-3xl border border-white/10 bg-[#0c1224]/90 backdrop-blur-md p-6 sm:p-10 shadow-[0_0_60px_rgba(0,0,0,0.35)]">
           {error && (
-            <div className="mb-6 flex items-start gap-3 p-4 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-200 text-sm">
+            <div className="mb-6 flex items-start gap-3 p-4 rounded-xl border border-accent/30 bg-accent/10 text-accent text-sm">
               <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
               <p>{error}</p>
             </div>

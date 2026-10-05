@@ -264,7 +264,7 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-xl border border-white/10 bg-[#0c1224]/98 backdrop-blur-xl shadow-2xl shadow-black/40 py-1.5 z-50"
+          className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-xl border border-white/10 bg-[#0c1224]/98 backdrop-blur-md shadow-2xl shadow-black/40 py-1.5 z-50"
         >
           <div className="px-3 py-2 border-b border-white/8">
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500">

@@ -24,11 +24,11 @@ export default async function BookingSuccessPage({ searchParams }: Props) {
     <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20 flex items-center justify-center">
       <div className="max-w-xl mx-auto px-6 w-full text-center">
         {/* Success Icon */}
-        <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+        <div className="w-16 h-16 rounded-full bg-primary/20 text-primary border border-primary/30 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
           <CheckCircle2 className="w-8 h-8" />
         </div>
 
-        <h1 className="text-3xl font-black text-white uppercase tracking-tight mb-2">
+        <h1 className="text-3xl font-bold text-white uppercase tracking-tight mb-2">
           CONSULTATION CONFIRMED
         </h1>
         <p className="text-sm text-zinc-400 mb-8">

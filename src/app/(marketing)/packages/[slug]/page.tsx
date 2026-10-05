@@ -61,7 +61,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
 
         <section className="px-6 lg:px-8 max-w-5xl mx-auto text-center relative">
           {/* Visual Banner */}
-          <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden mb-10 border border-white/10 shadow-2xl bg-black/50">
+          <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden mb-10 border border-white/10 shadow-2xl bg-[#0A1530]/50">
             <SafeImage
               src={`/images/packages/${pkg.slug}.jpg`}
               alt={`${pkg.title} Architecture Visual`}
@@ -72,12 +72,12 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
           </div>
 
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-[300px] opacity-[0.1] blur-[100px] bg-gradient-to-r from-primary to-accent pointer-events-none" />
-          <h1 className="uppercase text-3xl md:text-4xl lg:text-6xl font-black text-white mb-4 relative z-10">{pkg.title}</h1>
+          <h1 className="uppercase text-3xl md:text-4xl lg:text-6xl font-bold text-white mb-4 relative z-10">{pkg.title}</h1>
           <p className="text-xl text-zinc-300 max-w-3xl mx-auto mb-6 relative z-10">{pkg.subtitle}</p>
-          <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent mb-10 relative z-10">{pkg.price}</p>
+          <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent mb-10 relative z-10">{pkg.price}</p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
-            <Link href="/contact" className="px-8 py-4 rounded-xl font-bold text-black bg-primary neon-btn w-full sm:w-auto">Start Project</Link>
+            <Link href="/contact" className="px-8 py-4 rounded-xl font-bold text-black bg-primary w-full sm:w-auto">Start Project</Link>
             <a href="https://wa.me/917550067712" target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-xl font-bold text-white bg-white/10 hover:bg-white/20 transition-colors w-full sm:w-auto border border-white/10">WhatsApp Us</a>
           </div>
         </section>
@@ -139,7 +139,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
 
         {/* Visual Banner */}
         <div className="max-w-6xl mx-auto px-6 mb-12">
-          <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black/50">
+          <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0A1530]/50">
             <SafeImage
               src={getServiceVisual(srv.slug)}
               alt={`${srv.title} Architecture Visual`}
@@ -158,10 +158,10 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
               <div className="bg-white/5 p-4 rounded-2xl w-fit mb-6 border border-white/10">
                 <Icon className="w-10 h-10 text-primary" />
               </div>
-              <h1 className="uppercase text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">{srv.title}</h1>
+              <h1 className="uppercase text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">{srv.title}</h1>
               <p className="text-xl text-zinc-300 mb-8 max-w-2xl">{srv.subtitle}</p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/contact" className="px-8 py-4 rounded-xl font-bold text-black bg-primary neon-btn w-full sm:w-auto text-center">Start Project</Link>
+                <Link href="/contact" className="px-8 py-4 rounded-xl font-bold text-black bg-primary w-full sm:w-auto text-center">Start Project</Link>
                 <a href="https://wa.me/917550067712" target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-xl font-bold text-white bg-white/10 hover:bg-white/20 transition-colors w-full sm:w-auto border border-white/10 text-center">Chat on WhatsApp</a>
               </div>
             </div>
@@ -224,7 +224,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {srv.process.map((step, i) => (
                 <div key={i} className="bg-white/[0.02] border border-white/5 p-6 rounded-2xl relative overflow-hidden group hover:border-primary/50 transition-colors">
-                  <div className="text-5xl font-black text-white/5 absolute -right-2 -bottom-2 group-hover:text-primary/10 transition-colors">
+                  <div className="text-5xl font-bold text-white/5 absolute -right-2 -bottom-2 group-hover:text-primary/10 transition-colors">
                     {i + 1}
                   </div>
                   <h3 className="text-lg font-bold text-white mb-2 relative z-10">{step.step}</h3>
@@ -243,7 +243,7 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
               {srv.pricing.map((tier, i) => (
                 <div key={i} className="bg-zinc-900/60 p-8 rounded-3xl border border-white/10 flex flex-col h-full">
                   <h3 className="text-xl font-bold text-white mb-2">{tier.tier}</h3>
-                  <div className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent mb-6">{tier.price}</div>
+                  <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent mb-6">{tier.price}</div>
                   {'details' in tier && (tier as any).details.length > 0 && (
                     <ul className="space-y-3 mb-8 flex-1">
                       {(tier as any).details.map((detail: string, j: number) => (

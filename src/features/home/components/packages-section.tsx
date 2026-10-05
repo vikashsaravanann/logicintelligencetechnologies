@@ -24,7 +24,7 @@ export default function PackagesSection() {
           <h2 className="text-primary font-bold tracking-[0.2em] uppercase text-sm mb-4">
             Our Service Packages
           </h2>
-          <h3 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-6">
+          <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
             Transparent pricing. No hidden charges. Real value.
           </h3>
         </div>
@@ -35,7 +35,7 @@ export default function PackagesSection() {
             return (
               <div
                 key={pkg.slug}
-                className={`relative rounded-3xl p-8 md:p-10 flex flex-col h-full bg-zinc-900/60 backdrop-blur-xl border transition-transform duration-200 will-change-transform hover:-translate-y-1 ${
+                className={`relative rounded-3xl p-8 md:p-10 flex flex-col h-full bg-zinc-900/60 backdrop-blur-md border transition-transform duration-200 will-change-transform hover:-translate-y-1 ${
                   isPopular
                     ? "lg:-mt-6 lg:mb-6 border-accent/50 shadow-[0_0_30px_rgba(8,148,222,0.15)]"
                     : "border-white/10"
@@ -48,13 +48,13 @@ export default function PackagesSection() {
                 )}
 
                 <div className="mb-6">
-                  <h4 className="text-2xl font-black text-white mb-2">{pkg.title}</h4>
+                  <h4 className="text-2xl font-bold text-white mb-2">{pkg.title}</h4>
                   <div className="flex items-baseline gap-2 mb-4">
                     <span className="text-xl text-zinc-400">Starting from</span>
                   </div>
                   <div className="mb-6">
                     <span
-                      className={`text-4xl font-black ${
+                      className={`text-4xl font-bold ${
                         isPopular
                           ? "text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent"
                           : "text-white"
@@ -63,7 +63,7 @@ export default function PackagesSection() {
                       {pkg.price}
                     </span>
                   </div>
-                  <p className="text-sm font-medium text-zinc-400 bg-black/50 p-3 rounded-lg border border-white/5">
+                  <p className="text-sm font-medium text-zinc-400 bg-[#0A1530]/50 p-3 rounded-lg border border-white/5">
                     <span className="text-zinc-300 font-bold block mb-1">Best for:</span>
                     {pkg.bestFor}
                   </p>

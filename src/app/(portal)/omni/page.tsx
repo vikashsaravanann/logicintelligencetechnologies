@@ -105,7 +105,7 @@ export default function OmniPublisherPage() {
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-400">
               Omni Publisher
             </p>
-            <h1 className="text-2xl md:text-3xl font-black">
+            <h1 className="text-2xl md:text-3xl font-bold">
               Autonomous multi-channel calendar
             </h1>
             <p className="text-sm text-zinc-400 mt-1">
@@ -127,20 +127,20 @@ export default function OmniPublisherPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Title (website)"
-              className="w-full rounded-xl bg-black/40 border border-white/10 px-3 py-2 text-sm outline-none focus:border-cyan-500/50"
+              className="w-full rounded-xl bg-[#0A1530]/40 border border-white/10 px-3 py-2 text-sm outline-none focus:border-cyan-500/50"
             />
             <textarea
               value={rootText}
               onChange={(e) => setRootText(e.target.value)}
               placeholder="Root message — reformatted per channel"
               rows={6}
-              className="w-full rounded-xl bg-black/40 border border-white/10 px-3 py-2 text-sm outline-none focus:border-cyan-500/50 resize-y"
+              className="w-full rounded-xl bg-[#0A1530]/40 border border-white/10 px-3 py-2 text-sm outline-none focus:border-cyan-500/50 resize-y"
             />
             <input
               type="datetime-local"
               value={executeAt}
               onChange={(e) => setExecuteAt(e.target.value)}
-              className="w-full rounded-xl bg-black/40 border border-white/10 px-3 py-2 text-sm outline-none"
+              className="w-full rounded-xl bg-[#0A1530]/40 border border-white/10 px-3 py-2 text-sm outline-none"
             />
             <div className="flex flex-wrap gap-2">
               {ALL_CHANNELS.map((ch) => (

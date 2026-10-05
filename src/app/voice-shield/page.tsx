@@ -52,11 +52,11 @@ export default function VoiceShieldProductPage() {
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight max-w-4xl mx-auto">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight max-w-4xl mx-auto">
             VoiceShield
           </h1>
 
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold bg-gradient-to-r from-cyan-400 via-blue-400 to-emerald-400 bg-clip-text text-transparent">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold bg-gradient-to-r from-cyan-400 via-blue-400 to-primary bg-clip-text text-transparent">
             AI voice security & risk intelligence
           </h2>
 
@@ -105,7 +105,7 @@ export default function VoiceShieldProductPage() {
             {
               value: "Configurable",
               label: "Retention & access controls",
-              color: "text-emerald-400",
+              color: "text-primary",
             },
             {
               value: "API-first",
@@ -118,7 +118,7 @@ export default function VoiceShieldProductPage() {
               className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 md:p-8 text-center backdrop-blur-md"
             >
               <div
-                className={`text-2xl md:text-3xl font-black font-mono mb-2 ${stat.color}`}
+                className={`text-2xl md:text-3xl font-bold font-mono mb-2 ${stat.color}`}
               >
                 {stat.value}
               </div>
@@ -131,7 +131,7 @@ export default function VoiceShieldProductPage() {
 
         <section id="architecture" className="space-y-10">
           <div className="text-center space-y-3">
-            <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
               Architecture principles
             </h2>
             <p className="text-sm font-mono tracking-[0.15em] text-cyan-400 uppercase">
@@ -173,8 +173,8 @@ export default function VoiceShieldProductPage() {
                 icon: Database,
                 title: "Audit-oriented records",
                 desc: "Detection and access events designed for append-style audit trails with role-based access controls.",
-                color: "text-emerald-400",
-                bg: "bg-emerald-500/10 border-emerald-500/20",
+                color: "text-primary",
+                bg: "bg-primary/10 border-primary/20",
               },
               {
                 icon: Lock,
@@ -207,7 +207,7 @@ export default function VoiceShieldProductPage() {
         <section className="relative rounded-3xl overflow-hidden border border-cyan-500/20 bg-slate-900/80 backdrop-blur-md p-8 md:p-14 text-center">
           <div className="absolute inset-0 bg-gradient-to-t from-cyan-900/20 to-transparent pointer-events-none" />
           <div className="relative z-10 space-y-5">
-            <h2 className="text-2xl md:text-3xl font-black text-white">
+            <h2 className="text-2xl md:text-3xl font-bold text-white">
               Request VoiceShield access
             </h2>
             <p className="text-slate-300 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">

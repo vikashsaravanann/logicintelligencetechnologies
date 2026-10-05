@@ -155,7 +155,7 @@ export default function FounderPage() {
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-4">
                 FOUNDER
               </p>
-              <h1 className="uppercase text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] mb-4">
+              <h1 className="uppercase text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] mb-4">
                 {FOUNDER.name}
               </h1>
               <p className="text-lg sm:text-xl text-zinc-300 font-medium mb-3">
@@ -258,7 +258,7 @@ export default function FounderPage() {
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-2">
                 PORTRAITS
               </p>
-              <h2 className="uppercase text-2xl sm:text-3xl font-black tracking-tight">
+              <h2 className="uppercase text-2xl sm:text-3xl font-bold tracking-tight">
                 Beyond the desk
               </h2>
             </div>
@@ -298,7 +298,7 @@ export default function FounderPage() {
             <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-2">
               PROFILE
             </p>
-            <h2 className="uppercase text-2xl sm:text-3xl font-black tracking-tight mb-4">
+            <h2 className="uppercase text-2xl sm:text-3xl font-bold tracking-tight mb-4">
               Who he is
             </h2>
             <ul className="space-y-3 text-sm text-zinc-400">
@@ -330,7 +330,7 @@ export default function FounderPage() {
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-2">
             EXPERTISE
           </p>
-          <h2 className="uppercase text-2xl sm:text-3xl font-black tracking-tight mb-10">
+          <h2 className="uppercase text-2xl sm:text-3xl font-bold tracking-tight mb-10">
             How he builds
           </h2>
           <div className="grid sm:grid-cols-2 gap-5">
@@ -358,7 +358,7 @@ export default function FounderPage() {
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-2">
             PRINCIPLES
           </p>
-          <h2 className="uppercase text-2xl sm:text-3xl font-black tracking-tight mb-10">
+          <h2 className="uppercase text-2xl sm:text-3xl font-bold tracking-tight mb-10">
             Operating rules
           </h2>
           <div className="grid md:grid-cols-3 gap-5">
@@ -367,7 +367,7 @@ export default function FounderPage() {
                 key={p.t}
                 className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent p-6"
               >
-                <h3 className="text-sm font-black uppercase tracking-wide text-primary mb-3">
+                <h3 className="text-sm font-bold uppercase tracking-wide text-primary mb-3">
                   {p.t}
                 </h3>
                 <p className="text-sm text-zinc-400 leading-relaxed">{p.d}</p>
@@ -380,7 +380,7 @@ export default function FounderPage() {
       {/* CTA */}
       <section className="py-16 md:py-24">
         <div className="max-w-3xl mx-auto px-6 text-center">
-          <h2 className="uppercase text-2xl sm:text-3xl font-black tracking-tight mb-4">
+          <h2 className="uppercase text-2xl sm:text-3xl font-bold tracking-tight mb-4">
             Build with the founder
           </h2>
           <p className="text-zinc-400 mb-8 leading-relaxed">
