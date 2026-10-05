@@ -281,10 +281,10 @@ export default function Footer() {
 
         {/* Bottom Banner */}
         <div className="pt-8 pb-20 md:pb-16 md:px-16 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-             <div className="w-2 h-2 rounded-full bg-primary " />
-             <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">ALL SYSTEMS OPERATIONAL</p>
-          </div>
+          <Link href="/status" className="flex items-center gap-3 min-h-[44px] text-xs font-bold text-zinc-400 uppercase tracking-widest hover:text-white transition-colors">
+             <span aria-hidden className="w-2 h-2 rounded-full bg-primary" />
+             System status
+          </Link>
 
           <p className="text-[10px] sm:text-xs text-zinc-400 text-center md:text-right uppercase tracking-widest leading-relaxed">
             © {new Date().getFullYear()} {COMPANY.legalName}. ALL RIGHTS RESERVED.<br className="md:hidden" />
