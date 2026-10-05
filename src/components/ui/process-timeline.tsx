@@ -20,7 +20,7 @@ export default function ProcessTimeline({
     <div className={`py-12 ${className}`}>
       {(title || subtitle) && (
         <div className="text-center max-w-3xl mx-auto mb-12">
-          {title && <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-3">{title}</h3>}
+          {title && <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-3">{title}</h3>}
           {subtitle && <p className="text-sm sm:text-base text-zinc-400">{subtitle}</p>}
         </div>
       )}
@@ -32,7 +32,7 @@ export default function ProcessTimeline({
             className="group relative rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] p-6 transition-all duration-300 hover:border-primary/40 hover:-translate-y-1"
           >
             <div className="flex items-center justify-between mb-4">
-              <span className="text-3xl font-black text-primary/30 group-hover:text-primary transition-colors">
+              <span className="text-3xl font-bold text-primary/30 group-hover:text-primary transition-colors">
                 {String(idx + 1).padStart(2, "0")}
               </span>
               <div className="w-2 h-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors" />

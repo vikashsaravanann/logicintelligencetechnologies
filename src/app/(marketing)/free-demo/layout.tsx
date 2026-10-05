@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Request a Free Demo | Logic Intelligence Technologies",
     description: "Zero risk. Zero commitment. See a working direction for your website before you invest. Free demo available for qualifying projects.",
-    images: [{ url: "/assets/og-banner.jpg", width: 1200, height: 630, alt: "Free Demo — Logic Intelligence Technologies" }],
+    images: [{ url: "/assets/og-banner.png", width: 1200, height: 630, alt: "Free Demo — Logic Intelligence Technologies" }],
   },
 };
 

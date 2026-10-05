@@ -474,7 +474,13 @@ export const servicesData = [
   }
 ];
 
+// Services that only have SVG (no jpg/webp available)
+const SVG_ONLY_SERVICES = new Set(["hotel-website", "travel-agency-website", "api-development"]);
+
 export function getServiceVisual(slug: string): string {
+  if (SVG_ONLY_SERVICES.has(slug)) {
+    return `/images/services/${slug}.svg`;
+  }
   return `/images/services/${slug}.jpg`;
 }
 

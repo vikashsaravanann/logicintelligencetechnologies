@@ -44,7 +44,7 @@ test.describe("Credentialed auth", () => {
       timeout: 30000,
     });
 
-    await page.goto("/contact", { waitUntil: "domcontentloaded" });
+    await page.goto("/profile", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(1500);
     expect(page.url()).not.toMatch(/\/login/);
 
@@ -64,9 +64,9 @@ test.describe("Credentialed auth", () => {
       });
     }
 
-    await page.goto("/contact", { waitUntil: "domcontentloaded" });
+    await page.goto("/profile", { waitUntil: "domcontentloaded" });
     await page.waitForURL(/\/login/, { timeout: 15000 });
-    expect(page.url()).toMatch(/\/login/);
+    expect(new URL(page.url()).searchParams.get("next")).toBe("/profile");
   });
 
   test("invalid password shows error, stays on login", async ({ page }) => {

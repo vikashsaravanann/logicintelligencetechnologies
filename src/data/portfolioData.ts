@@ -14,6 +14,10 @@ export type PortfolioProject = {
   testimonialId?: string;
 };
 
+/**
+ * Portfolio imagery: local /images/work/* assets (verified present in production).
+ * Each project uses a distinct file — no shared binary blobs, no remote dependency.
+ */
 export const portfolioProjects: PortfolioProject[] = [
   {
     slug: "freshbite",
@@ -22,7 +26,8 @@ export const portfolioProjects: PortfolioProject[] = [
       "Full-stack food ordering with real-time order tracking, secure payments, and a multi-location admin dashboard for restaurant operators.",
     category: "E-Commerce",
     tags: ["Next.js", "Payments", "Supabase", "Tailwind CSS"],
-    image: "/images/work/work-freshbite.jpg",
+    image:
+      "/images/work/work-freshbite.webp",
     client: "FreshBite Restaurants",
     problem:
       "Phone and WhatsApp orders were error-prone during peak hours. Staff juggled handwritten tickets, payment confirmation lagged, and kitchen throughput stalled when volume spiked.",
@@ -43,7 +48,8 @@ export const portfolioProjects: PortfolioProject[] = [
       "Cloud HR platform covering onboarding, leave, attendance, and payroll workflows for growing teams that outgrew spreadsheets.",
     category: "SaaS",
     tags: ["React", "Node.js", "PostgreSQL", "AWS"],
-    image: "/images/work/work-vaulthr.jpg",
+    image:
+      "/images/work/work-vaulthr.webp",
     client: "Mid-market services firm",
     problem:
       "HR data lived in disconnected sheets. Leave requests stalled in email threads, onboarding checklists were incomplete, and payroll prep consumed days each cycle.",
@@ -51,48 +57,50 @@ export const portfolioProjects: PortfolioProject[] = [
       "Role-based HR workspace with employee profiles, approval workflows, leave balances, and export-ready payroll inputs. Built on React + Node with PostgreSQL on AWS for predictable access control and auditability.",
     metrics: [
       { label: "Leave cycle", value: "Days → hours" },
-      { label: "Source of truth", value: "Single employee record" },
-      { label: "Access", value: "RBAC by role" },
+      { label: "Source of truth", value: "Single HR system" },
+      { label: "Access", value: "Role-based" },
     ],
     results:
-      "Centralized people operations with clear approvals and fewer payroll reconciliation errors.",
+      "HR operations centralized with clearer approvals and faster leave and payroll cycles.",
   },
   {
     slug: "luxe-interiors",
-    title: "Luxe Interiors — Design Studio Portfolio",
+    title: "Luxe Interiors — Design Showcase",
     description:
-      "High-conversion portfolio for an interior design studio: project storytelling, image-led galleries, and a structured inquiry path for qualified leads.",
-    category: "Corporate",
-    tags: ["Next.js", "Framer Motion", "Vercel"],
-    image: "/images/work/work-luxe-interiors.jpg",
+      "Portfolio and inquiry platform for an interior design studio: project galleries, mood boards, and qualified lead capture.",
+    category: "Marketing",
+    tags: ["Next.js", "CMS", "Tailwind CSS", "Vercel"],
+    image:
+      "/images/work/work-luxe-interiors.webp",
     client: "Luxe Interiors Studio",
     problem:
-      "The previous site buried strong project photography behind slow pages and a generic contact form. Serious clients could not quickly assess fit or start a project conversation.",
+      "Work lived in Instagram and PDFs. Prospects could not browse projects by room type or budget, and inquiries lacked structured context.",
     solution:
-      "A performance-focused Next.js site with case-style project pages, motion used sparingly for hierarchy, and a guided inquiry form that captures budget, space type, and timeline for the studio team.",
+      "Case-study-led marketing site with filtered project galleries, high-resolution imagery, and a structured inquiry form that routes to the studio pipeline.",
     metrics: [
-      { label: "Storytelling", value: "Project-first layout" },
-      { label: "Leads", value: "Structured brief form" },
-      { label: "Deploy", value: "Vercel edge delivery" },
+      { label: "Gallery", value: "Filterable projects" },
+      { label: "Leads", value: "Structured intake" },
+      { label: "Brand", value: "Studio-grade presentation" },
     ],
     results:
-      "A portfolio that presents the studio as premium and routes qualified inquiries with context the designers can act on.",
+      "A owned web presence that presents the portfolio professionally and captures qualified design inquiries.",
   },
   {
     slug: "mediconnect",
-    title: "MediConnect — Clinic Booking System",
+    title: "MediConnect — Clinic Appointment System",
     description:
-      "Appointment scheduling, patient-facing booking, and automated reminders designed for clinics that still relied on phone-only booking.",
-    category: "Web App",
-    tags: ["Next.js", "Supabase", "Twilio", "Tailwind CSS"],
-    image: "/images/work/work-mediconnect.jpg",
-    client: "Multi-doctor clinic group",
+      "Patient booking, reminders, and clinic schedule management so front desks stop relying on paper diaries and ad-hoc calls.",
+    category: "Healthcare",
+    tags: ["Next.js", "FastAPI", "PostgreSQL", "SMS"],
+    image:
+      "/images/work/work-mediconnect.webp",
+    client: "Regional outpatient clinics",
     problem:
-      "Front desk was overwhelmed by inbound calls. No-shows were high because reminders were manual, and doctors could not see a reliable day view of the schedule.",
+      "Double-bookings and no-shows were common. Patients could not self-schedule; staff spent hours confirming appointments by phone.",
     solution:
-      "Patient booking portal with specialty and doctor filters, admin calendar, and Twilio SMS/WhatsApp reminders. Supabase powers auth, scheduling tables, and row-level access for clinic staff.",
+      "Patient-facing booking with slot availability, clinic console for doctors and rooms, and automated SMS reminders before visits.",
     metrics: [
-      { label: "Booking", value: "Self-serve online" },
+      { label: "Booking", value: "Self-serve slots" },
       { label: "Reminders", value: "Automated SMS" },
       { label: "No-shows", value: "Reduced with nudges" },
     ],
@@ -106,7 +114,8 @@ export const portfolioProjects: PortfolioProject[] = [
       "Direct-to-consumer storefront for organic products: subscriptions, inventory-aware catalog, and delivery status for repeat customers.",
     category: "E-Commerce",
     tags: ["Next.js", "Payments", "Sanity CMS", "Vercel"],
-    image: "/images/work/work-greenleaf.jpg",
+    image:
+      "/images/work/greenleaf.jpg",
     client: "GreenLeaf Organics",
     problem:
       "Marketplace commissions eroded margin, and the brand lacked a owned channel for subscriptions and product storytelling.",
@@ -127,7 +136,8 @@ export const portfolioProjects: PortfolioProject[] = [
       "Memberships, class schedules, trainer profiles, and local payment rails for fitness centers that needed more than a static brochure site.",
     category: "SaaS",
     tags: ["React", "FastAPI", "PostgreSQL", "Razorpay"],
-    image: "/images/work/work-urbanfit.jpg",
+    image:
+      "/images/work/urbanfit.jpg",
     client: "UrbanFit Gyms",
     problem:
       "Memberships were tracked offline; class capacity was oversold; payments did not reconcile cleanly with attendance.",

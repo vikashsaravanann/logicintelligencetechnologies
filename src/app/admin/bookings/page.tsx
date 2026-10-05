@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { AdminBackLink } from "../components/AdminBackLink";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import BackToHome from "@/components/ui/back-to-home";
+import { BookingActions } from "./booking-actions";
 
 export const metadata: Metadata = {
   title: "Consultation Bookings | Admin Command Center",
@@ -17,6 +19,7 @@ export default async function AdminBookingsPage() {
 
   return (
     <div className="container mx-auto p-4 py-8 max-w-6xl space-y-8">
+      <BackToHome href="/admin/command-center" label="Back to Command Center" inline />
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-800">
         <div>
           <AdminBackLink />
@@ -31,7 +34,7 @@ export default async function AdminBookingsPage() {
         <Link
           href="/book-consultation"
           target="_blank"
-          className="px-4 py-2 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_15px_rgba(0,191,255,0.3)]"
+          className="px-4 py-2 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all "
         >
           View Public Booking Form
         </Link>
@@ -47,12 +50,13 @@ export default async function AdminBookingsPage() {
                 <th className="p-4">Slot Time</th>
                 <th className="p-4">Status</th>
                 <th className="p-4">Notes</th>
+                <th className="p-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-800">
               {bookings && bookings.length > 0 ? (
                 bookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-white/[0.02] transition-colors">
+                  <tr key={b.id} className="hover:bg-white/[0.02] transition-colors relative">
                     <td className="p-4">
                       <div className="font-bold text-white text-sm">{b.name}</div>
                       <div className="text-xs text-zinc-400">
@@ -72,12 +76,26 @@ export default async function AdminBookingsPage() {
                       </div>
                     </td>
                     <td className="p-4">
-                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        {b.status}
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
+                        b.status === "Completed"
+                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                          : b.status === "Cancelled"
+                          ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                          : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                      }`}>
+                        {b.status || "Scheduled"}
                       </span>
                     </td>
                     <td className="p-4 text-xs text-zinc-400 max-w-xs truncate">
                       {b.notes || "No notes"}
+                    </td>
+                    <td className="p-4 text-right">
+                      <BookingActions 
+                        bookingId={b.id} 
+                        email={b.email} 
+                        name={b.name} 
+                        currentStatus={b.status || "Scheduled"} 
+                      />
                     </td>
                   </tr>
                 ))

@@ -5,7 +5,7 @@ import { COMPANY } from "@/config/company";
 function waHref(): string {
   const n = String(COMPANY.whatsappNumber || "").replace(/\D/g, "");
   const text = encodeURIComponent("Hi LIT — I found you on the website.");
-  return n ? `https://wa.me/${n}?text=${text}` : COMPANY.whatsappGroupUrl || "https://wa.me/919342877474";
+  return n ? `https://wa.me/${n}?text=${text}` : COMPANY.whatsappGroupUrl || "https://wa.me/917550067712";
 }
 
 export default function FloatingWhatsApp() {

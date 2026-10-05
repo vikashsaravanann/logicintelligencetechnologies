@@ -57,7 +57,7 @@
   {
     "id": "contact",
     "query": "How do I contact Logic Intelligence on WhatsApp?",
-    "must_include_any": ["93428", "WhatsApp", "phone"],
+    "must_include_any": ["75500", "WhatsApp", "phone"],
     "expected_sources": ["policy"]
   },
   {
@@ -130,7 +130,7 @@
   {
     "id": "para-team-contact",
     "query": "I want to talk to a human on the team today",
-    "must_include_any": ["93428", "WhatsApp", "email", "support"],
+    "must_include_any": ["75500", "WhatsApp", "email", "support"],
     "expected_sources": ["policy"]
   }
 ]

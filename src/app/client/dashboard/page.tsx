@@ -31,7 +31,7 @@ export default async function ClientDashboardPage() {
       {/* Welcome Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white uppercase tracking-tight">
             Client Workspace
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-1">
@@ -48,7 +48,7 @@ export default async function ClientDashboardPage() {
           </Link>
           <Link
             href="/book-consultation"
-            className="px-4 py-2 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_15px_rgba(0,191,255,0.3)]"
+            className="px-4 py-2 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all "
           >
             Book Review Call
           </Link>
@@ -62,7 +62,7 @@ export default async function ClientDashboardPage() {
             <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Active Projects</span>
             <Briefcase className="w-4 h-4 text-primary" />
           </div>
-          <div className="text-3xl font-black text-white">{activeProjects.length}</div>
+          <div className="text-3xl font-bold text-white">{activeProjects.length}</div>
           <p className="text-[10px] text-zinc-500 mt-1">In active development</p>
         </div>
 
@@ -71,7 +71,7 @@ export default async function ClientDashboardPage() {
             <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Pending Invoices</span>
             <Receipt className="w-4 h-4 text-amber-400" />
           </div>
-          <div className="text-3xl font-black text-white">{pendingInvoices.length}</div>
+          <div className="text-3xl font-bold text-white">{pendingInvoices.length}</div>
           <p className="text-[10px] text-zinc-500 mt-1">Awaiting milestone approval</p>
         </div>
 
@@ -80,7 +80,7 @@ export default async function ClientDashboardPage() {
             <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Open Tickets</span>
             <HelpCircle className="w-4 h-4 text-rose-400" />
           </div>
-          <div className="text-3xl font-black text-white">{openTickets.length}</div>
+          <div className="text-3xl font-bold text-white">{openTickets.length}</div>
           <p className="text-[10px] text-zinc-500 mt-1">Under engineering review</p>
         </div>
 
@@ -89,7 +89,7 @@ export default async function ClientDashboardPage() {
             <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Vault Documents</span>
             <FileText className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-3xl font-black text-white">{files?.length || 0}</div>
+          <div className="text-3xl font-bold text-white">{files?.length || 0}</div>
           <p className="text-[10px] text-zinc-500 mt-1">Encrypted specifications</p>
         </div>
       </div>

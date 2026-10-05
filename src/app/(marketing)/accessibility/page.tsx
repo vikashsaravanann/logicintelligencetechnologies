@@ -14,11 +14,11 @@ export const metadata: Metadata = {
 
 export default function AccessibilityPage() {
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20">
       <BackToHome href="/" label="Back to Home" />
       <div className="max-w-4xl mx-auto px-6">
         <div className="mb-12 border-b border-white/10 pb-8">
-          <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white mb-4">
+          <h1 className="text-3xl sm:text-5xl font-bold uppercase tracking-tight text-white mb-4">
             ACCESSIBILITY STATEMENT
           </h1>
           <p className="text-sm text-zinc-400">

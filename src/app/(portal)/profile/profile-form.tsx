@@ -49,7 +49,7 @@ export default function ProfileForm({
   }
 
   return (
-    <div className="rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-xl p-5 sm:p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+    <div className="rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-md p-5 sm:p-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="pb-4 border-b border-white/10">
           <h2 className="text-lg font-semibold text-white tracking-tight">Personal details</h2>
@@ -99,7 +99,7 @@ export default function ProfileForm({
               type="tel"
               name="phoneNumber"
               defaultValue={initialPhoneNumber}
-              placeholder="+91 93428 77474"
+              placeholder="+91 75500 67712"
               className={fieldClass}
             />
           </div>

@@ -49,7 +49,7 @@ export default async function AnalyticsPage() {
           <div key={s.label} className={`p-5 rounded-2xl bg-white/5 border ${s.color.split(" ")[1]} flex flex-col gap-3`}>
             <s.icon className={`w-5 h-5 ${s.color.split(" ")[0]}`} />
             <div>
-              <p className="text-2xl font-black text-white">{s.value}</p>
+              <p className="text-2xl font-bold text-white">{s.value}</p>
               <p className="text-xs text-zinc-500 mt-0.5">{s.label}</p>
             </div>
           </div>

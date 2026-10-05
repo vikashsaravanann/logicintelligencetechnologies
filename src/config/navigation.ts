@@ -1,10 +1,13 @@
 /**
  * Central navigation model for Logic Intelligence Technologies.
+ * Products: AI Agent · AI Voice Agent · VoiceShield
+ * /ai = AI Agent interactive assistant experience (not a fourth product).
  */
 export type NavItem = {
   href: string;
   label: string;
   description?: string;
+  highlight?: boolean;
 };
 
 export type NavGroup = {
@@ -16,10 +19,12 @@ export type NavGroup = {
 /** Always-visible desktop primary links. */
 export const PRIMARY_NAV: NavItem[] = [
   { href: "/", label: "HOME" },
+  { href: "/products/logic-voice", label: "LOGIC VOICE" },
+  { href: "/voice-shield", label: "VOICESHIELD" },
+  { href: "/products", label: "PRODUCTS" },
   { href: "/services", label: "SOLUTIONS" },
   { href: "/industries", label: "INDUSTRIES" },
   { href: "/work", label: "WORK" },
-  { href: "/resources", label: "RESOURCES" },
   { href: "/about", label: "COMPANY" },
   { href: "/contact", label: "CONTACT" },
 ];
@@ -29,61 +34,75 @@ export const PRIMARY_CTA: NavItem = {
   label: "BOOK A CONSULTATION",
 };
 
-/**
- * More menu — secondary destinations only.
- * Do NOT repeat PRIMARY_NAV hrefs (/about, /work, /resources, /contact).
- * Do NOT repeat header auth (login / profile) — handled by AuthNavControl.
- */
 export const MORE_NAV_GROUPS: NavGroup[] = [
   {
     id: "company",
     label: "COMPANY",
     items: [
-      { href: "/about/founder", label: "FOUNDER", description: "VIKASH SARAVANAN PROFILE" },
+      { href: "/about/founder", label: "FOUNDER", description: "VIKASH SARAVANAN PROFILE", highlight: true },
       { href: "/expertise", label: "TECHNICAL EXPERTISE", description: "ENGINEERING CAPABILITIES" },
-      { href: "/careers", label: "CAREERS", description: "CULTURE AND OPEN PATHS" },
-      { href: "/jobs", label: "LEADERSHIP JOBS", description: "CEO AND DIRECTOR SEATS" },
+      { href: "/careers", label: "CAREERS", description: "CULTURE AND OPEN PATHS", highlight: true },
+      { href: "/jobs", label: "LEADERSHIP JOBS", description: "CEO AND DIRECTOR SEATS", highlight: true },
       { href: "/press", label: "PRESS", description: "MEDIA AND BRAND ASSETS" },
       { href: "/investors", label: "INVESTORS", description: "PARTNERSHIP OVERVIEW" },
     ],
   },
   {
-    id: "resources",
-    label: "RESOURCES",
+    id: "products",
+    label: "PRODUCTS",
     items: [
-      { href: "/blog", label: "BLOG", description: "ENGINEERING AND PRODUCT NOTES" },
-      { href: "/certifications", label: "CERTIFICATIONS", description: "VERIFIED CREDENTIALS" },
-      { href: "/checklist", label: "WEBSITE CHECKLIST", description: "PRODUCTION QA FRAMEWORK" },
-      { href: "/packages", label: "PACKAGES", description: "FIXED-SCOPE OFFERINGS" },
+      {
+        href: "/products/logic-voice",
+        label: "LOGIC VOICE",
+        description: "VOICE-FIRST PERSONAL AI ASSISTANT",
+        highlight: true,
+      },
+      {
+        href: "/voice-shield",
+        label: "VOICESHIELD",
+        description: "AI VOICE SECURITY & RISK INTELLIGENCE",
+        highlight: true,
+      },
+      {
+        href: "/products",
+        label: "ALL PRODUCTS",
+        description: "INTELLIGENT AI PRODUCTS OVERVIEW",
+      },
+      {
+        href: "/ai",
+        label: "AI ASSISTANT",
+        description: "INTERACTIVE AI ASSISTANT EXPERIENCE",
+      },
+      {
+        href: "/pricing",
+        label: "PRICING",
+        description: "COMMERCIAL PLANS USD / INR",
+      },
+      {
+        href: "/knowledge-base",
+        label: "KNOWLEDGE BASE",
+        description: "ASSISTANT KNOWLEDGE HUB",
+      },
+      {
+        href: "/ai-discovery",
+        label: "AI DISCOVERY",
+        description: "DISCOVERY WORKSHOP",
+      },
+      {
+        href: "/ai-ethics",
+        label: "AI ETHICS",
+        description: "RESPONSIBLE AI PRINCIPLES",
+      },
     ],
   },
   {
-    id: "tools",
-    label: "TOOLS",
+    id: "engage",
+    label: "ENGAGE",
     items: [
-      { href: "/ai", label: "AI ASSISTANT", description: "COMPANY KNOWLEDGE WORKSPACE" },
-      { href: "/discovery", label: "DISCOVERY", description: "START A STRUCTURED DISCOVERY" },
-      { href: "/free-demo", label: "FREE DEMO", description: "REQUEST A WORKING DIRECTION" },
-    ],
-  },
-  {
-    id: "support",
-    label: "SUPPORT",
-    items: [
-      { href: "/support", label: "CUSTOMER SUPPORT", description: "TICKETS AND HELP" },
-    ],
-  },
-  {
-    id: "legal",
-    label: "LEGAL",
-    items: [
-      { href: "/privacy", label: "PRIVACY" },
-      { href: "/terms", label: "TERMS" },
-      { href: "/refund-policy", label: "REFUND POLICY" },
-      { href: "/cookie-policy", label: "COOKIE POLICY" },
-      { href: "/accessibility", label: "ACCESSIBILITY" },
+      { href: "/free-demo", label: "FREE DEMO", description: "SEE THE WORK BEFORE PAYMENT" },
+      { href: "/book-consultation", label: "BOOK CONSULTATION", description: "SCHEDULE A CALL" },
+      { href: "/support", label: "SUPPORT", description: "HELP AND TICKETS" },
+      { href: "/checklist", label: "CHECKLIST", description: "PROJECT READINESS" },
     ],
   },
 ];
-
-export const MORE_NAV_FLAT: NavItem[] = MORE_NAV_GROUPS.flatMap((g) => g.items);

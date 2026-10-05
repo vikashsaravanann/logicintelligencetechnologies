@@ -24,9 +24,9 @@ export function BillingTab({ invoices }: { invoices: any[] }) {
     return (
       <motion.div 
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col items-center justify-center min-h-[320px] p-10 text-center border rounded-3xl bg-white/[0.05] border-white/15 backdrop-blur-xl"
+        className="flex flex-col items-center justify-center min-h-[320px] p-10 text-center border rounded-3xl bg-white/[0.05] border-white/15 backdrop-blur-md"
       >
-        <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(0,191,255,0.2)]">
+        <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mb-6 ">
           <Receipt className="w-10 h-10 text-cyan-400" />
         </div>
         <h3 className="text-2xl font-bold text-white mb-3">No Invoices</h3>
@@ -48,7 +48,7 @@ export function BillingTab({ invoices }: { invoices: any[] }) {
         <motion.div 
           key={invoice.id}
           variants={itemVariants}
-          className="flex flex-col sm:flex-row items-center justify-between p-6 rounded-2xl border border-white/[0.08] bg-[rgba(10,15,30,0.6)] backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.3),inset_0_0_80px_rgba(255,255,255,0.02)] gap-6 hover:border-white/[0.15] hover:shadow-[0_10px_40px_rgba(0,191,255,0.15)] transition-all duration-300"
+          className="flex flex-col sm:flex-row items-center justify-between p-6 rounded-2xl border border-white/[0.08] bg-[rgba(10,15,30,0.6)] backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.3),inset_0_0_80px_rgba(255,255,255,0.02)] gap-6 hover:border-white/[0.15] hover:shadow-[0_10px_40px_rgba(69,217,210,0.15)] transition-all duration-300"
         >
           <div className="flex items-center gap-5 w-full sm:w-auto">
             <div className={`p-4 rounded-xl shadow-inner ${invoice.status === 'Paid' ? 'bg-emerald-500/10 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]' : 'bg-orange-500/10 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.15)]'}`}>
@@ -64,7 +64,7 @@ export function BillingTab({ invoices }: { invoices: any[] }) {
           
           <div className="flex items-center gap-8 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 border-white/5 pt-4 sm:pt-0">
             <div className="text-left sm:text-right">
-              <p className="text-2xl font-black text-white tracking-tight mb-1">${Number(invoice.amount).toFixed(2)}</p>
+              <p className="text-2xl font-bold text-white tracking-tight mb-1">${Number(invoice.amount).toFixed(2)}</p>
               <p className={`text-[10px] font-bold uppercase tracking-widest ${invoice.status === 'Paid' ? 'text-emerald-400' : 'text-orange-400'}`}>
                 {invoice.status}
               </p>
@@ -83,7 +83,7 @@ export function BillingTab({ invoices }: { invoices: any[] }) {
                 a.click();
                 URL.revokeObjectURL(url);
               }}
-              className="p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-blue-500/20 hover:border-blue-500/40 text-zinc-400 hover:text-cyan-400 transition-all hover:shadow-[0_0_15px_rgba(0,191,255,0.2)]"
+              className="p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-blue-500/20 hover:border-blue-500/40 text-zinc-400 hover:text-cyan-400 transition-all hover:"
               title="Download invoice summary"
               aria-label="Download invoice summary"
             >

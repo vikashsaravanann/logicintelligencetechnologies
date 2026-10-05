@@ -20,10 +20,10 @@ export async function GET(request: NextRequest) {
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-            backgroundColor: "#060B18",
+            backgroundColor: "#0A1530",
             padding: "60px 80px",
             fontFamily: "sans-serif",
-            backgroundImage: "radial-gradient(circle at 80% 20%, rgba(0, 191, 255, 0.15) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(123, 47, 190, 0.15) 0%, transparent 50%)",
+            backgroundImage: "radial-gradient(circle at 80% 20%, rgba(69,217,210, 0.15) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(8,148,222, 0.15) 0%, transparent 50%)",
             border: "1px solid rgba(255, 255, 255, 0.1)",
           }}
         >
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
                   width: "48px",
                   height: "48px",
                   borderRadius: "12px",
-                  backgroundColor: "#00BFFF",
+                  backgroundColor: "#45D9D2",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -58,11 +58,11 @@ export async function GET(request: NextRequest) {
 
             <div
               style={{
-                backgroundColor: "rgba(0, 191, 255, 0.1)",
-                border: "1px solid rgba(0, 191, 255, 0.3)",
+                backgroundColor: "rgba(69,217,210, 0.1)",
+                border: "1px solid rgba(69,217,210, 0.3)",
                 padding: "8px 20px",
                 borderRadius: "30px",
-                color: "#00BFFF",
+                color: "#45D9D2",
                 fontSize: "12px",
                 fontWeight: "700",
                 letterSpacing: "2px",

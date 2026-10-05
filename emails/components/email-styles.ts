@@ -1,25 +1,25 @@
-/** Shared email design tokens — white, corporate, email-client safe */
+/** Shared email design tokens — Highly Professional PDF-like layout */
 export const EMAIL = {
-  width: 640,
+  width: 680, // Slightly wider for a more professional document look
   logoUrl: "https://www.logicintelligencetechnologies.in/assets/logo-icon.jpg",
   siteUrl: "https://www.logicintelligencetechnologies.in",
   company: "Logic Intelligence Technologies",
   colors: {
-    pageBg: "#ffffff",
-    cardBg: "#ffffff",
-    text: "#111827",
+    pageBg: "#F5F1E7", // Sandal/Parchment background like a PDF document
+    cardBg: "#FFFFFF", // Crisp white for the document body
+    text: "#111827", // Almost black for high contrast reading
     body: "#374151",
-    muted: "#6b7280",
-    faint: "#9ca3af",
-    border: "#e5e7eb",
-    divider: "#e5e7eb",
-    ctaBg: "#0ea5e9",
-    ctaText: "#ffffff",
-    link: "#0284c7",
-    softBg: "#f9fafb",
-    alertBg: "#fef2f2",
-    alertText: "#991b1b",
+    muted: "#6B7280",
+    faint: "#9CA3AF",
+    border: "#E5E7EB",
+    divider: "#E5E7EB",
+    ctaBg: "#111827", // Professional dark button
+    ctaText: "#FFFFFF",
+    link: "#2563EB",
+    softBg: "#F9FAFB",
+    alertBg: "#FEF2F2",
+    alertText: "#991B1B",
   },
-  font:
-    'Arial, Helvetica, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  font: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontMono: '"JetBrains Mono", Consolas, Menlo, Monaco, monospace',
 } as const;

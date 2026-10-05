@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { Users, Search, ArrowRight, ShieldCheck, Filter } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: "CRM Leads Ledger | Admin Command Center",
@@ -17,6 +18,7 @@ export default async function AdminLeadsPage() {
 
   return (
     <div className="container mx-auto p-4 py-8 max-w-6xl space-y-8">
+      <BackToHome href="/admin/command-center" label="Back to Command Center" inline />
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-800">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white mb-1">
@@ -26,13 +28,6 @@ export default async function AdminLeadsPage() {
             Centralized registry of contact inquiries, demo requests, and calculated intent scores.
           </p>
         </div>
-
-        <Link
-          href="/admin/command-center"
-          className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs uppercase tracking-wider transition-all"
-        >
-          Command Center
-        </Link>
       </div>
 
       <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 overflow-hidden">

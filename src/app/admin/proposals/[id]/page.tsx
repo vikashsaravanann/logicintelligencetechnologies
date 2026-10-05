@@ -47,7 +47,7 @@ export default async function AdminProposalDetailPage({ params }: Props) {
         <Link
           href={`/proposal/${proposal.secure_token}`}
           target="_blank"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_15px_rgba(0,191,255,0.3)]"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all "
         >
           <span>Open Public Link</span>
           <ArrowRight className="w-4 h-4" />
@@ -57,14 +57,14 @@ export default async function AdminProposalDetailPage({ params }: Props) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="p-6 rounded-2xl border border-neutral-800 bg-neutral-900/50">
           <span className="text-xs text-zinc-500 font-bold uppercase block mb-1">Investment</span>
-          <span className="text-2xl font-black text-white">
+          <span className="text-2xl font-bold text-white">
             {proposal.currency === "INR" ? "₹" : "$"}{Number(proposal.pricing).toLocaleString()}
           </span>
         </div>
 
         <div className="p-6 rounded-2xl border border-neutral-800 bg-neutral-900/50">
           <span className="text-xs text-zinc-500 font-bold uppercase block mb-1">Timeline</span>
-          <span className="text-2xl font-black text-white">{proposal.timeline}</span>
+          <span className="text-2xl font-bold text-white">{proposal.timeline}</span>
         </div>
 
         <div className="p-6 rounded-2xl border border-neutral-800 bg-neutral-900/50">

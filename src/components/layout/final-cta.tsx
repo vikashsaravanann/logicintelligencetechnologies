@@ -26,7 +26,7 @@ export function FinalCTA({
   return (
     <section className={cn("py-20 sm:py-28 relative overflow-hidden", className)}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/40 via-[#0a1128]/80 to-[#050814] p-8 sm:p-12 md:p-16 shadow-[0_24px_80px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur-xl overflow-hidden">
+        <div className="relative rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/40 via-[#0a1128]/80 to-[#050814] p-8 sm:p-12 md:p-16 shadow-[0_24px_80px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur-md overflow-hidden">
           {/* Subtle background glow */}
           <div className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full bg-cyan-500/15 blur-[100px]" />
           <div className="pointer-events-none absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-blue-600/15 blur-[100px]" />
@@ -37,7 +37,7 @@ export function FinalCTA({
               Direct Engineering Consultation
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight">
               {title}
             </h2>
 
@@ -48,7 +48,7 @@ export function FinalCTA({
             <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
               <Link
                 href={primaryHref}
-                className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 active:scale-[0.98] transition-all shadow-[0_4px_20px_rgba(6,182,212,0.3)] text-sm uppercase tracking-wider"
+                className="inline-flex items-center justify-center gap-2.5 h-12 px-6 rounded-xl font-bold  bg-primary text-[#0D1B3E] hover:bg-[#6DE6E0]  active:scale-[0.98] transition-all shadow-[0_4px_20px_rgba(6,182,212,0.3)] text-sm uppercase tracking-wider"
               >
                 <Calendar className="w-4 h-4" />
                 <span>{primaryLabel}</span>

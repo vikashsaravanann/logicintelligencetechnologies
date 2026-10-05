@@ -22,7 +22,8 @@
     "audit:visuals": "node scripts/audit-visuals.mjs",
     "eval:rag": "node scripts/eval-rag-golden.mjs",
     "seed:knowledge": "node scripts/seed-knowledge.mjs",
-    "backfill:embeddings": "node scripts/backfill-embeddings.mjs"
+    "backfill:embeddings": "node scripts/backfill-embeddings.mjs",
+    "prebuild": "node scripts/decode-founder-images.cjs"
   },
   "dependencies": {
     "@gradio/client": "^2.5.1",
@@ -33,6 +34,7 @@
     "@supabase/auth-helpers-nextjs": "^0.8.7",
     "@supabase/supabase-js": "^2.112.4",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@upstash/redis": "^1.38.4",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "class-variance-authority": "^0.7.1",

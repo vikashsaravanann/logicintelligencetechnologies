@@ -77,7 +77,7 @@ const rows = [
     source_id: "free-demo",
     title: "Free demo policy",
     content:
-      "Free demo when scope fits — see direction before payment. Start at /free-demo or WhatsApp +91 93428 77474.",
+      "Free demo when scope fits — see direction before payment. Start at /free-demo or WhatsApp +91 75500 67712.",
     is_price_constrained: false,
     metadata: {},
   },
@@ -104,7 +104,7 @@ const rows = [
     source_id: "contact",
     title: "Contact",
     content:
-      "WhatsApp/Phone +91 93428 77474. Email support@logicintelligencetechnologies.in. Coimbatore, Tamil Nadu, India.",
+      "WhatsApp/Phone +91 75500 67712. Email support@logicintelligencetechnologies.in. Coimbatore, Tamil Nadu, India.",
     is_price_constrained: false,
     metadata: {},
   },

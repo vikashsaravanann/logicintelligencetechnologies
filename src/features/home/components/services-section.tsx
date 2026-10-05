@@ -1,140 +1,157 @@
 "use client";
+
 import { motion } from "framer-motion";
-import { Monitor, Code, ArrowRight, ShoppingCart, Brain } from "lucide-react";
+import {
+  ArrowRight,
+  ExternalLink,
+  Shield,
+  Mic,
+  Sparkles,
+} from "lucide-react";
 import Link from "next/link";
 
-export default function ServicesSection() {
-  const services = [
-    {
-      title: "Full Stack Web Development",
-      description: "Custom websites and web apps built from scratch — scoped to your business, not a template.",
-      icon: Monitor,
-      features: ["Custom front-end design", "Back-end & database setup", "API integrations", "Deployment & hosting setup", "Post-launch support"],
-      link: "/contact?service=full-stack",
-      accent: "from-blue-500/20 to-cyan-500/20",
-      borderHover: "group-hover:border-blue-500/50",
-      shadowHover: "group-hover:shadow-[0_0_40px_rgba(59,130,246,0.3)]",
-      iconColor: "text-blue-400"
-    },
-    {
-      title: "E-Commerce Websites",
-      description: "Online stores with secure checkout, inventory tools, and admin dashboards you can actually use.",
-      icon: ShoppingCart,
-      features: ["Custom storefront design", "Secure payment gateways", "Inventory management system", "Admin dashboard", "Mobile shopping optimized"],
-      link: "/contact?service=ecommerce",
-      accent: "from-purple-500/20 to-pink-500/20",
-      borderHover: "group-hover:border-purple-500/50",
-      shadowHover: "group-hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]",
-      iconColor: "text-purple-400"
-    },
-    {
-      title: "Custom Software Development",
-      description: "CRMs, booking systems, and internal tools designed around how your team already works.",
-      icon: Code,
-      features: ["Requirement analysis", "Custom CRM / ERP builds", "Workflow automation", "Secure data architecture", "Ongoing maintenance"],
-      link: "/contact?service=software",
-      accent: "from-emerald-500/20 to-teal-500/20",
-      borderHover: "group-hover:border-emerald-500/50",
-      shadowHover: "group-hover:shadow-[0_0_40px_rgba(16,185,129,0.3)]",
-      iconColor: "text-emerald-400"
-    },
-    {
-      title: "AI-Powered Solutions",
-      description: "Practical AI features — chatbots, dashboards, and automations — integrated into your existing product or workflow.",
-      icon: Brain,
-      features: ["AI chatbot integration", "Data dashboards & analytics", "ML-powered features", "Automation workflows", "API integration with AI models"],
-      link: "/contact?service=ai-solutions",
-      accent: "from-amber-500/20 to-orange-500/20",
-      borderHover: "group-hover:border-amber-500/50",
-      shadowHover: "group-hover:shadow-[0_0_40px_rgba(245,158,11,0.3)]",
-      iconColor: "text-amber-400"
-    }
-  ];
+/**
+ * Homepage product band — two launched flagship products of Logic Intelligence Technologies:
+ * 1. Logic Voice (AI Voice Assistant / Personal AI Assistant)
+ * 2. VoiceShield (Voice Security & Risk Intelligence)
+ */
+const PRODUCTS = [
+  {
+    id: "logic-voice",
+    name: "Logic Voice",
+    badge: "AI Voice Assistant",
+    href: "/products/logic-voice",
+    liveHref: "https://logicvoice.logicintelligencetechnologies.in/",
+    cta: "Explore Logic Voice",
+    liveCta: "Launch Live Product",
+    icon: Mic,
+    description:
+      "A voice-first personal AI assistant developed by Logic Intelligence Technologies, designed to let users interact naturally through speech, understanding, reasoning, planning, and executing approved tools under explicit authorization.",
+    capabilities: [
+      "Voice-first speech recognition and natural speech understanding",
+      "Contextual reasoning, multi-step planning, and intelligent automation",
+      "Approved tool execution with confirmations for sensitive actions",
+      "Direction toward a personal AI operating system interface",
+    ],
+    suited: "Personal productivity, voice-driven workflows, intelligent automation",
+    accent: "text-[#45D9D2]",
+    accentBg: "bg-[#45D9D2]/10 border-[#45D9D2]/25",
+  },
+  {
+    id: "voice-shield",
+    name: "VoiceShield",
+    badge: "Voice Security & Risk",
+    href: "/voice-shield",
+    liveHref: "https://voiceshield.logicintelligencetechnologies.in/",
+    cta: "Explore VoiceShield",
+    liveCta: "VoiceShield Platform",
+    icon: Shield,
+    description:
+      "A voice-security and voice-risk intelligence product developed by Logic Intelligence Technologies, designed to analyze voice interactions and produce structured intelligence around security, fraud, and compliance-related signals.",
+    capabilities: [
+      "Real-time acoustic analysis and synthetic speech anomaly indicators",
+      "Deterministic detection path without an LLM in the hot loop",
+      "Async forensic review lab for transcription and structured evidence",
+      "API-first architecture for high-volume enterprise telephony environments",
+    ],
+    suited:
+      "BPOs, contact centres, financial services, telecom, enterprise fraud teams",
+    accent: "text-[#3DB1EA]",
+    accentBg: "bg-[#0894DE]/10 border-[#0894DE]/30",
+  },
+] as const;
 
+export default function ServicesSection() {
   return (
-    <section id="services" className="relative py-20 md:py-32 bg-[#0A0F1E] overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-      <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.02] mix-blend-overlay pointer-events-none" />
-      
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-20">
-          <motion.div
-            initial={{ opacity: 1, y: 0 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            className="flex items-center justify-center gap-2 mb-6"
+    <section
+      id="products"
+      className="relative py-20 md:py-28 overflow-hidden border-t border-white/[0.06]"
+      aria-labelledby="home-products-heading"
+    >
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 relative z-10">
+        <div className="mb-14 md:mb-16 max-w-3xl">
+          <p className="lit-eyebrow mb-5">Flagship Products</p>
+          <h2
+            id="home-products-heading"
+            className="font-display text-[clamp(1.75rem,1.2rem+2.4vw,3rem)] font-bold text-white tracking-tight leading-[1.1] mb-5 uppercase"
           >
-            <span className="h-px w-8 bg-white/20" />
-            <span className="text-sm font-bold tracking-[0.2em] uppercase text-primary">Our Expertise</span>
-            <span className="h-px w-8 bg-white/20" />
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 1, y: 0 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ delay: 0.1 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-black text-white tracking-tight mb-6"
-          >
-            Comprehensive Digital <br />
-            <span className="text-white opacity-90 font-light">Solutions for Real Businesses</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 1, y: 0 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ delay: 0.2 }}
-            className="text-zinc-400 max-w-2xl mx-auto text-lg leading-relaxed"
-          >
-            From storefronts and booking systems to AI chatbots and custom software — pick a service or tell us what you need on a free demo call.
-          </motion.p>
+            Two Launched Products.{" "}
+            <span className="text-primary">One Company.</span>
+          </h2>
+          <p className="text-zinc-300 text-base sm:text-lg leading-relaxed">
+            Logic Intelligence Technologies develops intelligent AI products and automation solutions.
+            Our two launched products operate independently with dedicated architectures.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {services.map((service, index) => (
-            <motion.div
-              key={service.title}
-              initial={{ opacity: 1, y: 0 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.35, delay: index * 0.1  }}
-              className={`group relative bg-[#12172B]/80 backdrop-blur-xl border border-white/5 rounded-[2rem] p-8 md:p-6 md:p-10 transition-all duration-500 overflow-hidden flex flex-col h-full hover:-translate-y-2 ${service.borderHover} ${service.shadowHover}`}
-            >
-              {/* Unique gradient hover effect */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${service.accent} opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none`} />
-              
-              <div className="relative z-10 flex-grow">
-                <div className={`w-16 h-16 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 shadow-inner group-hover:border-white/20`}>
-                  <service.icon className={`w-8 h-8 ${service.iconColor} transition-transform duration-500 group-hover:scale-110`} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
+          {PRODUCTS.map((p, i) => {
+            const Icon = p.icon;
+            return (
+              <motion.article
+                key={p.id}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.45, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="lit-card lit-card-interactive group relative flex h-full flex-col justify-between p-6 sm:p-8 lg:p-9"
+              >
+                <div className="flex-grow">
+                  <div className="flex items-center justify-between gap-3 mb-7">
+                    <div className={`flex h-12 w-12 items-center justify-center rounded-xl border ${p.accentBg}`}>
+                      <Icon className={`h-6 w-6 ${p.accent}`} aria-hidden />
+                    </div>
+                    <span className="rounded-full border border-white/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-300">
+                      {p.badge}
+                    </span>
+                  </div>
+
+                  <h3 className="font-display text-3xl font-bold text-white mb-4 tracking-tight">
+                    {p.name}
+                  </h3>
+                  <p className="text-sm sm:text-[15px] leading-relaxed mb-8 text-zinc-300">
+                    {p.description}
+                  </p>
+
+                  <h4 className={`text-[11px] font-semibold uppercase tracking-[0.16em] mb-4 ${p.accent}`}>
+                    Core capabilities
+                  </h4>
+                  <ul className="space-y-3 mb-7">
+                    {p.capabilities.map((c) => (
+                      <li key={c} className="flex gap-3 items-start">
+                        <Sparkles className={`w-4 h-4 mt-0.5 shrink-0 ${p.accent}`} aria-hidden />
+                        <span className="text-sm text-zinc-200">{c}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <h4 className={`text-[11px] font-semibold uppercase tracking-[0.16em] mb-2 ${p.accent}`}>
+                    Best suited for
+                  </h4>
+                  <p className="text-sm text-zinc-400">{p.suited}</p>
                 </div>
-                
-                <h3 className="text-2xl font-black text-white mb-4 tracking-tight leading-tight">
-                  {service.title}
-                </h3>
-                
-                <p className="text-sm text-zinc-400 leading-relaxed mb-8 font-medium border-b border-white/10 pb-6">
-                  {service.description}
-                </p>
 
-                <h4 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4">What's Included</h4>
-                <ul className="space-y-3 mb-8">
-                  {service.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-sm font-medium text-zinc-300">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                      <span className="leading-tight">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="relative z-10 mt-auto pt-6 border-t border-white/5">
-                <Link href={service.link} className="inline-flex items-center justify-center w-full gap-2 text-sm font-bold text-white bg-white/5 border border-white/10 rounded-xl py-3 group-hover:bg-primary group-hover:text-black group-hover:border-primary transition-all duration-300 shadow-lg">
-                  Get This Service
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
-            </motion.div>
-          ))}
+                <div className="mt-9 pt-6 border-t border-white/10 space-y-2">
+                  <a
+                    href={p.liveHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="lit-btn lit-btn-lg lit-btn-primary w-full"
+                  >
+                    <span>{p.liveCta}</span>
+                    <ExternalLink className="w-4 h-4" aria-hidden />
+                    <span className="sr-only"> (opens in a new tab)</span>
+                  </a>
+                  <Link
+                    href={p.href}
+                    className="flex min-h-[44px] items-center justify-center text-xs font-mono tracking-wider uppercase text-zinc-300 hover:text-primary transition-colors"
+                  >
+                    {p.cta} Specifications →
+                  </Link>
+                </div>
+              </motion.article>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -28,7 +28,7 @@ export default async function TicketDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20">
       <div className="max-w-4xl mx-auto px-6 space-y-8">
         <div>
           <BackButton fallbackHref="/support" label="Back to Support" inline />
@@ -45,8 +45,8 @@ export default async function TicketDetailPage({ params }: Props) {
             <span
               className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider self-start sm:self-auto ${
                 ticket.status === "Open"
-                  ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
-                  : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                  ? "bg-accent/20 text-accent border border-accent/30"
+                  : "bg-primary/20 text-primary border border-primary/30"
               }`}
             >
               {ticket.status}
@@ -64,7 +64,7 @@ export default async function TicketDetailPage({ params }: Props) {
 
           <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-zinc-400 gap-2">
             <span>Opened: {new Date(ticket.created_at).toLocaleString()}</span>
-            <span className="text-emerald-400 flex items-center gap-1">
+            <span className="text-primary flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Assigned to On-Call Architect</span>
             </span>

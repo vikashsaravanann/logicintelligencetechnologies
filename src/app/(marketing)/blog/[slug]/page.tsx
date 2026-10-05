@@ -44,7 +44,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const relatedPosts = blogPosts.filter((p) => p.slug !== slug).slice(0, 2);
 
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white pb-24 relative selection:bg-primary/30 pt-28">
+    <main className="min-h-screen bg-transparent text-white pb-24 relative selection:bg-primary/30 pt-28">
       <BackToHome href="/blog" label="Back to Blog" />
       <div className="max-w-4xl mx-auto px-6 lg:px-8 relative z-10">
 
@@ -66,7 +66,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </div>
 
         {/* Headline */}
-        <h1 className="uppercase text-3xl sm:text-4xl md:text-5xl font-black text-white mb-6 leading-[1.15] tracking-tight">
+        <h1 className="uppercase text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6 leading-[1.15] tracking-tight">
           {post.title}
         </h1>
 
@@ -75,7 +75,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </p>
 
         {/* Featured Visual Image */}
-        <div className="w-full aspect-[16/9] relative rounded-3xl overflow-hidden mb-12 border border-white/10 shadow-2xl bg-black/50">
+        <div className="w-full aspect-[16/9] relative rounded-3xl overflow-hidden mb-12 border border-white/10 shadow-2xl bg-[#0A1530]/50">
           <SafeImage
             src={post.image}
             alt={post.title}

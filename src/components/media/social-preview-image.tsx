@@ -37,7 +37,7 @@ export function SocialPreviewImage({
       </div>
 
       <div className="space-y-3 max-w-2xl">
-        <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
           {title}
         </h2>
         {subtitle && (

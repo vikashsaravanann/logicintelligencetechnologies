@@ -21,8 +21,8 @@ export default function CodeBlock({ language, code }: { language: string; code: 
   return (
     <div className="relative my-2.5 rounded-xl overflow-hidden border border-white/10 bg-[#0b1220]">
       {/* Header bar */}
-      <div className="flex items-center justify-between px-3.5 py-2 border-b border-white/[0.07] bg-black/30">
-        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-300/80 select-none">
+      <div className="flex items-center justify-between px-3.5 py-2 border-b border-white/[0.07] bg-[#0A1530]/30">
+        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-accent/80 select-none">
           {language}
         </span>
         <button
@@ -33,8 +33,8 @@ export default function CodeBlock({ language, code }: { language: string; code: 
         >
           {copied ? (
             <>
-              <Check className="w-3 h-3 text-emerald-400" />
-              <span className="text-emerald-400">Copied</span>
+              <Check className="w-3 h-3 text-primary" />
+              <span className="text-primary">Copied</span>
             </>
           ) : (
             <>

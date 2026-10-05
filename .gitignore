@@ -70,3 +70,4 @@ proxy_*
 .vscode/
 *.pid
 .supabase/
+local_pdfs/

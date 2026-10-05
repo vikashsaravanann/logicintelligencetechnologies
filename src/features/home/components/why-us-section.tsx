@@ -27,9 +27,9 @@ export default function WhyUsSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#0A0F1E] relative overflow-hidden">
+    <section className="py-16 md:py-24 bg-transparent relative overflow-hidden">
       {/* Background blueprint/grid styling */}
-      <div className="absolute inset-0 bg-[url('https://res.cloudinary.com/dbuznxrrm/image/upload/v1704285811/grid-pattern_q5aocu.svg')] opacity-5" />
+      <div className="absolute inset-0 bg-[none] opacity-5" />
       <div className="absolute right-0 top-0 w-1/2 h-full opacity-10 pointer-events-none">
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full stroke-primary" strokeWidth="0.5" fill="none">
           <path d="M0,100 L20,80 L20,20 L40,0 L60,20 L60,60 L80,40 L100,60" />
@@ -50,7 +50,7 @@ export default function WhyUsSection() {
           >
             <div>
               <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">Digital Infrastructure</span>
-              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight">
+              <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight">
                 Why businesses <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">choose us.</span>
               </h2>
@@ -68,7 +68,7 @@ export default function WhyUsSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ delay: i * 0.1 }}
-                  className="flex items-start gap-4 p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-primary/30 transition-colors"
+                  className="flex items-start gap-4 p-4 rounded-2xl bg-[#0A1530]/40 border border-white/5 hover:border-primary/30 transition-colors"
                 >
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                     <point.icon className="w-5 h-5 text-primary" />
@@ -86,26 +86,26 @@ export default function WhyUsSection() {
             initial={{ opacity: 1, y: 0 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
-            className="relative h-[500px] w-full lg:h-[600px] rounded-2xl border border-primary/20 bg-black/40 overflow-hidden backdrop-blur-sm"
+            className="relative h-[500px] w-full lg:h-[600px] rounded-2xl border border-primary/20 bg-[#0A1530]/40 overflow-hidden backdrop-blur-sm"
           >
             <div className="absolute inset-0 flex items-center justify-center flex-col">
-              <Server className="w-24 h-24 text-primary/40 mb-8 animate-pulse" />
+              <Server className="w-24 h-24 text-primary/40 mb-8" />
               <div className="space-y-4 w-3/4">
                 <div className="h-2 w-full bg-primary/10 rounded overflow-hidden">
-                  <div className="h-full bg-primary w-2/3 animate-[pulse_2s_ease-in-out_infinite]" />
+                  <div className="h-full bg-primary w-2/3 " />
                 </div>
                 <div className="h-2 w-full bg-primary/10 rounded overflow-hidden">
-                  <div className="h-full bg-primary/60 w-4/5 animate-[pulse_3s_ease-in-out_infinite]" />
+                  <div className="h-full bg-primary/60 w-4/5 " />
                 </div>
                 <div className="h-2 w-full bg-primary/10 rounded overflow-hidden">
-                  <div className="h-full bg-accent/80 w-1/2 animate-[pulse_2.5s_ease-in-out_infinite]" />
+                  <div className="h-full bg-accent/80 w-1/2 " />
                 </div>
               </div>
             </div>
             
-            <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md flex items-center justify-between">
+            <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl border border-white/10 bg-[#0A1530]/60 backdrop-blur-md flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                <div className="w-3 h-3 rounded-full bg-primary" />
                 <span className="text-xs font-mono text-zinc-300">System Status: Online</span>
               </div>
               <span className="text-xs font-mono text-primary">100% Uptime Architecture</span>

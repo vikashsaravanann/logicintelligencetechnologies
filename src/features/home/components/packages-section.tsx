@@ -12,7 +12,7 @@ export default function PackagesSection() {
   return (
     <section
       id="packages"
-      className="py-16 md:py-24 bg-[#0A0F1E] relative border-t border-white/5"
+      className="py-16 md:py-24 bg-transparent relative border-t border-white/5"
     >
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-primary/5 blur-[120px] rounded-full pointer-events-none"
@@ -24,37 +24,37 @@ export default function PackagesSection() {
           <h2 className="text-primary font-bold tracking-[0.2em] uppercase text-sm mb-4">
             Our Service Packages
           </h2>
-          <h3 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-6">
+          <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
             Transparent pricing. No hidden charges. Real value.
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
           {packagesData.map((pkg) => {
             const isPopular = pkg.slug === "business-pro-pack";
             return (
               <div
                 key={pkg.slug}
-                className={`relative rounded-3xl p-8 md:p-10 flex flex-col h-full bg-zinc-900/60 backdrop-blur-xl border transition-transform duration-200 will-change-transform hover:-translate-y-1 ${
+                className={`relative rounded-3xl p-8 md:p-10 flex flex-col h-full bg-zinc-900/60 backdrop-blur-md border transition-transform duration-200 will-change-transform hover:-translate-y-1 ${
                   isPopular
-                    ? "lg:-mt-6 lg:mb-6 border-accent/50 shadow-[0_0_30px_rgba(123,47,190,0.15)]"
+                    ? "lg:-mt-6 lg:mb-6 border-accent/50 shadow-[0_0_30px_rgba(8,148,222,0.15)]"
                     : "border-white/10"
                 }`}
               >
                 {isPopular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.2em] text-white bg-accent shadow-[0_0_15px_rgba(123,47,190,0.5)]">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.2em] text-white bg-accent shadow-[0_0_15px_rgba(8,148,222,0.5)]">
                     Most Popular
                   </div>
                 )}
 
                 <div className="mb-6">
-                  <h4 className="text-2xl font-black text-white mb-2">{pkg.title}</h4>
+                  <h4 className="text-2xl font-bold text-white mb-2">{pkg.title}</h4>
                   <div className="flex items-baseline gap-2 mb-4">
                     <span className="text-xl text-zinc-400">Starting from</span>
                   </div>
                   <div className="mb-6">
                     <span
-                      className={`text-4xl font-black ${
+                      className={`text-4xl font-bold ${
                         isPopular
                           ? "text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent"
                           : "text-white"
@@ -63,7 +63,7 @@ export default function PackagesSection() {
                       {pkg.price}
                     </span>
                   </div>
-                  <p className="text-sm font-medium text-zinc-400 bg-black/50 p-3 rounded-lg border border-white/5">
+                  <p className="text-sm font-medium text-zinc-400 bg-[#0A1530]/50 p-3 rounded-lg border border-white/5">
                     <span className="text-zinc-300 font-bold block mb-1">Best for:</span>
                     {pkg.bestFor}
                   </p>
@@ -90,7 +90,7 @@ export default function PackagesSection() {
                   href={`/packages/${pkg.slug}`}
                   className={`flex items-center justify-center w-full py-4 rounded-xl text-sm font-bold transition-colors cursor-pointer ${
                     isPopular
-                      ? "bg-accent text-white hover:bg-accent/90 shadow-[0_0_15px_rgba(123,47,190,0.4)]"
+                      ? "bg-accent text-white hover:bg-accent/90 shadow-[0_0_15px_rgba(8,148,222,0.4)]"
                       : "bg-white/10 text-white hover:bg-white/20"
                   }`}
                 >
@@ -108,7 +108,7 @@ export default function PackagesSection() {
             </span>
             Not sure which package fits you?{" "}
             <a
-              href="https://wa.me/919342877474?text=Hi%20LIT%20—%20I%20need%20help%20choosing%20a%20package"
+              href="https://wa.me/917550067712?text=Hi%20LIT%20—%20I%20need%20help%20choosing%20a%20package"
               className="inline-flex items-center gap-2 px-4 py-2 mx-1 rounded-xl bg-[#25D366] text-[#04120a] font-bold text-sm hover:bg-[#20bd5c] transition-colors cursor-pointer align-middle"
               target="_blank"
               rel="noopener noreferrer"

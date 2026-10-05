@@ -157,8 +157,25 @@ export const industriesData: IndustryData[] = [
   }
 ];
 
+/** Distinct card visuals — local when present, unique remote otherwise. */
+const INDUSTRY_VISUALS: Record<string, string> = {
+  healthcare:
+    "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&h=800&q=80",
+  education: "/images/industries/education.jpg",
+  retail: "/images/industries/retail.jpg",
+  manufacturing:
+    "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&h=800&q=80",
+  finance:
+    "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&h=800&q=80",
+  startups:
+    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&h=800&q=80",
+};
+
 export function getIndustryVisual(slug: string): string {
-  return `/images/industries/${slug}.jpg`;
+  return (
+    INDUSTRY_VISUALS[slug] ??
+    "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&h=800&q=80"
+  );
 }
 
 export function getIndustryBySlug(slug: string) {

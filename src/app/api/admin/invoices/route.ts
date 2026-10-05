@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
 
     const invoiceNumber = `INV-${String(invoice.id).slice(0, 8).toUpperCase()}`;
 
-    await sendEmail({
+    const emailResult = await sendEmail({
       to: clientEmail,
       subject: "Invoice from Logic Intelligence Technologies",
       from: "vikash",
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       }),
     });
 
-    return NextResponse.json({ success: true, invoice });
+    return NextResponse.json({ success: true, invoice, emailStatus: emailResult.status });
   } catch (error: unknown) {
     console.error("Error creating invoice:", error);
     return NextResponse.json({ error: "Failed to create invoice" }, { status: 500 });

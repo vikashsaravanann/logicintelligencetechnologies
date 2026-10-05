@@ -45,7 +45,7 @@ const schema = z.object({
 
 export async function POST(req: Request) {
   try {
-    if (!rateLimit(`jobs:${clientIp(req)}`, 5, 15 * 60_000)) {
+    if (!(await rateLimit(`jobs:${clientIp(req)}`, 5, 15 * 60_000))) {
       return NextResponse.json({ ok: false, success: false, error: "Too many requests." }, { status: 429 });
     }
 

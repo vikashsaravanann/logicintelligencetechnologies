@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { FileText, Plus, ArrowRight, CheckCircle2, Clock, Eye, Send } from "lucide-react";
+import BackToHome from "@/components/ui/back-to-home";
+import { ProposalActions } from "./proposal-actions";
 
 export const metadata: Metadata = {
   title: "Proposal Management | Admin Command Center",
@@ -17,7 +19,8 @@ export default async function AdminProposalsPage() {
 
   return (
     <div className="container mx-auto p-4 py-8 max-w-6xl">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <BackToHome href="/admin/command-center" label="Back to Command Center" inline />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 mt-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white mb-1">
             Client Proposals & Contracts
@@ -28,7 +31,7 @@ export default async function AdminProposalsPage() {
         </div>
         <Link
           href="/admin/proposals/new"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_15px_rgba(0,191,255,0.3)]"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all "
         >
           <Plus className="w-4 h-4" />
           <span>Create New Proposal</span>
@@ -80,14 +83,7 @@ export default async function AdminProposalsPage() {
                       {new Date(p.created_at).toLocaleDateString()}
                     </td>
                     <td className="p-4 text-right">
-                      <Link
-                        href={`/proposal/${p.secure_token}`}
-                        target="_blank"
-                        className="text-xs text-primary font-bold hover:underline inline-flex items-center gap-1"
-                      >
-                        <span>View Client Link</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
+                      <ProposalActions proposalId={p.id} secureToken={p.secure_token} />
                     </td>
                   </tr>
                 ))

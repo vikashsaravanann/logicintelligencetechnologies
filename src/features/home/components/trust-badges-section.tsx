@@ -30,9 +30,9 @@ export default function TrustBadgesSection() {
   ];
 
   return (
-    <section className="py-16 bg-[#0A0F1E] border-t border-b border-white/5 relative z-10">
+    <section className="py-16 bg-transparent border-t border-b border-white/5 relative z-10">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {trustElements.map((item, i) => {
             const content = (
               <>
@@ -56,7 +56,7 @@ export default function TrustBadgesSection() {
                 className="h-full"
               >
                 {item.isLink ? (
-                  <Link href={item.href!} className={`${containerClass} ring-1 ring-primary/20 bg-primary/[0.02] hover:bg-primary/[0.05] hover:ring-primary/40 shadow-[0_0_20px_rgba(0,191,255,0.05)] hover:shadow-[0_0_30px_rgba(0,191,255,0.15)]`}>
+                  <Link href={item.href!} className={`${containerClass} ring-1 ring-primary/20 bg-primary/[0.02] hover:bg-primary/[0.05] hover:ring-primary/40  hover:`}>
                     {content}
                     <div className="mt-4 text-xs font-bold text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
                       Claim Free Demo &rarr;

@@ -50,7 +50,7 @@ const fromYou = [
 
 export default function AiAssistantPage() {
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white pt-28 sm:pt-32">
+    <main className="min-h-screen bg-transparent text-white pt-28 sm:pt-32">
       <BackToHome />
 
       <section className="relative px-6 lg:px-8 overflow-hidden">
@@ -59,7 +59,7 @@ export default function AiAssistantPage() {
         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-4">
           LIT Knowledge Assistant
         </p>
-        <h1 className="uppercase text-3xl sm:text-5xl font-black tracking-tight leading-[1.1] mb-5">
+        <h1 className="uppercase text-3xl sm:text-5xl font-bold tracking-tight leading-[1.1] mb-5">
           Answers from{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
             your documents
@@ -88,9 +88,9 @@ export default function AiAssistantPage() {
         </div>
 
         {/* Visual Architecture Banner */}
-        <div className="max-w-4xl mx-auto aspect-[21/9] relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black/50">
+        <div className="max-w-4xl mx-auto aspect-[21/9] relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0A1530]/50">
           <SafeImage
-            src="/images/ai/intelligent-interface.svg"
+            src="/assets/knowledge_assistant_bg.jpg"
             alt="LIT Knowledge Assistant Architecture"
             fill
             priority
@@ -162,7 +162,7 @@ export default function AiAssistantPage() {
             { t: "Monthly", d: "Hosting, re-ingest, eval reruns, support. Set only after the first live month." },
           ].map((p) => (
             <div key={p.t} className="rounded-2xl border border-white/10 p-6">
-              <h3 className="font-black text-lg mb-2">{p.t}</h3>
+              <h3 className="font-bold text-lg mb-2">{p.t}</h3>
               <p className="text-sm text-zinc-400 leading-relaxed">{p.d}</p>
             </div>
           ))}

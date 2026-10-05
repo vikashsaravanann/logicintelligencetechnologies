@@ -78,7 +78,7 @@ const policies = [
     source: "policy",
     title: "Contact",
     content:
-      "WhatsApp/Phone +91 93428 77474. Email support@logicintelligencetechnologies.in. Talk to a human on the team via WhatsApp or support email.",
+      "WhatsApp/Phone +91 75500 67712. Email support@logicintelligencetechnologies.in. Talk to a human on the team via WhatsApp or support email.",
     is_price_constrained: false,
   },
 ];

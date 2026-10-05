@@ -44,7 +44,7 @@ export default async function ResourceDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-28 pb-20 overflow-hidden">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-28 pb-20 overflow-hidden">
       <BackToHome href="/resources" label="Back to Resources" />
       {/* Background Lighting */}
       <div className="absolute top-10 right-1/4 w-[500px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
@@ -56,7 +56,7 @@ export default async function ResourceDetailPage({ params }: Props) {
           {/* Left Column: Cover & Details */}
           <div className="lg:col-span-7">
             {/* Visual Cover Mockup */}
-            <div className="w-full aspect-[16/10] relative rounded-3xl overflow-hidden mb-8 border border-white/10 shadow-2xl bg-black/40">
+            <div className="w-full aspect-[16/10] relative rounded-3xl overflow-hidden mb-8 border border-white/10 shadow-2xl bg-[#0A1530]/40">
               <SafeImage
                 src={res.coverImage}
                 alt={`${res.title} Document Cover`}
@@ -71,7 +71,7 @@ export default async function ResourceDetailPage({ params }: Props) {
               <span>{res.category}</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight uppercase mb-6">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight uppercase mb-6">
               {res.title}
             </h1>
 

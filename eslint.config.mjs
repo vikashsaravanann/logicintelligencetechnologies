@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     "scripts/**",
     "coverage/**",
     "ml-from-scratch/**",
+    "*.js",
+    "*.mjs",
   ]),
   {
     rules: {

@@ -139,7 +139,7 @@ KNOWLEDGE_BASE = [
     },
     {
         "keywords": ["support", "maintenance", "contact", "help", "whatsapp", "response time", "after launch", "bug fix"],
-        "context": "Fact: Every inquiry is responded to within 24 hours. Primary contact: WhatsApp +91 93428 77474. Free support included: Digital Launch Pack = 1 month; Business Pro Pack = 3 months; Enterprise Pack = 6 months. After free support, paid maintenance plans available. Full source code transferred to client upon project completion."
+        "context": "Fact: Every inquiry is responded to within 24 hours. Primary contact: WhatsApp +91 75500 67712. Free support included: Digital Launch Pack = 1 month; Business Pro Pack = 3 months; Enterprise Pack = 6 months. After free support, paid maintenance plans available. Full source code transferred to client upon project completion."
     },
     {
         "keywords": ["guarantee", "promise", "demo", "prototype", "before i pay", "free demo", "no obligation"],
@@ -234,11 +234,11 @@ def build_messages(user_text: str):
         "STRICT RULES:
 "
         "1. NEVER invent pricing, timelines, features, or terms not in the provided company facts. "
-        "If information is not in the facts, say so clearly and direct the client to WhatsApp (+91 93428 77474) or the /contact page.
+        "If information is not in the facts, say so clearly and direct the client to WhatsApp (+91 75500 67712) or the /contact page.
 "
         "2. Reply concisely and professionally. No filler phrases, no hype, no emojis unless responding to casual conversation.
 "
-        "3. When unsure, say so and offer to connect the client with the team on WhatsApp (+91 93428 77474).
+        "3. When unsure, say so and offer to connect the client with the team on WhatsApp (+91 75500 67712).
 "
         "4. Do not recommend competitor services or tools not in our offerings.
 "

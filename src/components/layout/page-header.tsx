@@ -53,7 +53,7 @@ export function PageHeader({
           {badge && (
             <div
               className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-[0.14em] bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-sm",
+                "lit-eyebrow",
                 align === "center" && "mx-auto"
               )}
             >
@@ -61,7 +61,7 @@ export function PageHeader({
             </div>
           )}
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] uppercase">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.08] uppercase break-words">
             {title}
           </h1>
 
