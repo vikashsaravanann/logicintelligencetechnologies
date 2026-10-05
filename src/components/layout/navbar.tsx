@@ -129,10 +129,14 @@ export default function Navbar() {
                 </NavLink>
               ))}
 
-              <div className="relative" ref={moreRef}>
+              {/* Not `relative`: the panel is placed against the fixed header so
+                  it can span the page width instead of hanging off this button. */}
+              <div ref={moreRef}>
                 <button
                   type="button"
-                  className="inline-flex items-center h-11 px-2 text-xs font-semibold tracking-[0.06em] text-zinc-200 hover:text-primary transition-colors"
+                  className={`inline-flex items-center h-11 px-2 text-xs font-semibold tracking-[0.06em] transition-colors ${
+                    moreOpen ? "text-primary" : "text-zinc-200 hover:text-primary"
+                  }`}
                   onClick={() => setMoreOpen((v) => !v)}
                   aria-expanded={moreOpen}
                   aria-haspopup="true"
@@ -145,44 +149,47 @@ export default function Navbar() {
                 </button>
                 <AnimatePresence>
                   {moreOpen && (
-                    <motion.div
-                      id="more-menu"
-                      role="menu"
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 8 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute top-full right-0 mt-1 w-[min(92vw,640px)] bg-[rgba(10,15,30,0.98)] border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/50 p-4 z-[80] grid grid-cols-2 gap-4"
-                    >
-                      {MORE_NAV_GROUPS.map((group) => (
-                        <div key={group.id} className="min-w-0">
-                          <p className="px-2 mb-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-500">
-                            {group.label}
-                          </p>
-                          <ul className="space-y-0.5">
-                            {group.items.map((item) => (
-                              <li key={item.href}>
-                                <Link
-                                  href={item.href}
-                                  role="menuitem"
-                                  onClick={() => setMoreOpen(false)}
-                                  className="block rounded-lg px-2 py-2 hover:bg-white/[0.06] transition-colors group"
-                                >
-                                  <span className="block text-[12px] font-semibold tracking-wide text-zinc-200 group-hover:text-white uppercase">
-                                    {item.label}
-                                  </span>
-                                  {item.description && (
-                                    <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-400 mt-0.5 leading-snug uppercase tracking-wider">
-                                      {item.description}
-                                    </span>
-                                  )}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                    </motion.div>
+                    <div className="absolute inset-x-0 top-full flex justify-center px-4 lg:px-6 pt-2">
+                      <motion.div
+                        id="more-menu"
+                        aria-label="All pages"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        transition={{ duration: 0.15 }}
+                        className="w-full max-w-[1320px] max-h-[calc(100dvh-88px)] overflow-y-auto overscroll-contain rounded-2xl border border-white/10 bg-[#0a0f1e] shadow-2xl shadow-black/60 p-5 grid grid-cols-6 gap-x-4 gap-y-6"
+                      >
+                        {MORE_NAV_GROUPS.map((group) => (
+                          <div key={group.id} className="min-w-0">
+                            <p className="px-2 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-primary/80">
+                              {group.label}
+                            </p>
+                            <ul className="space-y-0.5">
+                              {group.items.map((item) => {
+                                const active = pathname === item.href;
+                                return (
+                                  <li key={item.href}>
+                                    <Link
+                                      href={item.href}
+                                      onClick={() => setMoreOpen(false)}
+                                      title={item.description}
+                                      aria-current={active ? "page" : undefined}
+                                      className={`flex items-center min-h-[34px] rounded-lg px-2 py-1.5 text-[11.5px] font-semibold tracking-wide uppercase leading-tight transition-colors ${
+                                        active
+                                          ? "bg-primary/10 text-primary"
+                                          : "text-zinc-300 hover:bg-white/[0.06] hover:text-white"
+                                      }`}
+                                    >
+                                      {item.label}
+                                    </Link>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        ))}
+                      </motion.div>
+                    </div>
                   )}
                 </AnimatePresence>
               </div>
