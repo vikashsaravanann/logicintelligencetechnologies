@@ -278,7 +278,7 @@ async function draftReply() {
   output.classList.add("empty");
   outputActions.style.display = "none";
 
-  const systemPrompt = `You are drafting an email reply on behalf of Vikash Saravanan, Founder & CEO of Logic Intelligence Technologies Pvt. Ltd., a web/software development studio based in Coimbatore, India.
+  const systemPrompt = `You are drafting an email reply on behalf of Vikash Saravanan, Founder & CEO of Logic Intelligence Technologies, a web/software development studio based in Coimbatore, India.
 
 Write ONLY the reply body (no subject line, no "Dear X" placeholder guessing beyond what's given, no meta-commentary). Tone: ${tone}.
 ${context ? "Additional context from the founder: " + context : ""}
