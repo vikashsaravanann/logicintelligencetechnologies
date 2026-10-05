@@ -15,7 +15,7 @@ export async function GET(
   ctx: { params: Promise<{ slug: string }> }
 ) {
   try {
-    if (!rateLimit(`resource-dl:${clientIp(req)}`, 30, 15 * 60_000)) {
+    if (!(await rateLimit(`resource-dl:${clientIp(req)}`, 30, 15 * 60_000))) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
 

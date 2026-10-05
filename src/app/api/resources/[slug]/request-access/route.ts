@@ -35,7 +35,7 @@ export async function POST(
     const { slug: rawSlug } = await ctx.params;
     const slug = String(rawSlug || "").trim().toLowerCase();
 
-    if (!rateLimit(`resource-access:${clientIp(req)}`, 8, 15 * 60_000)) {
+    if (!(await rateLimit(`resource-access:${clientIp(req)}`, 8, 15 * 60_000))) {
       return NextResponse.json(
         { success: false, message: "Too many requests. Please try again shortly." },
         { status: 429 }
