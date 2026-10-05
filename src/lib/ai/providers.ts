@@ -104,9 +104,9 @@ async function callProvider(
   }
 ): Promise<ProviderResult | null> {
   const temperature = options?.temperature ?? 0.4;
-  const max_tokens = options?.max_tokens ?? 800;
+  const max_tokens = Math.min(1200, Math.max(64, Math.floor(options?.max_tokens ?? 800)));
 
-  for (const model of provider.models) {
+  for (const model of provider.models.slice(0, 1)) {
     let cacheKey = "";
     if (redis) {
       cacheKey = `ai_exact:${computeExactHash(provider.id, model, messages, { temperature, max_tokens, tools: options?.tools })}`;
@@ -211,7 +211,7 @@ async function callProvider(
 }
 
 /**
- * Race configured providers in parallel. First successful text/tool result wins.
+ * One configured provider/model per completion; no paid provider races.
  */
 export async function completeWithProviders(
   messages: ChatMessage[],
@@ -222,7 +222,7 @@ export async function completeWithProviders(
     cacheTtlSeconds?: number;
   }
 ): Promise<ProviderResult> {
-  const providers = buildProviders();
+  const providers = buildProviders().slice(0, 1);
   if (!providers.length) {
     return { provider: "none", model: "none", content: "" };
   }
@@ -275,7 +275,7 @@ export async function* streamWithProviders(
   messages: ChatMessage[],
   options?: { temperature?: number; max_tokens?: number }
 ): AsyncGenerator<{ chunk: string; provider: string; model: string }, ProviderResult, void> {
-  const providers = buildProviders();
+  const providers = buildProviders().slice(0, 1);
   if (!providers.length) {
     yield { chunk: "", provider: "none", model: "none" };
     return { provider: "none", model: "none", content: "" };
@@ -283,7 +283,7 @@ export async function* streamWithProviders(
 
   let lastError: unknown = null;
   for (const provider of providers) {
-    for (const model of provider.models) {
+    for (const model of provider.models.slice(0, 1)) {
       try {
         const res = await fetch(provider.apiUrl, {
           method: "POST",
@@ -295,9 +295,10 @@ export async function* streamWithProviders(
             model,
             messages,
             temperature: options?.temperature ?? 0.35,
-            max_tokens: options?.max_tokens ?? 900,
+            max_tokens: Math.min(1200, Math.max(64, Math.floor(options?.max_tokens ?? 900))),
             stream: true,
           }),
+          signal: AbortSignal.timeout(22000),
         });
         if (!res.ok || !res.body) {
           lastError = new Error(`${provider.id} ${model} HTTP ${res.status}`);
@@ -326,9 +327,12 @@ export async function* streamWithProviders(
                 json.choices?.[0]?.delta?.content ||
                 json.choices?.[0]?.text ||
                 "";
-              if (delta) {
+              if (delta && full.length + delta.length <= 12000) {
                 full += delta;
                 yield { chunk: delta, provider: provider.id, model };
+              } else if (delta) {
+                await reader.cancel();
+                return { provider: provider.id, model, content: full };
               }
             } catch {
               /* ignore partial JSON */

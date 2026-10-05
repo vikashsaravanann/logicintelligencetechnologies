@@ -51,7 +51,7 @@ export async function GET(request: Request) {
       }
     } catch (error: any) {
       console.error('Auth callback error:', error);
-      return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(error.message || 'Authentication failed')}`, request.url));
+      return NextResponse.redirect(new URL('/login?error=Authentication%20failed', request.url));
     }
   }
 

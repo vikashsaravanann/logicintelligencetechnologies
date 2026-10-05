@@ -4,6 +4,7 @@ import { isSupabaseLive } from "./config";
 import { EMAIL_MAX_ATTEMPTS, isExhausted, nextAttemptAt } from "./retry";
 import { emailLog, maskEmail } from "./logger";
 import type { EmailCategory, EmailDeliveryStatus, EmailErrorCategory } from "./types";
+import { escapeHtml } from "./validation";
 
 export type OutboxInsert = {
   eventType: string;
@@ -69,8 +70,8 @@ export async function enqueueEmail(
     html:
       params.html ||
       (params.metadata
-        ? `<p>${params.subject}</p><pre>${JSON.stringify(params.metadata, null, 2)}</pre>`
-        : `<p>${params.subject}</p>`),
+        ? `<p>${escapeHtml(params.subject)}</p><pre>${escapeHtml(JSON.stringify(params.metadata, null, 2))}</pre>`
+        : `<p>${escapeHtml(params.subject)}</p>`),
     text: params.text,
     idempotencyKey,
     correlationId: params.correlationId,

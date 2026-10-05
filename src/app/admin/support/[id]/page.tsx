@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { CheckCircle2 } from "lucide-react";
 import { SupportTicketActions } from "./support-ticket-actions";
+import { requireAdminPage } from "@/lib/auth/require-admin";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 
 export default async function AdminSupportDetailPage({ params }: Props) {
   const { id } = await params;
+  await requireAdminPage(`/admin/support/${id}`);
 
   const { data: ticket, error } = await supabaseAdmin
     .from("support_tickets")
@@ -37,7 +38,7 @@ export default async function AdminSupportDetailPage({ params }: Props) {
               Ticket ID: {ticket.id}
             </span>
             <h1 className="uppercase text-2xl font-bold text-white">{ticket.subject}</h1>
-            <p className="text-xs text-neutral-400 mt-1">Submitted by: {ticket.email}</p>
+            <p className="text-xs text-neutral-400 mt-1">Submitted by: {ticket.requester_email || "Linked client account"}</p>
           </div>
           <span
             className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider self-start sm:self-auto ${
@@ -60,7 +61,7 @@ export default async function AdminSupportDetailPage({ params }: Props) {
         </div>
         
         <div className="pt-4">
-          <SupportTicketActions ticketId={ticket.id} email={ticket.email} status={ticket.status} />
+          <SupportTicketActions ticketId={ticket.id} email={ticket.requester_email || "linked client"} status={ticket.status} />
         </div>
 
         <div className="pt-6 border-t border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-neutral-500 gap-2">

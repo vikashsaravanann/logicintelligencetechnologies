@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
+import { requireAdminApi } from "@/lib/auth/require-admin";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
+  const auth = await requireAdminApi(req);
+  if (!auth.ok) return NextResponse.json({ success: false, error: auth.message }, { status: auth.status });
   try {
     // Placeholder for Real-Time PCM -> AASIST flow
     // 1. Receive PCM audio buffer

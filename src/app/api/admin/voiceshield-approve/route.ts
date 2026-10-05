@@ -5,6 +5,9 @@ import * as React from "react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { COMPANY } from "@/config/company";
 import { requireAdminApi } from "@/lib/auth/require-admin";
+import { readBoundedAiJson, InvalidAiRequest } from "@/lib/ai/request-guard";
+import { isValidEmail, sanitizePersonName } from "@/lib/email/validation";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -14,15 +17,22 @@ export async function POST(req: Request) {
   if (!auth.ok) return NextResponse.json({ success: false, message: auth.message }, { status: auth.status });
 
   try {
-    const body = await req.json();
-    const { leadId, email, fullName, accessType } = body;
-
-    if (!leadId || !email || !fullName) {
+    const parsed = z.object({ leadId: z.string().uuid() })
+      .safeParse(await readBoundedAiJson(req));
+    if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: "Missing required fields: leadId, email, fullName" },
+        { success: false, message: "Invalid approval request" },
         { status: 400 }
       );
     }
+    const { leadId } = parsed.data;
+    const { data: lead, error: lookupError } = await supabaseAdmin.from("contact_leads")
+      .select("id, name, email, message").eq("id", leadId).maybeSingle();
+    if (lookupError) return NextResponse.json({ success: false, message: "Approval service unavailable" }, { status: 503 });
+    if (!lead || !isValidEmail(lead.email)) return NextResponse.json({ success: false, message: "Request not found or cannot be approved" }, { status: 404 });
+    const email = lead.email;
+    const fullName = sanitizePersonName(lead.name || "VoiceShield user");
+    const accessType = sanitizePersonName(lead.message?.match(/Access type:\s*([^\r\n]+)/i)?.[1] || "Demo", 80);
 
     const consoleUrl = COMPANY.products.voiceShield.consoleUrl;
 
@@ -44,23 +54,25 @@ export async function POST(req: Request) {
 
     if (!emailResult.success) {
       return NextResponse.json(
-        { success: false, message: emailResult.message || "Failed to send email" },
+        { success: false, message: "Could not send approval email" },
         { status: 500 }
       );
     }
 
     // Update the lead's pipeline stage to "Access Granted"
-    await supabaseAdmin
+    const { error: updateError } = await supabaseAdmin
       .from("contact_leads")
       .update({ pipeline_stage: "Access Granted" })
       .eq("id", leadId);
+    if (updateError) return NextResponse.json({ success: false, message: "Email accepted, but approval status could not be saved. Contact support before retrying." }, { status: 503 });
 
     return NextResponse.json({
       success: true,
-      message: `Access email sent to ${email}`,
+      message: "Approval email accepted for sending",
     });
   } catch (error) {
-    console.error("[VoiceShield Approve] Error:", error);
+    if (error instanceof InvalidAiRequest) return NextResponse.json({ success: false, message: "Invalid approval request" }, { status: 400 });
+    console.error("[VoiceShield Approve] request failed");
     return NextResponse.json(
       { success: false, message: "Internal server error" },
       { status: 500 }

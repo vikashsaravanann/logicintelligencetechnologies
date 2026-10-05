@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { resolveSupportTicket, sendAdminEmail } from "../../actions";
+import { resolveSupportTicket, replyToSupportTicket } from "../../actions";
 import { CheckCircle2, Mail, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
 
@@ -33,11 +33,7 @@ export function SupportTicketActions({ ticketId, email, status }: SupportTicketA
     if (!replyText.trim()) return;
     setSending(true);
     try {
-      await sendAdminEmail(
-        email,
-        `Re: Support Ticket #${ticketId}`,
-        replyText
-      );
+      await replyToSupportTicket(ticketId, replyText);
       toast.success("Reply sent successfully");
       setShowReply(false);
       setReplyText("");

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { runServerlessAI } from "@/lib/ai/serverless";
+import { guardAiRequest, readBoundedAiJson, InvalidAiRequest } from "@/lib/ai/request-guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -8,30 +9,30 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
 const bodySchema = z.object({
-  message: z.string().min(1).max(8000).optional(),
+  message: z.string().min(1).max(4000).optional(),
   /** OpenAI-style messages array (portfolio chatbot). */
   messages: z
     .array(
       z.object({
-        role: z.string(),
-        content: z.string().optional(),
+        role: z.enum(["user", "assistant"]),
+        content: z.string().max(4000).optional(),
       })
     )
-    .max(40)
+    .max(12)
     .optional(),
   history: z
     .array(
       z.object({
-        role: z.string(),
-        content: z.string(),
+        role: z.enum(["user", "assistant"]),
+        content: z.string().max(4000),
       })
     )
-    .max(40)
+    .max(12)
     .optional(),
-  systemExtra: z.string().max(12000).optional(),
+  systemExtra: z.string().max(2000).optional(),
   skipRag: z.boolean().optional(),
   temperature: z.number().min(0).max(1).optional(),
-  max_tokens: z.number().min(64).max(2048).optional(),
+  max_tokens: z.number().int().min(64).max(1200).optional(),
 });
 
 /**
@@ -48,7 +49,9 @@ const bodySchema = z.object({
  */
 export async function POST(req: Request) {
   try {
-    const json = await req.json();
+    const auth = await guardAiRequest();
+    if (!auth.ok) return NextResponse.json({ success: false, error: auth.error }, { status: auth.status });
+    const json = await readBoundedAiJson(req);
     const parsed = bodySchema.safeParse(json);
     if (!parsed.success) {
       return NextResponse.json(
@@ -98,7 +101,7 @@ export async function POST(req: Request) {
       model: result.model,
       grounded: result.grounded,
       latency_ms: result.latency_ms,
-      error: result.error,
+      error: result.success ? undefined : "AI service unavailable",
       // OpenAI-compatible shape for older clients
       choices: [
         {
@@ -107,11 +110,12 @@ export async function POST(req: Request) {
       ],
     });
   } catch (err) {
+    if (err instanceof InvalidAiRequest) return NextResponse.json({ error: err.message }, { status: 400 });
     console.error("[api/serverless-ai]", err);
     return NextResponse.json(
       {
         success: false,
-        error: err instanceof Error ? err.message : "Internal error",
+        error: "AI service unavailable",
       },
       { status: 500 }
     );

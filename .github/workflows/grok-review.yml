@@ -1,33 +1,18 @@
 name: grok-review
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   review:
     runs-on: ubuntu-latest
+    timeout-minutes: 1
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install xAI Grok CLI
-        run: curl -fsSL https://x.ai/cli/install.sh | bash
-
-      - name: Grok PR review
-        env:
-          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-          GH_TOKEN: ${{ github.token }}
+      # Disabled until a pinned, bounded API-only implementation is reviewed.
+      # No checkout of PR code, AI secret, writable token or remote installer.
+      - name: Review automation disabled pending a safe implementation
         run: |
-          if [ -z "$XAI_API_KEY" ]; then
-            echo "XAI_API_KEY secret is not set — skipping Grok review."
-            exit 0
-          fi
-          # Post a constructive PR review (bugs, security, regressions)
-          grok -p "Review this pull request for bugs, security issues, broken TypeScript, and regressions. Be specific with file paths. Prefer actionable findings over style nits." --always-approve
+          printf '%s\n' 'Grok review is disabled for security. Use human review and existing CI checks.' >> "$GITHUB_STEP_SUMMARY"

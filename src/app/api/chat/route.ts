@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import { COMPANY } from "@/config/company";
 import { packagesData } from "@/data/packagesData";
 import { servicesData } from "@/data/servicesData";
@@ -11,10 +9,9 @@ import {
   AI_TOOLS,
   dispatchToolCall,
   loadUserMemory,
-  lookupLeadStatus,
 } from "@/lib/ai/tools";
-import { env } from "@/config/env";
 import { z } from "zod";
+import { guardAiRequest, readBoundedAiJson, InvalidAiRequest } from "@/lib/ai/request-guard";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -44,11 +41,11 @@ function getCandidateModels(): string[] {
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
-  content: z.string().min(1).max(10000),
+  content: z.string().min(1).max(4000),
 });
 
 const requestSchema = z.object({
-  messages: z.array(messageSchema).min(1).max(50),
+  messages: z.array(messageSchema).min(1).max(12),
   chat_id: z.string().uuid().optional().nullable(),
 });
 
@@ -125,28 +122,13 @@ function generateLocalFallbackReply(userText: string): string {
   return `I'm the ${COMPANY.displayName} assistant. Ask about packages, services, or past work — or reach us on WhatsApp at ${COMPANY.phone}.`;
 }
 
-async function resolveUserId(): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const supabase = createServerComponentClient(
-      { cookies: () => cookieStore as any },
-      {
-        supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
-        supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      }
-    );
-    const { data } = await supabase.auth.getUser();
-    return data.user?.id ?? null;
-  } catch {
-    return null;
-  }
-}
-
 export async function POST(req: Request) {
   let userQuery = "";
 
   try {
-    const body = await req.json();
+    const auth = await guardAiRequest();
+    if (!auth.ok) return NextResponse.json({ success: false, error: auth.error }, { status: auth.status });
+    const body = await readBoundedAiJson(req);
     const parsed = requestSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
@@ -156,12 +138,13 @@ export async function POST(req: Request) {
     }
 
     const messages = parsed.data.messages;
-    const chatId = parsed.data.chat_id ?? null;
+    // Do not attach privileged lead writes to a browser-supplied chat owner.
+    const chatId = null;
     const lastUserMessage =
       [...messages].reverse().find((m) => m.role === "user")?.content || "";
     userQuery = lastUserMessage;
 
-    const userId = await resolveUserId();
+    const userId = auth.user.id;
     const memoryContext = userId ? await loadUserMemory(userId) : "";
 
     let leadContext = "";
@@ -172,7 +155,7 @@ export async function POST(req: Request) {
       emailMatch &&
       /status|submit|form|lead|check|demo|quote|request/i.test(lastUserMessage)
     ) {
-      leadContext = JSON.stringify(await lookupLeadStatus(emailMatch[0]), null, 2);
+      leadContext = "Lead status is available through the authenticated client portal or support team only.";
     }
 
     const { block: knowledgeBlock } = await buildQueryGroundedKnowledge(lastUserMessage);
@@ -192,10 +175,10 @@ export async function POST(req: Request) {
       });
     }
 
-    // Parallel Groq + xAI (Grok): first successful reply wins
+    // Exactly one provider path; never repeat a completed paid call in legacy code.
+    if (hasAnyProvider()) {
     try {
       const dual = await completeWithProviders(conversation as any, {
-        tools: AI_TOOLS as any,
         temperature: 0.4,
         max_tokens: 900,
       });
@@ -217,7 +200,9 @@ export async function POST(req: Request) {
         // handled below by legacy loop when dual only returned tools — continue
       }
     } catch (e) {
-      console.warn("[chat] dual provider race failed", e);
+      console.warn("[chat] provider failed", e);
+    }
+    return NextResponse.json({ success: true, reply: generateLocalFallbackReply(userQuery) });
     }
 
     const toolCtx = {
@@ -227,7 +212,7 @@ export async function POST(req: Request) {
     };
 
     let finalReply = "";
-    for (const model of getCandidateModels()) {
+    for (const model of getCandidateModels().slice(0, 1)) {
       try {
         let response = await fetch(GROQ_API_URL, {
           method: "POST",
@@ -241,6 +226,7 @@ export async function POST(req: Request) {
             tools: AI_TOOLS,
             tool_choice: "auto",
             temperature: 0.4,
+            max_tokens: 900,
           }),
           signal: AbortSignal.timeout(12000),
         });
@@ -258,6 +244,7 @@ export async function POST(req: Request) {
                 model,
                 messages: conversation,
                 temperature: 0.4,
+                max_tokens: 900,
               }),
               signal: AbortSignal.timeout(12000),
             });
@@ -272,10 +259,10 @@ export async function POST(req: Request) {
         let data = await response.json();
         let assistantMessage = data.choices?.[0]?.message;
 
-        // Multi-tool loop (max 3)
-        for (let i = 0; i < 3 && assistantMessage?.tool_calls?.length; i++) {
+        // One bounded tool round.
+        for (let i = 0; i < 1 && assistantMessage?.tool_calls?.length; i++) {
           const toolMessages: Array<Record<string, unknown>> = [];
-          for (const toolCall of assistantMessage.tool_calls) {
+          for (const toolCall of assistantMessage.tool_calls.slice(0, 2)) {
             let args: Record<string, unknown> = {};
             try {
               args = JSON.parse(toolCall.function.arguments || "{}");
@@ -308,6 +295,7 @@ export async function POST(req: Request) {
               tools: AI_TOOLS,
               tool_choice: "auto",
               temperature: 0.4,
+              max_tokens: 900,
             }),
             signal: AbortSignal.timeout(12000),
           });
@@ -334,6 +322,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, reply: finalReply });
   } catch (error) {
+    if (error instanceof InvalidAiRequest) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("[Chat Route Error]", error);
     return NextResponse.json({
       success: true,
