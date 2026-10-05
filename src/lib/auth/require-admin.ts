@@ -12,21 +12,12 @@ export type AdminApiAuth =
   | { ok: true; userId: string; email: string | null; role: string }
   | { ok: false; status: number; message: string };
 
-const COMPANY_DOMAIN = "@logicintelligencetechnologies.in";
-
-/** Company accounts are the admin population; the middleware uses the same rule for /admin and /dashboard. */
-export function isCompanyAdminEmail(email: string | null | undefined): boolean {
-  return Boolean(email && email.toLowerCase().endsWith(COMPANY_DOMAIN));
-}
-
 /**
  * Resolves the signed-in user with getUser(), which validates the access token
  * with Supabase Auth instead of trusting the session cookie as getSession() does.
  *
- * profiles.role is deliberately NOT consulted: that column is writable by its
- * owner under the current RLS policy, so trusting it would let any user promote
- * themselves. Restore a role check only after the profiles update policy pins
- * the role column (see supabase/migrations/*_harden_rls.sql).
+ * Requires the deployed guard_profile_role trigger from the hardening migration.
+ * Email suffixes and user-editable metadata never grant administrative access.
  */
 async function resolveAdmin(supabase: SupabaseClient): Promise<AdminApiAuth> {
   let user: User | null = null;
@@ -37,10 +28,18 @@ async function resolveAdmin(supabase: SupabaseClient): Promise<AdminApiAuth> {
     console.error("[require-admin] auth lookup failed:", error);
   }
   if (!user) return { ok: false, status: 401, message: "Unauthorized" };
-  if (!isCompanyAdminEmail(user.email)) {
+  if (user.is_anonymous || !user.email_confirmed_at) {
     return { ok: false, status: 403, message: "Forbidden: Admin access required" };
   }
-  return { ok: true, userId: user.id, email: user.email ?? null, role: "company_admin" };
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (error || !profile || !["admin", "super_admin"].includes(profile.role)) {
+    return { ok: false, status: 403, message: "Forbidden: Admin access required" };
+  }
+  return { ok: true, userId: user.id, email: user.email ?? null, role: profile.role };
 }
 
 async function routeClient() {
@@ -53,7 +52,11 @@ async function routeClient() {
 
 /** Route handlers: returns a result the caller turns into a 401/403 response. */
 export async function requireAdminApi(_req?: Request): Promise<AdminApiAuth> {
-  return resolveAdmin(await routeClient());
+  try {
+    return await resolveAdmin(await routeClient());
+  } catch {
+    return { ok: false, status: 503, message: "Authorization service unavailable" };
+  }
 }
 
 /** Server actions: throws so the action never runs for a non-admin caller. */

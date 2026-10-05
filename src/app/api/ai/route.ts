@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
 import { COMPANY } from "@/config/company";
 import { packagesData } from "@/data/packagesData";
 import { logAgentRun } from "@/lib/agent-eval/logger";
@@ -14,8 +12,19 @@ import {
   dispatchToolCall,
   loadUserMemory,
 } from "@/lib/ai/tools";
-import { env } from "@/config/env";
-import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
+import { guardAiRequest, readBoundedAiJson, InvalidAiRequest } from "@/lib/ai/request-guard";
+import { z } from "zod";
+
+const aiSchema = z.object({
+  text: z.string().max(4000).optional(),
+  message: z.string().max(4000).optional(),
+  file: z.object({ name: z.string().max(255).optional(), type: z.string().max(100), data: z.string().max(48000) }).optional(),
+  max_tokens: z.number().int().min(64).max(1200).optional(),
+  chat_id: z.string().uuid().nullable().optional(),
+  history: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(4000) })).max(12).optional(),
+  stream: z.union([z.boolean(), z.literal("true"), z.literal("false")]).optional(),
+  mode: z.enum(["company", "general"]).optional(),
+}).refine(data => Boolean(data.text?.trim() || data.message?.trim()), "Message required");
 
 const DEFAULT_GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 const DEFAULT_MODEL = "openai/gpt-oss-120b";
@@ -66,23 +75,6 @@ function newRunId(): string {
   return `run_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
 }
 
-async function resolveUserId(): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const supabase = createServerComponentClient(
-      { cookies: () => cookieStore as any },
-      {
-        supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
-        supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      }
-    );
-    const { data } = await supabase.auth.getUser();
-    return data.user?.id ?? null;
-  } catch {
-    return null;
-  }
-}
-
 export async function POST(request: Request) {
   const started = Date.now();
   const runId = newRunId();
@@ -98,11 +90,12 @@ export async function POST(request: Request) {
   let steps = 1;
 
   try {
-    if (!(await rateLimit(`ai:${clientIp(request)}`, 20, 60_000))) {
-      return NextResponse.json({ success: false, error: "Too many requests. Please wait a moment." }, { status: 429 });
-    }
-    const body = await request.json();
-    const { text, message, file, max_tokens, chat_id, history, stream, mode: rawMode } = body;
+    const auth = await guardAiRequest();
+    if (!auth.ok) return NextResponse.json({ success: false, error: auth.error }, { status: auth.status });
+    const parsedBody = aiSchema.safeParse(await readBoundedAiJson(request));
+    if (!parsedBody.success) return NextResponse.json({ success: false, error: "Invalid AI request" }, { status: 400 });
+    const body = parsedBody.data;
+    const { text, message, file, max_tokens, history, stream, mode: rawMode } = body;
     const mode: "company" | "general" = rawMode === "general" ? "general" : "company";
     userText =
       (typeof text === "string" && text) ||
@@ -112,12 +105,12 @@ export async function POST(request: Request) {
     const { apiKey, apiUrl, model } = getAiConfig();
     modelName = model;
 
-    const userId = await resolveUserId();
+    const userId = auth.user.id;
     const memoryContext = userId ? await loadUserMemory(userId) : "";
     const toolCtx = {
       source: "ai_page" as const,
       userId,
-      chatId: typeof chat_id === "string" ? chat_id : null,
+      chatId: null,
     };
 
     let injectedContext = "";
@@ -201,7 +194,7 @@ export async function POST(request: Request) {
                 const msg = (dual.raw as { choices?: Array<{ message?: { tool_calls?: Array<{ id: string; function: { name: string; arguments: string } }> } }> })?.choices?.[0]?.message;
                 if (msg?.tool_calls?.length) {
                   const toolMessages: Array<Record<string, unknown>> = [];
-                  for (const toolCall of msg.tool_calls) {
+                  for (const toolCall of msg.tool_calls.slice(0, 2)) {
                     let args: Record<string, unknown> = {};
                     try { args = JSON.parse(toolCall.function.arguments || "{}"); } catch { args = {}; }
                     const toolResult = await dispatchToolCall(toolCall.function.name, args, toolCtx);
@@ -284,7 +277,6 @@ export async function POST(request: Request) {
     if (hasAnyProvider()) {
       try {
         const dual = await completeWithProviders(conversation as any, {
-          tools: AI_TOOLS as any,
           temperature: 0.3,
           max_tokens: typeof max_tokens === "number" ? max_tokens : 800,
         });
@@ -322,8 +314,11 @@ export async function POST(request: Request) {
           }
         }
       } catch (e) {
-        console.warn("[ai] dual provider race failed", e);
+        console.warn("[ai] provider failed", e);
       }
+      // A provider has already been attempted: no additional paid legacy retry.
+      const fallback = getLocalFallbackReply(userText);
+      return NextResponse.json({ success: true, generated_text: fallback, reply: fallback, run_id: runId });
     }
 
     if (!apiKey) {
@@ -432,11 +427,11 @@ export async function POST(request: Request) {
     tokensOut = Number(usage.completion_tokens || usage.output_tokens || 0);
     let assistantMessage = data.choices?.[0]?.message;
 
-    for (let i = 0; i < 3 && assistantMessage?.tool_calls?.length; i++) {
+    for (let i = 0; i < 1 && assistantMessage?.tool_calls?.length; i++) {
       toolCalls += assistantMessage.tool_calls.length;
       steps = 1 + toolCalls;
       const toolMessages: Array<Record<string, unknown>> = [];
-      for (const toolCall of assistantMessage.tool_calls) {
+      for (const toolCall of assistantMessage.tool_calls.slice(0, 2)) {
         let args: Record<string, unknown> = {};
         try {
           args = JSON.parse(toolCall.function.arguments || "{}");
@@ -529,6 +524,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error: unknown) {
+    if (error instanceof InvalidAiRequest) return NextResponse.json({ error: error.message }, { status: 400 });
     console.error("Error connecting to AI:", error);
     usedFallback = true;
     const err = error as { name?: string };

@@ -34,7 +34,7 @@ export async function PATCH(req: Request) {
     .eq("id", id);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Could not update lead" }, { status: 500 });
   }
 
   if (["REPLIED", "WON", "LOST", "UNSUBSCRIBED", "SUPPRESSED"].includes(stage)) {

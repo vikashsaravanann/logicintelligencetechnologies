@@ -16,9 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Display Rollback Instructions
+        env:
+          ROLLBACK_REASON: ${{ github.event.inputs.reason }}
         run: |
-          echo "# 🚨 ROLLBACK INITIATED 🚨" >> $GITHUB_STEP_SUMMARY
-          echo "## Reason: ${{ github.event.inputs.reason }}" >> $GITHUB_STEP_SUMMARY
+          echo "# Rollback requested" >> "$GITHUB_STEP_SUMMARY"
+          printf 'Reason (untrusted input):\n\n    %s\n\n' "${ROLLBACK_REASON//$'\n'/$'\n    '}" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Steps to safely rollback:" >> $GITHUB_STEP_SUMMARY
           echo "1. **Instant Revert:** Go to [Vercel Deployments](https://vercel.com) and promote the last safe build to production." >> $GITHUB_STEP_SUMMARY

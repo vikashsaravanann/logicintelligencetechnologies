@@ -4,6 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email/send-email";
 import NewLeadNotificationEmail from "@/emails/new-lead-notification-email";
 import LeadConfirmationEmail from "@/emails/lead-confirmation-email";
+import { isValidEmail } from "@/lib/email/validation";
 
 export type AiLeadSource = "chat_widget" | "ai_page";
 
@@ -73,73 +74,18 @@ export const AI_TOOLS = [
   },
 ];
 
-export async function lookupLeadStatus(email: string) {
-  try {
-    const normalizedEmail = email.trim().toLowerCase();
-
-    const [contact, demo, checklist, aiLeads] = await Promise.all([
-      supabaseAdmin
-        .from("contact_leads")
-        .select("created_at")
-        .ilike("email", normalizedEmail)
-        .order("created_at", { ascending: false })
-        .limit(1),
-      supabaseAdmin
-        .from("demo_leads")
-        .select("created_at")
-        .ilike("email", normalizedEmail)
-        .order("created_at", { ascending: false })
-        .limit(1),
-      supabaseAdmin
-        .from("checklist_leads")
-        .select("created_at")
-        .ilike("email", normalizedEmail)
-        .order("created_at", { ascending: false })
-        .limit(1),
-      supabaseAdmin
-        .from("ai_captured_leads")
-        .select("created_at, source, interest")
-        .ilike("email", normalizedEmail)
-        .order("created_at", { ascending: false })
-        .limit(3),
-    ]);
-
-    const findings: Record<string, unknown> = {
-      contact_form_submission: contact.data?.[0]?.created_at ?? null,
-      free_demo_request: demo.data?.[0]?.created_at ?? null,
-      checklist_submission: checklist.data?.[0]?.created_at ?? null,
-      ai_captured: aiLeads.data ?? [],
-    };
-
-    const hasAny =
-      Boolean(findings.contact_form_submission) ||
-      Boolean(findings.free_demo_request) ||
-      Boolean(findings.checklist_submission) ||
-      (Array.isArray(findings.ai_captured) && findings.ai_captured.length > 0);
-
-    return {
-      found: hasAny,
-      submissions: findings,
-      note: hasAny
-        ? "Submission timestamps only. For project status, direct the visitor to the team."
-        : "No submissions found for this email.",
-    };
-  } catch (err) {
-    console.error("[lookupLeadStatus Error]", err);
-    return {
-      found: false,
-      submissions: {},
-      note: "Unable to query lead submissions at this time.",
-    };
-  }
+export async function lookupLeadStatus(_email: string) {
+  // Disabled until submissions carry explicit, verified account ownership.
+  // Merely stating an email (or matching an account email) is not proof.
+  return { found: false, submissions: {}, note: "Contact support through the authenticated client portal for submission status." };
 }
 
-export async function emailAlreadyCaptured(email: string): Promise<boolean> {
+async function emailAlreadyCaptured(email: string): Promise<boolean> {
   try {
     const { data } = await supabaseAdmin
       .from("ai_captured_leads")
       .select("id")
-      .ilike("email", email.trim().toLowerCase())
+      .eq("email", email.trim().toLowerCase())
       .limit(1);
     return Boolean(data?.length);
   } catch {
@@ -159,12 +105,12 @@ export async function captureLead(args: {
 }) {
   const name = String(args.name || "").trim();
   const email = String(args.email || "").trim().toLowerCase();
-  if (!name || !email.includes("@")) {
+  if (!name || !isValidEmail(email)) {
     return { ok: false, error: "name and valid email are required" };
   }
 
   if (await emailAlreadyCaptured(email)) {
-    return { ok: true, duplicate: true, message: "Lead already on file." };
+    return { ok: true, message: "Your enquiry has been received." };
   }
 
   try {
@@ -185,7 +131,7 @@ export async function captureLead(args: {
 
     if (error) {
       console.error("[captureLead DB]", error);
-      return { ok: false, error: error.message };
+      return { ok: false, error: "Could not save lead" };
     }
 
     // Internal notification (same pattern as free-demo)
@@ -228,9 +174,7 @@ export async function captureLead(args: {
 
     return {
       ok: true,
-      id: data?.id,
-      message:
-        "Lead saved. Confirm naturally that the team will follow up within 24 hours.",
+      message: "Your enquiry has been received.",
     };
   } catch (err) {
     console.error("[captureLead]", err);
@@ -287,7 +231,7 @@ export async function saveMemory(
     );
     if (error) {
       console.error("[saveMemory]", error);
-      return { ok: false, error: error.message };
+      return { ok: false, error: "Could not save memory" };
     }
     return { ok: true, memory_key: key };
   } catch (err) {
@@ -309,16 +253,9 @@ export async function dispatchToolCall(
     return lookupLeadStatus(String(args.email || ""));
   }
   if (name === "capture_lead") {
-    return captureLead({
-      name: String(args.name || ""),
-      email: String(args.email || ""),
-      phone: args.phone ? String(args.phone) : undefined,
-      company: args.company ? String(args.company) : undefined,
-      interest: args.interest ? String(args.interest) : undefined,
-      source: ctx.source,
-      userId: ctx.userId,
-      chatId: ctx.chatId,
-    });
+    // Do not let model-selected recipients trigger transactional email or
+    // fabricate client ownership. Public validated forms remain available.
+    return { ok: false, error: "Submit your enquiry using the contact form." };
   }
   if (name === "save_memory") {
     return saveMemory(

@@ -4,10 +4,6 @@ import type { NextRequest } from "next/server";
 import { safeNextPath } from "@/lib/auth/safe-next";
 import { isCompanyOnlyPath, isProtectedPath, isPublicPath } from "@/lib/routing/public-paths";
 
-function isCompanyEmail(email: string): boolean {
-  return email.toLowerCase().endsWith("@logicintelligencetechnologies.in");
-}
-
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const path = req.nextUrl.pathname;
@@ -29,9 +25,9 @@ export async function middleware(req: NextRequest) {
       try {
         const supabase = createMiddlewareClient({ req, res });
         const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (session) {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user && !user.is_anonymous) {
           const dest = safeNextPath(req.nextUrl.searchParams.get("next"), "/");
           return NextResponse.redirect(new URL(dest, req.url));
         }
@@ -48,18 +44,19 @@ export async function middleware(req: NextRequest) {
   try {
     const supabase = createMiddlewareClient({ req, res });
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!session) {
+    if (!user || user.is_anonymous || !user.email_confirmed_at) {
       const loginUrl = new URL("/login", req.url);
       loginUrl.searchParams.set("next", safeNextPath(requested, path));
       return NextResponse.redirect(loginUrl);
     }
 
     if (isCompanyOnlyPath(path)) {
-      const email = session.user.email || "";
-      if (!isCompanyEmail(email)) {
+      const { data: profile, error } = await supabase.from("profiles")
+        .select("role").eq("id", user.id).maybeSingle();
+      if (error || !profile || !["admin", "super_admin"].includes(profile.role)) {
         return NextResponse.redirect(new URL("/profile", req.url));
       }
     }

@@ -1,8 +1,5 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { env } from "@/config/env";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { requireAdminPage } from "@/lib/auth/require-admin";
 
 export const dynamic = "force-dynamic";
 
@@ -12,18 +9,7 @@ function isJob(row: { company?: string | null; message?: string | null }) {
 }
 
 export default async function LeadsPage() {
-  const cookieStore = await cookies();
-  const supabase = createServerComponentClient(
-    { cookies: () => cookieStore as never },
-    {
-      supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
-      supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    }
-  );
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user?.email?.endsWith("@logicintelligencetechnologies.in")) {
-    redirect("/login");
-  }
+  await requireAdminPage("/dashboard/leads");
 
   const { data: rows } = await supabaseAdmin
     .from("contact_leads")

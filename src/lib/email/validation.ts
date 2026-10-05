@@ -71,6 +71,13 @@ export function sanitizeMultilineText(value: string, maxLen = 5000): string {
     .slice(0, maxLen);
 }
 
+/** Plain text interpolated into an HTML fallback must never become markup. */
+export function escapeHtml(value: string): string {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[char]!));
+}
+
 // ---------------------------------------------------------------------------
 // SSRF-safe URL check
 // Blocks private/loopback/link-local/metadata addresses in addition to
