@@ -16,7 +16,7 @@ export function PageShell({
   return (
     <main
       className={cn(
-        "min-h-screen bg-[#050814] text-white relative overflow-x-hidden",
+        "min-h-screen bg-transparent text-white relative overflow-x-hidden",
         className
       )}
     >

@@ -12,5 +12,15 @@
       "path": "/api/cron/outreach-followups",
       "schedule": "*/15 * * * *"
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/voice-shield/console",
+      "destination": "https://voiceshield-live.vercel.app/"
+    },
+    {
+      "source": "/voice-shield/console/:path*",
+      "destination": "https://voiceshield-live.vercel.app/:path*"
+    }
   ]
 }

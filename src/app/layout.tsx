@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import { COMPANY } from '@/config/company';
 import { organizationNode, websiteNode } from '@/lib/seo/schema';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from '@/components/theme/theme-provider';
+import GlobalBackground from '@/components/ui/global-background';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 
@@ -16,34 +18,56 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-space-grotesk',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: false,
+  variable: '--font-jetbrains-mono',
+});
+
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  viewportFit: "cover",
+  viewportFit: 'cover',
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0A0F1E" },
-    { media: "(prefers-color-scheme: light)", color: "#F7F4EE" },
+    { media: '(prefers-color-scheme: dark)', color: '#0D1B3E' },
+    { media: '(prefers-color-scheme: light)', color: '#F7F4EE' },
   ],
 };
 
 export const metadata: Metadata = {
   title: {
-    default: 'Logic Intelligence Technologies | Premium Web & Software Development',
+    default: 'Logic Intelligence Technologies | AI Products & Automation Solutions',
     template: '%s | Logic Intelligence Technologies',
   },
   description:
-    'Full-stack web development, mobile apps, and enterprise software for businesses. Based in Coimbatore, India. Free demo available.',
+    'Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions, including Logic Voice and VoiceShield. Based in Coimbatore, Tamil Nadu, India.',
   keywords: [
-    'web development',
-    'mobile app development',
-    'custom software',
+    'Logic Intelligence Technologies',
+    'AI technology company',
+    'AI products',
+    'AI automation',
+    'AI agents',
+    'Logic Voice',
+    'AI voice assistant',
+    'personal AI assistant',
+    'voice-first AI',
+    'VoiceShield',
+    'voice security',
+    'voice risk intelligence',
+    'voice fraud intelligence',
+    'AI-powered automation',
+    'Vikash Saravanan',
     'Coimbatore',
     'India',
-    'React',
-    'Next.js',
-    'full stack',
   ],
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.logicintelligencetechnologies.in'
@@ -55,6 +79,9 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     siteName: COMPANY.legalName,
+    title: 'Logic Intelligence Technologies | Where Logic Meets Innovation',
+    description:
+      'Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions, including Logic Voice and VoiceShield.',
     images: [
       {
         url: COMPANY.bannerPath,
@@ -66,6 +93,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    title: 'Logic Intelligence Technologies | Where Logic Meets Innovation',
+    description:
+      'Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions, including Logic Voice and VoiceShield.',
     images: [COMPANY.bannerPath],
   },
   icons: {
@@ -89,9 +119,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} overflow-x-hidden w-full max-w-[100vw]`}>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href="/icon-48.png" type="image/png" sizes="48x48" />
         <link rel="icon" href="/assets/logo-icon.jpg" type="image/jpeg" />
         <link rel="apple-touch-icon" href="/apple-icon.png" sizes="180x180" />
@@ -106,12 +136,17 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
+      <body className={`${inter.className} m-0 p-0 w-full max-w-[100vw] overflow-x-hidden`}>
+        <a href="#main-content" className="lit-skip">Skip to main content</a>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
+          <GlobalBackground />
+          <Toaster position="top-right" toastOptions={{ style: { background: '#132147', color: '#fff', border: '1px solid rgba(255,255,255,0.12)' } }} />
           {children}
           <SpeedInsights />
           <Analytics />
+          {process.env.NODE_ENV === 'development' && (
+            <Script type="module" src="http://localhost:7331/inject.js" strategy="afterInteractive" />
+          )}
         </ThemeProvider>
       </body>
     </html>

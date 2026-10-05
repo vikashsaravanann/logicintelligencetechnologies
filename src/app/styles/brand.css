@@ -1,0 +1,161 @@
+/* LIT brand layer: type, surfaces, buttons, focus, motion.
+   Palette: Deep Navy #0D1B3E, Bright Turquoise #45D9D2, Azure Blue #0894DE. */
+
+:root {
+  --lit-navy: #0D1B3E;
+  --lit-navy-deep: #0A1530;
+  --lit-navy-raised: #132147;
+  --lit-turquoise: #45D9D2;
+  --lit-azure: #0894DE;
+  --lit-border: rgba(255, 255, 255, 0.09);
+  --lit-border-strong: rgba(69, 217, 210, 0.35);
+  --lit-radius-card: 1rem;
+  --lit-radius-control: 0.625rem;
+  --lit-shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 10px 30px -12px rgba(2, 8, 24, 0.6);
+  --lit-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+  body { font-family: var(--font-primary); }
+}
+
+/* Type scale: Display / H1-H4 use Space Grotesk, body Inter, code JetBrains Mono */
+@layer base {
+h1, h2, h3, h4 {
+  font-family: var(--font-display-stack);
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+h1 { font-size: var(--text-h1); line-height: 1.08; }
+h2 { font-size: var(--text-h2); line-height: 1.15; }
+h1, h2, h3, h4 { font-weight: 700; }
+p, li { text-wrap: pretty; }
+code, kbd, samp, pre { font-family: var(--font-mono-stack); }
+.text-display { font-size: var(--text-display); line-height: 1.02; letter-spacing: -0.025em; font-family: var(--font-display-stack); font-weight: 700; }
+.text-label { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+}
+
+::selection { background: rgba(69, 217, 210, 0.28); color: #fff; }
+
+/* Focus: visible on every interactive element */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--lit-turquoise);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Skip link */
+.lit-skip {
+  position: fixed; left: 1rem; top: -4rem; z-index: 200;
+  padding: 0.625rem 1rem; border-radius: 0.5rem;
+  background: var(--lit-turquoise); color: var(--lit-navy); font-weight: 700; font-size: 0.875rem;
+  transition: top 0.2s var(--lit-ease);
+}
+.lit-skip:focus { top: 1rem; }
+
+/* ---------- Background system ---------- */
+.lit-bg {
+  position: fixed; inset: 0; z-index: -50; pointer-events: none; overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% -10%, rgba(8, 148, 222, 0.22), transparent 70%),
+    radial-gradient(ellipse 45% 40% at 90% 15%, rgba(69, 217, 210, 0.08), transparent 70%),
+    linear-gradient(180deg, #0D1B3E 0%, #0B1735 55%, #0A1530 100%);
+}
+.lit-bg::before {
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 20%, transparent 80%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 20%, transparent 80%);
+}
+.lit-bg::after {
+  content: ""; position: absolute; inset: 0; opacity: 0.035; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.lit-section-alt { background: linear-gradient(180deg, rgba(10,21,48,0) 0%, rgba(10,21,48,0.55) 18%, rgba(10,21,48,0.55) 82%, rgba(10,21,48,0) 100%); }
+
+/* ---------- Surfaces ---------- */
+.lit-card {
+  background: linear-gradient(180deg, rgba(19, 33, 71, 0.72), rgba(13, 27, 62, 0.72));
+  border: 1px solid var(--lit-border);
+  border-radius: var(--lit-radius-card);
+  box-shadow: var(--lit-shadow-card);
+  transition: border-color 0.25s var(--lit-ease), transform 0.25s var(--lit-ease), background-color 0.25s;
+}
+.lit-card:hover { border-color: var(--lit-border-strong); }
+.lit-card-interactive:hover { transform: translateY(-2px); }
+
+/* Legacy glass utilities rebuilt as flat, high-contrast surfaces (no heavy blur / glow) */
+.glass-surface, .glass-card, .glass-panel {
+  background: linear-gradient(180deg, rgba(19, 33, 71, 0.78), rgba(13, 27, 62, 0.78));
+  border: 1px solid var(--lit-border);
+  border-radius: var(--lit-radius-card);
+  box-shadow: var(--lit-shadow-card);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.glass-surface-strong {
+  background: #0F1D45; border: 1px solid rgba(255,255,255,0.14);
+  border-radius: var(--lit-radius-card); box-shadow: var(--lit-shadow-card);
+}
+.glass-nav { background: rgba(10, 21, 48, 0.86); border-bottom: 1px solid var(--lit-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+/* ---------- Buttons ---------- */
+.lit-btn {
+  --btn-bg: transparent; --btn-fg: #fff; --btn-bd: transparent; --btn-bg-h: rgba(255,255,255,0.08);
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  min-height: 44px; padding: 0 1.25rem; border-radius: var(--lit-radius-control);
+  font-family: var(--font-primary); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.01em; line-height: 1;
+  white-space: nowrap; text-decoration: none; cursor: pointer;
+  color: var(--btn-fg); background: var(--btn-bg); border: 1px solid var(--btn-bd);
+  transition: background-color 0.2s var(--lit-ease), border-color 0.2s var(--lit-ease), color 0.2s, box-shadow 0.2s, transform 0.12s;
+}
+.lit-btn:hover { background: var(--btn-bg-h); }
+.lit-btn:active { transform: translateY(1px); }
+.lit-btn:disabled, .lit-btn[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+.lit-btn[data-loading="true"] { pointer-events: none; color: transparent; }
+.lit-btn[data-loading="true"]::after {
+  content: ""; position: absolute; width: 1rem; height: 1rem; border-radius: 50%;
+  border: 2px solid var(--lit-navy); border-top-color: transparent; animation: lit-spin 0.7s linear infinite;
+}
+.lit-btn-sm { min-height: 40px; padding: 0 1rem; font-size: 0.8125rem; }
+.lit-btn-lg { min-height: 52px; padding: 0 1.75rem; font-size: 0.9375rem; }
+.lit-btn-primary, .lit-btn--primary { --btn-bg: var(--lit-turquoise); --btn-fg: var(--lit-navy); --btn-bg-h: #6DE6E0; font-weight: 700; }
+.lit-btn-primary:hover { box-shadow: 0 6px 20px -8px rgba(69, 217, 210, 0.6); }
+.lit-btn-secondary, .lit-btn--secondary { --btn-bg: rgba(255,255,255,0.04); --btn-bd: rgba(255,255,255,0.18); --btn-bg-h: rgba(255,255,255,0.09); }
+.lit-btn--azure { --btn-bg: var(--lit-azure); --btn-fg: #fff; --btn-bg-h: #2AA6EA; }
+.lit-btn--tertiary { --btn-fg: var(--lit-turquoise); --btn-bd: rgba(69,217,210,0.35); --btn-bg-h: rgba(69,217,210,0.1); }
+.lit-btn--ghost { --btn-fg: #D3DBE8; }
+.lit-btn--text { --btn-fg: var(--lit-turquoise); padding: 0; min-height: 44px; }
+.lit-btn--text:hover { background: transparent; text-decoration: underline; text-underline-offset: 4px; }
+.lit-btn--destructive { --btn-bg: #B42339; --btn-fg: #fff; --btn-bg-h: #CC2D45; }
+@keyframes lit-spin { to { transform: rotate(360deg); } }
+
+/* ---------- Eyebrow / chip ---------- */
+.lit-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.3125rem 0.75rem;
+  border: 1px solid rgba(69, 217, 210, 0.28); background: rgba(69, 217, 210, 0.07);
+  color: var(--lit-turquoise); border-radius: 999px;
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+}
+
+/* ---------- Motion ---------- */
+@keyframes lit-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.lit-rise { animation: lit-rise 0.7s var(--lit-ease) both; }
+.lit-rise-1 { animation-delay: 0.06s; } .lit-rise-2 { animation-delay: 0.12s; }
+.lit-rise-3 { animation-delay: 0.18s; } .lit-rise-4 { animation-delay: 0.26s; }
+
+/* Scroll-driven section entrance, progressive enhancement, no JS */
+@supports (animation-timeline: view()) {
+  .lit-reveal { animation: lit-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important; scroll-behavior: auto !important;
+  }
+  .lit-reveal { animation: none; }
+}

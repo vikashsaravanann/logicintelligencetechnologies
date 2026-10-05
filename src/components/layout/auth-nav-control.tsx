@@ -215,6 +215,14 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
           >
             <Sparkles className="w-4 h-4" /> AI Assistant
           </Link>
+          {user.email?.toLowerCase().endsWith('@logicintelligencetechnologies.in') && (
+            <Link
+              href="/admin/command-center"
+              className="flex items-center gap-2 py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-200 hover:bg-cyan-950/30 min-h-[44px]"
+            >
+              <Sparkles className="w-4 h-4" /> Admin Dashboard
+            </Link>
+          )}
           <button
             type="button"
             onClick={() => void signOut()}
@@ -256,7 +264,7 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-xl border border-white/10 bg-[#0c1224]/98 backdrop-blur-xl shadow-2xl shadow-black/40 py-1.5 z-50"
+          className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-xl border border-white/10 bg-[#0c1224]/98 backdrop-blur-md shadow-2xl shadow-black/40 py-1.5 z-50"
         >
           <div className="px-3 py-2 border-b border-white/8">
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500">
@@ -282,6 +290,16 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
           >
             <Sparkles className="w-3.5 h-3.5" /> AI Assistant
           </Link>
+          {user.email?.toLowerCase().endsWith('@logicintelligencetechnologies.in') && (
+            <Link
+              role="menuitem"
+              href="/admin/command-center"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-200 hover:bg-cyan-950/30"
+            >
+              <Sparkles className="w-3.5 h-3.5" /> Admin Dashboard
+            </Link>
+          )}
           <button
             type="button"
             role="menuitem"

@@ -8,13 +8,13 @@ export default function TestimonialsSection() {
   const hasTestimonials = testimonials.length > 0;
 
   return (
-    <section id="testimonials" className="py-16 md:py-24 bg-[#060B18] border-y border-white/5 relative overflow-hidden">
+    <section id="testimonials" className="py-16 md:py-24 bg-[#0A1530] border-y border-white/5 relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">
             Client Stories
           </span>
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
             What Our Clients Say
           </h2>
           {hasTestimonials && (
@@ -86,7 +86,7 @@ export default function TestimonialsSection() {
               </p>
               <Link
                 href="/free-demo"
-                className="inline-flex mt-6 px-6 py-3 rounded-xl text-sm font-bold text-black bg-primary neon-btn"
+                className="inline-flex mt-6 px-6 py-3 rounded-xl text-sm font-bold text-black bg-primary"
               >
                 Start a free demo
               </Link>

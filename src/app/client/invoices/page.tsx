@@ -22,7 +22,7 @@ export default async function ClientInvoicesPage() {
       </div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white uppercase tracking-tight">
             Invoices & Billing
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-1">
@@ -51,7 +51,7 @@ export default async function ClientInvoicesPage() {
                       <div className="font-bold text-white">{inv.invoice_code}</div>
                       <div className="text-[10px] text-zinc-500">Milestone Payment</div>
                     </td>
-                    <td className="p-4 font-black text-white">
+                    <td className="p-4 font-bold text-white">
                       ₹{Number(inv.amount).toLocaleString()}
                     </td>
                     <td className="p-4 text-xs text-zinc-400">

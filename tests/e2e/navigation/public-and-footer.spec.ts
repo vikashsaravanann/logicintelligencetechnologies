@@ -1,6 +1,20 @@
 import { test, expect } from "@playwright/test";
 
+const PUBLIC_ROUTES = [
+  "/contact", "/services", "/industries", "/free-demo", "/book-consultation",
+  "/checklist", "/about", "/blog", "/careers",
+];
+
 test.describe("Public navigation", () => {
+  for (const path of PUBLIC_ROUTES) {
+    test(`${path} remains public`, async ({ page }) => {
+      const response = await page.goto(path, { waitUntil: "domcontentloaded" });
+      expect(response?.status()).toBe(200);
+      expect(new URL(page.url()).pathname).toBe(path);
+      await expect(page.locator("main").first()).toBeVisible();
+    });
+  }
+
   test("homepage loads without crash", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
@@ -22,8 +36,11 @@ test.describe("Public navigation", () => {
 
   test("health endpoint ok", async ({ request }) => {
     const res = await request.get("/api/health");
-    expect(res.status()).toBe(200);
     const json = await res.json();
-    expect(json.status || json.checks).toBeTruthy();
+    expect(res.status(), JSON.stringify(json.checks)).toBe(200);
+    expect(json.status).toBe("ok");
+    for (const name of ["database", "smtp", "emailIsolation", "cronSecret", "unsubscribeSecret"]) {
+      expect(json.checks[name]?.status, `Health check: ${name}`).toBe("ok");
+    }
   });
 });

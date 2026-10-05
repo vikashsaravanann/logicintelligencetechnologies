@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Mail, Phone, Building2, Calendar, FileText, ArrowRight, CheckCircle2, ShieldCheck, Plus } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { calculateLeadScore } from "@/lib/crm/scoring";
+import { LeadActions } from "./lead-actions";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -46,14 +47,16 @@ export default async function AdminLeadDetailPage({ params }: Props) {
           <span className="text-[10px] uppercase font-bold text-primary tracking-widest block mb-1">
             CRM Lead Dossier · ID: {lead.id.slice(0, 8)}
           </span>
-          <h1 className="text-3xl font-black text-white">{lead.name}</h1>
+          <h1 className="text-3xl font-bold text-white">{lead.name}</h1>
           <p className="text-xs text-zinc-400 mt-1">{lead.email}</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <LeadActions email={lead.email} name={lead.name} />
+          
           <Link
             href="/admin/proposals/new"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_15px_rgba(0,191,255,0.3)]"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all "
           >
             <Plus className="w-4 h-4" />
             <span>Generate Proposal</span>
@@ -65,7 +68,7 @@ export default async function AdminLeadDetailPage({ params }: Props) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="p-6 rounded-2xl border border-neutral-800 bg-neutral-900/50">
           <span className="text-xs font-bold text-zinc-500 uppercase block mb-1">Intent Score</span>
-          <div className="text-3xl font-black text-white">{scoring.score} / 100</div>
+          <div className="text-3xl font-bold text-white">{scoring.score} / 100</div>
           <span className="text-xs text-primary font-bold uppercase mt-1 block">
             Category: {scoring.category.replace("_", " ")}
           </span>

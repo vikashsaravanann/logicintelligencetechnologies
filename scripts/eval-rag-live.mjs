@@ -11,7 +11,7 @@ const cases = [
   { id: "pro-support", q: "Support window on Business Pro Pack?", must: ["3 month"] },
   { id: "payment", q: "Payment terms for Launch pack?", must: ["50%"] },
   { id: "demo", q: "Do you offer a free demo before payment?", must: ["demo"] },
-  { id: "whatsapp", q: "What is your WhatsApp number?", must: ["93428"] },
+  { id: "whatsapp", q: "What is your WhatsApp number?", must: ["75500"] },
   { id: "pages", q: "How many pages in Digital Launch Pack?", must: ["5"] },
   { id: "pro-gateway", q: "Does Business Pro include a payment gateway?", must: ["payment", "razorpay", "gateway"] },
 ];

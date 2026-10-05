@@ -25,13 +25,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Pricing Packages | Logic Intelligence Technologies',
     description: 'Digital Launch Pack from ₹8,999 · Business Pro from ₹18,999 · Enterprise from ₹50,000. Transparent fixed-price packages for web, e-commerce, and AI software.',
-    images: [{ url: '/assets/og-banner.jpg', width: 1200, height: 630, alt: 'LIT Packages & Pricing' }],
+    images: [{ url: '/assets/og-banner.png', width: 1200, height: 630, alt: 'LIT Packages & Pricing' }],
   },
 };
 
 export default function PackagesAndServicesPage() {
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white pt-20">
+    <main className="min-h-screen bg-transparent text-white pt-20">
       <BackToHome href="/" label="Back to Home" />
       <JsonLd
         data={[
@@ -53,7 +53,7 @@ export default function PackagesAndServicesPage() {
       <section className="py-20 px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/5 relative">
         <div className="text-center max-w-3xl mx-auto mb-16 relative z-10">
           <h2 className="text-primary font-bold tracking-[0.2em] uppercase text-sm mb-4">Our Core Services</h2>
-          <h3 className="text-3xl md:text-4xl font-black text-white mb-6">Expert Solutions for Your Digital Needs</h3>
+          <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">Expert Solutions for Your Digital Needs</h3>
           <p className="text-zinc-400">Discover our comprehensive range of specialized services tailored to elevate your business in the digital landscape.</p>
         </div>
 

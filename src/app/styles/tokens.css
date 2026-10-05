@@ -1,0 +1,196 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-background: var(--bg-primary);
+  --color-foreground: #FFFFFF;
+  --color-primary: #45D9D2;
+  --color-accent: #0894DE;
+  --color-navy: #0D1B3E;
+  --color-turquoise: #45D9D2;
+  --color-azure: #0894DE;
+
+  --font-sans: var(--font-primary);
+  --font-display: var(--font-display-stack);
+  --font-poppins: var(--font-display-stack);
+  --font-mono: var(--font-mono-stack);
+
+  /* Brand-aligned scales. Existing utility classes (cyan-*, blue-*, sky-*,
+     purple-*, violet-*, indigo-*, zinc-*, slate-*, gray-*) resolve to the
+     LIT palette so every route inherits it without per-page edits. */
+  --color-cyan-50: #ECFEFD;
+  --color-cyan-100: #CFFAF7;
+  --color-cyan-200: #A3F2EE;
+  --color-cyan-300: #72E7E1;
+  --color-cyan-400: #45D9D2;
+  --color-cyan-500: #2FBDB7;
+  --color-cyan-600: #1B8F8C;
+  --color-cyan-700: #1A7173;
+  --color-cyan-800: #195A5E;
+  --color-cyan-900: #174A4F;
+  --color-cyan-950: #0B2D35;
+
+  --color-sky-50: #F0F9FE;
+  --color-sky-100: #DDF1FC;
+  --color-sky-200: #B5E2F8;
+  --color-sky-300: #7FCDF3;
+  --color-sky-400: #3DB1EA;
+  --color-sky-500: #0894DE;
+  --color-sky-600: #0678B6;
+  --color-sky-700: #075F92;
+  --color-sky-800: #0A4B73;
+  --color-sky-900: #0C3C5D;
+  --color-sky-950: #0D2A4A;
+
+  --color-blue-50: #F0F9FE;
+  --color-blue-100: #DDF1FC;
+  --color-blue-200: #B5E2F8;
+  --color-blue-300: #7FCDF3;
+  --color-blue-400: #3DB1EA;
+  --color-blue-500: #0894DE;
+  --color-blue-600: #0678B6;
+  --color-blue-700: #075F92;
+  --color-blue-800: #0A4B73;
+  --color-blue-900: #0C3C5D;
+  --color-blue-950: #0D2A4A;
+
+  --color-indigo-300: #7FCDF3;
+  --color-indigo-400: #3DB1EA;
+  --color-indigo-500: #0894DE;
+  --color-indigo-600: #0678B6;
+  --color-purple-300: #7FCDF3;
+  --color-purple-400: #3DB1EA;
+  --color-purple-500: #0894DE;
+  --color-purple-600: #0678B6;
+  --color-violet-300: #7FCDF3;
+  --color-violet-400: #3DB1EA;
+  --color-violet-500: #0894DE;
+  --color-violet-600: #0678B6;
+
+  /* Navy-tinted neutrals */
+  --color-zinc-50: #F4F7FB;
+  --color-zinc-100: #E8EDF5;
+  --color-zinc-200: #D3DBE8;
+  --color-zinc-300: #B4BFD2;
+  --color-zinc-400: #94A3BC;
+  --color-zinc-500: #7686A3;
+  --color-zinc-600: #556584;
+  --color-zinc-700: #36425C;
+  --color-zinc-800: #1F2B4A;
+  --color-zinc-900: #132147;
+  --color-zinc-950: #0A1530;
+  --color-slate-300: #B4BFD2;
+  --color-slate-400: #94A3BC;
+  --color-slate-500: #7686A3;
+  --color-slate-800: #1F2B4A;
+  --color-slate-900: #132147;
+  --color-gray-300: #B4BFD2;
+  --color-gray-400: #94A3BC;
+  --color-gray-500: #7686A3;
+  --color-gray-800: #1F2B4A;
+  --color-gray-900: #132147;
+
+  /* Type scale */
+  --text-display: clamp(2.5rem, 1.6rem + 4vw, 4.75rem);
+  --text-h1: clamp(2rem, 1.3rem + 3vw, 3.75rem);
+  --text-h2: clamp(1.625rem, 1.2rem + 1.8vw, 2.5rem);
+  --text-h3: clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem);
+  --text-h4: 1.125rem;
+
+  /* Breakpoints */
+  --breakpoint-xs: 24.375rem; /* 390px */
+  --breakpoint-sm: 40rem;     /* 640px */
+  --breakpoint-md: 48rem;     /* 768px */
+  --breakpoint-lg: 64rem;     /* 1024px */
+  --breakpoint-xl: 80rem;     /* 1280px */
+  --breakpoint-2xl: 96rem;    /* 1536px */
+}
+
+:root {
+  /* Backgrounds */
+  --bg-primary: #0D1B3E;
+  --bg-secondary: #0A1530;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --bg-card-hover: rgba(255, 255, 255, 0.07);
+  --bg-glass: rgba(13, 17, 23, 0.8);
+
+  /* Brand Colors */
+  --neon-blue: #45D9D2;
+  --neon-purple: #0894DE;
+  --neon-green: #00FF88;
+  --neon-pink: #FF2D78;
+  --neon-orange: #FF6B00;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #45D9D2 0%, #0894DE 100%);
+  --gradient-hero: linear-gradient(180deg, #0D1B3E 0%, #0A1530 100%);
+  --gradient-card: linear-gradient(145deg, rgba(69,217,210,0.1) 0%, rgba(8,148,222,0.1) 100%);
+  --gradient-text: linear-gradient(90deg, #45D9D2, #0894DE);
+  --gradient-button: linear-gradient(135deg, #45D9D2 0%, #0894DE 100%);
+
+  /* Glows */
+  --glow-blue: 0 0 24px rgba(69,217,210,0.18);
+  --glow-purple: 0 0 24px rgba(8,148,222,0.18);
+  --glow-green: 0 0 20px rgba(0,255,136,0.5), 0 0 40px rgba(0,255,136,0.2);
+  --glow-card: 0 8px 32px rgba(69,217,210,0.15);
+
+  /* Typography */
+  --font-primary: var(--font-inter), 'Inter', system-ui, sans-serif;
+  --font-display-stack: var(--font-space-grotesk), 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-mono-stack: var(--font-jetbrains-mono), 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: var(--font-display-stack);
+
+  /* Borders & Radii */
+  --border-glass: 1px solid rgba(255,255,255,0.08);
+  --border-neon: 1px solid rgba(69,217,210,0.3);
+  --border-radius-card: 16px;
+  --border-radius-button: 8px;
+
+  /* Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.4,0,0.2,1);
+  --transition-smooth: 0.4s cubic-bezier(0.4,0,0.2,1);
+  --transition-slow: 0.8s cubic-bezier(0.4,0,0.2,1);
+
+  /* Logic AI canvas (dark default) */
+  --ai-ink: #F2F6FF;
+  --ai-muted: #9AA8C7;
+  --ai-panel: rgba(10, 21, 48, 0.72);
+  --ai-border: rgba(255, 255, 255, 0.12);
+  --ai-header: rgba(13, 27, 62, 0.88);
+  --ai-user: #45D9D2;
+
+  /* Glassmorphism design tokens */
+  --glass-bg: rgba(12, 18, 32, 0.72);
+  --glass-bg-strong: rgba(10, 15, 30, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-blur: 16px;
+  --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --glass-radius-lg: 1.5rem;
+  --ai-glow: radial-gradient(ellipse 70% 40% at 50% -10%, rgba(69,217,210,0.12), transparent 65%), #0D1B3E;
+}
+
+html.light {
+  /* Readable body ink; interactive CTAs still set explicit colors */
+  --color-foreground: #0D1B3E;
+  --bg-primary: #F3F6FB;
+  --bg-secondary: #FFFFFF;
+  --bg-card: rgba(13, 27, 62, 0.04);
+  --bg-card-hover: rgba(13, 27, 62, 0.08);
+  --bg-glass: rgba(255, 255, 255, 0.86);
+  --ai-ink: #0D1B3E;
+  --ai-muted: #4A5878;
+  --ai-panel: rgba(255, 255, 255, 0.86);
+  --ai-border: rgba(13, 27, 62, 0.12);
+  --ai-header: rgba(255, 255, 255, 0.86);
+  --ai-user: #45D9D2;
+
+  /* Glassmorphism design tokens */
+  --glass-bg: rgba(12, 18, 32, 0.72);
+  --glass-bg-strong: rgba(10, 15, 30, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-blur: 16px;
+  --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --glass-radius-lg: 1.5rem;
+  --ai-glow: #F3F6FB;
+}

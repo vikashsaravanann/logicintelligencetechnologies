@@ -300,7 +300,7 @@ export default function NewProposalPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-4 rounded-xl bg-primary text-black font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.4)] flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-4 rounded-xl bg-primary text-black font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-all  flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {loading ? (
             <>

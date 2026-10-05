@@ -44,7 +44,13 @@ export function CreateInvoiceForm() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to create invoice");
       
-      setSuccessMsg(`Invoice created and sent to ${formData.clientEmail}`);
+      let statusMsg = "Invoice created";
+      if (data.emailStatus === "sent") statusMsg += " and email sent";
+      else if (data.emailStatus === "queued" || data.emailStatus === "retrying") statusMsg += " and email queued";
+      else if (data.emailStatus === "skipped") statusMsg += " (email skipped)";
+      else statusMsg += ", but email failed to send";
+
+      setSuccessMsg(`${statusMsg} to ${formData.clientEmail}`);
       setFormData({
         clientName: "",
         clientEmail: "",

@@ -32,12 +32,12 @@ export default async function SearchPage({
     : blogPosts.slice(0, 6);
 
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white pt-32 pb-24 px-6">
+    <main className="min-h-screen bg-transparent text-white pt-32 pb-24 px-6">
       <BackToHome href="/" label="Back to Home" />
       <JsonLd data={breadcrumb([{ name: "Home", path: "/" }, { name: "Search", path: "/search" }])} />
       <div className="max-w-3xl mx-auto">
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-300 mb-3">Search</p>
-        <h1 className="uppercase text-3xl font-black mb-6">
+        <h1 className="uppercase text-3xl font-bold mb-6">
           {query ? `Results for “${q.trim()}”` : "Search the studio"}
         </h1>
         <form action="/search" method="get" className="mb-10">

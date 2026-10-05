@@ -23,7 +23,7 @@ export default async function ClientSupportPage() {
       </div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white uppercase tracking-tight">
             Support Desk
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-1">
@@ -33,7 +33,7 @@ export default async function ClientSupportPage() {
 
         <Link
           href="/support/new"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-[0_0_15px_rgba(0,191,255,0.3)]"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all "
         >
           <Plus className="w-4 h-4" />
           <span>Open New Ticket</span>

@@ -44,7 +44,7 @@ export function SupportTab({ tickets }: { tickets: any[] }) {
       {/* Create Ticket Form */}
       <motion.div 
         initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, ease: "easeOut" }}
-        className="h-full min-h-[360px] p-6 rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-xl"
+        className="h-full min-h-[360px] p-6 rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-md"
       >
         <h3 className="text-2xl font-bold text-white mb-6 tracking-tight">Create a Ticket</h3>
         <form id="ticket-form" action={handleSubmit} className="space-y-5">
@@ -53,7 +53,7 @@ export function SupportTab({ tickets }: { tickets: any[] }) {
             <input 
               name="subject" 
               required 
-              className="w-full px-5 py-4 bg-black/40 border border-white/10 rounded-xl text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all shadow-inner"
+              className="w-full px-5 py-4 bg-[#0A1530]/40 border border-white/10 rounded-xl text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all shadow-inner"
               placeholder="E.g., Need help with my domain"
             />
           </div>
@@ -63,14 +63,14 @@ export function SupportTab({ tickets }: { tickets: any[] }) {
               name="message" 
               required 
               rows={5}
-              className="w-full px-5 py-4 bg-black/40 border border-white/10 rounded-xl text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all resize-none shadow-inner custom-scrollbar"
+              className="w-full px-5 py-4 bg-[#0A1530]/40 border border-white/10 rounded-xl text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all resize-none shadow-inner custom-scrollbar"
               placeholder="Describe your issue or request..."
             />
           </div>
           <button 
             type="submit" 
             disabled={isLoading}
-            className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white rounded-xl font-bold tracking-wide transition-all flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(0,191,255,0.3)] hover:shadow-[0_0_30px_rgba(0,191,255,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto px-8 py-4 bg-primary text-[#0D1B3E] hover:bg-[#6DE6E0]   rounded-xl font-bold tracking-wide transition-all flex items-center justify-center gap-3  hover: disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
             Submit Ticket
@@ -81,7 +81,7 @@ export function SupportTab({ tickets }: { tickets: any[] }) {
       {/* Ticket History */}
       <motion.div 
         initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-        className="h-full min-h-[360px] p-6 rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-xl flex flex-col"
+        className="h-full min-h-[360px] p-6 rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-md flex flex-col"
       >
         <h3 className="text-2xl font-bold text-white mb-6 tracking-tight">Previous Tickets</h3>
         {list.length === 0 ? (
@@ -97,7 +97,7 @@ export function SupportTab({ tickets }: { tickets: any[] }) {
             className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar flex-1"
           >
             {list.map((ticket) => (
-              <motion.div key={ticket.id} variants={itemVariants} className="p-5 rounded-2xl border border-white/[0.05] bg-black/20 hover:bg-black/40 transition-colors">
+              <motion.div key={ticket.id} variants={itemVariants} className="p-5 rounded-2xl border border-white/[0.05] bg-[#0A1530]/20 hover:bg-[#0A1530]/40 transition-colors">
                 <div className="flex justify-between items-start mb-3 gap-4">
                   <h4 className="text-white font-bold tracking-tight">{ticket.subject}</h4>
                   <span className={`shrink-0 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-md border ${

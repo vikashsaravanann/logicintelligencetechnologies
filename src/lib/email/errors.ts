@@ -35,9 +35,15 @@ export function classifyEmailError(err: unknown): ClassifiedEmailError {
     lower.includes("eauth") ||
     lower.includes("invalid login") ||
     lower.includes("authentication failed") ||
+    lower.includes("535") ||
     responseCode === 535
   ) {
-    return { category: "configuration", retryable: false, code, message };
+    return {
+      category: "configuration",
+      retryable: false,
+      code: responseCode === 535 || lower.includes("535") ? "SMTP_535" : code,
+      message,
+    };
   }
 
   if (
@@ -48,14 +54,18 @@ export function classifyEmailError(err: unknown): ClassifiedEmailError {
   }
 
   const permanentCodes = new Set([550, 551, 552, 553, 554, 501, 503, 504, 521, 523, 541]);
-  if (permanentCodes.has(responseCode) || lower.includes("user unknown") || lower.includes("mailbox unavailable")) {
+  if (
+    permanentCodes.has(responseCode) ||
+    lower.includes("user unknown") ||
+    lower.includes("mailbox unavailable")
+  ) {
     return { category: "permanent", retryable: false, code, message };
   }
 
   const temporaryCodes = new Set([421, 441, 442, 450, 451, 452, 454]);
   if (
     temporaryCodes.has(responseCode) ||
-    /etimedout|econnreset|econnection|esocket|enotfound|eai_again|etimedout|timeout|429|rate limit|temporarily/.test(
+    /etimedout|econnreset|econnection|esocket|enotfound|eai_again|timeout|429|rate limit|temporarily/.test(
       lower
     )
   ) {

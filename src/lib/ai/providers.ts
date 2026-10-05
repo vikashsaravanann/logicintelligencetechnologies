@@ -1,73 +1,50 @@
-/**
- * Dual LLM providers: Groq + xAI (Grok), raced in parallel.
- * First non-empty successful completion wins; the other is cancelled via AbortSignal where possible.
- */
+import { redis } from './redis';
+import crypto from 'crypto';
 
 export type ChatMessage = {
-  role: string;
-  content?: string;
-  [key: string]: unknown;
+  role: "system" | "user" | "assistant";
+  content: string;
+};
+
+export type ProviderConfig = {
+  id: string;
+  models: string[];
+  apiUrl: string;
+  apiKey: string;
 };
 
 export type ProviderResult = {
-  provider: "groq" | "xai" | "none";
+  provider: string;
   model: string;
   content: string;
   raw?: unknown;
 };
 
-type ProviderConfig = {
-  id: "groq" | "xai";
-  apiKey: string;
-  apiUrl: string;
-  models: string[];
-};
-
 function buildProviders(): ProviderConfig[] {
   const list: ProviderConfig[] = [];
 
-  const groqKey =
-    process.env.GROQ_API_KEY ||
-    process.env.GROK_API_KEY || // legacy misname sometimes used for Groq
-    "";
-  const xaiKey = process.env.XAI_API_KEY || process.env.GROK_API_KEY || "";
-
-  // Prefer explicit GROQ_API_KEY for Groq; XAI_API_KEY for xAI
-  if (process.env.GROQ_API_KEY || process.env.GROQ_API_URL?.includes("groq.com")) {
+  // THROUGHPUTS - Primary AI for VoiceShield & Forensic
+  if (process.env.THROUGHPUTS_API_KEY) {
     list.push({
-      id: "groq",
-      apiKey: process.env.GROQ_API_KEY || groqKey,
-      apiUrl:
-        process.env.GROQ_API_URL ||
-        "https://api.groq.com/openai/v1/chat/completions",
+      id: "throughputs",
+      apiKey: process.env.THROUGHPUTS_API_KEY,
+      apiUrl: process.env.THROUGHPUTS_BASE_URL
+        ? `${process.env.THROUGHPUTS_BASE_URL.replace(/\/$/, '')}/chat/completions`
+        : "https://api.throughputs.in/v1/chat/completions",
       models: [
-        process.env.GROQ_MODEL || "",
-        "llama-3.3-70b-versatile",
-        "openai/gpt-oss-120b",
-        "llama-3.1-8b-instant",
-      ].filter(Boolean),
+        process.env.THROUGHPUTS_INFERENCE_MODEL || "throughputs-core-latest",
+      ],
     });
-  } else if (groqKey && !process.env.XAI_API_KEY) {
-    // Only one key labeled GROK — try Groq if URL says groq
-    if ((process.env.GROQ_API_URL || "").includes("groq")) {
-      list.push({
-        id: "groq",
-        apiKey: groqKey,
-        apiUrl: process.env.GROQ_API_URL!,
-        models: [process.env.GROQ_MODEL || "llama-3.3-70b-versatile"],
-      });
-    }
   }
 
-  if (process.env.XAI_API_KEY || process.env.XAI_API_URL) {
+  // xAI (Grok)
+  if (process.env.GROK_API_KEY && !(process.env.GROQ_API_URL || "").includes("x.ai")) {
     list.push({
       id: "xai",
-      apiKey: process.env.XAI_API_KEY || xaiKey,
-      apiUrl:
-        process.env.XAI_API_URL || "https://api.x.ai/v1/chat/completions",
+      apiKey: process.env.GROK_API_KEY,
+      apiUrl: "https://api.x.ai/v1/chat/completions",
       models: [
-        process.env.XAI_MODEL || process.env.GROK_MODEL || "",
-        "grok-3",
+        process.env.XAI_MODEL || "grok-3",
         "grok-3-mini",
       ].filter(Boolean),
     });
@@ -80,7 +57,7 @@ function buildProviders(): ProviderConfig[] {
     });
   }
 
-  // If GROQ_API_KEY set but not added yet
+  // Groq
   if (process.env.GROQ_API_KEY && !list.some((p) => p.id === "groq")) {
     list.push({
       id: "groq",
@@ -93,9 +70,26 @@ function buildProviders(): ProviderConfig[] {
     });
   }
 
-  // Prefer xAI first when both present
-  list.sort((a, b) => (a.id === "xai" ? -1 : b.id === "xai" ? 1 : 0));
+  // Sorting preference: throughputs -> xai -> groq
+  list.sort((a, b) => {
+    if (a.id === "throughputs") return -1;
+    if (b.id === "throughputs") return 1;
+    if (a.id === "xai") return -1;
+    if (b.id === "xai") return 1;
+    return 0;
+  });
+  
   return list.filter((p) => Boolean(p.apiKey));
+}
+
+function computeExactHash(
+  provider: string,
+  model: string,
+  messages: ChatMessage[],
+  options?: any
+): string {
+  const payload = JSON.stringify({ provider, model, messages, options });
+  return crypto.createHash('sha256').update(payload).digest('hex');
 }
 
 async function callProvider(
@@ -106,12 +100,26 @@ async function callProvider(
     temperature?: number;
     max_tokens?: number;
     signal?: AbortSignal;
+    cacheTtlSeconds?: number;
   }
 ): Promise<ProviderResult | null> {
   const temperature = options?.temperature ?? 0.4;
   const max_tokens = options?.max_tokens ?? 800;
 
   for (const model of provider.models) {
+    let cacheKey = "";
+    if (redis) {
+      cacheKey = `ai_exact:${computeExactHash(provider.id, model, messages, { temperature, max_tokens, tools: options?.tools })}`;
+      try {
+        const cached = await redis.get(cacheKey);
+        if (cached) {
+          return typeof cached === "string" ? (JSON.parse(cached) as ProviderResult) : (cached as unknown as ProviderResult);
+        }
+      } catch (e) {
+        console.warn("Redis cache read failed:", e);
+      }
+    }
+
     try {
       const body: Record<string, unknown> = {
         model,
@@ -158,12 +166,16 @@ async function callProvider(
           const content2 =
             msg2?.content || msg2?.reasoning_content || "";
           if (content2 || msg2?.tool_calls?.length) {
-            return {
+            const result = {
               provider: provider.id,
               model,
               content: typeof content2 === "string" ? content2 : "",
               raw: data2,
             };
+            if (redis && cacheKey) {
+               await redis.setex(cacheKey, options?.cacheTtlSeconds || 3600, JSON.stringify(result));
+            }
+            return result;
           }
           continue;
         }
@@ -179,12 +191,16 @@ async function callProvider(
       const msg = data.choices?.[0]?.message;
       const content = msg?.content || msg?.reasoning_content || "";
       if (content || msg?.tool_calls?.length) {
-        return {
+        const result = {
           provider: provider.id,
           model,
           content: typeof content === "string" ? content : "",
           raw: data,
         };
+        if (redis && cacheKey) {
+           await redis.setex(cacheKey, options?.cacheTtlSeconds || 3600, JSON.stringify(result));
+        }
+        return result;
       }
     } catch (err) {
       if ((err as Error)?.name === "AbortError") return null;
@@ -195,7 +211,7 @@ async function callProvider(
 }
 
 /**
- * Race Groq and xAI in parallel. First successful text/tool result wins.
+ * Race configured providers in parallel. First successful text/tool result wins.
  */
 export async function completeWithProviders(
   messages: ChatMessage[],
@@ -203,6 +219,7 @@ export async function completeWithProviders(
     tools?: unknown[];
     temperature?: number;
     max_tokens?: number;
+    cacheTtlSeconds?: number;
   }
 ): Promise<ProviderResult> {
   const providers = buildProviders();
@@ -218,7 +235,6 @@ export async function completeWithProviders(
       callProvider(p, messages, { ...options, signal: controller.signal })
     );
 
-    // Promise.any-like: first non-null success
     const result = await new Promise<ProviderResult | null>((resolve) => {
       let remaining = tasks.length;
       let settled = false;
@@ -251,9 +267,8 @@ export function hasAnyProvider(): boolean {
   return buildProviders().length > 0;
 }
 
-
 /**
- * Stream from the first available provider (xAI preferred, then Groq).
+ * Stream from the first available provider.
  * Yields plain text chunks via async generator.
  */
 export async function* streamWithProviders(

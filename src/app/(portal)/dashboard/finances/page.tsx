@@ -62,7 +62,7 @@ export default async function FinancesPage() {
             </div>
             <div>
               <p className="text-xs text-zinc-500 uppercase tracking-widest font-medium">{card.label}</p>
-              <p className="text-2xl font-black text-white mt-0.5">{card.value}</p>
+              <p className="text-2xl font-bold text-white mt-0.5">{card.value}</p>
             </div>
           </div>
         ))}

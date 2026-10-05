@@ -20,6 +20,9 @@ export default defineConfig({
     video: "off",
     actionTimeout: 12_000,
     navigationTimeout: 30_000,
+    launchOptions: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+      ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH }
+      : undefined,
   },
   projects: [
     {

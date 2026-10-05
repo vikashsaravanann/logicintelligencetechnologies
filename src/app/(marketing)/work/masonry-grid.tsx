@@ -26,7 +26,7 @@ export default function MasonryGrid({ projects }: { projects: PortfolioProject[]
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/20 to-transparent flex items-end p-6 lg:p-8">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B3E] via-[#0D1B3E]/20 to-transparent flex items-end p-6 lg:p-8">
               <div className="relative z-10 w-full">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-bold uppercase tracking-widest text-primary drop-shadow-md">
@@ -44,7 +44,7 @@ export default function MasonryGrid({ projects }: { projects: PortfolioProject[]
                     </a>
                   )}
                 </div>
-                <h2 className="text-2xl font-black text-white group-hover:text-primary transition-colors drop-shadow-md">
+                <h2 className="text-2xl font-bold text-white group-hover:text-primary transition-colors drop-shadow-md">
                   {project.title}
                 </h2>
               </div>

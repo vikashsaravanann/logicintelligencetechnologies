@@ -4,25 +4,13 @@ import { COMPANY } from "@/config/company";
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white flex flex-col items-center justify-center relative overflow-hidden px-6 py-24 selection:bg-primary/30">
-      {/* Background radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 blur-[140px] rounded-full pointer-events-none" />
-
-      {/* Background subtle grid pattern */}
-      <div 
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage: `linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)`,
-          backgroundSize: '40px 40px'
-        }}
-      />
-
+    <main id="main-content" className="min-h-screen bg-transparent text-white flex flex-col items-center justify-center relative overflow-hidden px-6 py-24 ">
       <div className="relative z-10 max-w-xl text-center flex flex-col items-center">
-        <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase bg-primary/10 border border-primary/20 text-primary mb-6">
+        <span className="lit-eyebrow mb-6">
           Error 404 • Page Not Found
         </span>
 
-        <h1 className="text-6xl sm:text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-500 tracking-tight mb-4">
+        <h1 className="font-display text-7xl sm:text-8xl md:text-9xl font-bold text-white tracking-tight mb-4">
           404
         </h1>
 
@@ -37,21 +25,21 @@ export default function NotFound() {
         <div className="flex flex-wrap items-center justify-center gap-4 w-full">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold text-black bg-primary hover:bg-primary/90 transition-all neon-btn shadow-[0_0_20px_rgba(0,191,255,0.3)]"
+            className="lit-btn lit-btn-primary "
           >
             <Home className="w-4 h-4" />
             Back to Homepage
           </Link>
           <Link
             href="/services"
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+            className="lit-btn lit-btn--secondary"
           >
             <Compass className="w-4 h-4" />
             Explore Services
           </Link>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-zinc-300 hover:text-white bg-transparent border border-white/10 hover:border-white/20 transition-colors"
+            className="lit-btn lit-btn--ghost"
           >
             <MessageSquare className="w-4 h-4" />
             Contact Support

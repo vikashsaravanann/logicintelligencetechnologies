@@ -16,12 +16,13 @@ import FreeDemoCTA from '@/features/leads/components/free-demo-cta';
 import { COMPANY } from '@/config/company';
 
 export const metadata: Metadata = {
-  title: 'Home',
+  title: 'Logic Intelligence Technologies | AI Products & Automation Solutions',
   description:
-    'Coimbatore-based web & AI development studio. Custom websites, e-commerce, and software with transparent pricing and a free demo before payment.',
+    'Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions, including Logic Voice and VoiceShield.',
   openGraph: {
     title: `${COMPANY.legalName} — ${COMPANY.tagline}`,
-    description: 'AI-integrated development for Coimbatore businesses. Free demo before payment.',
+    description:
+      'AI technology company developing intelligent AI products and automation solutions. Creators of Logic Voice and VoiceShield.',
     images: [{ url: COMPANY.bannerPath, width: 1200, height: 630, alt: 'Logic Intelligence Technologies' }],
   },
 };

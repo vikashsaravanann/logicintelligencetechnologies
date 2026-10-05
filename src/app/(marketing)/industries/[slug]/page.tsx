@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { industriesData } from "@/data/industriesData";
+import { industriesData, getIndustryVisual } from "@/data/industriesData";
 import { ArrowLeft, CheckCircle2, AlertTriangle, ShieldCheck, ArrowRight, Building2, Layers, Sparkles } from "lucide-react";
 import SafeImage from "@/components/ui/safe-image";
 import CTASection from "@/components/ui/cta-section";
@@ -43,10 +43,10 @@ export default async function IndustryDetailPage({ params }: Props) {
     notFound();
   }
 
-  const visualSrc = `/images/industries/${slug}.jpg`;
+  const visualSrc = getIndustryVisual(slug);
 
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-28 pb-20 overflow-hidden">
+    <div className="relative min-h-screen bg-[#0A1530] text-white pt-28 pb-20 overflow-hidden">
       <BackToHome href="/industries" label="Back to Industries" />
       {/* Background Accent Glow */}
       <div className="absolute top-0 right-1/3 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
@@ -54,7 +54,7 @@ export default async function IndustryDetailPage({ params }: Props) {
       <div className="max-w-6xl mx-auto px-6 relative z-10">
 
         {/* Visual Architecture Hero */}
-        <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden mb-12 border border-white/10 shadow-2xl bg-black/50">
+        <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-3xl overflow-hidden mb-12 border border-white/10 shadow-2xl bg-[#0A1530]/50">
           <SafeImage
             src={visualSrc}
             alt={`${ind.title} Architecture Visual`}
@@ -69,7 +69,7 @@ export default async function IndustryDetailPage({ params }: Props) {
           <div className="inline-block px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-widest uppercase mb-4">
             {ind.subtitle}
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight uppercase mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight uppercase mb-6">
             {ind.title}
           </h1>
           <p className="text-base sm:text-lg text-zinc-300 max-w-4xl leading-relaxed mb-8">
@@ -79,7 +79,7 @@ export default async function IndustryDetailPage({ params }: Props) {
           <div className="flex flex-wrap gap-4">
             <Link
               href="/book-consultation"
-              className="px-7 py-3.5 rounded-xl bg-primary text-black font-bold text-sm hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.4)] flex items-center gap-2 group"
+              className="px-7 py-3.5 rounded-xl bg-primary text-black font-bold text-sm hover:bg-primary/90 transition-all  flex items-center gap-2 group"
             >
               <span>Schedule Technical Consultation</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -96,15 +96,15 @@ export default async function IndustryDetailPage({ params }: Props) {
         {/* Challenges vs Solutions Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
           {/* Industry Bottlenecks */}
-          <div className="rounded-3xl border border-rose-500/20 bg-rose-500/[0.02] p-8">
-            <h2 className="text-xl font-bold text-rose-400 mb-6 uppercase tracking-wider flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-rose-400" />
+          <div className="rounded-3xl border border-accent/20 bg-accent/[0.02] p-8">
+            <h2 className="text-xl font-bold text-accent mb-6 uppercase tracking-wider flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-accent" />
               <span>Common Industry Bottlenecks</span>
             </h2>
             <div className="space-y-4">
               {ind.challenges.map((c, idx) => (
                 <div key={idx} className="flex items-start gap-3 text-sm text-zinc-300">
-                  <div className="w-1.5 h-1.5 rounded-full bg-rose-400 mt-2 shrink-0" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0" />
                   <span>{c}</span>
                 </div>
               ))}
@@ -130,7 +130,7 @@ export default async function IndustryDetailPage({ params }: Props) {
 
         {/* Core Domain Features */}
         <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-8 lg:p-12 mb-16">
-          <h2 className="text-2xl font-black text-white uppercase tracking-tight mb-8">
+          <h2 className="text-2xl font-bold text-white uppercase tracking-tight mb-8">
             Core Vertical Modules &amp; Capabilities
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -147,14 +147,14 @@ export default async function IndustryDetailPage({ params }: Props) {
         <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-8 mb-16 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-emerald-400" />
+              <ShieldCheck className="w-5 h-5 text-primary" />
               <span>Regulatory &amp; Compliance Standards</span>
             </h3>
             <p className="text-xs text-zinc-400">Strict data privacy, encryption, and auditability protocols built-in.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {ind.compliance.map((c, idx) => (
-              <span key={idx} className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold">
+              <span key={idx} className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-primary text-xs font-semibold">
                 {c}
               </span>
             ))}

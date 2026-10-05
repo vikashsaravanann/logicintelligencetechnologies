@@ -11,11 +11,10 @@ export default function CredentialsStripSection() {
   ];
 
   return (
-    <section className="bg-primary/5 border-y border-primary/20 py-8 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[url('https://res.cloudinary.com/dbuznxrrm/image/upload/v1704285811/grid-pattern_q5aocu.svg')] opacity-[0.05]" />
+    <section className="border-y border-white/[0.07] bg-[#0A1530]/60 py-6 relative">
       
       <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
           {credentials.map((cred, i) => (
             <motion.div
               key={i}
@@ -23,10 +22,10 @@ export default function CredentialsStripSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ delay: i * 0.1 }}
-              className="flex flex-col items-center gap-3 p-4 rounded-xl bg-black/20 border border-white/5 backdrop-blur-sm hover:border-primary/30 transition-all group"
+              className="flex items-center gap-3 px-2 py-2 group"
             >
-              <cred.icon className="w-8 h-8 text-primary group-hover:scale-110 transition-transform" />
-              <span className="text-sm font-semibold text-zinc-300 group-hover:text-white transition-colors">{cred.text}</span>
+              <cred.icon className="w-6 h-6 shrink-0 text-primary" />
+              <span className="text-[13px] font-medium text-zinc-200 leading-snug">{cred.text}</span>
             </motion.div>
           ))}
         </div>

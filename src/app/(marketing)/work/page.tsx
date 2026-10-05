@@ -20,16 +20,16 @@ export const metadata: Metadata = {
 
 export default function WorkPage() {
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white pt-32">
+    <main className="min-h-screen bg-transparent text-white pt-32">
       <BackToHome href="/" label="Back to Home" />
       <section className="relative py-16 px-6 lg:px-8 overflow-hidden">
-        <PageBackdrop src="/assets/backdrops/work-hero.jpg" />
+        <PageBackdrop src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&h=900&q=80" />
         <div className="relative z-10 max-w-7xl mx-auto">
         <div className="text-center mb-16 max-w-3xl mx-auto">
           <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">
             Our Portfolio
           </span>
-          <h1 className="uppercase text-3xl md:text-4xl lg:text-6xl font-black text-white mb-6">OUR WORK</h1>
+          <h1 className="uppercase text-3xl md:text-4xl lg:text-6xl font-bold text-white mb-6">OUR WORK</h1>
           <p className="text-lg text-zinc-400 leading-relaxed">
             Explore our curated selection of high-performance web applications, scalable enterprise platforms, and bespoke digital solutions designed to drive business growth and operational excellence.
           </p>
@@ -39,7 +39,7 @@ export default function WorkPage() {
 
         <div className="mt-20 text-center">
           <p className="text-zinc-400 mb-6">Want something similar built for your business?</p>
-          <Link href="/free-demo" className="inline-flex px-8 py-4 rounded-xl text-sm font-bold text-black bg-primary neon-btn">
+          <Link href="/free-demo" className="inline-flex px-8 py-4 rounded-xl text-sm font-bold text-black bg-primary">
             Request a Free Demo
           </Link>
         </div>

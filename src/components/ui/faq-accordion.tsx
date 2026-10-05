@@ -48,7 +48,7 @@ export default function FAQAccordion({
             <HelpCircle className="w-3.5 h-3.5" />
             <span>Answers</span>
           </div>
-          {title && <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-3">{title}</h3>}
+          {title && <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-3">{title}</h3>}
           {subtitle && <p className="text-sm sm:text-base text-zinc-400">{subtitle}</p>}
         </div>
       )}

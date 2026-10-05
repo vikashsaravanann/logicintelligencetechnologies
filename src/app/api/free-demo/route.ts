@@ -1,31 +1,32 @@
 import { NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email/send-email";
-import FreeDemoConfirmationEmail from "@/emails/free-demo-confirmation-email";
 import NewLeadNotificationEmail from "@/emails/new-lead-notification-email";
-import { z } from "zod";
+import LeadConfirmationEmail from "@/emails/lead-confirmation-email";
 import * as React from "react";
+import { z } from "zod";
 import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
 import { getLeadNotificationRecipients } from "@/lib/email/recipients";
-import { COMPANY } from "@/config/company";
-import { sanitizeMultilineText, sanitizePersonName } from "@/lib/email/validation";
+import { sanitizePersonName, sanitizeMultilineText } from "@/lib/email/validation";
 import { insertLead } from "@/lib/forms/persist";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required").max(120),
-  email: z.string().email("Invalid email address").max(254),
+  fullName: z.string().min(1, "Name is required").max(120),
+  email: z.string().email("Valid email required").max(254),
   phone: z.string().max(40).optional(),
-  business: z.string().max(160).optional(),
-  service_type: z.string().max(80).optional().default("General Enquiry"),
-  budget: z.string().max(80).optional(),
-  requirements: z.string().max(5000).optional(),
+  companyName: z.string().max(160).optional(),
+  projectType: z.string().max(80).optional().default("Free Demo"),
+  budgetRange: z.string().max(80).optional(),
+  timeline: z.string().max(80).optional(),
+  description: z.string().max(5000).optional().default(""),
+  pageUrl: z.string().max(500).optional(),
 });
 
 export async function POST(req: Request) {
   try {
-    if (!rateLimit(`demo:${clientIp(req)}`, 8, 15 * 60_000)) {
+    if (!(await rateLimit(`free-demo:${clientIp(req)}`, 8, 15 * 60_000))) {
       return NextResponse.json(
         { success: false, message: "Too many requests. Please try again shortly." },
         { status: 429 }
@@ -34,31 +35,47 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const parsed = schema.safeParse(body);
-
     if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: "Invalid input" },
+        { success: false, message: parsed.error.issues[0]?.message || "Invalid input" },
         { status: 400 }
       );
     }
 
-    const name = sanitizePersonName(parsed.data.name);
+    const fullName = sanitizePersonName(parsed.data.fullName);
     const email = parsed.data.email.trim().toLowerCase();
     const phone = parsed.data.phone ? sanitizePersonName(parsed.data.phone, 40) : "";
-    const business = parsed.data.business ? sanitizePersonName(parsed.data.business, 160) : "";
-    const service_type = sanitizePersonName(parsed.data.service_type || "General Enquiry", 80);
-    const budget = parsed.data.budget ? sanitizePersonName(parsed.data.budget, 80) : "";
-    const requirements = sanitizeMultilineText(parsed.data.requirements || "", 5000);
+    const companyName = parsed.data.companyName
+      ? sanitizePersonName(parsed.data.companyName, 160)
+      : "";
+    const projectType = sanitizePersonName(parsed.data.projectType || "Free Demo", 80);
+    const budgetRange = parsed.data.budgetRange
+      ? sanitizePersonName(parsed.data.budgetRange, 80)
+      : "";
+    const timeline = parsed.data.timeline
+      ? sanitizePersonName(parsed.data.timeline, 80)
+      : "";
+    const description = sanitizeMultilineText(parsed.data.description || "", 5000);
 
-    const stored = await insertLead("demo_leads", {
-      first_name: name.split(" ")[0] || name,
-      last_name: name.split(" ").slice(1).join(" ") || "",
+    const stored = await insertLead("contact_leads", {
+      name: fullName,
       email,
-      phone: phone || "",
-      company_name: business || "",
-      job_title: "",
-      interests: [service_type],
-      budget: budget || "",
+      company: companyName || null,
+      phone: phone || null,
+      project_type: projectType,
+      budget: budgetRange || null,
+      timeline: timeline || null,
+      source: "free-demo-form",
+      page_url: parsed.data.pageUrl || "/free-demo",
+      message: [
+        description || "",
+        phone ? `Phone: ${phone}` : "",
+        budgetRange ? `Budget: ${budgetRange}` : "",
+        timeline ? `Timeline: ${timeline}` : "",
+        projectType ? `Type: ${projectType}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n"),
     });
 
     if (!stored.ok) {
@@ -69,51 +86,57 @@ export async function POST(req: Request) {
 
     try {
       const emailResult = await sendEmail({
-        to: email,
-        from: "hello",
-        replyTo: COMPANY.emails.hello,
-        subject: "We received your request — Logic Intelligence Technologies",
-        category: "transactional",
-        eventType: "demo-confirmation",
-        templateKey: "free-demo-confirmation-email",
-        idempotencyKey: `demo:${idemBase}:customer`,
-        react: React.createElement(FreeDemoConfirmationEmail, { fullName: name }),
-      });
-      if (!emailResult.success) {
-        console.error("[Email Error] Failed to send email:", emailResult.message);
-      }
-    } catch (emailErr) {
-      console.error("[Email Error] User confirmation failed:", emailErr);
-    }
-
-    try {
-      const emailResult = await sendEmail({
         to: getLeadNotificationRecipients(),
         from: "noReply",
         replyTo: email,
-        subject: `New website enquiry: ${name} — ${service_type}`,
+        subject: `New Free Demo Request: ${projectType} from ${fullName}`,
         category: "transactional",
         eventType: "demo-internal",
         templateKey: "new-lead-notification-email",
         idempotencyKey: `demo:${idemBase}:internal`,
         react: React.createElement(NewLeadNotificationEmail, {
-          fullName: name,
-          companyName: business || "",
+          fullName,
           email,
-          phone: phone || "",
-          service: service_type,
-          requirements: requirements || "",
+          phone: phone || "N/A",
+          companyName: companyName || "N/A",
+          service: projectType,
+          requirements: `Budget: ${budgetRange || "n/a"} | Timeline: ${timeline || "n/a"}\n\n${description || ""}`,
           submissionDate: new Date().toISOString(),
         }),
       });
       if (!emailResult.success) {
-        console.error("[Email Error] Failed to send email:", emailResult.message);
+        console.error("[Email Error] Internal notification failed:", emailResult.message);
       }
     } catch (emailErr) {
-      console.error("[Email Error] Internal notification failed:", emailErr);
+      console.error("[Email Error] Internal notification exception:", emailErr);
     }
 
-    return NextResponse.json({ success: true, message: "Request received", leadId: stored.id });
+    try {
+      const emailResult = await sendEmail({
+        to: email,
+        from: "hello",
+        subject: "We received your demo request — Logic Intelligence Technologies",
+        category: "transactional",
+        eventType: "demo-confirmation",
+        templateKey: "lead-confirmation-email",
+        idempotencyKey: `demo:${idemBase}:customer`,
+        react: React.createElement(LeadConfirmationEmail, {
+          fullName,
+          service: projectType,
+        }),
+      });
+      if (!emailResult.success) {
+        console.error("[Email Error] User confirmation failed:", emailResult.message);
+      }
+    } catch (emailErr) {
+      console.error("[Email Error] User confirmation exception:", emailErr);
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Request received",
+      leadId: stored.id,
+    });
   } catch (error) {
     console.error("Free Demo API Error:", error);
     return NextResponse.json(
@@ -122,3 +145,4 @@ export async function POST(req: Request) {
     );
   }
 }
+

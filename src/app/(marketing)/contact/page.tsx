@@ -134,7 +134,7 @@ export default function ContactPage() {
   const labelClass = "block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2";
 
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white pt-24">
+    <main className="min-h-screen bg-transparent text-white pt-24">
       <BackToHome />
 
       <section className="relative py-16 px-6 lg:px-8 overflow-hidden min-h-[80vh] flex flex-col justify-center">
@@ -142,21 +142,21 @@ export default function ContactPage() {
 
         <div className="max-w-3xl mx-auto w-full relative z-10">
           <div className="text-center mb-12">
-            <h1 className="uppercase text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">START YOUR PROJECT</h1>
+            <h1 className="uppercase text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">START YOUR PROJECT</h1>
             <p className="text-zinc-400">Tell us about your requirements and we'll get back to you within 24 hours.</p>
           </div>
 
-          <div className="bg-zinc-900/40 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
+          <div className="bg-zinc-900/40 backdrop-blur-md border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
             {sent ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center py-16"
               >
-                <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(0,191,255,0.2)]">
+                <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8 ">
                   <CheckCircle2 className="h-12 w-12 text-primary" />
                 </div>
-                <h3 className="text-3xl font-black text-white mb-4">Inquiry Submitted!</h3>
+                <h3 className="text-3xl font-bold text-white mb-4">Inquiry Submitted!</h3>
                 <p className="text-zinc-400 max-w-sm mx-auto mb-8">
                   Thank you for sharing your project details. We will review them and contact you within 24 hours.
                 </p>
@@ -190,8 +190,8 @@ export default function ContactPage() {
                       key={s}
                       className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 ${
                         step >= s
-                          ? "bg-primary text-black shadow-[0_0_15px_rgba(0,191,255,0.4)]"
-                          : "bg-[#0A0F1E] text-zinc-500 border border-white/10"
+                          ? "bg-primary text-black "
+                          : "bg-transparent text-zinc-500 border border-white/10"
                       }`}
                     >
                       {step > s ? <CheckCircle2 className="w-5 h-5" /> : s}
@@ -336,7 +336,7 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-8 py-4 rounded-xl text-sm font-bold text-black bg-white hover:bg-primary transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(0,191,255,0.4)] flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-8 py-4 rounded-xl text-sm font-bold text-black bg-white hover:bg-primary transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover: flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <>

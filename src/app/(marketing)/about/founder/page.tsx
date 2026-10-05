@@ -74,19 +74,19 @@ const gallery = [
     caption: "Studio",
   },
   {
-    src: "/images/founder/founder-portrait-dessert.jpg",
+    src: "/images/founder/founder-about-card.jpg",
     alt: `${FOUNDER.name} — portrait`,
     caption: "Portrait",
   },
   {
-    src: "/images/founder/founder-portrait-lounge.jpg",
+    src: "/images/founder/vikash-lion-lounge.jpg",
     alt: `${FOUNDER.name} — Coimbatore`,
     caption: "Coimbatore",
   },
   {
-    src: "/images/founder/founder-portrait-forest.jpg",
-    alt: `${FOUNDER.name} — outdoors`,
-    caption: "Outdoors",
+    src: "/images/founder/vikash-banner.jpg",
+    alt: `${FOUNDER.name} — profile`,
+    caption: "Profile",
   },
 ];
 
@@ -132,7 +132,7 @@ export default function FounderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0F1E] text-white">
+    <div className="min-h-screen bg-transparent text-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -155,7 +155,7 @@ export default function FounderPage() {
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-4">
                 FOUNDER
               </p>
-              <h1 className="uppercase text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] mb-4">
+              <h1 className="uppercase text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] mb-4">
                 {FOUNDER.name}
               </h1>
               <p className="text-lg sm:text-xl text-zinc-300 font-medium mb-3">
@@ -168,7 +168,7 @@ export default function FounderPage() {
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <GraduationCap className="w-3.5 h-3.5 text-primary" />
-                  B.Tech AI &amp; Data Science
+                  B.Tech AI & Data Science
                 </span>
               </p>
               <p className="text-base text-zinc-300 leading-relaxed max-w-xl mb-8">
@@ -226,22 +226,22 @@ export default function FounderPage() {
             </div>
 
             <div className="lg:col-span-7 order-1 lg:order-2">
-              <div className="relative aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5] max-h-[560px] w-full mx-auto rounded-3xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(0,191,255,0.12)]">
+              <div className="relative aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5] max-h-[560px] w-full mx-auto rounded-3xl overflow-hidden border border-white/10 ">
                 <Image
                   src="/images/founder/founder-about-main.jpg"
                   alt={`${FOUNDER.name} — Founder of ${FOUNDER.company}`}
                   fill
                   priority
-                  className="object-cover object-[center_20%]"
+                  className="object-cover object-top sm:object-center"
                   sizes="(max-width: 1024px) 100vw, 48vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E]/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B3E]/80 via-transparent to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-1">
                     Logic Intelligence Technologies
                   </p>
                   <p className="text-sm text-white/90 font-medium">
-                    Founder &amp; Lead Systems Engineer · Coimbatore
+                    Founder & Lead Systems Engineer · Coimbatore
                   </p>
                 </div>
               </div>
@@ -258,7 +258,7 @@ export default function FounderPage() {
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-2">
                 PORTRAITS
               </p>
-              <h2 className="uppercase text-2xl sm:text-3xl font-black tracking-tight">
+              <h2 className="uppercase text-2xl sm:text-3xl font-bold tracking-tight">
                 Beyond the desk
               </h2>
             </div>
@@ -298,7 +298,7 @@ export default function FounderPage() {
             <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-2">
               PROFILE
             </p>
-            <h2 className="uppercase text-2xl sm:text-3xl font-black tracking-tight mb-4">
+            <h2 className="uppercase text-2xl sm:text-3xl font-bold tracking-tight mb-4">
               Who he is
             </h2>
             <ul className="space-y-3 text-sm text-zinc-400">
@@ -317,19 +317,9 @@ export default function FounderPage() {
             </ul>
           </div>
           <div className="lg:col-span-8 space-y-5 text-zinc-300 leading-relaxed text-[15px] sm:text-base">
-            <p>{FOUNDER.shortBio}</p>
-            <p>
-              Logic Intelligence Technologies is run as a focused digital engineering studio:
-              fixed-scope packages where they fit, custom architecture where they do not, and a free
-              demo path so buyers can see direction before payment. The work spans marketing sites,
-              operational software, and AI assistants grounded in company knowledge rather than open
-              internet guesses.
-            </p>
-            <p>
-              Outside client delivery, Vikash experiments with autonomous workflow engines and
-              evaluation discipline — golden-set checks for pricing answers, retrieval quality, and
-              the gap between a demo chatbot and something sales can trust.
-            </p>
+            {FOUNDER.longBio.split("\n\n").map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
           </div>
         </div>
       </section>
@@ -338,18 +328,20 @@ export default function FounderPage() {
       <section className="py-16 md:py-20 border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-2">
-            CAPABILITIES
+            EXPERTISE
           </p>
-          <h2 className="uppercase text-2xl sm:text-3xl font-black tracking-tight mb-10">
-            Where the work lands
+          <h2 className="uppercase text-2xl sm:text-3xl font-bold tracking-tight mb-10">
+            How he builds
           </h2>
-          <div className="grid sm:grid-cols-2 gap-4 md:gap-6">
+          <div className="grid sm:grid-cols-2 gap-5">
             {expertise.map((item) => (
               <div
                 key={item.title}
-                className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 hover:border-primary/30 hover:bg-white/[0.05] transition-colors"
+                className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-primary/30 transition-colors"
               >
-                <item.icon className="w-7 h-7 text-primary mb-4" />
+                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+                  <item.icon className="w-5 h-5 text-primary" />
+                </div>
                 <h3 className="text-sm font-bold uppercase tracking-wide text-white mb-2">
                   {item.title}
                 </h3>
@@ -364,18 +356,18 @@ export default function FounderPage() {
       <section className="py-16 md:py-20 border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-2">
-            OPERATING STYLE
+            PRINCIPLES
           </p>
-          <h2 className="uppercase text-2xl sm:text-3xl font-black tracking-tight mb-10">
-            How decisions get made
+          <h2 className="uppercase text-2xl sm:text-3xl font-bold tracking-tight mb-10">
+            Operating rules
           </h2>
-          <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid md:grid-cols-3 gap-5">
             {principles.map((p) => (
               <div
                 key={p.t}
-                className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-6"
+                className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent p-6"
               >
-                <h3 className="text-sm font-black uppercase tracking-wide text-white mb-3">
+                <h3 className="text-sm font-bold uppercase tracking-wide text-primary mb-3">
                   {p.t}
                 </h3>
                 <p className="text-sm text-zinc-400 leading-relaxed">{p.d}</p>
@@ -387,35 +379,27 @@ export default function FounderPage() {
 
       {/* CTA */}
       <section className="py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-          <h2 className="uppercase text-2xl sm:text-4xl font-black tracking-tight mb-4">
-            Build with the same person who scopes the work
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <h2 className="uppercase text-2xl sm:text-3xl font-bold tracking-tight mb-4">
+            Build with the founder
           </h2>
-          <p className="text-zinc-400 mb-8 max-w-2xl mx-auto">
-            Share the problem, the constraints, and the timeline. You will get a clear plan — and
-            when it fits, a free demo direction — before any payment.
+          <p className="text-zinc-400 mb-8 leading-relaxed">
+            Scope, architecture, and delivery from the same desk. Start with a project brief or
+            a consultation.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
-              href="/free-demo"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-primary text-black text-sm font-bold uppercase tracking-wide hover:bg-primary/90 transition-colors"
+              href="/contact"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-black text-sm font-bold uppercase tracking-wide hover:bg-primary/90 transition-colors"
             >
-              Request free demo <ArrowRight className="w-4 h-4" />
+              Start a project <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/about"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border border-white/15 text-sm font-bold uppercase tracking-wide hover:bg-white/5 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/15 bg-white/5 text-sm font-bold uppercase tracking-wide hover:bg-white/10 transition-colors"
             >
               About the company
             </Link>
-            <a
-              href={FOUNDER.linkedinUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border border-white/15 text-sm font-bold uppercase tracking-wide hover:bg-white/5 transition-colors"
-            >
-              LinkedIn <ExternalLink className="w-3.5 h-3.5" />
-            </a>
           </div>
         </div>
       </section>

@@ -95,7 +95,7 @@ export default async function ProfilePage() {
                   className="w-full h-full object-cover object-center"
                 />
               ) : (
-                <span className="w-full h-full flex items-center justify-center text-2xl font-black text-[#041018] bg-gradient-to-br from-cyan-300 to-sky-400">
+                <span className="w-full h-full flex items-center justify-center text-2xl font-bold text-[#041018] bg-gradient-to-br from-cyan-300 to-sky-400">
                   {initial}
                 </span>
               )}
@@ -135,7 +135,7 @@ export default async function ProfilePage() {
                 key={s.k}
                 className="rounded-2xl border border-white/12 bg-white/[0.04] px-3 py-3 text-center min-h-[72px] flex flex-col items-center justify-center"
               >
-                <p className="text-xl font-black tracking-tight">{s.v}</p>
+                <p className="text-xl font-bold tracking-tight">{s.v}</p>
                 <p className="text-[10px] uppercase tracking-widest text-zinc-500 mt-1">{s.k}</p>
               </div>
             ))}

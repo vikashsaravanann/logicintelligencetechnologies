@@ -1,16 +1,16 @@
 import { test, expect } from "@playwright/test";
 
 const PROTECTED = [
-  "/contact",
-  "/services",
-  "/industries",
-  "/ai",
-  "/free-demo",
-  "/book-consultation",
-  "/checklist",
-  "/about",
-  "/blog",
-  "/careers",
+  "/dashboard",
+  "/admin",
+  "/admin/command-center",
+  "/profile",
+  "/client/dashboard",
+  "/client/projects",
+  "/client/documents",
+  "/client/invoices",
+  "/client/messages",
+  "/client/support",
 ];
 
 test.describe("Auth gate", () => {
@@ -22,7 +22,7 @@ test.describe("Auth gate", () => {
       await page.waitForURL(/\/login/, { timeout: 15000 });
       const url = page.url();
       expect(url).toContain("/login");
-      expect(url).toMatch(/next=/);
+      expect(new URL(url).searchParams.get("next")).toBe(path);
     });
   }
 
@@ -41,11 +41,13 @@ test.describe("Auth gate", () => {
   test("external next stays on-site (no open redirect navigation)", async ({
     page,
   }) => {
+    await page.goto("/login", { waitUntil: "domcontentloaded" });
+    const origin = new URL(page.url()).origin;
     await page.goto("/login?next=https://evil.example.com", {
       waitUntil: "domcontentloaded",
     });
     const u = new URL(page.url());
     expect(u.pathname).toBe("/login");
-    expect(u.hostname).toMatch(/logicintelligencetechnologies\.in$/);
+    expect(u.origin).toBe(origin);
   });
 });

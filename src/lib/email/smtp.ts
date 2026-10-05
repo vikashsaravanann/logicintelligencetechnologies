@@ -20,6 +20,7 @@ const senderEnvMap: Record<SenderKey, string> = {
   hello: "HELLO",
   admin: "ADMIN",
   support: "SUPPORT",
+  contact: "CONTACT",
 };
 
 /**

@@ -1,14 +1,13 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import BackToHome from "@/components/ui/back-to-home";
+import { ArrowRight, Phone } from "lucide-react";
 import PageBackdrop from "@/components/ui/page-backdrop";
 import { COMPANY } from "@/config/company";
-import { ArrowRight, Phone } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Investor Briefing",
+  title: "Investor Briefing | Logic Intelligence Technologies",
   description:
-    "LOGIC INTELLIGENCE TECHNOLOGIES operating update. Coimbatore technology startup. Not a priced round. Walk the live stack.",
+    "Operating update for Logic Intelligence Technologies. Not raising. Walk the live stack.",
 };
 
 const points = [
@@ -22,15 +21,14 @@ const points = [
 
 export default function InvestorsPage() {
   return (
-    <main className="min-h-screen bg-[#0A0F1E] text-white pt-24 sm:pt-28">
-      <BackToHome />
+    <main className="min-h-screen bg-transparent text-white pt-24 sm:pt-28">
       <section className="relative px-6 lg:px-8 overflow-hidden">
-        <PageBackdrop src="/assets/jobs/studio-hero.jpg" />
+        <PageBackdrop src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&h=900&q=80" />
         <div className="relative z-10 max-w-4xl mx-auto text-center pb-12 pt-6">
         <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-primary mb-4">
           LOGIC INTELLIGENCE TECHNOLOGIES
         </p>
-        <h1 className="uppercase text-3xl sm:text-5xl font-black tracking-tight leading-[1.1] mb-5">
+        <h1 className="uppercase text-3xl sm:text-5xl font-bold tracking-tight leading-[1.1] mb-5">
           INVESTOR BRIEFING
         </h1>
         <p className="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
@@ -55,12 +53,12 @@ export default function InvestorsPage() {
           <Link href="/ai" className="inline-flex items-center justify-center gap-2 h-12 rounded-xl font-bold text-black bg-primary">
             Open Logic AI <ArrowRight className="w-4 h-4" />
           </Link>
-          <Link href="/ai-assistant" className="inline-flex items-center justify-center h-12 rounded-xl font-bold border border-white/15 hover:bg-white/5">
+          <Link href="/ai-assistant" className="inline-flex items-center justify-center h-12 rounded-xl font-bold text-white border border-white/15 hover:bg-white/5">
             Knowledge Assistant
           </Link>
           <a
             href={`https://wa.me/${COMPANY.whatsappNumber}?text=${encodeURIComponent("Hi LIT — I read the investor briefing.")}`}
-            className="inline-flex items-center justify-center gap-2 h-12 rounded-xl font-bold border border-white/15 hover:bg-white/5"
+            className="inline-flex items-center justify-center gap-2 h-12 rounded-xl font-bold text-white border border-white/15 hover:bg-white/5"
           >
             <Phone className="w-4 h-4" /> WhatsApp
           </a>
