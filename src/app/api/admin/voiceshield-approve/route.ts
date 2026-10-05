@@ -4,11 +4,15 @@ import VoiceShieldAccessGrantedEmail from "@/../emails/voiceshield-access-grante
 import * as React from "react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { COMPANY } from "@/config/company";
+import { requireAdminApi } from "@/lib/auth/require-admin";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
+  const auth = await requireAdminApi(req);
+  if (!auth.ok) return NextResponse.json({ success: false, message: auth.message }, { status: auth.status });
+
   try {
     const body = await req.json();
     const { leadId, email, fullName, accessType } = body;

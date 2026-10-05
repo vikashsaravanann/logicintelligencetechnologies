@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { Briefcase, FileText, Receipt, HelpCircle } from "lucide-react";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getPortalContext, listOwnRows } from "@/lib/client-portal/data";
 
 export const metadata: Metadata = {
   title: "Executive Dashboard | Client Portal | Logic Intelligence Technologies",
@@ -10,16 +10,12 @@ export const metadata: Metadata = {
 export const revalidate = 0;
 
 export default async function ClientDashboardPage() {
-  const [
-    { data: projects },
-    { data: invoices },
-    { data: tickets },
-    { data: files },
-  ] = await Promise.all([
-    supabaseAdmin.from("projects").select("*").order("created_at", { ascending: false }).limit(4),
-    supabaseAdmin.from("invoices").select("*").order("created_at", { ascending: false }).limit(4),
-    supabaseAdmin.from("support_tickets").select("*").order("created_at", { ascending: false }).limit(4),
-    supabaseAdmin.from("client_files").select("*").order("created_at", { ascending: false }).limit(4),
+  const portal = await getPortalContext("/client/dashboard");
+  const [projects, invoices, tickets, files] = await Promise.all([
+    listOwnRows(portal, "projects", 4),
+    listOwnRows(portal, "invoices", 4),
+    listOwnRows(portal, "support_tickets", 4),
+    listOwnRows(portal, "client_files", 4),
   ]);
 
   const activeProjects = projects?.filter((p) => p.status !== "Completed") || [];

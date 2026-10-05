@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import BackButton from "@/components/navigation/back-button";
 import { notFound } from "next/navigation";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getPortalContext, getOwnRow } from "@/lib/client-portal/data";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -14,13 +14,10 @@ export const metadata: Metadata = {
 export default async function ClientProjectDetailPage({ params }: Props) {
   const { id } = await params;
 
-  const { data: project, error } = await supabaseAdmin
-    .from("projects")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const portal = await getPortalContext(`/client/projects/${id}`);
+  const project = await getOwnRow(portal, "projects", id);
 
-  if (error || !project) {
+  if (!project) {
     notFound();
   }
 

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import BackButton from "@/components/navigation/back-button";
 import { Plus, ArrowRight } from "lucide-react";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getPortalContext, listOwnRows } from "@/lib/client-portal/data";
 
 export const metadata: Metadata = {
   title: "Support Tickets | Client Portal",
@@ -11,10 +11,8 @@ export const metadata: Metadata = {
 export const revalidate = 0;
 
 export default async function ClientSupportPage() {
-  const { data: tickets } = await supabaseAdmin
-    .from("support_tickets")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const portal = await getPortalContext("/client/support");
+  const tickets = await listOwnRows(portal, "support_tickets");
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">

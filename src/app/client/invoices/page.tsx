@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import BackButton from "@/components/navigation/back-button";
 import { CreditCard } from "lucide-react";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getPortalContext, listOwnRows } from "@/lib/client-portal/data";
 
 export const metadata: Metadata = {
   title: "Invoices & Billing | Client Portal",
@@ -10,10 +10,8 @@ export const metadata: Metadata = {
 export const revalidate = 0;
 
 export default async function ClientInvoicesPage() {
-  const { data: invoices } = await supabaseAdmin
-    .from("invoices")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const portal = await getPortalContext("/client/invoices");
+  const invoices = await listOwnRows(portal, "invoices");
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">

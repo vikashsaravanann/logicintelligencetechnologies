@@ -1,30 +1,25 @@
 import { NextResponse } from "next/server";
+import { requireAdminApi } from "@/lib/auth/require-admin";
+import { isAgentSecretValid } from "@/lib/auth/agent-secret";
 import { GOLDEN_EVAL_CASES, scoreGoldenReply } from "@/lib/agent-eval/golden";
 
 /**
  * Offline golden-set evaluation against live /api/ai (or local fallback path).
- * POST { baseUrl?: string }
- * Protect with AGENT_METRICS_SECRET when set.
+ * POST (evaluates this deployment; no caller-supplied target)
+ * Requires AGENT_METRICS_SECRET (automation) or an admin session.
  */
 export async function POST(request: Request) {
-  const secret = process.env.AGENT_METRICS_SECRET;
-  if (secret) {
-    const header = request.headers.get("x-agent-metrics-secret");
-    if (header !== secret) {
-      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+  // Automation callers present AGENT_METRICS_SECRET; people need an admin session.
+  if (!(await isAgentSecretValid(request))) {
+    const auth = await requireAdminApi(request);
+    if (!auth.ok) {
+      return NextResponse.json({ success: false, message: auth.message }, { status: auth.status });
     }
   }
 
-  let baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://127.0.0.1:3000";
-  try {
-    const body = await request.json().catch(() => ({}));
-    if (body?.baseUrl) baseUrl = String(body.baseUrl).replace(/\/$/, "");
-  } catch {
-    /* empty */
-  }
-
-  const origin = new URL(request.url).origin;
-  const targetBase = baseUrl.includes("127.0.0.1") ? origin : baseUrl;
+  // Evaluate this deployment only. A caller-supplied baseUrl would let the
+  // server be pointed at arbitrary hosts (SSRF), so it is not accepted.
+  const targetBase = new URL(request.url).origin;
 
   const results: Array<{
     id: string;

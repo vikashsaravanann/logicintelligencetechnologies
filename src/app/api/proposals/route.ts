@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { requireAdminApi } from "@/lib/auth/require-admin";
 
 const proposalSchema = z.object({
   clientName: z.string().min(2),
@@ -17,7 +18,9 @@ const proposalSchema = z.object({
   terms: z.string().optional(),
 });
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await requireAdminApi(req);
+  if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status });
   try {
     const { data: proposals, error } = await supabaseAdmin
       .from("proposals")
@@ -35,6 +38,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAdminApi(req);
+  if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status });
   try {
     const body = await req.json();
     const validated = proposalSchema.parse(body);

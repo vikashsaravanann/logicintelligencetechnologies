@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import BackButton from "@/components/navigation/back-button";
 import { ArrowRight } from "lucide-react";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getPortalContext, listOwnRows } from "@/lib/client-portal/data";
 
 export const metadata: Metadata = {
   title: "Projects & Sprints | Client Portal",
@@ -11,10 +11,8 @@ export const metadata: Metadata = {
 export const revalidate = 0;
 
 export default async function ClientProjectsPage() {
-  const { data: projects } = await supabaseAdmin
-    .from("projects")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const portal = await getPortalContext("/client/projects");
+  const projects = await listOwnRows(portal, "projects");
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">

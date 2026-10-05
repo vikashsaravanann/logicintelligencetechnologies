@@ -25,7 +25,12 @@ async function main() {
     "founder@logicintelligencetechnologies.in",
     "invoice@logicintelligencetechnologies.in"
   ];
-  const password = "AdminDashboard2026!";
+  // Never hardcode credentials: pass the initial password at run time.
+  const password = process.env.ADMIN_INITIAL_PASSWORD;
+  if (!password || password.length < 12) {
+    console.error("Set ADMIN_INITIAL_PASSWORD (12+ characters) before running this script.");
+    process.exit(1);
+  }
 
   for (const email of emails) {
     console.log(`\n--- Processing ${email} ---`);

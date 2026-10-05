@@ -4,12 +4,15 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email/send-email";
 import ProposalSentEmail from "@/emails/proposal-sent-email";
 import { COMPANY } from "@/config/company";
+import { requireAdminApi } from "@/lib/auth/require-admin";
 
 const sendProposalSchema = z.object({
   proposalId: z.string().uuid(),
 });
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAdminApi(req);
+  if (!auth.ok) return NextResponse.json({ error: auth.message }, { status: auth.status });
   try {
     const body = await req.json();
     const validated = sendProposalSchema.parse(body);
@@ -28,10 +31,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Client email is missing" }, { status: 400 });
     }
 
-    // Construct the full URL using the request headers or fallback
-    const host = req.headers.get("host") || "logicintelligence.com";
-    const protocol = host.includes("localhost") ? "http" : "https";
-    const proposalUrl = `${protocol}://${host}/proposal/${proposal.secure_token}`;
+    // Always link to the canonical site; never trust the request Host header.
+    const proposalUrl = `${COMPANY.websiteUrl}/proposal/${proposal.secure_token}`;
 
     const { success, message } = await sendEmail({
       to: proposal.client_email,

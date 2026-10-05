@@ -1,16 +1,18 @@
 import { NextResponse } from "next/server";
+import { requireAdminApi } from "@/lib/auth/require-admin";
+import { isAgentSecretValid } from "@/lib/auth/agent-secret";
 import { aggregateAgentRuns } from "@/lib/agent-eval/aggregate";
 
 /**
  * Aggregate online agent metrics.
- * Protect with AGENT_METRICS_SECRET or admin session in production.
+ * Requires AGENT_METRICS_SECRET (automation) or an admin session.
  */
 export async function GET(request: Request) {
-  const secret = process.env.AGENT_METRICS_SECRET;
-  if (secret) {
-    const header = request.headers.get("x-agent-metrics-secret");
-    if (header !== secret) {
-      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+  // Automation callers present AGENT_METRICS_SECRET; people need an admin session.
+  if (!(await isAgentSecretValid(request))) {
+    const auth = await requireAdminApi(request);
+    if (!auth.ok) {
+      return NextResponse.json({ success: false, message: auth.message }, { status: auth.status });
     }
   }
 
