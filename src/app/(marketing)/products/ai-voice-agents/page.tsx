@@ -21,7 +21,6 @@ export default function AIVoiceAgentsPage() {
         <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[50%] bg-accent/20 blur-[150px] rounded-full mix-blend-screen" />
         <div className="absolute top-[40%] -left-[10%] w-[40%] h-[60%] bg-purple-600/20 blur-[150px] rounded-full mix-blend-screen" />
         <div className="absolute bottom-0 right-[20%] w-[50%] h-[40%] bg-accent/10 blur-[150px] rounded-full mix-blend-screen" />
-        <div className="absolute inset-0 bg-[url('/assets/noise.png')] opacity-[0.03] mix-blend-overlay" />
       </div>
 
       <script

@@ -233,7 +233,7 @@ export default function Navbar() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 320 }}
-              className="fixed top-0 right-0 w-[min(88vw,380px)] h-[100dvh] bg-[rgba(10,15,30,0.98)] border-l border-white/10 xl:hidden z-40 overflow-y-auto"
+              className="fixed top-0 right-0 w-[min(88vw,380px)] h-[100dvh] bg-[#0a0f1e] border-l border-white/10 shadow-2xl shadow-black/60 xl:hidden z-40 overflow-y-auto"
             >
               <div className="flex flex-col px-5 pt-16 pb-10">
                 <div className="space-y-1 mb-6">
@@ -261,11 +261,11 @@ export default function Navbar() {
                         }
                         aria-expanded={open}
                       >
-                        <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-500">
+                        <span className={`text-xs font-bold uppercase tracking-[0.16em] ${open ? "text-primary" : "text-zinc-200"}`}>
                           {group.label}
                         </span>
                         <ChevronDown
-                          className={`w-4 h-4 text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`}
+                          className={`w-4 h-4 transition-transform ${open ? "rotate-180 text-primary" : "text-zinc-400"}`}
                         />
                       </button>
                       <AnimatePresence initial={false}>

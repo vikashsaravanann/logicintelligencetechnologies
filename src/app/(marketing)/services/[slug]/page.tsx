@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { servicesData } from "@/data/servicesData";
+import { servicesData, getServiceVisual } from "@/data/servicesData";
 import { ArrowLeft, CheckCircle2, Layers, Cpu, ShieldCheck, Zap, ArrowRight, HelpCircle, Sparkles } from "lucide-react";
 import SafeImage from "@/components/ui/safe-image";
 import ProcessTimeline from "@/components/ui/process-timeline";
@@ -56,7 +56,7 @@ export default async function ServiceDetailPage({ params }: Props) {
     notFound();
   }
 
-  const serviceVisualSrc = `/images/services/${canonicalSlug}.jpg`;
+  const serviceVisualSrc = getServiceVisual(canonicalSlug);
 
   return (
     <div className="relative min-h-screen bg-[#0A1530] text-white pt-28 pb-20 overflow-hidden">

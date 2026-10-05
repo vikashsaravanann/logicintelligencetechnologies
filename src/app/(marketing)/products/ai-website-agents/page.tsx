@@ -21,7 +21,6 @@ export default function AIWebsiteAgentsPage() {
         <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-cyan-600/20 blur-[150px] rounded-full mix-blend-screen" />
         <div className="absolute top-[40%] -right-[10%] w-[40%] h-[60%] bg-blue-600/20 blur-[150px] rounded-full mix-blend-screen" />
         <div className="absolute bottom-0 left-[20%] w-[60%] h-[40%] bg-primary/10 blur-[150px] rounded-full mix-blend-screen" />
-        <div className="absolute inset-0 bg-[url('/assets/noise.png')] opacity-[0.03] mix-blend-overlay" />
       </div>
 
       <script
