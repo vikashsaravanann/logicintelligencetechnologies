@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Mail,
@@ -38,10 +39,10 @@ const BRAND_RULES = [
 ];
 
 const ASSETS = [
-  { title: "Press Kit PDF", href: "/resources/press-kit.pdf", desc: "Media biography & visual identity standards" },
-  { title: "Brand Book", href: "/resources/brand-book.pdf", desc: "Extended brand reference" },
-  { title: "Company Profile", href: "/resources/company-profile.pdf", desc: "Capability overview for partners and media" },
-  { title: "Website Development Checklist", href: "/resources/website-development-checklist.pdf", desc: "Five-phase production QA framework" },
+  { title: "Brand Book", href: "/resources/brand-book", desc: "Media biography & visual identity standards" },
+  { title: "Company Profile", href: "/resources/company-profile", desc: "Capability overview for partners and media" },
+  { title: "Services Brochure", href: "/resources/services-brochure", desc: "Core service offerings across the engineering lifecycle" },
+  { title: "Website Development Checklist", href: "/checklist", desc: "Five-phase production QA framework" },
 ];
 
 export default function PressPage() {
@@ -125,7 +126,7 @@ export default function PressPage() {
           <h2 className="text-lg font-bold text-white mb-4 tracking-tight">Downloadable assets</h2>
           <div className="grid sm:grid-cols-2 gap-4 mb-14">
             {ASSETS.map((a) => (
-              <a key={a.href} href={a.href} target="_blank" rel="noopener noreferrer" className="block group">
+              <Link key={a.href} href={a.href} className="block group">
                 <GlassSurface variant="panel" className="p-5 h-full transition group-hover:border-primary/40">
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -137,7 +138,7 @@ export default function PressPage() {
                     <Download className="w-4 h-4 text-zinc-500 group-hover:text-primary shrink-0" />
                   </div>
                 </GlassSurface>
-              </a>
+              </Link>
             ))}
           </div>
 

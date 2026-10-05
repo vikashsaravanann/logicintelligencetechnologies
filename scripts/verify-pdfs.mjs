@@ -4,51 +4,51 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
-const resourceDirs = [
-  path.join(rootDir, 'private/resources'),
-  path.join(rootDir, 'public/resources'),
-];
 
-const EXPECTED_PDFS = [
-  'company-profile.pdf',
-  'services-brochure.pdf',
-  'capability-statement.pdf',
-  'website-development-checklist.pdf',
-  'ai-readiness-assessment.pdf',
-  'business-automation-guide.pdf',
-  'technology-roadmap-template.pdf',
-  'project-proposal-template.pdf',
-  'statement-of-work.pdf',
-  'case-study.pdf',
-  'press-kit.pdf',
-  'investor-partnership-information-memorandum.pdf',
+// Gated corporate resources are streamed from private/resources (never public
+// static assets). The website-development-checklist backs the /checklist lead
+// magnet, and the jobs/leadership one-pager is a direct download from
+// public/docs. Keep this list in sync with src/config/pdfs.ts.
+const PRIVATE_RESOURCES_DIR = path.join(rootDir, 'private/resources');
+const PUBLIC_DOCS_DIR = path.join(rootDir, 'public/docs');
+
+const EXPECTED = [
+  { dir: PRIVATE_RESOURCES_DIR, file: 'company-profile.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'services-brochure.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'ai-rpa-capabilities.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'portfolio.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'pricing-guide.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'case-studies.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'onboarding-guide.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'technology-stack.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'founder-profile.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'security-compliance.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'faq.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'contact-engagement.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'brand-book.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'investor-briefing.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'knowledge-assistant.pdf' },
+  { dir: PRIVATE_RESOURCES_DIR, file: 'website-development-checklist.pdf' },
+  { dir: PUBLIC_DOCS_DIR, file: 'jobs-leadership.pdf' },
 ];
 
 console.log('--- LOGIC INTELLIGENCE TECHNOLOGIES PDF VERIFICATION ---');
 
 let hasErrors = false;
 
-const existingResourceDirs = resourceDirs.filter((dir) => fs.existsSync(dir));
+for (const { dir, file } of EXPECTED) {
+  const filePath = path.join(dir, file);
+  const rel = path.relative(rootDir, filePath);
 
-if (existingResourceDirs.length === 0) {
-  console.error(`FAIL: Neither private/resources nor public/resources directories exist.`);
-  process.exit(1);
-}
-
-for (const filename of EXPECTED_PDFS) {
-  const filePath = existingResourceDirs
-    .map((dir) => path.join(dir, filename))
-    .find((candidatePath) => fs.existsSync(candidatePath));
-
-  if (!filePath) {
-    console.error(`FAIL: Missing PDF file: ${filename}`);
+  if (!fs.existsSync(filePath)) {
+    console.error(`FAIL: Missing PDF file: ${rel}`);
     hasErrors = true;
     continue;
   }
 
   const stat = fs.statSync(filePath);
   if (stat.size === 0) {
-    console.error(`FAIL: PDF file is empty (0 bytes): ${filename}`);
+    console.error(`FAIL: PDF file is empty (0 bytes): ${rel}`);
     hasErrors = true;
     continue;
   }
@@ -60,12 +60,12 @@ for (const filename of EXPECTED_PDFS) {
 
   const header = buffer.toString('utf-8');
   if (!header.startsWith('%PDF-')) {
-    console.error(`FAIL: File ${filename} does not start with %PDF- header (saw: ${header})`);
+    console.error(`FAIL: File ${rel} does not start with %PDF- header (saw: ${header})`);
     hasErrors = true;
     continue;
   }
 
-  console.log(`PASS: ${filename} (Size: ${stat.size} bytes, Header: ${header.slice(0, 8)})`);
+  console.log(`PASS: ${rel} (Size: ${stat.size} bytes, Header: ${header.slice(0, 8)})`);
 }
 
 if (hasErrors) {
@@ -73,4 +73,4 @@ if (hasErrors) {
   process.exit(1);
 }
 
-console.log(`\nALL ${EXPECTED_PDFS.length} OFFICIAL CORPORATE PDFS VERIFIED SUCCESSFULLY.`);
+console.log(`\nALL ${EXPECTED.length} OFFICIAL CORPORATE PDFS VERIFIED SUCCESSFULLY.`);

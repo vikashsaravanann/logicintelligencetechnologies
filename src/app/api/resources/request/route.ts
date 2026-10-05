@@ -3,7 +3,14 @@ import { rateLimit, clientIp } from "@/lib/ai/rate-limit";
 import { insertLead } from "@/lib/forms/persist";
 import { redis } from "@/lib/ai/redis";
 import crypto from "crypto";
+import fs from "fs";
+import path from "path";
+import * as React from "react";
 import { PDF_RESOURCES } from "@/config/pdfs";
+import { sendEmail } from "@/lib/email/send-email";
+import ResourceDeliveryEmail from "@/emails/resource-delivery-email";
+
+export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
@@ -42,7 +49,7 @@ export async function POST(req: Request) {
         status: "new",
       });
 
-      if (!persisted) {
+      if (!persisted.ok) {
         return NextResponse.json(
           { success: false, message: "Failed to verify request. Please try again." },
           { status: 500 }
@@ -63,6 +70,33 @@ export async function POST(req: Request) {
         { success: false, message: "Secure storage is not configured." },
         { status: 500 }
       );
+    }
+
+    // Best-effort: deliver the requested PDF by email. The lead is already
+    // captured and the secure download token is returned regardless, so email
+    // failures never block the response.
+    try {
+      const filePath = path.join(process.cwd(), "private", "resources", resource.filename);
+      const attachments = fs.existsSync(filePath)
+        ? [{ filename: resource.filename, path: filePath }]
+        : undefined;
+
+      await sendEmail({
+        to: email,
+        from: "noReply",
+        subject: `Your requested document: ${resource.title}`,
+        category: "transactional",
+        eventType: "resource-delivery",
+        templateKey: "resource-delivery-email",
+        idempotencyKey: `resource:${token}:customer`,
+        react: React.createElement(ResourceDeliveryEmail, {
+          fullName: fullName || "there",
+          resourceTitle: resource.title,
+        }),
+        attachments,
+      });
+    } catch (emailErr) {
+      console.error("[Resource Request] email delivery failed:", emailErr);
     }
 
     return NextResponse.json({ success: true, token });
