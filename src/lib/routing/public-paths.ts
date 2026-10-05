@@ -1,8 +1,7 @@
 /**
- * Routes reachable without signing in. The middleware is default-deny: any
- * path not matched here is redirected to /login, so every public marketing
- * page MUST be listed. tests/navigation/public-paths.test.ts fails if a page
- * under src/app/(marketing) is missing, which is how routes like /pricing and
+ * Routes reachable without signing in. Every public marketing page MUST be
+ * listed. tests/navigation/public-paths.test.ts fails if a page under
+ * src/app/(marketing) is missing, which is how routes like /pricing and
  * /voice-shield/request were previously locked behind the login wall.
  */
 export const PUBLIC_MARKETING_PREFIXES: readonly string[] = [
@@ -37,4 +36,42 @@ export function isPublicPath(path: string): boolean {
   if (path.startsWith("/robots")) return true;
   if (path.startsWith("/manifest")) return true;
   return PUBLIC_MARKETING_PREFIXES.some((p) => path === p || path.startsWith(p + "/"));
+}
+
+/**
+ * Signed-in areas. Requests here without a session are redirected to /login.
+ * Paths that are neither public nor protected match no route, so the
+ * middleware lets them through and Next renders the 404 page instead of
+ * sending a mistyped URL to /login. The route-classification test fails if a
+ * page exists that is in neither list, so a new private page cannot ship
+ * unprotected.
+ */
+export const PROTECTED_PREFIXES: readonly string[] = [
+  "/admin", "/client", "/dashboard", "/omni", "/profile",
+];
+
+/** Decoded, slash-collapsed, lower-cased path; null when the encoding is malformed. */
+function normalizePath(path: string): string | null {
+  try {
+    return decodeURIComponent(path).replace(/\/{2,}/g, "/").toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+function matchesPrefix(path: string, prefixes: readonly string[]): boolean {
+  const normalized = normalizePath(path);
+  if (normalized === null) return true; // malformed encoding: fail closed
+  return prefixes.some((p) => normalized === p || normalized.startsWith(p + "/"));
+}
+
+export function isProtectedPath(path: string): boolean {
+  return matchesPrefix(path, PROTECTED_PREFIXES);
+}
+
+/** Internal areas restricted to company accounts (in addition to signing in). */
+export const COMPANY_ONLY_PREFIXES: readonly string[] = ["/admin", "/dashboard"];
+
+export function isCompanyOnlyPath(path: string): boolean {
+  return matchesPrefix(path, COMPANY_ONLY_PREFIXES);
 }

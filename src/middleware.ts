@@ -2,7 +2,7 @@ import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { safeNextPath } from "@/lib/auth/safe-next";
-import { isPublicPath } from "@/lib/routing/public-paths";
+import { isCompanyOnlyPath, isProtectedPath, isPublicPath } from "@/lib/routing/public-paths";
 
 function isCompanyEmail(email: string): boolean {
   return email.toLowerCase().endsWith("@logicintelligencetechnologies.in");
@@ -42,6 +42,9 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
+  // Not a signed-in area: unknown paths fall through to the 404 page.
+  if (!isProtectedPath(path)) return res;
+
   try {
     const supabase = createMiddlewareClient({ req, res });
     const {
@@ -54,7 +57,7 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    if (path.startsWith("/dashboard") || path.startsWith("/admin")) {
+    if (isCompanyOnlyPath(path)) {
       const email = session.user.email || "";
       if (!isCompanyEmail(email)) {
         return NextResponse.redirect(new URL("/profile", req.url));
