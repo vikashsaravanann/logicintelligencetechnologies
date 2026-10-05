@@ -4,11 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import WebGLParticles from "@/components/motion/webgl-particles";
 
 /**
- * Site-wide tech ambient — full opacity video (no 30% blend).
- * Prefers /assets/ambient/tech-loop.*; falls back to public CDN loop.
- * Mobile-safe: muted + playsInline for autoplay.
+ * Site-wide tech ambient layer:
+ * - looping muted video with configurable opacity
+ * - dark navy scrim so text never washes out
+ * - WebGL particle field as secondary motion
+ * - respects prefers-reduced-motion
  */
-export default function AmbientTechBackground() {
+export default function AmbientTechBackground({
+  opacity = 0.3,
+}: {
+  opacity?: number;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [ready, setReady] = useState(false);
   const [reduced, setReduced] = useState(false);
@@ -48,14 +54,14 @@ export default function AmbientTechBackground() {
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
           style={{
-            opacity: ready ? 1 : 0,
+            opacity: ready ? opacity : 0,
             transition: "opacity 1s ease",
           }}
           autoPlay
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
           poster="/assets/banner.jpg"
         >
           <source src="/assets/ambient/tech-loop.webm" type="video/webm" />
@@ -68,16 +74,17 @@ export default function AmbientTechBackground() {
       )}
 
       {!reduced && (
-        <div className="absolute inset-0 opacity-30">
+        <div className="absolute inset-0 opacity-40">
           <WebGLParticles className="h-full w-full" />
         </div>
       )}
 
       <div className="absolute -top-24 left-1/4 h-56 w-56 rounded-full bg-primary/10 blur-[90px] sm:h-72 sm:w-72" />
       <div className="absolute top-1/3 right-0 h-64 w-64 rounded-full bg-accent/10 blur-[100px] sm:h-80 sm:w-80" />
+      <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-primary/5 blur-[90px]" />
 
-      <div className="absolute inset-0 bg-[#0A0F1E]/35" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/25 via-transparent to-[#0A0F1E]/70" />
+      <div className="absolute inset-0 bg-[#0A0F1E]/55" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/45 via-[#0A0F1E]/50 to-[#0A0F1E]/85" />
     </div>
   );
 }

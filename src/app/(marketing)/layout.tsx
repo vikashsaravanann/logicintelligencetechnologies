@@ -15,7 +15,7 @@ export default function MarketingLayout({
       <Navbar />
       <main className="relative min-h-screen min-h-[100dvh] overflow-x-hidden bg-[#0A0F1E]">
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-          <AmbientTechBackground />
+          <AmbientTechBackground opacity={0.3} />
         </div>
         <div className="relative z-[1] w-full max-w-[100vw] overflow-x-hidden">
           {children}
