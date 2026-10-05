@@ -148,9 +148,9 @@ export default async function IndustryDetailPage({ params }: Props) {
           <div>
             <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-primary" />
-              <span>Regulatory &amp; Compliance Standards</span>
+              <span>Regulatory requirements we design for</span>
             </h3>
-            <p className="text-xs text-zinc-400">Strict data privacy, encryption, and auditability protocols built-in.</p>
+            <p className="text-xs text-zinc-400">We build to these requirements. Formal certification, where needed, is completed with your auditor.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {ind.compliance.map((c, idx) => (

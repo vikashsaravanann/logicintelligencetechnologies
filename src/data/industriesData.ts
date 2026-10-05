@@ -14,7 +14,7 @@ export const industriesData: IndustryData[] = [
   {
     slug: "healthcare",
     title: "Healthcare & MedTech Systems",
-    subtitle: "HIPAA & DISHA-Compliant Medical Platforms & Patient Records",
+    subtitle: "HIPAA- and DPDP-Aware Medical Platforms & Patient Records",
     iconName: "Activity",
     summary: "Engineering secure, real-time clinical workflows, electronic health records (EHR), telemedicine platforms, and AI-assisted medical diagnostic interfaces.",
     challenges: [
@@ -33,7 +33,7 @@ export const industriesData: IndustryData[] = [
       "Remote Health Monitoring Dashboards",
       "Secure Multi-Tenant Clinic Management"
     ],
-    compliance: ["HIPAA Compliant", "DISHA Ready", "ISO 27001 Standard"]
+    compliance: ["HIPAA (US)", "DPDP Act 2023", "ISO 27001 practices"]
   },
   {
     slug: "education",
@@ -57,7 +57,7 @@ export const industriesData: IndustryData[] = [
       "Parent-Teacher Engagement Mobile App",
       "Certificate Generation & Blockchain Verification"
     ],
-    compliance: ["FERPA Compliant", "COPPA Compliant"]
+    compliance: ["FERPA (US)", "COPPA (US)"]
   },
   {
     slug: "retail",
@@ -81,7 +81,7 @@ export const industriesData: IndustryData[] = [
       "Automated WhatsApp Order Updates",
       "Dynamic Product Recommendation Engine"
     ],
-    compliance: ["PCI-DSS Level 1", "SSL 256-bit Encryption"]
+    compliance: ["PCI-DSS via certified gateways", "TLS encryption"]
   },
   {
     slug: "manufacturing",
@@ -105,7 +105,7 @@ export const industriesData: IndustryData[] = [
       "Vendor Portal & Purchase Order Automation",
       "Machinery Health Monitoring"
     ],
-    compliance: ["Industry 4.0 Standard", "SOC 2 Type II"]
+    compliance: ["Industry 4.0", "Role-based access & audit trails"]
   },
   {
     slug: "finance",
@@ -129,7 +129,7 @@ export const industriesData: IndustryData[] = [
       "Real-Time Fraud Detection Heuristics",
       "Multi-Currency Wallet Architecture"
     ],
-    compliance: ["RBI Guidelines", "PCI-DSS", "GDPR / DPDP Act"]
+    compliance: ["RBI guidelines", "PCI-DSS via certified gateways", "GDPR / DPDP Act 2023"]
   },
   {
     slug: "startups",
@@ -157,25 +157,18 @@ export const industriesData: IndustryData[] = [
   }
 ];
 
-/** Distinct card visuals — local when present, unique remote otherwise. */
+/** Distinct card visuals, all self-hosted (no third-party hotlinks). */
 const INDUSTRY_VISUALS: Record<string, string> = {
-  healthcare:
-    "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&h=800&q=80",
+  healthcare: "/portfolio/mediconnect.jpg",
   education: "/images/industries/education.jpg",
   retail: "/images/industries/retail.jpg",
-  manufacturing:
-    "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&h=800&q=80",
-  finance:
-    "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&h=800&q=80",
-  startups:
-    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&h=800&q=80",
+  manufacturing: "/assets/jobs/studio-hero.jpg",
+  finance: "/images/services/billing-software.jpg",
+  startups: "/images/company/company-story-02.jpg",
 };
 
 export function getIndustryVisual(slug: string): string {
-  return (
-    INDUSTRY_VISUALS[slug] ??
-    "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&h=800&q=80"
-  );
+  return INDUSTRY_VISUALS[slug] ?? "/images/company/company-story-01.jpg";
 }
 
 export function getIndustryBySlug(slug: string) {

@@ -163,7 +163,7 @@ KNOWLEDGE_BASE = [
     },
     {
         "keywords": ["cin", "registration", "legal entity", "company registration", "pvt ltd"],
-        "context": "Fact: Logic Intelligence Technologies Private Limited is registered with CIN U72900TZ2026PTC123456, based in Coimbatore, Tamil Nadu, India."
+        "context": "Fact: Logic Intelligence Technologies is a technology startup based in Coimbatore, Tamil Nadu, India. Company incorporation is pending, so no CIN has been issued yet."
     },
     {
         "keywords": ["tagline", "motto", "slogan", "about", "who are you", "what do you do", "offer", "capabilities", "services", "technologies", "tech stack"],
@@ -225,30 +225,18 @@ def build_messages(user_text: str):
     rag_context = retrieve_rag_context(user_text)
     system_content = (
         "You are the official AI assistant for Logic Intelligence Technologies — "
-        "a premium web, app, and software development agency based in Coimbatore, India, founded by Vikash Saravanan.
-
-"
-        "Your role: help prospective and existing clients understand our services, packages, pricing, portfolio, and processes.
-
-"
-        "STRICT RULES:
-"
+        "a premium web, app, and software development agency based in Coimbatore, India, founded by Vikash Saravanan.\n\n"
+        "Your role: help prospective and existing clients understand our services, packages, pricing, portfolio, and processes.\n\n"
+        "STRICT RULES:\n"
         "1. NEVER invent pricing, timelines, features, or terms not in the provided company facts. "
-        "If information is not in the facts, say so clearly and direct the client to WhatsApp (+91 75500 67712) or the /contact page.
-"
-        "2. Reply concisely and professionally. No filler phrases, no hype, no emojis unless responding to casual conversation.
-"
-        "3. When unsure, say so and offer to connect the client with the team on WhatsApp (+91 75500 67712).
-"
-        "4. Do not recommend competitor services or tools not in our offerings.
-"
+        "If information is not in the facts, say so clearly and direct the client to WhatsApp (+91 75500 67712) or the /contact page.\n"
+        "2. Reply concisely and professionally. No filler phrases, no hype, no emojis unless responding to casual conversation.\n"
+        "3. When unsure, say so and offer to connect the client with the team on WhatsApp (+91 75500 67712).\n"
+        "4. Do not recommend competitor services or tools not in our offerings.\n"
         "5. Maintain a helpful, confident, professional tone — like a knowledgeable account manager."
     )
     if rag_context:
-        system_content += f"
-
-Verified Company Facts (use these exactly; do not alter numbers or terms):
-{rag_context}"
+        system_content += f"\n\nVerified Company Facts (use these exactly; do not alter numbers or terms):\n{rag_context}"
     return [
         {"role": "system", "content": system_content},
         {"role": "user", "content": user_text}

@@ -38,7 +38,7 @@ KNOWLEDGE_BASE = [
     {"keywords": ["business pro", "18999", "18,999"], "context": "Fact: Business Pro Pack is priced from ₹18,999."},
     {"keywords": ["digital launch", "8999", "8,999"], "context": "Fact: Digital Launch Pack is priced from ₹8,999."},
     {"keywords": ["enterprise", "50000", "50,000"], "context": "Fact: Enterprise Pack is custom-priced starting from ₹50,000."},
-    {"keywords": ["cin"], "context": "Fact: Logic Intelligence Technologies Private Limited is registered with CIN U72900TZ2026PTC123456."},
+    {"keywords": ["cin"], "context": "Fact: Logic Intelligence Technologies is a technology startup based in Coimbatore, Tamil Nadu, India. Company incorporation is pending, so no CIN has been issued yet."},
     {"keywords": ["founder", "ceo"], "context": "Fact: Logic Intelligence Technologies was founded by Vikash Saravanan."}
 ]
 

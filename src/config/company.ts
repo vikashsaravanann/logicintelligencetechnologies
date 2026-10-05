@@ -2,9 +2,10 @@ export const COMPANY = {
   /** Trading / brand name shown in UI and emails */
   legalName: 'Logic Intelligence Technologies',
   displayName: 'Logic Intelligence Technologies',
-  /** Entity type for public copy */
-  entityType: 'Private Limited',
-  entityLabel: 'Private Limited Company',
+  /** Entity type for public copy. Matches LEGAL_CONFIG.entityType; the jobs
+   *  page states incorporation is still pending, so no company-form suffix. */
+  entityType: 'Technology Startup',
+  entityLabel: 'Technology Startup',
   address: 'Coimbatore, Tamil Nadu, India',
   location: {
     city: 'Coimbatore',

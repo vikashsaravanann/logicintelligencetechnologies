@@ -42,7 +42,7 @@ export default function CompanyFactsPage() {
             </div>
             <div>
               <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Company Type</p>
-              <p className="text-base text-white font-medium mt-1">Private Limited Company</p>
+              <p className="text-base text-white font-medium mt-1">{COMPANY.entityLabel}</p>
             </div>
             <div>
               <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Headquarters</p>

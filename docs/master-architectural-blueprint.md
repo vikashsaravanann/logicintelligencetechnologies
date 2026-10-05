@@ -1,5 +1,5 @@
 # LIT AUTOMATION & ENGINEERING STACK: MASTER ARCHITECTURAL BLUEPRINT
-Entity: Logic Intelligence Technologies Pvt. Ltd. (LIT)
+Entity: Logic Intelligence Technologies (LIT)
 Founder & Lead Engineer: Vikash Saravanan
 Headquarters: Coimbatore, Tamil Nadu, India
 Classification: Enterprise Engineering Architecture & Autonomous Operations Protocol

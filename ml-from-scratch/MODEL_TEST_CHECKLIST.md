@@ -14,7 +14,7 @@ Run these through your app at http://localhost:5173 (with ai_server.py running) 
    Expected: custom, from ₹50,000
 
 4. "What is Logic Intelligence Technologies' CIN number?"
-   Expected: U72900TZ2026PTC123456
+   Expected: no CIN yet; incorporation is pending (must NOT invent a number)
 
 5. "Who founded Logic Intelligence Technologies?"
    Expected: Vikash Saravanan

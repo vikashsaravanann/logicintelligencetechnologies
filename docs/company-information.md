@@ -7,7 +7,7 @@ This document contains authoritative company identity, product structures, gover
 ## 1. Corporate Identity
 
 - **Legal / Display Name:** Logic Intelligence Technologies
-- **Company Type:** Private Limited Company
+- **Company Type:** Technology Startup (incorporation pending)
 - **Headquarters:** Coimbatore, Tamil Nadu, India
 - **Founder & CEO:** Vikash Saravanan
 - **Official Corporate Website:** [https://www.logicintelligencetechnologies.in/](https://www.logicintelligencetechnologies.in/)

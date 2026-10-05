@@ -3,7 +3,7 @@ import { COMPANY } from "./company";
 export const LEGAL_CONFIG = {
   entityName: COMPANY.legalName,
   tradeName: COMPANY.displayName,
-  entityType: "Technology Startup",
+  entityType: COMPANY.entityType,
   jurisdiction: "Coimbatore / Karur, Tamil Nadu, India",
   governingLaw: "Laws of India",
   copyrightYear: new Date().getFullYear(),

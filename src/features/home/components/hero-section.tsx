@@ -24,7 +24,7 @@ export default function HeroSection() {
 
   const facts = [
     { kicker: "Flagship Products", stat: "2 Launched", body: "Logic Voice & VoiceShield." },
-    { kicker: "Company", stat: "Private Limited", body: "Logic Intelligence Technologies" },
+    { kicker: "Company", stat: COMPANY.entityType, body: "Logic Intelligence Technologies" },
     { kicker: "Headquarters", stat: "Coimbatore", body: "Tamil Nadu, India." },
     { kicker: "Leadership", stat: "Vikash Saravanan", body: "Founder & CEO." },
   ];
