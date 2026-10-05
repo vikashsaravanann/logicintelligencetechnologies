@@ -24,7 +24,8 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci || npm install --no-audit --no-fund
 
       - name: NPM Audit (report high/critical; do not block on transitive noise)
         run: |
@@ -35,7 +36,6 @@ jobs:
       - name: Secret scanning (literal secrets only)
         run: |
           set -euo pipefail
-          # Match assignment-style hardcoded secrets, not process.env.STRIPE_SECRET_KEY references.
           PATTERN='(sk_live_[0-9a-zA-Z]{20,}|pk_live_[0-9a-zA-Z]{20,}|xoxb-[0-9A-Za-z-]{20,}|ghp_[0-9A-Za-z]{30,}|AKIA[0-9A-Z]{16}|-----BEGIN (RSA |OPENSSH )?PRIVATE KEY-----)'
           if grep -RInE "$PATTERN" src/ --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' --include='*.mjs' --include='*.json' 2>/dev/null; then
             echo "Hardcoded secret material detected in source."

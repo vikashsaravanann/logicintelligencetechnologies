@@ -1,0 +1,37 @@
+name: apply-glass-features
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/apply-ai-coming-soon.py"
+      - "scripts/apply-jobs-ceo-glass.py"
+      - "scripts/apply-glass-tokens.py"
+      - ".github/workflows/apply-glass-features.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply patches
+        run: |
+          python3 scripts/apply-ai-coming-soon.py
+          python3 scripts/apply-jobs-ceo-glass.py
+          python3 scripts/apply-glass-tokens.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "feat(ui): AI Coming Soon + Jobs CEO glass panel + glass tokens"
+          git push

@@ -258,11 +258,11 @@ export default function JobsClient() {
         transition={{ duration: 0.45 }}
         className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto py-16 sm:py-24"
       >
-        <div className="relative rounded-[32px] border border-white/10 bg-gradient-to-b from-white/[0.05] via-white/[0.02] to-transparent p-6 sm:p-10 lg:p-12 backdrop-blur-md shadow-[0_30px_90px_rgba(0,0,0,0.5)] overflow-hidden">
+        <div className="relative rounded-[32px] border border-white/10 bg-gradient-to-b from-white/[0.05] via-white/[0.02] to-transparent p-6 sm:p-10 lg:p-12 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.5)] overflow-hidden">
           <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-cyan-500/10 blur-[100px] pointer-events-none" />
           
           <div className="grid lg:grid-cols-[340px_1fr] gap-8 lg:gap-14 items-center">
-            <div className="relative aspect-[3/4] w-full max-w-[340px] mx-auto rounded-[24px] overflow-hidden border border-white/15 bg-[#0A1530] shadow-[0_20px_50px_rgba(0,0,0,0.6)] group">
+            <div className="relative aspect-[3/4] w-full max-w-[340px] mx-auto rounded-[24px] overflow-hidden border border-white/15 bg-black shadow-[0_20px_50px_rgba(0,0,0,0.6)] group">
               <Image
                 src={COMPANY.founder.photoPath}
                 alt={`${COMPANY.founder.name}, Founder of ${COMPANY.displayName}`}
@@ -271,9 +271,9 @@ export default function JobsClient() {
                 quality={75}
                 className="object-cover object-[center_18%] transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B3E] via-transparent to-transparent opacity-60" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-transparent to-transparent opacity-60" />
               <div className="absolute bottom-4 left-4 right-4 text-center">
-                <span className="inline-block text-[10px] font-bold uppercase tracking-[0.2em] rounded-full border border-white/20 bg-[#0A1530]/70 backdrop-blur-md px-3 py-1 text-zinc-300">
+                <span className="inline-block text-[10px] font-bold uppercase tracking-[0.2em] rounded-full border border-white/20 bg-black/70 backdrop-blur-md px-3 py-1 text-zinc-300">
                   Seat Status: Filled
                 </span>
               </div>
@@ -290,7 +290,7 @@ export default function JobsClient() {
                 </span>
               </div>
 
-              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight mb-4 uppercase text-white">
+              <h2 className="text-3xl sm:text-5xl font-black tracking-tight mb-4 uppercase text-white">
                 {COMPANY.founder.name}
               </h2>
 
@@ -302,7 +302,7 @@ export default function JobsClient() {
                 {founder.d}
               </p>
 
-              <div className="bg-[#0A1530]/30 border border-white/8 rounded-2xl p-5 mb-6">
+              <div className="bg-black/30 border border-white/8 rounded-2xl p-5 mb-6">
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400 mb-3">
                   Core Mandates Maintained by the Founder
                 </p>
@@ -329,7 +329,7 @@ export default function JobsClient() {
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-20">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-400 mb-2">The Proposition</p>
-          <h2 className="text-2xl sm:text-4xl font-bold uppercase tracking-tight text-white">
+          <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-white">
             Built for operators. Not spectators.
           </h2>
         </div>
@@ -347,7 +347,7 @@ export default function JobsClient() {
               <div className="w-10 h-10 rounded-xl bg-cyan-400/10 border border-cyan-400/25 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <w.icon className="w-5 h-5 text-cyan-300" />
               </div>
-              <h3 className="text-sm font-bold uppercase tracking-[0.14em] text-white mb-2">{w.t}</h3>
+              <h3 className="text-sm font-black uppercase tracking-[0.14em] text-white mb-2">{w.t}</h3>
               <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-normal">{w.d}</p>
             </motion.article>
           ))}
@@ -362,7 +362,7 @@ export default function JobsClient() {
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300">Cohort 2026</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight uppercase text-white">
+            <h2 className="text-3xl sm:text-5xl font-black tracking-tight uppercase text-white">
               Open Leadership Seats
             </h2>
           </div>
@@ -372,70 +372,54 @@ export default function JobsClient() {
         </div>
       </section>
 
-      {/* Featured CEO Card */}
+      {/* Featured CEO Card - half image / half glass content */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-14">
-        <article className="relative isolate overflow-hidden rounded-[32px] border border-cyan-400/30 bg-transparent shadow-[0_30px_90px_rgba(0,0,0,0.6)] min-h-[460px] sm:min-h-[520px] lg:min-h-[560px]">
-          <Image
-            src={featured.cover!}
-            alt=""
-            fill
-            sizes="100vw"
-            quality={72}
-            className="object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B3E] via-[#0D1B3E]/85 to-[#0D1B3E]/25 lg:bg-gradient-to-r lg:from-transparent lg:via-[#0D1B3E]/60 lg:to-[#0D1B3E]" />
-          
-          <div className="absolute top-5 left-5 z-20 flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] rounded-full border border-cyan-300/50 bg-[#0A1530]/70 backdrop-blur-md px-3.5 py-1 text-cyan-200 shadow-lg">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              Priority Role · Open Seat
-            </span>
-          </div>
-
-          <div className="relative z-10 flex min-h-[460px] sm:min-h-[520px] lg:min-h-[560px] items-end lg:items-stretch">
-            <div className="w-full lg:ml-auto lg:w-[56%] p-6 sm:p-10 lg:p-12 flex flex-col justify-center">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-400">Executive Appointment</span>
-                <span className="text-zinc-600">|</span>
+        <article className="relative isolate overflow-hidden rounded-[32px] border border-white/12 shadow-[0_30px_90px_rgba(0,0,0,0.55)] bg-[#0A0F1E]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[480px] lg:min-h-[560px]">
+            <div className="relative min-h-[220px] sm:min-h-[280px] lg:min-h-full order-1">
+              <Image src={featured.cover!} alt="" fill sizes="(max-width: 1024px) 100vw, 50vw" quality={75} className="object-cover object-center" priority />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[#0A0F1E]/40" />
+              <div className="absolute top-5 left-5 z-20">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] rounded-full border border-cyan-300/40 bg-black/65 backdrop-blur-md px-3.5 py-1 text-cyan-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" aria-hidden />
+                  Priority Role - Open Seat
+                </span>
+              </div>
+            </div>
+            <div className="relative z-10 order-2 flex flex-col justify-center p-6 sm:p-9 lg:p-11 bg-[rgba(10,15,30,0.94)] lg:bg-[rgba(10,15,30,0.92)] border-t lg:border-t-0 lg:border-l border-white/10 backdrop-blur-xl">
+              <div className="flex flex-wrap items-center gap-2 mb-3">
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-cyan-400">Executive Appointment</span>
+                <span className="text-zinc-600" aria-hidden>|</span>
                 <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-300">Coimbatore HQ</span>
               </div>
-
-              <h3 className="text-2xl sm:text-4xl font-bold mb-3 tracking-tight uppercase text-white">{featured.t}</h3>
-              <p className="text-sm sm:text-base text-zinc-200 leading-relaxed mb-4">{featured.d}</p>
-              
-              <div className="space-y-2 mb-5">
-                <p className="text-xs sm:text-sm text-zinc-300 font-medium">
-                  <span className="text-cyan-400 font-bold uppercase tracking-wider text-[11px]">Ideal Profile: </span>
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight uppercase text-white leading-[1.15] mb-4">{featured.t}</h3>
+              <p className="text-sm sm:text-base text-zinc-200 leading-relaxed mb-5 max-w-prose">{featured.d}</p>
+              <div className="space-y-3 mb-5 rounded-2xl border border-white/10 bg-black/35 p-4">
+                <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed">
+                  <span className="text-cyan-400 font-bold uppercase tracking-wider text-[11px] block mb-1">Ideal Profile</span>
                   {featured.who}
                 </p>
-                <p className="text-xs sm:text-sm text-zinc-300 font-medium">
-                  <span className="text-cyan-400 font-bold uppercase tracking-wider text-[11px]">Location Requirement: </span>
+                <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed">
+                  <span className="text-cyan-400 font-bold uppercase tracking-wider text-[11px] block mb-1">Location Requirement</span>
                   {featured.extra}
                 </p>
               </div>
-
-              <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-cyan-950/40 border border-cyan-400/25 mb-6">
-                <span className="text-xs font-bold uppercase tracking-wider text-cyan-300">Terms:</span>
-                <span className="text-xs font-semibold text-white uppercase tracking-wide">{featured.salary} · {featured.equity}</span>
+              <div className="inline-flex flex-wrap items-center gap-2 sm:gap-3 px-4 py-3 rounded-xl border border-cyan-400/25 bg-cyan-950/50 mb-6 max-w-full">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-300 shrink-0">Terms</span>
+                <span className="text-xs font-semibold text-white uppercase tracking-wide">{featured.salary} - {featured.equity}</span>
               </div>
-
               <div className="space-y-2 mb-8">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400">90-Day Ownership Goals:</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400">90-Day Ownership Goals</p>
                 <div className="grid gap-2">
                   {featured.days.map((d) => (
-                    <div key={d} className="rounded-xl border border-white/10 bg-[#0A1530]/45 backdrop-blur-sm px-4 py-2.5 text-xs font-semibold text-zinc-200 uppercase tracking-wide flex items-center gap-2">
-                      <span className="text-cyan-400 font-bold">→</span>
-                      <span>{d}</span>
+                    <div key={d} className="rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-xs font-semibold text-zinc-100 tracking-wide flex items-start gap-2">
+                      <span className="text-cyan-400 font-bold shrink-0" aria-hidden>-</span>
+                      <span className="normal-case sm:uppercase">{d}</span>
                     </div>
                   ))}
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={() => goApply("ceo")}
-                className="h-12 px-8 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-[0.16em] w-full sm:w-auto shadow-[0_10px_30px_rgba(69,217,210,0.3)] hover:brightness-110 transition-all"
-              >
+              <button type="button" onClick={() => goApply("ceo")} className="h-12 px-8 rounded-xl bg-primary text-black font-black text-xs uppercase tracking-[0.16em] w-full sm:w-auto shadow-[0_10px_30px_rgba(0,191,255,0.28)] hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all">
                 Apply for CEO Seat
               </button>
             </div>
@@ -448,7 +432,7 @@ export default function JobsClient() {
         {directors.map((s) => (
           <article
             key={s.id}
-            className="group rounded-[28px] overflow-hidden border border-white/12 bg-gradient-to-b from-white/[0.05] to-white/[0.02] backdrop-blur-md flex flex-col hover:border-cyan-400/30 transition-all duration-300 shadow-[0_20px_50px_rgba(0,0,0,0.4)]"
+            className="group rounded-[28px] overflow-hidden border border-white/12 bg-gradient-to-b from-white/[0.05] to-white/[0.02] backdrop-blur-xl flex flex-col hover:border-cyan-400/30 transition-all duration-300 shadow-[0_20px_50px_rgba(0,0,0,0.4)]"
           >
             <div className="relative aspect-[16/10] shrink-0 overflow-hidden">
               <Image
@@ -459,14 +443,14 @@ export default function JobsClient() {
                 quality={70}
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B3E] via-transparent to-transparent opacity-80" />
-              <span className="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-[0.18em] rounded-full bg-[#0A1530]/60 border border-white/15 px-3 py-1 text-cyan-200 backdrop-blur-md">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-transparent to-transparent opacity-80" />
+              <span className="absolute top-3 left-3 text-[9px] font-black uppercase tracking-[0.18em] rounded-full bg-black/60 border border-white/15 px-3 py-1 text-cyan-200 backdrop-blur-md">
                 Directorship Open
               </span>
             </div>
 
-            <div className="relative z-10 p-6 sm:p-7 flex flex-col gap-3.5 flex-1 bg-transparent/95">
-              <h3 className="text-xl font-bold tracking-tight uppercase text-white">{s.t}</h3>
+            <div className="relative z-10 p-6 sm:p-7 flex flex-col gap-3.5 flex-1 bg-[#0A0F1E]/95">
+              <h3 className="text-xl font-black tracking-tight uppercase text-white">{s.t}</h3>
               <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-normal">{s.d}</p>
               
               <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3 text-xs space-y-1 text-zinc-300">
@@ -504,7 +488,7 @@ export default function JobsClient() {
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-20">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-400 mb-2">Transparency</p>
-          <h2 className="text-2xl sm:text-4xl font-bold uppercase tracking-tight text-white">
+          <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-white">
             Indicative Compensation Matrix
           </h2>
           <p className="text-xs sm:text-sm text-zinc-400 mt-2">
@@ -523,7 +507,7 @@ export default function JobsClient() {
               }`}
             >
               <div>
-                <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-cyan-300 mb-4 pb-2 border-b border-white/10">
+                <p className="text-[12px] font-black uppercase tracking-[0.12em] text-cyan-300 mb-4 pb-2 border-b border-white/10">
                   {s.t}
                 </p>
                 
@@ -561,21 +545,21 @@ export default function JobsClient() {
 
       {/* 3 Gates / Hiring Process Section */}
       <section className="relative px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-16 overflow-hidden">
-        <div className="relative rounded-[32px] border border-white/12 overflow-hidden bg-transparent shadow-[0_30px_90px_rgba(0,0,0,0.6)]">
+        <div className="relative rounded-[32px] border border-white/12 overflow-hidden bg-[#0A0F1E] shadow-[0_30px_90px_rgba(0,0,0,0.6)]">
           <Image
-            src="/assets/careers_bg.jpg"
+            src="/assets/jobs/apply-pane.jpg"
             alt=""
             fill
             sizes="100vw"
             quality={50}
             className="object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-transparent/85" />
+          <div className="absolute inset-0 bg-[#0A0F1E]/85" />
           
           <div className="relative z-10 p-8 sm:p-12 lg:p-14">
             <div className="max-w-2xl mb-12">
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-300 mb-2">Selection Framework</p>
-              <h2 className="text-3xl sm:text-5xl font-bold uppercase tracking-tight mb-4 text-white">
+              <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tight mb-4 text-white">
                 Three Gates. Then You Own a Function.
               </h2>
               <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-normal">
@@ -594,17 +578,17 @@ export default function JobsClient() {
                   transition={{ duration: 0.45, delay: i * 0.1 }}
                   className="relative sm:pl-20 pb-12 last:pb-0"
                 >
-                  <span className="hidden sm:grid absolute left-0 top-0 h-14 w-14 place-items-center rounded-2xl border border-cyan-400/40 bg-transparent text-cyan-300 shadow-[0_0_24px_rgba(34,211,238,0.2)]">
+                  <span className="hidden sm:grid absolute left-0 top-0 h-14 w-14 place-items-center rounded-2xl border border-cyan-400/40 bg-[#0A0F1E] text-cyan-300 shadow-[0_0_24px_rgba(34,211,238,0.2)]">
                     <s.icon className="w-5 h-5" />
                   </span>
                   
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-400/30 text-[10px] font-bold tracking-[0.16em] text-cyan-300 mb-2">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-400/30 text-[10px] font-black tracking-[0.16em] text-cyan-300 mb-2">
                     <span>GATE {s.n}</span>
                     <span>·</span>
                     <span>{s.time.toUpperCase()}</span>
                   </div>
 
-                  <h3 className="text-2xl font-bold uppercase tracking-tight mb-2 text-white">{s.t}</h3>
+                  <h3 className="text-2xl font-black uppercase tracking-tight mb-2 text-white">{s.t}</h3>
                   <p className="text-sm sm:text-base text-zinc-200 leading-relaxed mb-2 max-w-3xl font-normal">{s.d}</p>
                   <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed max-w-3xl font-normal">{s.extra}</p>
                 </motion.article>
@@ -627,13 +611,13 @@ export default function JobsClient() {
               <span className="w-2 h-2 rounded-full bg-cyan-400" />
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-300">Contractual Commitment</p>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold uppercase tracking-tight mb-6 text-white">We Will Offer</h2>
+            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight mb-6 text-white">We Will Offer</h2>
             <ul className="space-y-6">
               {offer.map((o) => (
                 <li key={o.t} className="flex gap-3">
                   <CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-bold uppercase tracking-[0.12em] text-white mb-1">{o.t}</p>
+                    <p className="text-sm font-black uppercase tracking-[0.12em] text-white mb-1">{o.t}</p>
                     <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-normal">{o.d}</p>
                   </div>
                 </li>
@@ -652,13 +636,13 @@ export default function JobsClient() {
               <span className="w-2 h-2 rounded-full bg-zinc-500" />
               <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-400">Strict Boundaries</p>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold uppercase tracking-tight mb-6 text-white">We Will Not Offer</h2>
+            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight mb-6 text-white">We Will Not Offer</h2>
             <ul className="space-y-5">
               {red.map((r) => (
                 <li key={r.t} className="flex gap-3">
                   <X className="w-4 h-4 text-zinc-500 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-bold uppercase tracking-[0.12em] text-zinc-200 mb-1">{r.t}</p>
+                    <p className="text-sm font-black uppercase tracking-[0.12em] text-zinc-200 mb-1">{r.t}</p>
                     <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed font-normal">{r.d}</p>
                   </div>
                 </li>
@@ -673,19 +657,19 @@ export default function JobsClient() {
 
       {/* Confidential Application Form Section */}
       <section id="apply" className="relative px-3 sm:px-6 lg:px-8 max-w-5xl mx-auto pb-24 sm:pb-32 scroll-mt-28">
-        <div className="relative rounded-[28px] sm:rounded-[36px] border border-white/20 bg-transparent shadow-[0_40px_120px_rgba(0,0,0,0.7)] overflow-hidden">
+        <div className="relative rounded-[28px] sm:rounded-[36px] border border-white/20 bg-[#0A0F1E] shadow-[0_40px_120px_rgba(0,0,0,0.7)] overflow-hidden">
           <div className="grid lg:grid-cols-[minmax(300px,38%)_minmax(0,1fr)] lg:items-stretch">
             {/* Left Info Panel */}
             <div className="relative hidden lg:block self-stretch min-h-full overflow-hidden">
               <Image
-                src="/assets/careers_bg.jpg"
+                src="/assets/jobs/apply-pane.jpg"
                 alt=""
                 fill
                 sizes="(min-width: 1024px) 38vw, 0px"
                 quality={70}
                 className="object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#0D1B3E]/90 via-[#0D1B3E]/50 to-[#0D1B3E]/80" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/90 via-[#0A0F1E]/50 to-[#0A0F1E]/80" />
               
               <div className="relative z-10 p-8 sm:p-10 flex flex-col justify-between h-full gap-6">
                 <div>
@@ -696,7 +680,7 @@ export default function JobsClient() {
                     </span>
                   </div>
 
-                  <h2 className="text-3xl font-bold tracking-tight uppercase leading-[1.05] text-white mb-4">
+                  <h2 className="text-3xl font-black tracking-tight uppercase leading-[1.05] text-white mb-4">
                     Join the Leadership Table
                   </h2>
 
@@ -727,11 +711,11 @@ export default function JobsClient() {
                 </div>
 
                 {seats.find((s) => s.id === seat) && (
-                  <div className="rounded-2xl border border-cyan-400/40 bg-[#0A1530]/60 backdrop-blur-md p-5 shadow-lg">
+                  <div className="rounded-2xl border border-cyan-400/40 bg-black/60 backdrop-blur-md p-5 shadow-lg">
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300 mb-1">
                       Target Appointment
                     </p>
-                    <p className="text-lg font-bold uppercase text-white mb-1.5">
+                    <p className="text-lg font-black uppercase text-white mb-1.5">
                       {seats.find((s) => s.id === seat)!.t}
                     </p>
                     <p className="text-xs text-zinc-300 leading-relaxed font-normal">
@@ -743,7 +727,7 @@ export default function JobsClient() {
             </div>
 
             {/* Right Form Panel */}
-            <div className="min-w-0 p-6 sm:p-8 lg:p-10 bg-transparent/80 backdrop-blur-md">
+            <div className="min-w-0 p-6 sm:p-8 lg:p-10 bg-[#0A0F1E]/80 backdrop-blur-md">
               <div className="lg:hidden mb-8 pb-6 border-b border-white/10">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-400/30 bg-cyan-950/40 mb-3">
                   <Lock className="w-3 h-3 text-cyan-300" />
@@ -751,7 +735,7 @@ export default function JobsClient() {
                     Confidential Application
                   </span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-bold uppercase tracking-tight text-white">
+                <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
                   Join the Leadership Table
                 </h2>
               </div>
@@ -761,7 +745,7 @@ export default function JobsClient() {
                   <div className="w-16 h-16 rounded-2xl bg-cyan-400/15 border border-cyan-400/40 flex items-center justify-center mx-auto mb-6">
                     <CheckCircle2 className="w-8 h-8 text-cyan-300" />
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-bold mb-3 text-white uppercase tracking-tight">
+                  <h3 className="text-2xl sm:text-3xl font-black mb-3 text-white uppercase tracking-tight">
                     Application Received
                   </h3>
                   <p className="text-sm text-zinc-300 max-w-md mx-auto leading-relaxed font-normal">
@@ -785,7 +769,7 @@ export default function JobsClient() {
                               : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/20"
                           }`}
                         >
-                          <span className="block text-xs font-bold tracking-tight text-white uppercase">{s.t}</span>
+                          <span className="block text-xs font-black tracking-tight text-white uppercase">{s.t}</span>
                           <span className="block text-[10px] text-cyan-300/80 mt-1 uppercase tracking-wide">{s.salary}</span>
                         </button>
                       ))}
@@ -891,7 +875,7 @@ export default function JobsClient() {
                         <label className={label}>Curriculum Vitae (PDF)</label>
                         {cv ? (
                           <div className="flex items-center gap-4 rounded-xl border border-cyan-400/40 bg-cyan-950/30 px-5 py-4">
-                            <span className="h-10 w-10 rounded-lg border border-cyan-400/40 bg-[#0A1530]/40 grid place-items-center shrink-0 text-cyan-300 text-[10px] font-bold">
+                            <span className="h-10 w-10 rounded-lg border border-cyan-400/40 bg-black/40 grid place-items-center shrink-0 text-cyan-300 text-[10px] font-black">
                               PDF
                             </span>
                             <div className="min-w-0 flex-1">
@@ -916,7 +900,7 @@ export default function JobsClient() {
                             <input type="file" accept=".pdf,application/pdf" className="hidden" onChange={(e) => { onCv(e.target.files?.[0]); e.target.value = ""; }} />
                           </label>
                         )}
-                        {cvNote && <p className="mt-2 text-xs text-accent font-medium">{cvNote}</p>}
+                        {cvNote && <p className="mt-2 text-xs text-amber-300 font-medium">{cvNote}</p>}
                       </div>
                     </div>
                   </div>
@@ -930,7 +914,7 @@ export default function JobsClient() {
                   <button
                     type="submit"
                     disabled={busy}
-                    className="h-14 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold uppercase tracking-[0.18em] text-xs shadow-[0_12px_40px_rgba(69,217,210,0.35)] hover:brightness-110 active:scale-[0.99] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                    className="h-14 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-black uppercase tracking-[0.18em] text-xs shadow-[0_12px_40px_rgba(0,191,255,0.35)] hover:brightness-110 active:scale-[0.99] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                   >
                     <Lock className="w-4 h-4" />
                     <span>{busy ? "Transmitting Application…" : "Submit Confidential Application"}</span>
@@ -960,7 +944,7 @@ export default function JobsClient() {
             <button
               type="button"
               onClick={() => goApply(seat)}
-              className="flex-1 sm:flex-none h-11 px-6 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-[0.14em] shadow-md hover:brightness-110 transition"
+              className="flex-1 sm:flex-none h-11 px-6 rounded-xl bg-primary text-black font-black text-xs uppercase tracking-[0.14em] shadow-md hover:brightness-110 transition"
             >
               Apply Now
             </button>

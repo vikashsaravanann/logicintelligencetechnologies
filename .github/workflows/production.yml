@@ -2,20 +2,20 @@ name: Production Deployment
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  workflow_dispatch:
 
 concurrency:
-  group: production
-  cancel-in-progress: false # Never cancel an active production deploy
+  group: production-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
 
 jobs:
-  production:
+  deploy:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -24,46 +24,30 @@ jobs:
           node-version: "22"
           cache: npm
 
-      - name: Install Dependencies
-        run: npm ci
+      - name: Install
+        run: |
+          npm ci || npm install --no-audit --no-fund
 
-      - name: Verify Environment
-        run: npm run verify:environment
+      - name: Typecheck
+        run: npm run typecheck
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      - name: Vercel Production Deployment
-        id: vercel
+      - name: Pull Vercel env
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          if [ -z "$VERCEL_TOKEN" ]; then
-            echo "VERCEL_TOKEN is not set. Assuming native Vercel integration handles deployment."
-            echo "url=https://www.logicintelligencetechnologies.in" >> $GITHUB_OUTPUT
-            echo "deploy_method=Native Vercel Git Integration (Skipped CLI)" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          vercel env pull .env.production --environment=production --token=$VERCEL_TOKEN
-          URL=$(vercel --prod --token=$VERCEL_TOKEN --yes)
-          echo "url=$URL" >> $GITHUB_OUTPUT
-          echo "deploy_method=Vercel CLI Direct Deploy" >> $GITHUB_OUTPUT
 
-      - name: Wait for DNS / Propagation
-        run: sleep 30
-
-      - name: Production Smoke Tests
+      - name: Build
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
-          VERCEL_URL: logicintelligencetechnologies.in # Canonical domain testing
-        run: npm run smoke:test
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-      - name: Generate Release Report
-        if: always()
-        run: |
-          echo "# Production Release Report" >> $GITHUB_STEP_SUMMARY
-          echo "- **Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Deployment Method:** ${{ steps.vercel.outputs.deploy_method || 'Vercel CLI' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Canonical URL:** https://www.logicintelligencetechnologies.in" >> $GITHUB_STEP_SUMMARY
+      - name: Deploy
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

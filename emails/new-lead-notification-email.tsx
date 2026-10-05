@@ -3,7 +3,7 @@ import * as React from "react";
 import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
-import { EmailButton, EmailButtonGroup } from "./components/email-button";
+import { EmailButton } from "./components/email-button";
 import {
   EmailContent,
   EmailTitle,
@@ -36,8 +36,13 @@ export const NewLeadNotificationEmail = ({
   Budget,
   budget,
 }: NewLeadNotificationEmailProps) => {
+  const adminDashboardUrl = `${EMAIL.siteUrl}/admin/command-center`;
+  const leadsUrl = `${EMAIL.siteUrl}/admin/leads`;
+
   return (
-    <EmailLayout preview={`New lead: ${fullName || "unknown"}${service ? ` — ${service}` : ""}`}>
+    <EmailLayout
+      preview={`New lead: ${fullName || "unknown"}${service ? ` — ${service}` : ""}`}
+    >
       <EmailHeader />
       <EmailContent>
         <EmailTitle>New website enquiry</EmailTitle>
@@ -48,15 +53,23 @@ export const NewLeadNotificationEmail = ({
           {phone ? <InfoRow label="Phone" value={phone} /> : null}
           {companyName ? <InfoRow label="Company" value={companyName} /> : null}
           {service ? <InfoRow label="Service" value={service} /> : null}
-          {submissionDate ? <InfoRow label="Submitted" value={submissionDate} /> : null}
-          {requirements ? <InfoRow label="Details" value={requirements} /> : null}
-          {(Budget || budget) ? <InfoRow label="Budget" value={Budget || budget} /> : null}
+          {submissionDate ? (
+            <InfoRow label="Submitted" value={submissionDate} />
+          ) : null}
+          {requirements ? (
+            <InfoRow label="Details" value={requirements} />
+          ) : null}
+          {Budget || budget ? (
+            <InfoRow label="Budget" value={Budget || budget} />
+          ) : null}
         </Section>
-        <EmailButtonGroup>
-          <EmailButton href={`${EMAIL.siteUrl}/admin/command-center`}>Open Admin Dashboard</EmailButton>
-          <EmailButton href={`${EMAIL.siteUrl}/admin/leads`} variant="secondary">Open leads</EmailButton>
-        </EmailButtonGroup>
-        <EmailMuted>Reply-To is set to the customer email when available.</EmailMuted>
+        <EmailButton href={adminDashboardUrl}>Open Admin Dashboard</EmailButton>
+        <EmailButton href={leadsUrl} variant="secondary">
+          Open Leads
+        </EmailButton>
+        <EmailMuted>
+          Reply-To is set to the customer email when available.
+        </EmailMuted>
       </EmailContent>
       <EmailFooter />
     </EmailLayout>

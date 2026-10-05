@@ -70,7 +70,7 @@ export async function GET(request: Request) {
       subject: "Checking in from Logic Intelligence Technologies",
       react: React.createElement(WeeklyRecognitionEmail, {
         fullName: user.full_name || "there",
-        dashboardUrl: "https://www.logicintelligencetechnologies.in/dashboard",
+        dashboardUrl: "https://www.logicintelligencetechnologies.in/client/dashboard",
         unsubscribeUrl,
       }),
       from: "hello",

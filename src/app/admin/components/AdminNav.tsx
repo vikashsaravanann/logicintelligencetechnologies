@@ -2,131 +2,109 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, Menu, X, LayoutDashboard, Users, Bot, Calendar, FileText, Headphones, ShieldCheck, Globe, ChevronRight } from "lucide-react";
+import { Shield, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
-
-const ADMIN_NAV_ITEMS = [
-  { label: "Command Center", href: "/admin/command-center", icon: LayoutDashboard, description: "Overview & KPIs" },
-  { label: "CRM Leads", href: "/admin/leads", icon: Users, description: "Inbound inquiries" },
-  { label: "AI Chat Leads", href: "/admin/ai-leads", icon: Bot, description: "AI-captured leads" },
-  { label: "Bookings", href: "/admin/bookings", icon: Calendar, description: "Consultations" },
-  { label: "Proposals", href: "/admin/proposals", icon: FileText, description: "SOWs & quotes" },
-  { label: "Support", href: "/admin/support", icon: Headphones, description: "Tickets" },
-  { label: "VoiceShield Access", href: "/admin/voiceshield-requests", icon: ShieldCheck, description: "Grant console access", highlight: true },
-];
+import { ADMIN_NAV_ITEMS } from "@/config/admin-nav";
 
 export function AdminNav() {
-  const pathname = usePathname();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname() || "";
+  const [open, setOpen] = useState(false);
 
   return (
-    <>
-      {/* Desktop Navigation */}
-      <nav className="hidden lg:flex items-center gap-1 text-sm">
-        {ADMIN_NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.href || (item.href !== "/admin/command-center" && pathname?.startsWith(item.href));
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg font-semibold text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
-                isActive
-                  ? item.highlight
-                    ? "bg-cyan-500/15 text-cyan-300"
-                    : "bg-primary/10 text-primary"
-                  : item.highlight
-                  ? "text-cyan-400/60 hover:text-cyan-300 hover:bg-cyan-500/10"
-                  : "text-neutral-400 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              <item.icon className="w-3.5 h-3.5" />
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
-
-      <div className="hidden lg:flex items-center gap-3 ml-4 pl-4 border-l border-neutral-800">
-        <Link
-          href="/"
-          target="_blank"
-          className="flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/5"
-          title="View live website"
-        >
-          <Globe className="w-3.5 h-3.5" />
-          <span className="uppercase tracking-wider">Live Site</span>
-        </Link>
-        <Link
-          href="/"
-          className="flex items-center gap-1.5 text-xs font-bold text-rose-400/70 hover:text-rose-300 transition-colors px-3 py-2 rounded-lg hover:bg-rose-500/10"
-          title="Exit Admin"
-        >
-          <LogOut className="w-3.5 h-3.5" />
-          <span className="uppercase tracking-wider">Exit</span>
-        </Link>
-      </div>
-
-      {/* Mobile Menu Button */}
-      <button
-        className="lg:hidden text-neutral-300 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors"
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        aria-label="Toggle admin menu"
-      >
-        {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-      </button>
-
-      {/* Mobile Drawer */}
-      {isMobileMenuOpen && (
-        <div className="absolute top-16 left-0 right-0 bg-neutral-950/95 backdrop-blur-md border-b border-neutral-800 shadow-2xl lg:hidden flex flex-col z-50">
-          <nav className="flex flex-col p-3 gap-1">
-            {ADMIN_NAV_ITEMS.map((item) => {
-              const isActive = pathname === item.href || (item.href !== "/admin/command-center" && pathname?.startsWith(item.href));
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl font-bold text-sm uppercase tracking-wider transition-colors ${
-                    isActive
-                      ? item.highlight
-                        ? "bg-cyan-500/15 text-cyan-300"
-                        : "bg-primary/10 text-primary"
-                      : item.highlight
-                      ? "text-cyan-400 hover:bg-cyan-500/10"
-                      : "text-neutral-300 hover:bg-neutral-900 hover:text-white"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <item.icon className="w-4 h-4" />
-                    <div>
-                      <div>{item.label}</div>
-                      <div className="text-[10px] font-normal normal-case text-neutral-500">{item.description}</div>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-4 h-4 opacity-40" />
-                </Link>
-              );
-            })}
-          </nav>
-          <div className="flex gap-2 p-3 border-t border-neutral-800">
-            <Link
-              href="/"
-              target="_blank"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider text-neutral-400 hover:bg-white/5 hover:text-white transition-colors"
-            >
-              <Globe className="w-4 h-4" /> Live Site
-            </Link>
-            <Link
-              href="/"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-xs uppercase tracking-wider text-rose-400 hover:bg-rose-500/10 transition-colors"
-            >
-              <LogOut className="w-4 h-4" /> Exit Admin
-            </Link>
+    <header className="sticky top-0 z-40 w-full border-b border-neutral-800 bg-neutral-950/90 backdrop-blur-md">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:h-16">
+        <div className="flex min-w-0 items-center gap-2">
+          <Shield className="h-5 w-5 shrink-0 text-indigo-500 sm:h-6 sm:w-6" aria-hidden />
+          <div className="min-w-0">
+            <p className="truncate text-xs font-semibold tracking-tight text-white sm:text-sm">
+              Logic Intelligence Technologies
+            </p>
+            <p className="truncate text-[10px] font-medium uppercase tracking-wider text-neutral-500">
+              Admin Command Center
+            </p>
           </div>
         </div>
-      )}
-    </>
+
+        <nav
+          className="hidden items-center gap-1 lg:flex"
+          aria-label="Admin primary"
+        >
+          {ADMIN_NAV_ITEMS.map((item) => {
+            const active = item.match(pathname);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ${
+                  active
+                    ? "bg-indigo-500/15 text-indigo-300"
+                    : "text-neutral-400 hover:bg-neutral-900 hover:text-white"
+                }`}
+                aria-current={active ? "page" : undefined}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+          <Link
+            href="/"
+            className="ml-2 inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500 transition-colors hover:bg-neutral-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+          >
+            <LogOut className="h-3.5 w-3.5" aria-hidden />
+            Exit
+          </Link>
+        </nav>
+
+        <button
+          type="button"
+          className="inline-flex items-center justify-center rounded-lg border border-neutral-800 p-2 text-neutral-300 hover:bg-neutral-900 lg:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+          aria-expanded={open}
+          aria-controls="admin-mobile-nav"
+          aria-label={open ? "Close menu" : "Open menu"}
+          onClick={() => setOpen((v) => !v)}
+        >
+          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </div>
+
+      {open ? (
+        <nav
+          id="admin-mobile-nav"
+          className="border-t border-neutral-800 bg-neutral-950 px-4 py-3 lg:hidden"
+          aria-label="Admin mobile"
+        >
+          <ul className="flex flex-col gap-1">
+            {ADMIN_NAV_ITEMS.map((item) => {
+              const active = item.match(pathname);
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className={`block rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
+                      active
+                        ? "bg-indigo-500/15 text-indigo-300"
+                        : "text-neutral-300 hover:bg-neutral-900 hover:text-white"
+                    }`}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+            <li>
+              <Link
+                href="/"
+                onClick={() => setOpen(false)}
+                className="mt-1 block rounded-lg px-3 py-2.5 text-sm font-semibold text-neutral-500 hover:bg-neutral-900 hover:text-white"
+              >
+                Exit Admin
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      ) : null}
+    </header>
   );
 }

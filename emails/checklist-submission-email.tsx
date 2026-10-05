@@ -3,6 +3,7 @@ import * as React from "react";
 import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
+import { EmailButton } from "./components/email-button";
 import { EmailContent, EmailTitle, EmailBody, softBoxStyle } from "./components/email-content";
 import { EMAIL } from "./components/email-styles";
 
@@ -26,6 +27,12 @@ export default function ChecklistSubmissionEmail({ email, type, answers, submiss
           {submissionDate ? <Row><Column style={{ width: "100px" }}><Text style={label}>When</Text></Column><Column><Text style={value}>{submissionDate}</Text></Column></Row> : null}
           {answers && answers.length > 0 ? <Row><Column style={{ width: "100px" }}><Text style={label}>Answers</Text></Column><Column><Text style={value}>{answers.join(" · ")}</Text></Column></Row> : null}
         </Section>
+        <EmailButton href={`${EMAIL.siteUrl}/admin/command-center`}>
+          Open Admin Dashboard
+        </EmailButton>
+        <EmailButton href={`${EMAIL.siteUrl}/admin/leads`} variant="secondary">
+          Open Leads
+        </EmailButton>
       </EmailContent>
       <EmailFooter />
     </EmailLayout>

@@ -1,15 +1,7 @@
-/*
- * Mobile: full-bleed only. Do not change root font-size, padding, or widgets.
- * Changing html font-size scales all rem-based Tailwind layout (broken UI).
- * No transform / zoom (those create a right-side blank gap).
- */
-
+/* Mobile / tablet: keep all content in viewport */
 html, body {
   overflow-x: hidden;
   max-width: 100vw;
-  width: 100%;
-  margin: 0;
-  padding: 0;
 }
 
 img, video, canvas, iframe, svg {
@@ -17,19 +9,28 @@ img, video, canvas, iframe, svg {
   height: auto;
 }
 
-@media (max-width: 768px) {
-  body {
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-    transform: none;
-    zoom: normal;
+/* Prevent fixed ambient from causing horizontal scroll on small phones */
+.fixed {
+  max-width: 100vw;
+}
+
+/* Comfortable reading scale on narrow screens */
+@media (max-width: 640px) {
+  html {
+    font-size: 15px;
+  }
+  h1, .text-4xl, .text-5xl, .text-6xl {
+    line-height: 1.15;
+    word-break: break-word;
+  }
+  section, .container {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
   }
 }
 
-/* Mobile root size: 14px keeps rem layouts proportional while staying readable */
-@media screen and (max-width: 768px) {
-  html { font-size: 14px; }
-}
-@media screen and (max-width: 360px) {
-  html { font-size: 13.5px; }
+@media (max-width: 390px) {
+  html {
+    font-size: 14px;
+  }
 }

@@ -1,0 +1,27 @@
+name: apply-form-frontend-fixes
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/apply-form-frontend-fixes.py"
+      - ".github/workflows/apply-form-frontend-fixes.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply frontend form fixes
+        run: python3 scripts/apply-form-frontend-fixes.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "fix(forms): discovery error UX + free-demo success gate"
+          git push

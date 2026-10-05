@@ -22,7 +22,7 @@ export default function BlogListPage() {
   );
 
   return (
-    <main className="min-h-screen bg-transparent text-white pt-32 pb-24 relative overflow-hidden">
+    <main className="min-h-screen bg-[#0A0F1E] text-white pt-32 pb-24 relative overflow-hidden">
       <BackToHome href="/" label="Back to Home" />
       <PageBackdrop src="/assets/jobs/ceo-desk.jpg" />
       
@@ -31,7 +31,7 @@ export default function BlogListPage() {
           <span className="inline-block text-primary font-bold tracking-widest uppercase text-xs sm:text-sm mb-4 bg-primary/10 px-4 py-1.5 rounded-full border border-primary/20">
             Insights &amp; Architecture Guides
           </span>
-          <h1 className="uppercase text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight">
+          <h1 className="uppercase text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tight">
             ENGINEERING & BUSINESS BLOG
           </h1>
           <p className="text-zinc-400 text-base sm:text-lg max-w-2xl leading-relaxed mx-auto md:mx-0">
@@ -49,10 +49,10 @@ export default function BlogListPage() {
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
-                className="group flex flex-col h-full bg-white/[0.02] border border-white/10 rounded-3xl overflow-hidden hover:bg-white/[0.04] hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:"
+                className="group flex flex-col h-full glass-card overflow-hidden hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)]"
               >
                 {/* Visual Cover */}
-                <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-[#0A1530]/40">
+                <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/40">
                   <SafeImage
                     src={post.image}
                     alt={post.title}
@@ -60,7 +60,7 @@ export default function BlogListPage() {
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-4 left-4 z-10">
-                    <span className="text-[10px] font-bold tracking-widest uppercase text-white bg-[#0A1530]/70 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+                    <span className="text-[10px] font-bold tracking-widest uppercase text-white bg-black/70 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
                       {post.category}
                     </span>
                   </div>

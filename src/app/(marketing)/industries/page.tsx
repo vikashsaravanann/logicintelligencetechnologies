@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function IndustriesPage() {
   return (
-    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20 overflow-hidden">
+    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
       <BackToHome href="/" label="Back to Home" />
       {/* Background Glow */}
       <div className="absolute top-10 left-1/3 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
@@ -24,7 +24,7 @@ export default function IndustriesPage() {
             <Building2 className="w-3.5 h-3.5" />
             <span>Domain-Specific Engineering</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 uppercase">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 uppercase">
             SOFTWARE TAILORED TO <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">YOUR INDUSTRY</span>
           </h1>
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
@@ -37,10 +37,10 @@ export default function IndustriesPage() {
           {industriesData.map((ind) => (
             <div
               key={ind.slug}
-              className="group rounded-2xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:"
+              className="group glass-card p-8 flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.15)]"
             >
               <div>
-                <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-6 border border-white/10 bg-[#0A1530]/40">
+                <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-6 border border-white/10 bg-black/40">
                   <SafeImage
                     src={getIndustryVisual(ind.slug)}
                     alt={`${ind.title} — professional industry visual`}
@@ -95,7 +95,7 @@ export default function IndustriesPage() {
           </p>
           <Link
             href="/book-consultation"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-primary text-black font-bold hover:bg-primary/90 transition-all "
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-primary text-black font-bold hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(0,191,255,0.4)]"
           >
             <span>Consult Industry Architect</span>
             <ArrowRight className="w-4 h-4" />

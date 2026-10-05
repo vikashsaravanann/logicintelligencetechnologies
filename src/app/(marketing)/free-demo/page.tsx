@@ -165,14 +165,14 @@ export default function FreeDemoPage() {
         }),
       });
 
-      if (res.ok) {
-        setSent(true);
-      } else {
-        const data = await res.json().catch(() => ({}));
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.success === false) {
         setError(
           data?.message ||
             "Submission failed. Please try again or contact us on WhatsApp."
         );
+      } else {
+        setSent(true);
       }
     } catch {
       setError("Network error. Please check your connection and try again.");

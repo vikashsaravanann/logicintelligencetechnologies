@@ -1,0 +1,44 @@
+name: cleanup-obsolete-branches
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/cleanup-obsolete-branches.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  delete-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete obsolete branches
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const branches = [
+              "feat/founder-pdfs-platform",
+              "vercel/install-vercel-speed-insights-ig45yy",
+              "vercel/install-vercel-web-analytics-d1ssne",
+            ];
+            for (const name of branches) {
+              try {
+                await github.rest.git.deleteRef({
+                  owner,
+                  repo,
+                  ref: `heads/${name}`,
+                });
+                console.log(`Deleted: ${name}`);
+              } catch (err) {
+                const status = err.status || err.response?.status;
+                if (status === 404) {
+                  console.log(`Already gone: ${name}`);
+                } else {
+                  console.error(`Failed ${name}:`, err.message || err);
+                  core.setFailed(`Failed to delete ${name}: ${err.message || err}`);
+                }
+              }
+            }

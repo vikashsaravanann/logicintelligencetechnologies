@@ -64,7 +64,8 @@ export async function ensureWelcomeEmail({
       templateKey: "welcome-email",
       idempotencyKey: userId ? `welcome:${userId}` : `welcome-email:${cleanEmail}`,
       react: React.createElement(WelcomeEmail, {
-        email: safeName || cleanEmail,
+        fullName: safeName || undefined,
+        email: cleanEmail,
       }),
     });
 
@@ -88,6 +89,21 @@ export async function ensureWelcomeEmail({
 
     if (emailResult.skipped && emailResult.message === "Already sent") {
       return { success: true, message: "Welcome email already sent", alreadySent: true };
+    }
+
+    if (userId && isSupabaseLive()) {
+      try {
+        await supabaseAdmin
+          .from("profiles")
+          .update({
+            email: cleanEmail,
+            full_name: safeName || undefined,
+            welcome_email_sent_at: new Date().toISOString(),
+          })
+          .eq("id", userId);
+      } catch {
+        /* non-fatal */
+      }
     }
 
     return {

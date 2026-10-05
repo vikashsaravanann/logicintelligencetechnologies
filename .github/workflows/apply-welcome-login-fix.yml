@@ -1,0 +1,22 @@
+name: apply-welcome-login-fix
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - scripts/apply-welcome-login-fix.py
+      - .github/workflows/apply-welcome-login-fix.yml
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/apply-welcome-login-fix.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then echo No changes; exit 0; fi
+          git commit -m "fix(auth): welcome on signup with fullName + on sign-in for missed welcomes"
+          git push

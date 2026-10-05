@@ -16,7 +16,7 @@ export default function MasonryGrid({ projects }: { projects: PortfolioProject[]
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6, delay: (idx % 3) * 0.1, ease: "easeOut" }}
-          className="break-inside-avoid group rounded-[2rem] border border-white/5 bg-zinc-900/40 overflow-hidden hover:border-primary/30 hover:bg-zinc-900/60 transition-all duration-500 flex flex-col relative"
+          className="break-inside-avoid group glass-card overflow-hidden hover:border-primary/30 transition-all duration-500 flex flex-col relative"
         >
           <div className="relative aspect-[4/3] w-full overflow-hidden">
             <Image

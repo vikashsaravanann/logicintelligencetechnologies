@@ -1,3 +1,5 @@
+export type ResourceAccessType = "gated" | "public";
+
 export interface PdfResource {
   id: string;
   slug: string;
@@ -5,11 +7,13 @@ export interface PdfResource {
   description: string;
   category: string;
   filename: string;
-  publicPath?: string;
-  isGated: boolean;
+  /** Legacy public URL — must not be used for gated downloads. */
+  publicPath: string;
   coverImage: string;
   version: string;
   publishedAt: string;
+  /** gated = form + token required; public = intentionally open (e.g. press kit) */
+  accessType: ResourceAccessType;
 }
 
 export const PDF_RESOURCES: PdfResource[] = [
@@ -21,10 +25,10 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Corporate",
     filename: "company-profile.pdf",
     publicPath: "/resources/company-profile.pdf",
-    isGated: false,
-    coverImage: "/images/resources/company-profile.webp",
+    coverImage: "/images/resources/company-profile.jpg",
     version: "2026.1",
     publishedAt: "2026-01-15",
+    accessType: "gated",
   },
   {
     id: "pdf-services-brochure",
@@ -34,10 +38,10 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Services",
     filename: "services-brochure.pdf",
     publicPath: "/resources/services-brochure.pdf",
-    isGated: false,
-    coverImage: "/images/resources/services-brochure.webp",
+    coverImage: "/images/resources/services-brochure.jpg",
     version: "2026.1",
     publishedAt: "2026-01-15",
+    accessType: "gated",
   },
   {
     id: "pdf-capability-statement",
@@ -47,10 +51,10 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Corporate",
     filename: "capability-statement.pdf",
     publicPath: "/resources/capability-statement.pdf",
-    isGated: false,
-    coverImage: "/images/resources/resources-digital-transformation.webp",
+    coverImage: "/images/resources/capability-statement.jpg",
     version: "2026.1",
     publishedAt: "2026-01-20",
+    accessType: "gated",
   },
   {
     id: "pdf-website-checklist",
@@ -59,10 +63,11 @@ export const PDF_RESOURCES: PdfResource[] = [
     description: "A 50-point technical checklist covering performance, SEO, mobile responsiveness, accessibility, and security before going live.",
     category: "Technical Guide",
     filename: "website-development-checklist.pdf",
-    isGated: true,
-    coverImage: "/images/resources/website-development-checklist.webp",
+    publicPath: "/resources/website-development-checklist.pdf",
+    coverImage: "/images/resources/website-development-checklist.jpg",
     version: "2026.2",
     publishedAt: "2026-02-01",
+    accessType: "gated",
   },
   {
     id: "pdf-ai-readiness",
@@ -71,10 +76,11 @@ export const PDF_RESOURCES: PdfResource[] = [
     description: "Diagnostic rubric to evaluate organizational data pipelines, model feasibility, latency tolerances, and return on investment.",
     category: "AI & Data",
     filename: "ai-readiness-assessment.pdf",
-    isGated: true,
-    coverImage: "/images/resources/ai-readiness-assessment.webp",
+    publicPath: "/resources/ai-readiness-assessment.pdf",
+    coverImage: "/images/resources/ai-readiness-assessment.jpg",
     version: "2026.1",
     publishedAt: "2026-02-10",
+    accessType: "gated",
   },
   {
     id: "pdf-automation-guide",
@@ -83,10 +89,11 @@ export const PDF_RESOURCES: PdfResource[] = [
     description: "Strategic playbook for eliminating manual bottlenecks across lead triage, invoicing, customer support, and multi-platform sync.",
     category: "Strategy",
     filename: "business-automation-guide.pdf",
-    isGated: true,
-    coverImage: "/images/resources/business-automation-guide.webp",
+    publicPath: "/resources/business-automation-guide.pdf",
+    coverImage: "/images/resources/business-automation-guide.jpg",
     version: "2026.1",
     publishedAt: "2026-02-15",
+    accessType: "gated",
   },
   {
     id: "pdf-tech-roadmap",
@@ -95,10 +102,11 @@ export const PDF_RESOURCES: PdfResource[] = [
     description: "Structured architecture planning template for phasing legacy modernization, cloud migration, and microservice refactoring.",
     category: "Templates",
     filename: "technology-roadmap-template.pdf",
-    isGated: true,
-    coverImage: "/images/resources/technology-roadmap-template.webp",
+    publicPath: "/resources/technology-roadmap-template.pdf",
+    coverImage: "/images/resources/technology-roadmap-template.jpg",
     version: "2026.1",
     publishedAt: "2026-02-20",
+    accessType: "gated",
   },
   {
     id: "pdf-proposal-template",
@@ -107,10 +115,11 @@ export const PDF_RESOURCES: PdfResource[] = [
     description: "Standardized contract proposal structure detailing milestones, deliverables, payment schedules, assumptions, and client acceptance terms.",
     category: "Templates",
     filename: "project-proposal-template.pdf",
-    isGated: true,
-    coverImage: "/images/resources/project-proposal-template.webp",
+    publicPath: "/resources/project-proposal-template.pdf",
+    coverImage: "/images/resources/project-proposal-template.jpg",
     version: "2026.1",
     publishedAt: "2026-02-25",
+    accessType: "gated",
   },
   {
     id: "pdf-statement-of-work",
@@ -119,10 +128,11 @@ export const PDF_RESOURCES: PdfResource[] = [
     description: "Comprehensive legal and operational SOW document defining acceptance criteria, change request protocols, and IP assignment.",
     category: "Legal & Contracts",
     filename: "statement-of-work.pdf",
-    isGated: true,
-    coverImage: "/images/resources/statement-of-work.webp",
+    publicPath: "/resources/statement-of-work.pdf",
+    coverImage: "/images/resources/statement-of-work.jpg",
     version: "2026.1",
     publishedAt: "2026-03-01",
+    accessType: "gated",
   },
   {
     id: "pdf-case-study",
@@ -132,10 +142,10 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Case Studies",
     filename: "case-study.pdf",
     publicPath: "/resources/case-study.pdf",
-    isGated: false,
-    coverImage: "/images/resources/case-study.webp",
+    coverImage: "/images/resources/case-study.jpg",
     version: "2026.1",
     publishedAt: "2026-03-05",
+    accessType: "gated",
   },
   {
     id: "pdf-press-kit",
@@ -145,10 +155,10 @@ export const PDF_RESOURCES: PdfResource[] = [
     category: "Press & Media",
     filename: "press-kit.pdf",
     publicPath: "/resources/press-kit.pdf",
-    isGated: false,
-    coverImage: "/images/resources/press-kit.webp",
+    coverImage: "/images/resources/press-kit.jpg",
     version: "2026.1",
     publishedAt: "2026-03-10",
+    accessType: "public",
   },
   {
     id: "pdf-investor-memo",
@@ -157,9 +167,24 @@ export const PDF_RESOURCES: PdfResource[] = [
     description: "Confidential institutional overview outlining market opportunity, proprietary intellectual property, unit economics, and expansion strategy.",
     category: "Investors",
     filename: "investor-partnership-information-memorandum.pdf",
-    isGated: true,
-    coverImage: "/images/resources/investor-partnership-information-memorandum.webp",
+    publicPath: "/resources/investor-partnership-information-memorandum.pdf",
+    coverImage: "/images/resources/investor-partnership-information-memorandum.jpg",
     version: "2026.1",
     publishedAt: "2026-03-15",
+    accessType: "gated",
   },
 ];
+
+export function getPdfResourceBySlug(slug: string): PdfResource | undefined {
+  return PDF_RESOURCES.find((r) => r.slug === slug);
+}
+
+export function isGatedResource(slug: string): boolean {
+  const r = getPdfResourceBySlug(slug);
+  return !r || r.accessType === "gated";
+}
+
+/** Filenames that must never be served as static public assets */
+export const GATED_PDF_FILENAMES: string[] = PDF_RESOURCES.filter(
+  (r) => r.accessType === "gated"
+).map((r) => r.filename);
