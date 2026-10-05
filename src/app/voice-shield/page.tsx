@@ -24,7 +24,7 @@ const SITE_URL =
 export const metadata: Metadata = {
   title: "VoiceShield | AI Voice Security | Logic Intelligence Technologies",
   description:
-    "VoiceShield is an AI security product by Logic Intelligence Technologies Analyze eligible voice interactions for configurable fraud-risk, synthetic-voice and security signals with structured evidence.",
+    "VoiceShield is an AI security product by Logic Intelligence Technologies. Analyze eligible voice interactions for configurable fraud-risk, synthetic-voice and security signals with structured evidence.",
   alternates: { canonical: `${SITE_URL}/voice-shield` },
 };
 

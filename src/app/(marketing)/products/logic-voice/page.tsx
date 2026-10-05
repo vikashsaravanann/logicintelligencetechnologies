@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Logic Voice | Voice-First Personal AI Assistant",
     description:
-      "A voice-first personal AI assistant by Logic Intelligence Technologies Natural speech interaction, reasoning, planning, and approved tool execution.",
+      "A voice-first personal AI assistant by Logic Intelligence Technologies. Natural speech interaction, reasoning, planning, and approved tool execution.",
     url: `${SITE_URL}/products/logic-voice`,
     images: [{ url: COMPANY.bannerPath, width: 1200, height: 630, alt: "Logic Voice" }],
   },

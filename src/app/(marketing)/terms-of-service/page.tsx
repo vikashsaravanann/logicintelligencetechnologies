@@ -21,7 +21,7 @@ export default function TermsOfServicePage() {
 
         <div className="prose prose-invert prose-emerald mt-12">
           <p>
-            Welcome to Logic Intelligence Technologies These Terms of Service govern your use of our website and products, including VoiceShield, an AI security product by Logic Intelligence Technologies
+            Welcome to Logic Intelligence Technologies. These Terms of Service govern your use of our website and products, including VoiceShield, an AI security product by Logic Intelligence Technologies
           </p>
 
           <h2>1. Acceptance of Terms</h2>

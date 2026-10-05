@@ -40,7 +40,7 @@ export const COMPANY = {
     photoPath: '/images/founder/founder-about-card.jpg',
     photoPathWebp: '/images/founder/founder-about-main.jpg',
     photoPathJpg: '/images/founder/founder-about-main.jpg',
-    bio: 'Vikash Saravanan is an AI and data science engineer and the Founder & CEO of Logic Intelligence Technologies His work focuses on full-stack software engineering, intelligent automation, workflow systems, and scalable application architecture.',
+    bio: 'Vikash Saravanan is an AI and data science engineer and the Founder & CEO of Logic Intelligence Technologies. His work focuses on full-stack software engineering, intelligent automation, workflow systems, and scalable application architecture.',
     portfolioUrl: 'https://vikashsaravanann.github.io/startupwithvikash/',
     linkedinUrl: 'https://www.linkedin.com/in/vikash-saravanan-j7528/',
     githubUrl: 'https://github.com/vikashsaravanann',
