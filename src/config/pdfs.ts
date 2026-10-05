@@ -1,3 +1,5 @@
+export type ResourceAccessType = "gated" | "public";
+
 export interface PdfResource {
   id: string;
   slug: string;
@@ -5,11 +7,13 @@ export interface PdfResource {
   description: string;
   category: string;
   filename: string;
-  publicPath?: string;
-  isGated: boolean;
+  /** Legacy public URL — must not be used for gated downloads. */
+  publicPath: string;
   coverImage: string;
   version: string;
   publishedAt: string;
+  /** gated = form + token required; public = intentionally open */
+  accessType: ResourceAccessType;
 }
 
 // Official Logic Intelligence Technologies corporate document library.
@@ -26,10 +30,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "Official corporate document covering the Logic Intelligence Technologies company profile and executive overview.",
     category: "Corporate",
     filename: "company-profile.pdf",
-    isGated: true,
+    publicPath: "/resources/company-profile.pdf",
     coverImage: "/images/resources/company-profile.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-services-brochure",
@@ -39,10 +44,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "Our core service offerings across the full engineering lifecycle.",
     category: "Services",
     filename: "services-brochure.pdf",
-    isGated: true,
+    publicPath: "/resources/services-brochure.pdf",
     coverImage: "/images/resources/services-brochure.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-ai-rpa-capabilities",
@@ -52,10 +58,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "Autonomous intelligent systems: self-operating pipelines and deterministic AI across our AI and RPA capabilities.",
     category: "AI & Automation",
     filename: "ai-rpa-capabilities.pdf",
-    isGated: true,
+    publicPath: "/resources/ai-rpa-capabilities.pdf",
     coverImage: "/images/resources/resources-ai-implementation.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-portfolio",
@@ -65,10 +72,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "Engineered work, real clients, and production systems. Every project is founder-coded.",
     category: "Case Studies",
     filename: "portfolio.pdf",
-    isGated: true,
+    publicPath: "/resources/portfolio.pdf",
     coverImage: "/images/resources/case-study.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-pricing-guide",
@@ -78,10 +86,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "Transparent pricing with no hidden fees and a free prototype first.",
     category: "Pricing",
     filename: "pricing-guide.pdf",
-    isGated: true,
+    publicPath: "/resources/pricing-guide.pdf",
     coverImage: "/images/resources/resources-digital-transformation.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-case-studies",
@@ -91,10 +100,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "Documented outcomes and measurable results from delivered engineering systems.",
     category: "Case Studies",
     filename: "case-studies.pdf",
-    isGated: true,
+    publicPath: "/resources/case-studies.pdf",
     coverImage: "/images/resources/case-study.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-onboarding-guide",
@@ -104,10 +114,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "Your journey from first call to live system, step by step.",
     category: "Guides",
     filename: "onboarding-guide.pdf",
-    isGated: true,
+    publicPath: "/resources/onboarding-guide.pdf",
     coverImage: "/images/resources/resources-digital-transformation.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-technology-stack",
@@ -117,10 +128,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "Engineering decisions, stack rationale, and architecture principles.",
     category: "Engineering",
     filename: "technology-stack.pdf",
-    isGated: true,
+    publicPath: "/resources/technology-stack.pdf",
     coverImage: "/images/resources/technology-roadmap-template.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-founder-profile",
@@ -130,10 +142,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "Founder profile: Vikash Saravanan, engineer, architect, and founder.",
     category: "Corporate",
     filename: "founder-profile.pdf",
-    isGated: true,
+    publicPath: "/resources/founder-profile.pdf",
     coverImage: "/images/resources/company-profile.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-security-compliance",
@@ -143,10 +156,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "Row-level security, DPDP alignment, and production-grade hardening.",
     category: "Security",
     filename: "security-compliance.pdf",
-    isGated: true,
+    publicPath: "/resources/security-compliance.pdf",
     coverImage: "/images/resources/resources-digital-transformation.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-faq",
@@ -156,10 +170,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "Honest answers with technical depth and no spin.",
     category: "Guides",
     filename: "faq.pdf",
-    isGated: true,
+    publicPath: "/resources/faq.pdf",
     coverImage: "/images/resources/resources-digital-transformation.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-contact-engagement",
@@ -169,10 +184,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "How to start a free discovery session and engage with our team.",
     category: "Corporate",
     filename: "contact-engagement.pdf",
-    isGated: true,
+    publicPath: "/resources/contact-engagement.pdf",
     coverImage: "/images/resources/resources-digital-transformation.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-brand-book",
@@ -182,10 +198,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "The official Logic Intelligence Technologies brand book: identity, logos, and guidelines.",
     category: "Press & Media",
     filename: "brand-book.pdf",
-    isGated: true,
+    publicPath: "/resources/brand-book.pdf",
     coverImage: "/images/resources/press-kit.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-investor-briefing",
@@ -195,10 +212,11 @@ export const PDF_RESOURCES: PdfResource[] = [
       "Q3/Q4 2026 operating update and investor briefing.",
     category: "Investors",
     filename: "investor-briefing.pdf",
-    isGated: true,
+    publicPath: "/resources/investor-briefing.pdf",
     coverImage: "/images/resources/investor-partnership-information-memorandum.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
   {
     id: "pdf-knowledge-assistant",
@@ -208,9 +226,24 @@ export const PDF_RESOURCES: PdfResource[] = [
       "Your documents, not the open web: an overview of our private RAG knowledge assistant.",
     category: "AI & Automation",
     filename: "knowledge-assistant.pdf",
-    isGated: true,
+    publicPath: "/resources/knowledge-assistant.pdf",
     coverImage: "/images/resources/resources-ai-implementation.webp",
     version: "2026.1",
     publishedAt: "2026-10-05",
+    accessType: "gated",
   },
 ];
+
+export function getPdfResourceBySlug(slug: string): PdfResource | undefined {
+  return PDF_RESOURCES.find((r) => r.slug === slug);
+}
+
+export function isGatedResource(slug: string): boolean {
+  const r = getPdfResourceBySlug(slug);
+  return !r || r.accessType === "gated";
+}
+
+/** Filenames that must never be served as static public assets */
+export const GATED_PDF_FILENAMES: string[] = PDF_RESOURCES.filter(
+  (r) => r.accessType === "gated"
+).map((r) => r.filename);

@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     }
 
     // 1. Lead Persistence
-    if (resource.isGated) {
+    if (resource.accessType === "gated") {
       const persisted = await insertLead("checklist_leads", {
         full_name: fullName || "Unknown",
         email: email,
