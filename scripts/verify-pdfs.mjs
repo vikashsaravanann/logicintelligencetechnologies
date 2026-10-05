@@ -4,7 +4,10 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
-const publicResourcesDir = path.join(rootDir, 'public/resources');
+const resourceDirs = [
+  path.join(rootDir, 'private/resources'),
+  path.join(rootDir, 'public/resources'),
+];
 
 const EXPECTED_PDFS = [
   'company-profile.pdf',
@@ -25,15 +28,19 @@ console.log('--- LOGIC INTELLIGENCE TECHNOLOGIES PDF VERIFICATION ---');
 
 let hasErrors = false;
 
-if (!fs.existsSync(publicResourcesDir)) {
-  console.error(`FAIL: Directory public/resources does not exist.`);
+const existingResourceDirs = resourceDirs.filter((dir) => fs.existsSync(dir));
+
+if (existingResourceDirs.length === 0) {
+  console.error(`FAIL: Neither private/resources nor public/resources directories exist.`);
   process.exit(1);
 }
 
 for (const filename of EXPECTED_PDFS) {
-  const filePath = path.join(publicResourcesDir, filename);
+  const filePath = existingResourceDirs
+    .map((dir) => path.join(dir, filename))
+    .find((candidatePath) => fs.existsSync(candidatePath));
 
-  if (!fs.existsSync(filePath)) {
+  if (!filePath) {
     console.error(`FAIL: Missing PDF file: ${filename}`);
     hasErrors = true;
     continue;
