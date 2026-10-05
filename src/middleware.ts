@@ -50,6 +50,9 @@ export async function middleware(req: NextRequest) {
     if (!user || user.is_anonymous || !user.email_confirmed_at) {
       const loginUrl = new URL("/login", req.url);
       loginUrl.searchParams.set("next", safeNextPath(requested, path));
+      // Signed in but unconfirmed: say so, otherwise /login (which sees the
+      // session) sends the browser straight back here in a loop.
+      if (user && !user.is_anonymous) loginUrl.searchParams.set("reason", "confirm-email");
       return NextResponse.redirect(loginUrl);
     }
 
@@ -57,7 +60,7 @@ export async function middleware(req: NextRequest) {
       const { data: profile, error } = await supabase.from("profiles")
         .select("role").eq("id", user.id).maybeSingle();
       if (error || !profile || !["admin", "super_admin"].includes(profile.role)) {
-        return NextResponse.redirect(new URL("/profile", req.url));
+        return NextResponse.redirect(new URL("/profile?notice=admin-required", req.url));
       }
     }
   } catch {

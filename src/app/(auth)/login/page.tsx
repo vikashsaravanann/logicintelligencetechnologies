@@ -103,9 +103,19 @@ export default function LoginPage() {
         const {
           data: { session },
         } = await supabase.auth.getSession();
-        if (!cancelled && session) {
-          router.replace(safeNextPath() || "/");
+        if (cancelled || !session) return;
+        // An unconfirmed account would bounce between here and the protected
+        // page forever: explain instead of redirecting.
+        const unconfirmed =
+          !session.user.email_confirmed_at ||
+          new URLSearchParams(window.location.search).get("reason") === "confirm-email";
+        if (unconfirmed) {
+          setServerError(
+            `${session.user.email ?? "This account"} has not confirmed its email address yet. Open the confirmation link we emailed you, then sign in again.`
+          );
+          return;
         }
+        router.replace(safeNextPath() || "/");
       } catch {
         /* stay on login */
       }

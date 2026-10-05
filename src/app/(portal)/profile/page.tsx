@@ -11,7 +11,12 @@ import { COMPANY } from "@/config/company";
 
 export const dynamic = "force-dynamic";
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ notice?: string }>;
+}) {
+  const { notice } = await searchParams;
   const cookieStore = await cookies();
   const supabase = createServerComponentClient(
     { cookies: () => cookieStore as any },
@@ -82,6 +87,21 @@ export default async function ProfilePage() {
         <div className="mb-4">
           <BackButton fallbackHref="/" label="Back to Home" inline />
         </div>
+
+        {notice === "admin-required" && (
+          <div
+            role="alert"
+            className="mb-5 rounded-2xl border border-amber-400/40 bg-amber-400/10 px-5 py-4 text-sm text-amber-100"
+          >
+            <p className="font-semibold text-amber-200">This account cannot open the admin dashboard.</p>
+            <p className="mt-1 text-amber-100/90">
+              {session.user.email} is signed in, but its role is{" "}
+              <strong>{profile?.role || "not set"}</strong>. The admin dashboard needs the role{" "}
+              <strong>admin</strong> or <strong>super_admin</strong>, which only a database
+              administrator can assign in Supabase.
+            </p>
+          </div>
+        )}
 
         <div className="rounded-3xl border border-white/15 bg-white/[0.05] backdrop-blur-[24px] p-5 sm:p-8 mb-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_20px_60px_rgba(0,0,0,0.35)]">
           <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7">

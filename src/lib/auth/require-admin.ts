@@ -75,7 +75,7 @@ export async function requireAdminPage(currentPath: string): Promise<Extract<Adm
   );
   const auth = await resolveAdmin(supabase);
   if (!auth.ok) {
-    redirect(auth.status === 401 ? `/login?next=${encodeURIComponent(currentPath)}` : "/profile");
+    redirect(auth.status === 401 ? `/login?next=${encodeURIComponent(currentPath)}` : "/profile?notice=admin-required");
   }
   return auth;
 }
