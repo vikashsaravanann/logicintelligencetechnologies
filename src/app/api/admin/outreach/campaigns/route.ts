@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: auth.message }, { status: auth.status });
   }
 
-  // Attribution is the authenticated admin, never a browser-supplied body.actor.
+  // Attribution is the authenticated admin, never a browser-supplied actor field.
   const actor = auth.email ?? auth.userId;
 
   const body = await req.json().catch(() => ({}));

@@ -15,8 +15,9 @@ export const revalidate = 0;
 export default async function AdminCommandCenterPage() {
   await requireCapabilityPage("dashboard.view", "/admin/command-center");
 
-  const nowIso = new Date().toISOString();
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const now = new Date();
+  const nowIso = now.toISOString();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
   const [invoicesRes, projectsRes, leadsRes, bookingsRes, ticketsRes, newLeadsRes] = await Promise.all([
     supabaseAdmin.from("invoices").select("amount, status"),
