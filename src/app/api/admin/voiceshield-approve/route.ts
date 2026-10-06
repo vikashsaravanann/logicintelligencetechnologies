@@ -55,7 +55,15 @@ export async function POST(req: Request) {
     if (!emailResult.success) {
       return NextResponse.json(
         { success: false, message: "Could not send approval email" },
-        { status: 500 }
+        { status: 502 }
+      );
+    }
+    // A skipped send (suppressed/unsubscribed recipient) means no access email
+    // reached the client — do NOT grant access on a silent skip.
+    if (emailResult.status === "skipped") {
+      return NextResponse.json(
+        { success: false, message: "Approval email was skipped (recipient suppressed or unsubscribed); access was not granted." },
+        { status: 409 }
       );
     }
 
@@ -64,6 +72,19 @@ export async function POST(req: Request) {
       .from("contact_leads")
       .update({ pipeline_stage: "Access Granted" })
       .eq("id", leadId);
+
+    const { recordAdminAction } = await import("@/lib/admin/audit");
+    await recordAdminAction({
+      actor: { userId: auth.userId, email: auth.email, role: auth.role },
+      action: "voiceshield.access_grant",
+      capability: "voiceshield.approve",
+      target: { type: "contact_lead", id: leadId },
+      outcome: updateError ? "failed" : "succeeded",
+      metadata: { emailStatus: emailResult.status },
+      errorCode: updateError ? "pipeline_update_failed" : undefined,
+      request: req,
+    });
+
     if (updateError) return NextResponse.json({ success: false, message: "Email accepted, but approval status could not be saved. Contact support before retrying." }, { status: 503 });
 
     return NextResponse.json({

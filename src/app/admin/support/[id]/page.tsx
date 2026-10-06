@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { SupportTicketActions } from "./support-ticket-actions";
 import { requireAdminPage } from "@/lib/auth/require-admin";
+import { formatIST } from "@/lib/format/datetime";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -28,6 +29,12 @@ export default async function AdminSupportDetailPage({ params }: Props) {
   if (error || !ticket) {
     notFound();
   }
+
+  const { data: messages } = await supabaseAdmin
+    .from("support_ticket_messages")
+    .select("id, sender_type, sender_name, message, created_at")
+    .eq("ticket_id", id)
+    .order("created_at", { ascending: true });
 
   return (
     <div className="container mx-auto p-4 py-8 max-w-4xl">
@@ -62,12 +69,43 @@ export default async function AdminSupportDetailPage({ params }: Props) {
           </div>
         </div>
         
+        <div className="space-y-3">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-400">Conversation</h2>
+          {messages && messages.length > 0 ? (
+            <ul className="space-y-3">
+              {messages.map((m) => (
+                <li
+                  key={m.id}
+                  className={`rounded-xl border p-4 text-sm ${
+                    m.sender_type === "agent"
+                      ? "border-primary/20 bg-primary/5"
+                      : "border-neutral-800 bg-neutral-950"
+                  }`}
+                >
+                  <div className="mb-1 flex items-center justify-between text-[11px] text-neutral-500">
+                    <span className="font-semibold text-neutral-300">
+                      {m.sender_name}
+                      <span className="ml-2 rounded px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-neutral-400 ring-1 ring-neutral-700">
+                        {m.sender_type}
+                      </span>
+                    </span>
+                    <span>{formatIST(m.created_at, "datetime")}</span>
+                  </div>
+                  <p className="whitespace-pre-line leading-relaxed text-neutral-300">{m.message}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs text-neutral-500">No replies yet.</p>
+          )}
+        </div>
+
         <div className="pt-4">
           <SupportTicketActions ticketId={ticket.id} email={ticket.requester_email || "linked client"} status={ticket.status} />
         </div>
 
         <div className="pt-6 border-t border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-neutral-500 gap-2">
-          <span>Opened: {new Date(ticket.created_at).toLocaleString()}</span>
+          <span>Opened: {formatIST(ticket.created_at, "datetime")}</span>
         </div>
       </div>
     </div>

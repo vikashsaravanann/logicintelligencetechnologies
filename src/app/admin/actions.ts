@@ -108,14 +108,33 @@ export async function replyToSupportTicket(ticketId: string, message: string) {
     recipient = data.user?.email;
   }
   if (!recipient || !isValidEmail(recipient)) throw new Error("No valid ticket recipient");
+
+  // Persist the reply to the ticket thread first, so the conversation is
+  // recorded even if the email send is skipped or fails.
+  const { error: msgError } = await supabaseAdmin.from("support_ticket_messages").insert({
+    ticket_id: ticketId,
+    sender_type: "agent",
+    sender_id: session.userId,
+    sender_name: session.email ?? "LIT Support",
+    message,
+  });
+  if (msgError) {
+    await recordAdminAction({
+      actor, action: "support.reply", capability: "support.reply",
+      target: { type: "support_ticket", id: ticketId }, outcome: "failed", errorCode: "thread_insert_failed",
+    });
+    throw new Error("Could not record the reply");
+  }
+
   const result = await sendEmail({ to: recipient, subject: `Re: Support Ticket #${ticketId}`,
     from: "support", category: "transactional", react: AdminGenericEmail({ message }) });
   await recordAdminAction({
     actor, action: "support.reply", capability: "support.reply",
     target: { type: "support_ticket", id: ticketId },
     outcome: result.success ? "succeeded" : "failed",
-    metadata: { delivered: result.success && !result.skipped },
+    metadata: { delivered: result.success && !result.skipped, emailStatus: result.status },
   });
-  if (!result.success) throw new Error("Could not send reply");
-  return { success: true };
+  revalidatePath(`/admin/support/${ticketId}`);
+  // The reply is saved to the thread regardless; report the real email status.
+  return { success: true, emailDelivered: result.success && !result.skipped };
 }
