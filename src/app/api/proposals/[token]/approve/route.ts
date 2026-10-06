@@ -1,85 +1,109 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import crypto from "crypto";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { enqueueEmail } from "@/lib/email/outbox";
 import { COMPANY } from "@/config/company";
+import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ token: string }> }
-) {
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
+const bodySchema = z.object({
+  signerName: z.string().trim().min(1).max(160),
+});
+
+function allowedOrigin(origin: string | null): boolean {
+  if (!origin) return true; // non-browser clients send no Origin
   try {
-    const { token } = await params;
-    const body = await req.json().catch(() => ({}));
-    const signerName = body?.signerName || "Client Representative";
-
-    // 1. Fetch proposal
-    const { data: proposal, error: fetchError } = await supabaseAdmin
-      .from("proposals")
-      .select("*")
-      .eq("secure_token", token)
-      .single();
-
-    if (fetchError || !proposal) {
-      return NextResponse.json({ error: "Proposal not found or invalid token." }, { status: 404 });
-    }
-
-    if (proposal.status === "Approved") {
-      return NextResponse.json({ success: true, message: "Proposal already approved." });
-    }
-
-    // 2. Mark Approved
-    const { data: updated, error: updateError } = await supabaseAdmin
-      .from("proposals")
-      .update({
-        status: "Approved",
-        approved_at: new Date().toISOString(),
-      })
-      .eq("id", proposal.id)
-      .select()
-      .single();
-
-    if (updateError) {
-      console.error("[proposals/[token]/approve]", updateError);
-      return NextResponse.json({ error: "Request failed" }, { status: 500 });
-    }
-
-    // 3. Create Project record automatically in CRM
+    const host = new URL(origin).host;
+    const allowed = new Set<string>();
     try {
-      const projectCode = `PRJ-${Math.floor(1000 + Math.random() * 9000)}`;
-      await supabaseAdmin.from("projects").insert({
-        project_code: projectCode,
-        client_name: proposal.client_name,
-        name: proposal.title,
-        status: "Planning",
-        progress: 0,
-        value: proposal.pricing,
-      });
-    } catch (projErr) {
-      console.warn("[Auto-Project Creation]", projErr);
+      allowed.add(new URL(COMPANY.websiteUrl).host);
+    } catch {
+      /* ignore malformed config */
     }
+    if (process.env.NODE_ENV !== "production") {
+      allowed.add("localhost:3000");
+      allowed.add("127.0.0.1:3000");
+    }
+    return allowed.has(host);
+  } catch {
+    return false;
+  }
+}
 
-    // 4. Notify admin via outbox email
+function hashIp(ip: string): string | null {
+  const secret = process.env.AUDIT_HASH_SECRET;
+  if (!secret || !ip || ip === "unknown") return null;
+  return crypto.createHmac("sha256", secret).update(ip).digest("hex");
+}
+
+export async function POST(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params;
+
+  if (!allowedOrigin(req.headers.get("origin"))) {
+    return NextResponse.json({ error: "Invalid origin" }, { status: 403 });
+  }
+  if (!token || token.length < 8 || token.length > 64) {
+    return NextResponse.json({ error: "Invalid proposal link" }, { status: 400 });
+  }
+
+  const ip = clientIp(req);
+  // Fails closed in production without Redis.
+  const ok = await rateLimit(`proposal-approve:${ip}:${token}`, 5, 60_000);
+  if (!ok) {
+    return NextResponse.json({ error: "Too many attempts. Please wait a moment." }, { status: 429 });
+  }
+
+  let signerName: string;
+  try {
+    ({ signerName } = bodySchema.parse(await req.json()));
+  } catch {
+    return NextResponse.json({ error: "A signatory name is required." }, { status: 400 });
+  }
+
+  const userAgent = (req.headers.get("user-agent") || "").slice(0, 300);
+
+  const { data: result, error } = await supabaseAdmin.rpc("approve_proposal", {
+    p_token: token,
+    p_signer_name: signerName,
+    p_ip_hash: hashIp(ip),
+    p_user_agent: userAgent,
+  });
+
+  if (error) {
+    console.error("[proposals/approve] rpc", error.message);
+    return NextResponse.json({ error: "Request failed" }, { status: 500 });
+  }
+
+  const r = (result ?? {}) as { ok?: boolean; reason?: string; reference?: string };
+
+  if (!r.ok) {
+    // Generic for not_found/expired/not_acceptable — do not leak proposal state.
+    const status = r.reason === "not_found" ? 404 : 409;
+    const message =
+      r.reason === "expired"
+        ? "This proposal has expired. Please contact us for an updated version."
+        : r.reason === "not_found"
+          ? "Proposal not found or invalid link."
+          : "This proposal can no longer be accepted.";
+    return NextResponse.json({ error: message }, { status });
+  }
+
+  // Notify internally only on a fresh acceptance (not on an idempotent repeat).
+  if (r.reason === "approved") {
     try {
       await enqueueEmail({
         recipient: COMPANY.adminEmail,
-        subject: `🎉 PROPOSAL APPROVED: ${proposal.title} by ${proposal.client_name}`,
+        subject: `Proposal accepted: ${r.reference ?? token}`,
         templateId: "proposal_approved_notification",
-        metadata: {
-          proposalId: proposal.id,
-          clientName: proposal.client_name,
-          clientEmail: proposal.client_email,
-          signerName,
-          value: proposal.pricing,
-          currency: proposal.currency,
-        },
+        metadata: { reference: r.reference ?? null, signerName },
       });
     } catch (emailErr) {
-      console.warn("[Outbox Proposal Notification]", emailErr);
+      console.warn("[proposals/approve] notify", emailErr);
     }
-
-    return NextResponse.json({ success: true, proposal: updated });
-  } catch (err: any) {
-    console.error("[proposals/[token]/approve]", err);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
+
+  return NextResponse.json({ success: true, reference: r.reference ?? null });
 }
