@@ -68,9 +68,10 @@ export function VoiceShieldRequestsClient({ leads }: Props) {
     }
   };
 
-  const voiceShieldLeads = leads.filter((l) =>
-    l.message?.includes("VoiceShield") || l.message?.includes("Access type:")
-  );
+  // The page already filtered to VoiceShield requests (by project_type, with a
+  // message fallback). "Pending" excludes those already granted access.
+  const voiceShieldLeads = leads;
+  const pendingCount = voiceShieldLeads.filter((l) => l.pipeline_stage !== "Access Granted").length;
 
   return (
     <div className="container mx-auto p-4 py-8 max-w-6xl space-y-8">
@@ -97,7 +98,7 @@ export function VoiceShieldRequestsClient({ leads }: Props) {
             </p>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
-            <span className="text-2xl font-bold text-cyan-400">{voiceShieldLeads.length}</span>
+            <span className="text-2xl font-bold text-cyan-400">{pendingCount}</span>
             <span className="text-xs text-cyan-300/70 font-mono uppercase tracking-wider">pending requests</span>
           </div>
         </div>

@@ -76,11 +76,11 @@ export function CreateInvoiceForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium text-neutral-400 mb-1">Client Name *</label>
-            <input required type="text" name="clientName" value={formData.clientName} onChange={handleChange} className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500" placeholder="John Doe" />
+            <input required type="text" name="clientName" value={formData.clientName} onChange={handleChange} className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500" placeholder="Client name" />
           </div>
           <div>
             <label className="block text-xs font-medium text-neutral-400 mb-1">Client Email *</label>
-            <input required type="email" name="clientEmail" value={formData.clientEmail} onChange={handleChange} className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500" placeholder="client@example.com" />
+            <input required type="email" name="clientEmail" value={formData.clientEmail} onChange={handleChange} className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500" placeholder="name@company.com" />
           </div>
         </div>
 

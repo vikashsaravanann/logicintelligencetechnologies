@@ -33,14 +33,9 @@ export default async function ProposalPage({ params }: Props) {
     notFound();
   }
 
-  // Record viewed status if it's currently 'Sent'
-  if (proposal.status === "Sent") {
-    await supabaseAdmin
-      .from("proposals")
-      .update({ status: "Viewed" })
-      .eq("id", proposal.id);
-    proposal.status = "Viewed";
-  }
+  // View tracking is NOT done here: a GET render must not write. The client
+  // pings the rate-limited /api/proposals/[token]/view route once on mount,
+  // which records the view (and skips staff previews).
 
   return (
     <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20 overflow-hidden">

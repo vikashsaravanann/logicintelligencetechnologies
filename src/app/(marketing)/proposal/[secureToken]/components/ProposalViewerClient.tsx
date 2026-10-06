@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { CheckCircle2, ShieldCheck, Clock, FileText, Check, Loader2, Sparkles, Building2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CheckCircle2, ShieldCheck, FileText, Check, Loader2, Sparkles } from "lucide-react";
 import { COMPANY } from "@/config/company";
 import { trackEvent } from "@/lib/analytics";
 
@@ -15,6 +15,16 @@ export default function ProposalViewerClient({ proposal }: Props) {
   const [status, setStatus] = useState<string>(proposal.status);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Record the view once, client-side (a GET render must not write). Best-effort.
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`/api/proposals/${proposal.secure_token}/view`, {
+      method: "POST",
+      signal: controller.signal,
+    }).catch(() => {});
+    return () => controller.abort();
+  }, [proposal.secure_token]);
 
   const handleApprove = async () => {
     if (!signerName.trim() || !agreeTerms) return;
@@ -69,7 +79,7 @@ export default function ProposalViewerClient({ proposal }: Props) {
                   : "bg-primary/20 text-primary border border-primary/30"
               }`}
             >
-              {isApproved ? "Approved & Executed" : "Active Proposal"}
+              {isApproved ? "Accepted" : "Active Proposal"}
             </span>
           </div>
         </div>
@@ -168,7 +178,7 @@ export default function ProposalViewerClient({ proposal }: Props) {
             Digital Acceptance & Authorization
           </h3>
           <p className="text-xs sm:text-sm text-zinc-300 mb-6">
-            By typing your full legal name below and clicking &quot;Approve & Sign Proposal&quot;, you authorize Logic Intelligence Technologies to initiate project scheduling and onboarding.
+            By typing your full legal name below and clicking &quot;Accept Proposal&quot;, you record your acceptance of this proposal and authorize Logic Intelligence Technologies to begin onboarding.
           </p>
 
           {error && (
@@ -181,9 +191,9 @@ export default function ProposalViewerClient({ proposal }: Props) {
             <div className="p-6 rounded-2xl bg-primary/10 border border-primary/30 text-primary flex items-center gap-4">
               <CheckCircle2 className="w-8 h-8 text-primary shrink-0" />
               <div>
-                <p className="font-bold text-sm">Proposal Successfully Accepted & Approved</p>
+                <p className="font-bold text-sm">Proposal accepted</p>
                 <p className="text-xs text-primary/80">
-                  Our onboarding team will contact you within 2 business hours to coordinate developer sprints.
+                  Thank you. Our team will be in touch shortly to coordinate onboarding and next steps.
                 </p>
               </div>
             </div>
@@ -225,12 +235,12 @@ export default function ProposalViewerClient({ proposal }: Props) {
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Executing Digital Signature...</span>
+                    <span>Recording acceptance...</span>
                   </>
                 ) : (
                   <>
                     <Check className="w-4 h-4" />
-                    <span>Approve & Sign Proposal</span>
+                    <span>Accept Proposal</span>
                   </>
                 )}
               </button>

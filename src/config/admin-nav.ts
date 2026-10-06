@@ -58,6 +58,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
   {
     label: "Operations",
     items: [
+      { label: "Automations", href: "/admin/automations", capability: "automations.read", match: startsWith("/admin/automations") },
       { label: "System Status", href: "/admin/status", capability: "status.read", match: startsWith("/admin/status") },
     ],
   },

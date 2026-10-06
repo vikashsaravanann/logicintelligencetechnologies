@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { requireCapabilityPage } from "@/lib/auth/session";
 import { checkAllServices, overallState, type ServiceState } from "@/lib/status/service-checks";
 import { runConfigChecks, type CheckStatus } from "@/lib/status/config-checks";
+import { checkDatabase, type LiveState } from "@/lib/status/live-checks";
 
 export const metadata: Metadata = {
   title: "System Status | Admin",
@@ -25,9 +26,15 @@ const CONFIG_TONE: Record<CheckStatus, string> = {
 
 export default async function StatusPage() {
   await requireCapabilityPage("status.read", "/admin/status");
-  const results = await checkAllServices();
+  const [results, db] = await Promise.all([checkAllServices(), checkDatabase()]);
   const overall = overallState(results);
   const config = runConfigChecks();
+
+  const LIVE_TONE: Record<LiveState, string> = {
+    PASS: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
+    FAIL: "text-rose-400 border-rose-500/30 bg-rose-500/10",
+    "NOT CONFIGURED": "text-zinc-400 border-zinc-600/40 bg-zinc-800/40",
+  };
 
   return (
     <div className="space-y-8">
@@ -60,6 +67,22 @@ export default async function StatusPage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section aria-labelledby="db-heading" className="overflow-hidden rounded-2xl border border-neutral-800">
+        <h2 id="db-heading" className="border-b border-neutral-800 bg-neutral-900/60 px-5 py-3 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+          Live database
+        </h2>
+        <div className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="font-medium text-white">Supabase round-trip</p>
+            <p className="break-words text-xs text-zinc-500">
+              {db.note ? db.note : "A real head query against profiles"}
+              {db.latencyMs !== undefined && ` · ${db.latencyMs} ms`}
+            </p>
+          </div>
+          <span className={`w-fit shrink-0 rounded-md border px-2 py-0.5 text-xs font-semibold ${LIVE_TONE[db.state]}`}>{db.state}</span>
+        </div>
       </section>
 
       <section aria-labelledby="cfg-heading" className="overflow-hidden rounded-2xl border border-neutral-800">

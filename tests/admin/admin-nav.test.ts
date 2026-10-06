@@ -24,6 +24,7 @@ const NAV_HIDDEN: Record<string, string> = {
   "/admin/forbidden": "shown on capability denial",
   "/admin/emails/new": "reached from the Emails page",
   "/admin/proposals/new": "reached from the Proposals page",
+  "/admin/invoices/new": "reached from the Invoices page",
 };
 
 test("every nav href resolves to an existing admin page", () => {

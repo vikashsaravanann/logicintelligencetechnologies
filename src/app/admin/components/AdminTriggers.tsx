@@ -35,13 +35,13 @@ export function AdminTriggers() {
   const [formData, setFormData] = useState({
     email: "",
     fullName: "",
-    invoiceNumber: "INV-2026-001",
-    amount: "₹1,500.00",
-    dueDate: "2026-09-30",
-    invoiceUrl: "https://www.logicintelligencetechnologies.in/client/dashboard",
-    projectName: "Logic Intel Web App",
-    liveUrl: "https://www.logicintelligencetechnologies.in",
-    proposalUrl: "https://www.logicintelligencetechnologies.in/client/dashboard",
+    invoiceNumber: "",
+    amount: "",
+    dueDate: "",
+    invoiceUrl: "",
+    projectName: "",
+    liveUrl: "",
+    proposalUrl: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

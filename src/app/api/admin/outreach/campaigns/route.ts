@@ -37,6 +37,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: auth.message }, { status: auth.status });
   }
 
+  // Attribution is the authenticated admin, never a browser-supplied actor field.
+  const actor = auth.email ?? auth.userId;
+
   const body = await req.json().catch(() => ({}));
   const action = String(body.action || "create");
 
@@ -57,7 +60,7 @@ export async function POST(req: Request) {
     const result = await createCampaign({
       name: String(body.name || "Untitled campaign"),
       description: body.description ? String(body.description) : undefined,
-      createdBy: body.actor ? String(body.actor) : "admin",
+      createdBy: actor,
       steps,
       dryRun: Boolean(body.dryRun),
     });
@@ -72,7 +75,7 @@ export async function POST(req: Request) {
     if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
     const enroll = await enrollEligibleLeads({
       campaignId: id,
-      actor: body.actor ? String(body.actor) : "admin",
+      actor: actor,
     });
     if ("error" in enroll) {
       return NextResponse.json({ error: enroll.error }, { status: 400 });
@@ -80,7 +83,7 @@ export async function POST(req: Request) {
     const status = await setCampaignStatus({
       id,
       status: "ACTIVE",
-      actor: body.actor ? String(body.actor) : "admin",
+      actor: actor,
     });
     if ("error" in status) {
       return NextResponse.json({ error: status.error }, { status: 400 });
@@ -98,7 +101,7 @@ export async function POST(req: Request) {
     const status = await setCampaignStatus({
       id,
       status: action === "pause" ? "PAUSED" : "ACTIVE",
-      actor: body.actor ? String(body.actor) : "admin",
+      actor: actor,
     });
     if ("error" in status) {
       return NextResponse.json({ error: status.error }, { status: 400 });
