@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Shield } from "lucide-react";
 import type { ReactNode } from "react";
-import { navForRole } from "@/config/admin-nav";
+import { navViewForRole } from "@/config/admin-nav";
 import { ROLE_LABELS, type StaffRole } from "@/config/roles";
 import { AdminMobileNav } from "./AdminMobileNav";
 import { AdminNavLinks } from "./AdminNavLinks";
@@ -20,7 +20,9 @@ export function AdminShell({
   email: string | null;
   children: ReactNode;
 }) {
-  const groups = navForRole(role);
+  // Serializable (label+href only) — functions like `match` cannot cross the
+  // server→client boundary into the nav client components.
+  const groups = navViewForRole(role);
 
   return (
     <div className="min-h-screen bg-neutral-950 font-sans text-neutral-50 selection:bg-indigo-500/30">
