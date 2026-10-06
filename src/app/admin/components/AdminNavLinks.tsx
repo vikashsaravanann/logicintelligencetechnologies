@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { AdminNavGroup } from "@/config/admin-nav";
+import { isActiveNav, type AdminNavGroupView } from "@/config/admin-nav";
 
 /** Grouped admin nav links with active highlighting. Used by sidebar + drawer. */
 export function AdminNavLinks({
   groups,
   onNavigate,
 }: {
-  groups: AdminNavGroup[];
+  groups: AdminNavGroupView[];
   onNavigate?: () => void;
 }) {
   const pathname = usePathname() || "";
@@ -22,7 +22,7 @@ export function AdminNavLinks({
           </p>
           <ul className="space-y-0.5">
             {group.items.map((item) => {
-              const active = item.match(pathname);
+              const active = isActiveNav(pathname, item.href);
               return (
                 <li key={item.href}>
                   <Link

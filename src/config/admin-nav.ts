@@ -86,3 +86,39 @@ export function navForRole(role: StaffRole | null | undefined): AdminNavGroup[] 
 export function allNavHrefs(): string[] {
   return ADMIN_NAV_GROUPS.flatMap((g) => g.items.map((i) => i.href));
 }
+
+/**
+ * Serializable nav shapes for passing from the server AdminShell to the client
+ * nav components. The `match` predicate is a function and CANNOT cross the
+ * server→client boundary (React throws "Functions cannot be passed to Client
+ * Components"), so the client receives only label+href and derives the active
+ * state with isActiveNav() below.
+ */
+export interface AdminNavLinkView {
+  label: string;
+  href: string;
+}
+export interface AdminNavGroupView {
+  label: string;
+  items: AdminNavLinkView[];
+}
+
+/** Capability-filtered nav for a role, reduced to serializable label+href. */
+export function navViewForRole(role: StaffRole | null | undefined): AdminNavGroupView[] {
+  return navForRole(role).map((g) => ({
+    label: g.label,
+    items: g.items.map((i) => ({ label: i.label, href: i.href })),
+  }));
+}
+
+/**
+ * Active-state rule for a nav href, mirroring the `match` predicates in
+ * ADMIN_NAV_GROUPS: the dashboard is active on "/admin" and the command-center
+ * path; every other item is active on its href or any sub-path.
+ */
+export function isActiveNav(pathname: string, href: string): boolean {
+  if (href === ADMIN_DASHBOARD_PATH) {
+    return pathname === "/admin" || pathname === ADMIN_DASHBOARD_PATH;
+  }
+  return pathname === href || pathname.startsWith(href + "/");
+}

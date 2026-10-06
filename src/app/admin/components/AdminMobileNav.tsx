@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
-import type { AdminNavGroup } from "@/config/admin-nav";
+import type { AdminNavGroupView } from "@/config/admin-nav";
 import { AdminNavLinks } from "./AdminNavLinks";
 
 /** Mobile drawer trigger + panel for the admin nav (hidden on lg+). */
@@ -12,7 +12,7 @@ export function AdminMobileNav({
   roleLabel,
   email,
 }: {
-  groups: AdminNavGroup[];
+  groups: AdminNavGroupView[];
   roleLabel: string;
   email: string | null;
 }) {
