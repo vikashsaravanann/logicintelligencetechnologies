@@ -8,10 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/lib/email/*.test.ts tests/**/*.test.ts",
+    "test": "node --import tsx --test src/lib/email/*.test.ts tests/**/*.test.ts",
     "test:unit": "npm run test",
-    "test:integration": "node --experimental-strip-types --test tests/navigation/*.test.ts",
-    "test:security": "node --experimental-strip-types --test tests/security/*.test.ts",
+    "test:integration": "node --import tsx --test tests/navigation/*.test.ts",
+    "test:security": "node --import tsx --test tests/security/*.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
@@ -23,7 +23,8 @@
     "eval:rag": "node scripts/eval-rag-golden.mjs",
     "seed:knowledge": "node scripts/seed-knowledge.mjs",
     "backfill:embeddings": "node scripts/backfill-embeddings.mjs",
-    "prebuild": "node scripts/decode-founder-images.cjs"
+    "prebuild": "node scripts/decode-founder-images.cjs",
+    "test:db": "bash scripts/db-test.sh"
   },
   "dependencies": {
     "@gradio/client": "^2.5.1",

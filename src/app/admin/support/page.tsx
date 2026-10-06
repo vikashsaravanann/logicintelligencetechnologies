@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { requireCapabilityPage } from "@/lib/auth/session";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { AdminBackLink } from "../components/AdminBackLink";
 
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
 export const revalidate = 0;
 
 export default async function AdminSupportPage() {
+  await requireCapabilityPage("support.read", "/admin/support");
   const { data: tickets } = await supabaseAdmin
     .from("support_tickets")
     .select("*")

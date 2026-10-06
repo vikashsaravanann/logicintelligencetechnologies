@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { requireCapabilityPage } from "@/lib/auth/session";
 import { AdminBackLink } from "../components/AdminBackLink";
 import { OutreachClient } from "./OutreachClient";
 
@@ -7,7 +8,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminOutreachPage() {
+export default async function AdminOutreachPage() {
+  await requireCapabilityPage("outreach.read", "/admin/outreach");
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <div>

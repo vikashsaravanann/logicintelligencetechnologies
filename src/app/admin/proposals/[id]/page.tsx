@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { requireCapabilityPage } from "@/lib/auth/session";
 import BackToHome from "@/components/ui/back-to-home";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminProposalDetailPage({ params }: Props) {
+  await requireCapabilityPage("proposals.read", "/admin/proposals");
   const { id } = await params;
 
   const { data: proposal, error } = await supabaseAdmin

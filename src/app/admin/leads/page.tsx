@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { requireCapabilityPage } from "@/lib/auth/session";
 import Link from "next/link";
 import { Users, Search, ArrowRight, ShieldCheck, Filter } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 export const revalidate = 0;
 
 export default async function AdminLeadsPage() {
+  await requireCapabilityPage("leads.read", "/admin/leads");
   const { data: leads } = await supabaseAdmin
     .from("contact_leads")
     .select("*")

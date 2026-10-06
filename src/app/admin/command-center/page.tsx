@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { requireCapabilityPage } from "@/lib/auth/session";
 import Link from "next/link";
 import { DollarSign, Briefcase, Users, Calendar, Ticket, ArrowRight, Plus } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 export const revalidate = 0;
 
 export default async function AdminCommandCenterPage() {
+  await requireCapabilityPage("dashboard.view", "/admin/command-center");
   const [
     { data: invoices },
     { count: projectsCount },

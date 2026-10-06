@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { safeNextPath } from "@/lib/auth/safe-next";
 import { isCompanyOnlyPath, isProtectedPath, isPublicPath } from "@/lib/routing/public-paths";
+import { isStaffRole } from "@/config/roles";
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
@@ -59,7 +60,7 @@ export async function middleware(req: NextRequest) {
     if (isCompanyOnlyPath(path)) {
       const { data: profile, error } = await supabase.from("profiles")
         .select("role").eq("id", user.id).maybeSingle();
-      if (error || !profile || !["admin", "super_admin"].includes(profile.role)) {
+      if (error || !profile || !isStaffRole(profile.role)) {
         return NextResponse.redirect(new URL("/profile?notice=admin-required", req.url));
       }
     }

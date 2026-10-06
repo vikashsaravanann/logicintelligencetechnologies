@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { requireCapabilityPage } from "@/lib/auth/session";
 import BackToHome from "@/components/ui/back-to-home";
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminSupportDetailPage({ params }: Props) {
+  await requireCapabilityPage("support.read", "/admin/support");
   const { id } = await params;
   await requireAdminPage(`/admin/support/${id}`);
 

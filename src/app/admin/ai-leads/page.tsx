@@ -1,9 +1,11 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { requireCapabilityPage } from "@/lib/auth/session";
 import { AdminBackLink } from "../components/AdminBackLink";
 
 export const revalidate = 0;
 
 export default async function AdminAiLeadsPage() {
+  await requireCapabilityPage("leads.read", "/admin/ai-leads");
   const { data: leads } = await supabaseAdmin
     .from("ai_captured_leads")
     .select("id, name, email, phone, company, interest, source, chat_id, created_at")

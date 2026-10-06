@@ -1,10 +1,12 @@
 import { Metadata } from "next";
+import { requireCapabilityPage } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
   title: "Email Broadcasts | Admin",
 };
 
-export default function EmailsPage() {
+export default async function EmailsPage() {
+  await requireCapabilityPage("emails.read", "/admin/emails");
   return (
     <div className="container mx-auto p-8 max-w-5xl">
       <h1 className="text-3xl font-black text-white mb-6">Email Broadcasts</h1>

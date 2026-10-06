@@ -1,11 +1,13 @@
 import { Metadata } from "next";
+import { requireCapabilityPage } from "@/lib/auth/session";
 import { BroadcastForm } from "./broadcast-form";
 
 export const metadata: Metadata = {
   title: "Compose Message | Admin",
 };
 
-export default function NewEmailPage() {
+export default async function NewEmailPage() {
+  await requireCapabilityPage("emails.send", "/admin/emails/new");
   return (
     <div className="container mx-auto p-8 max-w-3xl">
       <h1 className="text-3xl font-black text-white mb-2">Compose message</h1>
