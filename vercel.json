@@ -11,6 +11,14 @@
     {
       "path": "/api/cron/outreach-followups",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/document-render",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/automation-retry",
+      "schedule": "*/15 * * * *"
     }
   ],
   "rewrites": [

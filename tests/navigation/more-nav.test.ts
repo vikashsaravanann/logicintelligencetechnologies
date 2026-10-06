@@ -23,6 +23,7 @@ const NOT_IN_MENU = [
   /^\/(admin|client|dashboard|omni|profile)(\/|$)/,
   /^\/(login|reset-password|unsubscribe|offline)$/,
   /^\/booking\//,
+  /^\/onboard$/, // token-gated client onboarding flow, not a menu page
   /^\/auth(\/|$)/,
   /^\/privacy-policy$/, // same content as /privacy
   /^\/terms-of-service$/, // same content as /terms

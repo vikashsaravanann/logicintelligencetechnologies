@@ -76,6 +76,14 @@ CREATE TABLE IF NOT EXISTS public.projects (
   user_id uuid
 );
 
+CREATE TABLE IF NOT EXISTS public.onboarding_submissions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  answers_json jsonb NOT NULL DEFAULT '{}'::jsonb,
+  status text NOT NULL DEFAULT 'Submitted',
+  created_at timestamptz DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS public.proposals (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   secure_token text NOT NULL UNIQUE,
