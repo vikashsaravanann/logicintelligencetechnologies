@@ -11,7 +11,7 @@ export const PUBLIC_MARKETING_PREFIXES: readonly string[] = [
   "/certifications", "/checklist", "/community", "/contact", "/cookie-policy",
   "/discovery", "/docs", "/expertise", "/free-demo", "/help-center",
   "/industries", "/investor-brief", "/investors", "/jobs", "/knowledge-base",
-  "/packages", "/press", "/privacy", "/privacy-policy", "/products",
+  "/onboard", "/packages", "/press", "/privacy", "/privacy-policy", "/products",
   "/proposal", "/refund-policy", "/resources", "/roi-calculator", "/sales",
   "/search", "/services", "/status", "/support", "/terms",
   "/terms-of-service", "/work",

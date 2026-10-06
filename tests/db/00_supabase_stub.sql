@@ -32,4 +32,14 @@ CREATE OR REPLACE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS $$
   SELECT coalesce(current_setting('request.jwt.claims', true)::jsonb, '{}'::jsonb)
 $$;
 
+-- Minimal storage.buckets, matching the columns a migration uses to declare a
+-- private bucket. Supabase's real table has more columns; these suffice here.
+CREATE TABLE IF NOT EXISTS storage.buckets (
+  id                 text PRIMARY KEY,
+  name               text NOT NULL,
+  public             boolean NOT NULL DEFAULT false,
+  file_size_limit    bigint,
+  allowed_mime_types text[]
+);
+
 GRANT USAGE ON SCHEMA auth, storage, public TO anon, authenticated, service_role;

@@ -8,7 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from '@/components/theme/theme-provider';
 import GlobalBackground from '@/components/ui/global-background';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from '@vercel/analytics/next';
+import { LitAnalytics } from '@/components/analytics/lit-analytics';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -143,7 +143,7 @@ export default function RootLayout({
           <Toaster position="top-right" toastOptions={{ style: { background: '#132147', color: '#fff', border: '1px solid rgba(255,255,255,0.12)' } }} />
           {children}
           <SpeedInsights />
-          <Analytics />
+          <LitAnalytics />
           {process.env.NODE_ENV === 'development' && (
             <Script type="module" src="http://localhost:7331/inject.js" strategy="afterInteractive" />
           )}

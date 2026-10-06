@@ -25,6 +25,9 @@ const NAV_HIDDEN: Record<string, string> = {
   "/admin/emails/new": "reached from the Emails page",
   "/admin/proposals/new": "reached from the Proposals page",
   "/admin/invoices/new": "reached from the Invoices page",
+  "/admin/clients/[id]": "reached from Clients",
+  "/admin/documents/[id]": "reached from Documents",
+  "/admin/contracts/[id]/record-signature": "reached from a client's contracts",
 };
 
 test("every nav href resolves to an existing admin page", () => {
