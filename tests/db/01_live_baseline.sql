@@ -36,3 +36,50 @@ CREATE POLICY profiles_service ON public.profiles FOR ALL TO service_role USING 
 DROP POLICY IF EXISTS profiles_self_read ON public.profiles;
 CREATE POLICY profiles_self_read ON public.profiles FOR SELECT TO authenticated USING (auth.uid() = id);
 GRANT SELECT, INSERT, UPDATE ON public.profiles TO authenticated;
+
+-- Existing production helper: stamps updated_at = now() on UPDATE when the row
+-- has that column. Created by migration 20260908010000 in prod; reconstructed
+-- here because the local harness applies only the Batch 1+ migrations.
+CREATE OR REPLACE FUNCTION public.update_modified_column() RETURNS trigger
+LANGUAGE plpgsql AS $$
+BEGIN
+  IF to_jsonb(NEW) ? 'updated_at' THEN
+    NEW.updated_at := now();
+  END IF;
+  RETURN NEW;
+END $$;
+
+-- Pre-existing tables that Batch 2 ALTERs. Columns match the live schema
+-- recorded in docs/command-center/prechecks.md (not the full production shape).
+CREATE TABLE IF NOT EXISTS public.invoices (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  invoice_code text NOT NULL UNIQUE,
+  project_id uuid,
+  client_name text NOT NULL,
+  amount numeric NOT NULL DEFAULT 0.00,
+  status text NOT NULL DEFAULT 'Pending',
+  due_date date,
+  created_at timestamptz DEFAULT now(),
+  user_id uuid
+);
+
+CREATE TABLE IF NOT EXISTS public.proposals (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  secure_token text NOT NULL UNIQUE,
+  client_name text NOT NULL,
+  client_email text NOT NULL,
+  client_company text,
+  title text NOT NULL,
+  scope text[] NOT NULL,
+  deliverables text[] NOT NULL,
+  milestones jsonb NOT NULL DEFAULT '[]'::jsonb,
+  timeline text NOT NULL,
+  pricing numeric NOT NULL,
+  currency text NOT NULL DEFAULT 'INR',
+  status text NOT NULL DEFAULT 'Draft',
+  terms text,
+  expires_at timestamptz,
+  approved_at timestamptz,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
