@@ -4,26 +4,15 @@ import { requireAdminApi } from "@/lib/auth/require-admin";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+// VoiceShield async forensic analysis is not implemented in the corporate app.
+// This endpoint previously returned a fabricated result; it now reports NOT
+// IMPLEMENTED so nothing downstream mistakes a placeholder for a real score.
+// The admin guard is kept so the route's authorization contract is unchanged.
 export async function POST(req: Request) {
   const auth = await requireAdminApi(req);
   if (!auth.ok) return NextResponse.json({ success: false, error: auth.message }, { status: auth.status });
-  try {
-    // Placeholder for Async Forensic flow
-    // 1. Receive audio file
-    // 2. Upload audio to object storage (Supabase/S3)
-    // 3. Trigger transcription service (Whisper / Deepgram)
-    // 4. Chunk & score using AASIST
-    // 5. Run XAI summary generation using THROUGHPUTS LLM provider
-    
-    return NextResponse.json({
-      success: true,
-      data: {
-        job_id: "vs_async_12345",
-        status: "processing",
-        message: "Audio uploaded and analysis started."
-      }
-    });
-  } catch (err) {
-    return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
-  }
+  return NextResponse.json(
+    { success: false, error: "NOT_IMPLEMENTED", message: "VoiceShield async analysis is not available in this application." },
+    { status: 501 },
+  );
 }

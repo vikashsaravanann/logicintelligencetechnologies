@@ -4,38 +4,78 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email/send-email";
 import { revalidatePath } from "next/cache";
 import AdminGenericEmail from "@/emails/admin-generic-email";
-import { requireAdminAction } from "@/lib/auth/require-admin";
+import { requireCapabilityAction } from "@/lib/auth/session";
+import { recordAdminAction, type StaffActor } from "@/lib/admin/audit";
 import { isValidEmail } from "@/lib/email/validation";
 import { z } from "zod";
 
+const actorOf = (s: { userId: string; email: string | null; role: string }): StaffActor => ({
+  userId: s.userId,
+  email: s.email,
+  role: s.role,
+});
+
 export async function resolveSupportTicket(ticketId: string) {
-  await requireAdminAction();
+  const session = await requireCapabilityAction("support.reply", "support.resolve");
+  const actor = actorOf(session);
+  if (!z.string().uuid().safeParse(ticketId).success) {
+    await recordAdminAction({ actor, action: "support.resolve", capability: "support.reply", outcome: "failed", errorCode: "invalid_id" });
+    throw new Error("Invalid ticket");
+  }
   const { error } = await supabaseAdmin
     .from("support_tickets")
     .update({ status: "Resolved" })
     .eq("id", ticketId);
 
+  await recordAdminAction({
+    actor, action: "support.resolve", capability: "support.reply",
+    target: { type: "support_ticket", id: ticketId },
+    outcome: error ? "failed" : "succeeded",
+    errorCode: error?.code,
+  });
   if (error) throw new Error("Could not resolve ticket");
   revalidatePath("/admin/support");
   revalidatePath(`/admin/support/${ticketId}`);
   return { success: true };
 }
 
+const BOOKING_STATUS = z.enum(["Scheduled", "Completed", "Cancelled", "Rescheduled"]);
+
 export async function updateBookingStatus(bookingId: string, status: string) {
-  await requireAdminAction();
+  const session = await requireCapabilityAction("bookings.write", "booking.status_change");
+  const actor = actorOf(session);
+  const idOk = z.string().uuid().safeParse(bookingId).success;
+  const parsed = BOOKING_STATUS.safeParse(status);
+  if (!idOk || !parsed.success) {
+    await recordAdminAction({ actor, action: "booking.status_change", capability: "bookings.write", outcome: "failed", errorCode: "invalid_input" });
+    throw new Error("Invalid booking update");
+  }
   const { error } = await supabaseAdmin
     .from("bookings")
-    .update({ status })
+    .update({ status: parsed.data })
     .eq("id", bookingId);
 
+  await recordAdminAction({
+    actor, action: "booking.status_change", capability: "bookings.write",
+    target: { type: "booking", id: bookingId },
+    outcome: error ? "failed" : "succeeded",
+    metadata: { status: parsed.data },
+    errorCode: error?.code,
+  });
   if (error) throw new Error("Could not update booking");
   revalidatePath("/admin/bookings");
   return { success: true };
 }
 
 export async function sendAdminEmail(to: string, subject: string, message: string) {
-  await requireAdminAction();
-  const { success, message: emailMsg } = await sendEmail({
+  const session = await requireCapabilityAction("emails.send", "email.send_adhoc");
+  const actor = actorOf(session);
+  if (!isValidEmail(to) || typeof subject !== "string" || !subject.trim() || subject.length > 300 ||
+      typeof message !== "string" || !message.trim() || message.length > 10000) {
+    await recordAdminAction({ actor, action: "email.send_adhoc", capability: "emails.send", outcome: "failed", errorCode: "invalid_input" });
+    throw new Error("Invalid email");
+  }
+  const { success, skipped } = await sendEmail({
     to,
     subject,
     from: "admin",
@@ -43,15 +83,20 @@ export async function sendAdminEmail(to: string, subject: string, message: strin
     react: AdminGenericEmail({ message }),
   });
 
-  if (!success) {
-    throw new Error("Could not send email");
-  }
-  return { success: true };
+  await recordAdminAction({
+    actor, action: "email.send_adhoc", capability: "emails.send",
+    target: { type: "email", id: to },
+    outcome: success ? "succeeded" : "failed",
+    metadata: { subject, delivered: success && !skipped, skipped: Boolean(skipped) },
+  });
+  if (!success) throw new Error("Could not send email");
+  return { success: true, delivered: !skipped };
 }
 
 /** Resolve recipient from the ticket, never an email supplied by the browser. */
 export async function replyToSupportTicket(ticketId: string, message: string) {
-  await requireAdminAction();
+  const session = await requireCapabilityAction("support.reply", "support.reply");
+  const actor = actorOf(session);
   if (!z.string().uuid().safeParse(ticketId).success || typeof message !== "string" ||
       !message.trim() || message.length > 10000) throw new Error("Invalid reply");
   const { data: ticket, error } = await supabaseAdmin.from("support_tickets")
@@ -65,6 +110,12 @@ export async function replyToSupportTicket(ticketId: string, message: string) {
   if (!recipient || !isValidEmail(recipient)) throw new Error("No valid ticket recipient");
   const result = await sendEmail({ to: recipient, subject: `Re: Support Ticket #${ticketId}`,
     from: "support", category: "transactional", react: AdminGenericEmail({ message }) });
+  await recordAdminAction({
+    actor, action: "support.reply", capability: "support.reply",
+    target: { type: "support_ticket", id: ticketId },
+    outcome: result.success ? "succeeded" : "failed",
+    metadata: { delivered: result.success && !result.skipped },
+  });
   if (!result.success) throw new Error("Could not send reply");
   return { success: true };
 }

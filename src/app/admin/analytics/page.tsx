@@ -1,10 +1,12 @@
 import { Metadata } from "next";
+import { requireCapabilityPage } from "@/lib/auth/session";
 
 export const metadata: Metadata = {
   title: "Analytics | Admin",
 };
 
-export default function AnalyticsPage() {
+export default async function AnalyticsPage() {
+  await requireCapabilityPage("analytics.read", "/admin/analytics");
   return (
     <div className="container mx-auto p-8 max-w-5xl">
       <h1 className="text-3xl font-bold text-white mb-6">Analytics Dashboard</h1>

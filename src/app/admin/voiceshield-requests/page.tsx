@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { requireCapabilityPage } from "@/lib/auth/session";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { VoiceShieldRequestsClient } from "./client";
 
@@ -11,6 +12,7 @@ export const revalidate = 0;
 import BackToHome from "@/components/ui/back-to-home";
 
 export default async function VoiceShieldRequestsPage() {
+  await requireCapabilityPage("voiceshield.read", "/admin/voiceshield-requests");
   const { data: leads } = await supabaseAdmin
     .from("contact_leads")
     .select("*")

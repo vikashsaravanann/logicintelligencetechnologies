@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { requireCapabilityPage } from "@/lib/auth/session";
 import { checkAllServices, overallState, type ServiceState } from "@/lib/status/service-checks";
 import { runConfigChecks, type CheckStatus } from "@/lib/status/config-checks";
 
@@ -23,6 +24,7 @@ const CONFIG_TONE: Record<CheckStatus, string> = {
 };
 
 export default async function StatusPage() {
+  await requireCapabilityPage("status.read", "/admin/status");
   const results = await checkAllServices();
   const overall = overallState(results);
   const config = runConfigChecks();
