@@ -37,7 +37,7 @@ echo "• stub + baseline"
 
 for pass in 1 2; do
   echo "• migrations (pass $pass — idempotency)"
-  for m in "$ROOT"/supabase/migrations/20261006*.sql "$ROOT"/supabase/migrations/20261007*.sql "$ROOT"/supabase/migrations/20261008*.sql "$ROOT"/supabase/migrations/20261009*.sql; do
+  for m in "$ROOT"/supabase/migrations/20261006*.sql "$ROOT"/supabase/migrations/20261007*.sql "$ROOT"/supabase/migrations/20261008*.sql "$ROOT"/supabase/migrations/20261009*.sql "$ROOT"/supabase/migrations/20261010*.sql; do
     [ -e "$m" ] || continue
     "${PSQL[@]}" -f "$m" >/dev/null
   done
