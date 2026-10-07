@@ -38,7 +38,14 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { label: "AI Leads", href: "/admin/ai-leads", capability: "leads.read", match: startsWith("/admin/ai-leads") },
       { label: "Bookings", href: "/admin/bookings", capability: "bookings.read", match: startsWith("/admin/bookings") },
       { label: "VoiceShield", href: "/admin/voiceshield-requests", capability: "voiceshield.read", match: startsWith("/admin/voiceshield-requests") },
-      { label: "Outreach", href: "/admin/outreach", capability: "outreach.read", match: startsWith("/admin/outreach") },
+      { label: "Outreach", href: "/admin/outreach", capability: "outreach.read", match: (p) => p === "/admin/outreach" },
+    ],
+  },
+  {
+    label: "Lead Operations",
+    items: [
+      { label: "Outreach Studio", href: "/admin/outreach/studio", capability: "outreach.manage", match: startsWith("/admin/outreach/studio") },
+      { label: "Message Playbook", href: "/admin/outreach/playbook", capability: "outreach.read", match: startsWith("/admin/outreach/playbook") },
     ],
   },
   {
