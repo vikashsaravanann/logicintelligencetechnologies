@@ -25,6 +25,22 @@ const requestSchema = z.object({
   stream: z.boolean().optional(),
 });
 
+export async function GET() {
+  if (!isGroqConfigured()) {
+    return NextResponse.json({ configured: false });
+  }
+  try {
+    const res = await fetch("https://api.groq.com/openai/v1/models", {
+      headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY!.trim()}` },
+    });
+    const data = await res.json();
+    const modelIds = (data?.data || []).map((m: { id: string }) => m.id);
+    return NextResponse.json({ configured: true, count: modelIds.length, models: modelIds });
+  } catch (err: any) {
+    return NextResponse.json({ configured: true, error: String(err) }, { status: 500 });
+  }
+}
+
 function buildSystemPrompt(opts: {
   knowledge: string;
   leadContext?: string;

@@ -18,14 +18,59 @@ export type GroqResponse = {
 };
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const CANDIDATE_MODELS = [
+const GROQ_MODELS_URL = "https://api.groq.com/openai/v1/models";
+
+const FALLBACK_CANDIDATES = [
   "llama-3.3-70b-versatile",
   "llama-3.1-8b-instant",
-  "llama3-70b-8192",
-  "llama3-8b-8192",
+  "openai/gpt-oss-120b",
+  "openai/gpt-oss-20b",
+  "qwen/qwen3.6-27b",
+  "meta-llama/llama-4-scout-17b-16e-instruct",
   "mixtral-8x7b-32768",
-  "gemma2-9b-it",
 ];
+
+let cachedModels: string[] | null = null;
+let lastModelFetch = 0;
+
+export async function getAvailableChatModels(apiKey: string): Promise<string[]> {
+  const now = Date.now();
+  if (cachedModels && now - lastModelFetch < 10 * 60 * 1000) {
+    return cachedModels;
+  }
+  try {
+    const res = await fetch(GROQ_MODELS_URL, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      signal: AbortSignal.timeout(4000),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const list: string[] = (data?.data || [])
+        .map((m: { id: string }) => m.id)
+        .filter((id: string) => {
+          const lower = id.toLowerCase();
+          return !lower.includes("whisper") && !lower.includes("guard");
+        });
+      if (list.length > 0) {
+        list.sort((a, b) => {
+          const score = (name: string) => {
+            if (name.includes("70b") || name.includes("120b")) return 3;
+            if (name.includes("3.3") || name.includes("4-")) return 2;
+            if (name.includes("8b") || name.includes("20b") || name.includes("27b")) return 1;
+            return 0;
+          };
+          return score(b) - score(a);
+        });
+        cachedModels = list;
+        lastModelFetch = now;
+        return list;
+      }
+    }
+  } catch (e) {
+    console.warn("[GroqChat] /models auto-discovery failed:", e);
+  }
+  return FALLBACK_CANDIDATES;
+}
 
 export function isGroqConfigured(): boolean {
   const key = process.env.GROQ_API_KEY;
@@ -41,7 +86,7 @@ function cleanResponse(raw: string): string {
 
 /**
  * Execute a completion via Groq, exclusively for the website chatbot.
- * Cascades through candidate models (Llama 3.3 70B, Llama 3.1 8B, Llama 3, Mixtral).
+ * Automatically discovers active models available to the key and cascades.
  */
 export async function completeGroqChat(
   messages: GroqChatMessage[],
@@ -53,7 +98,9 @@ export async function completeGroqChat(
   const temperature = options?.temperature ?? 0.4;
   const max_tokens = Math.min(1200, Math.max(64, options?.max_tokens ?? 900));
 
-  for (const model of CANDIDATE_MODELS) {
+  const candidateModels = await getAvailableChatModels(key);
+
+  for (const model of candidateModels) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 12000);
@@ -115,8 +162,9 @@ export async function streamGroqChat(
   const key = process.env.GROQ_API_KEY!.trim();
   const temperature = options?.temperature ?? 0.4;
   const max_tokens = Math.min(1200, Math.max(64, options?.max_tokens ?? 900));
+  const candidateModels = await getAvailableChatModels(key);
 
-  for (const model of CANDIDATE_MODELS) {
+  for (const model of candidateModels) {
     try {
       const res = await fetch(GROQ_API_URL, {
         method: "POST",
