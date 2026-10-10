@@ -8,8 +8,8 @@ Strict Execution Rule: Work sequentially through every page template and dynamic
 | **001** | `/` | Homepage | COMPLETE | Verified | Verified | Verified | Pass | Pass | 2a596e9 |
 | **002** | `/about` | About LIT | COMPLETE | Verified | Verified | Verified | Pass | Pass | c715b07 |
 | **003** | `/about/founder` | Founder Profile | COMPLETE | Verified | Verified | Verified | Pass | Pass | f3d562e |
-| **004** | `/company/facts` | Company Facts Sheet | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
-| **005** | `/expertise` | Technical Capabilities | NOT STARTED | - | - | - | - | - | - |
+| **004** | `/company/facts` | Company Facts Sheet | COMPLETE | Verified | Verified | Verified | Pass | Pass | 1420521 |
+| **005** | `/expertise` | Technical Capabilities | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **006** | `/services` | Services Catalog | NOT STARTED | - | - | - | - | - | - |
 | **007** | `/services/[slug]` | Service Detail Template (18 slugs) | NOT STARTED | - | - | - | - | - | - |
 | **008** | `/products` | Product Ecosystem | NOT STARTED | - | - | - | - | - | - |
