@@ -39,6 +39,96 @@ export async function resolveSupportTicket(ticketId: string) {
   return { success: true };
 }
 
+const SUPPORT_STATUS = z.enum(["Open", "In Progress", "Waiting on Client", "Resolved", "Closed"]);
+const SUPPORT_PRIORITY = z.enum(["Urgent", "High", "Medium", "Low"]);
+
+export async function updateSupportTicketStatus(ticketId: string, status: string) {
+  const session = await requireCapabilityAction("support.reply", "support.status_change");
+  const actor = actorOf(session);
+  const idOk = z.string().uuid().safeParse(ticketId).success;
+  const parsed = SUPPORT_STATUS.safeParse(status);
+  if (!idOk || !parsed.success) {
+    await recordAdminAction({ actor, action: "support.status_change", capability: "support.reply", outcome: "failed", errorCode: "invalid_input" });
+    throw new Error("Invalid ticket status");
+  }
+  const { error } = await supabaseAdmin
+    .from("support_tickets")
+    .update({ status: parsed.data })
+    .eq("id", ticketId);
+
+  await recordAdminAction({
+    actor, action: "support.status_change", capability: "support.reply",
+    target: { type: "support_ticket", id: ticketId },
+    outcome: error ? "failed" : "succeeded",
+    metadata: { status: parsed.data },
+    errorCode: error?.code,
+  });
+  if (error) throw new Error("Could not update ticket status");
+  revalidatePath("/admin/support");
+  revalidatePath(`/admin/support/${ticketId}`);
+  return { success: true };
+}
+
+export async function updateSupportTicketPriority(ticketId: string, priority: string) {
+  const session = await requireCapabilityAction("support.reply", "support.priority_change");
+  const actor = actorOf(session);
+  const idOk = z.string().uuid().safeParse(ticketId).success;
+  const parsed = SUPPORT_PRIORITY.safeParse(priority);
+  if (!idOk || !parsed.success) {
+    await recordAdminAction({ actor, action: "support.priority_change", capability: "support.reply", outcome: "failed", errorCode: "invalid_input" });
+    throw new Error("Invalid ticket priority");
+  }
+  const { error } = await supabaseAdmin
+    .from("support_tickets")
+    .update({ priority: parsed.data })
+    .eq("id", ticketId);
+
+  await recordAdminAction({
+    actor, action: "support.priority_change", capability: "support.reply",
+    target: { type: "support_ticket", id: ticketId },
+    outcome: error ? "failed" : "succeeded",
+    metadata: { priority: parsed.data },
+    errorCode: error?.code,
+  });
+  if (error) throw new Error("Could not update ticket priority");
+  revalidatePath("/admin/support");
+  revalidatePath(`/admin/support/${ticketId}`);
+  return { success: true };
+}
+
+export async function addSupportInternalNote(ticketId: string, note: string) {
+  const session = await requireCapabilityAction("support.reply", "support.internal_note");
+  const actor = actorOf(session);
+  if (!z.string().uuid().safeParse(ticketId).success || typeof note !== "string" || !note.trim() || note.length > 10000) {
+    await recordAdminAction({ actor, action: "support.internal_note", capability: "support.reply", outcome: "failed", errorCode: "invalid_input" });
+    throw new Error("Invalid note");
+  }
+
+  const { error: msgError } = await supabaseAdmin.from("support_ticket_messages").insert({
+    ticket_id: ticketId,
+    sender_type: "internal",
+    sender_id: session.userId,
+    sender_name: session.email ?? "Internal Staff",
+    message: note.trim(),
+  });
+
+  if (msgError) {
+    await recordAdminAction({
+      actor, action: "support.internal_note", capability: "support.reply",
+      target: { type: "support_ticket", id: ticketId }, outcome: "failed", errorCode: "thread_insert_failed",
+    });
+    throw new Error("Could not record internal note");
+  }
+
+  await recordAdminAction({
+    actor, action: "support.internal_note", capability: "support.reply",
+    target: { type: "support_ticket", id: ticketId }, outcome: "succeeded",
+  });
+
+  revalidatePath(`/admin/support/${ticketId}`);
+  return { success: true };
+}
+
 const BOOKING_STATUS = z.enum(["Scheduled", "Completed", "Cancelled", "Rescheduled"]);
 
 export async function updateBookingStatus(bookingId: string, status: string) {
