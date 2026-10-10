@@ -62,7 +62,7 @@ Strict Execution Rule: Work sequentially through every page template and dynamic
 | **055** | `/certifications` | Verified Standards & Credentials | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **056** | `/security` | Enterprise Security & Trust | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **057** | `/ai-ethics` | Responsible AI & Safety Gates | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
-| **058** | `/accessibility` | Accessibility Statement (WCAG) | NOT STARTED | - | - | - | - | - | - |
+| **058** | `/accessibility` | Accessibility Statement (WCAG) | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **059** | `/privacy` | Privacy Policy | NOT STARTED | - | - | - | - | - | - |
 | **060** | `/privacy-policy` | Alternative Privacy Document | NOT STARTED | - | - | - | - | - | - |
 | **061** | `/terms` | Terms of Use | NOT STARTED | - | - | - | - | - | - |
