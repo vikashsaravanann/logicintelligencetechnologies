@@ -3,10 +3,48 @@ import { requireCapabilityPage } from "@/lib/auth/session";
 import { getAutomationsSnapshot, type AutomationsState } from "@/lib/automations/n8n-client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { formatIST } from "@/lib/format/datetime";
-import { retryProvisioningStep } from "./actions";
+import { AdminBackLink } from "../components/AdminBackLink";
 import ImportButton from "./import-button";
+import {
+  retryProvisioningStep,
+  retryAutomationEvent,
+  triggerAutomationDispatcher,
+  triggerLeadScoringBatch,
+  triggerInvoiceReminders,
+  triggerOutreachFollowups,
+} from "./actions";
+import {
+  Zap,
+  Activity,
+  Cpu,
+  Clock,
+  Play,
+  CheckCircle2,
+  AlertTriangle,
+  AlertCircle,
+  Layers,
+  Mail,
+  Calculator,
+  Receipt,
+  Send,
+  FileCheck2,
+  RefreshCw,
+  Server,
+  ShieldCheck,
+  ChevronRight,
+  Sparkles,
+} from "lucide-react";
 
-export const metadata: Metadata = { title: "Automations | Admin" };
+export const metadata: Metadata = {
+  title: "Automations & Scheduled Pipelines | Admin | Logic Intelligence Technologies",
+  description:
+    "Clinical dashboard for managing background cron workers, lead auto-scoring engines, invoice reminders, and recovery queues.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
 export const dynamic = "force-dynamic";
 
 interface FailedEventRow {
@@ -44,168 +82,672 @@ async function getFailureQueue(): Promise<{ events: FailedEventRow[]; steps: Fai
   };
 }
 
-function statusBadge(status: string): string {
-  if (status === "dead_letter") return "border-rose-500/30 bg-rose-500/10 text-rose-300";
-  if (status === "failed") return "border-amber-500/30 bg-amber-500/10 text-amber-300";
-  return "border-neutral-600/30 bg-neutral-700/20 text-neutral-400";
-}
-
-const STATE_TONE: Record<AutomationsState, string> = {
-  CONNECTED: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
-  ERROR: "text-rose-400 border-rose-500/30 bg-rose-500/10",
-  "NOT CONFIGURED": "text-zinc-400 border-zinc-600/40 bg-zinc-800/40",
+const STATE_CONFIG: Record<
+  AutomationsState,
+  { label: string; badge: string; dot: string }
+> = {
+  CONNECTED: {
+    label: "Engine Active",
+    badge: "border-emerald-200 bg-emerald-50 text-emerald-800",
+    dot: "bg-emerald-500",
+  },
+  ERROR: {
+    label: "Engine Degraded",
+    badge: "border-rose-200 bg-rose-50 text-rose-800",
+    dot: "bg-rose-500",
+  },
+  "NOT CONFIGURED": {
+    label: "Unconfigured",
+    badge: "border-slate-200 bg-slate-50 text-slate-700",
+    dot: "bg-slate-400",
+  },
 };
+
+interface ScheduledAutomation {
+  id: string;
+  name: string;
+  description: string;
+  category: "Cron Worker" | "Scoring Engine" | "Billing Dunning" | "Outreach Pipeline" | "Document Worker";
+  schedule: string;
+  humanSchedule: string;
+  route: string;
+  status: "Active" | "Paused" | "Error";
+  icon: typeof Zap;
+  triggerAction?: () => Promise<void>;
+  actionLabel?: string;
+}
 
 export default async function AutomationsPage() {
   const session = await requireCapabilityPage("automations.read", "/admin/automations");
   const snap = await getAutomationsSnapshot();
   const { events: failedEvents, steps: failedSteps } = await getFailureQueue();
 
+  const [pendingRes, totalRes] = await Promise.all([
+    supabaseAdmin
+      .from("automation_events")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "pending"),
+    supabaseAdmin
+      .from("automation_events")
+      .select("*", { count: "exact", head: true }),
+  ]);
+
+  const pendingEventsCount = pendingRes.count ?? 0;
+  const totalEventsCount = totalRes.count ?? 0;
+  const failureCount = failedEvents.length + failedSteps.length;
+
+  const stateUi = STATE_CONFIG[snap.state];
+
+  // Defined Catalog of Platform Automations
+  const automationsList: ScheduledAutomation[] = [
+    {
+      id: "automation_dispatcher",
+      name: "Automation Event Dispatcher",
+      description:
+        "Dispatches pending contract signings, onboarding session triggers, and client provisioning jobs to n8n webhook targets with HMAC v1 signing.",
+      category: "Cron Worker",
+      schedule: "*/15 * * * *",
+      humanSchedule: "every 15m",
+      route: "/api/cron/automation-retry",
+      status: snap.state === "CONNECTED" ? "Active" : snap.state === "ERROR" ? "Error" : "Paused",
+      icon: Zap,
+      triggerAction: triggerAutomationDispatcher,
+      actionLabel: "Run Dispatcher",
+    },
+    {
+      id: "lead_scoring",
+      name: "Lead Auto-Scoring & Intent Engine",
+      description:
+        "Deterministic intent scoring (0–100) evaluating corporate domains, business scale, budget indicators, and behavioral telemetry for CRM pipeline routing.",
+      category: "Scoring Engine",
+      schedule: "0 */2 * * *",
+      humanSchedule: "every 2h + event-driven",
+      route: "/api/crm/scoring",
+      status: "Active",
+      icon: Calculator,
+      triggerAction: triggerLeadScoringBatch,
+      actionLabel: "Evaluate Leads",
+    },
+    {
+      id: "invoice_reminders",
+      name: "Invoice Due & Overdue Dunning",
+      description:
+        "Monitors open accounts receivable against net-30 terms, formats payment links, and sends escalating payment notifications to verified client billing contacts.",
+      category: "Billing Dunning",
+      schedule: "0 10 * * *",
+      humanSchedule: "daily 10:00 IST",
+      route: "/api/invoices/reminders",
+      status: "Active",
+      icon: Receipt,
+      triggerAction: triggerInvoiceReminders,
+      actionLabel: "Check Receivables",
+    },
+    {
+      id: "outreach_followups",
+      name: "Client Outreach & Follow-Up Sequencer",
+      description:
+        "Executes multi-step outreach follow-ups across active campaigns, enforcing frequency capping, unsubscribe suppression, and instant reply pause guards.",
+      category: "Outreach Pipeline",
+      schedule: "0 9-18 * * 1-5",
+      humanSchedule: "hourly business hours",
+      route: "/api/cron/outreach-followups",
+      status: "Active",
+      icon: Send,
+      triggerAction: triggerOutreachFollowups,
+      actionLabel: "Run Outreach Pass",
+    },
+    {
+      id: "document_render",
+      name: "Cryptographic Document Render Pipeline",
+      description:
+        "Compiles client agreements and statements to PDF, mints cryptographic SHA-256 hashes, and commits immutable audit trails to the document vault.",
+      category: "Document Worker",
+      schedule: "*/5 * * * *",
+      humanSchedule: "every 5m",
+      route: "/api/cron/document-render",
+      status: "Active",
+      icon: FileCheck2,
+    },
+    {
+      id: "email_outbox",
+      name: "Transactional SMTP Relay Daemon",
+      description:
+        "Asynchronous email outbox delivery daemon with sender rotation, circuit breaking, bounce handling, and anti-stuck watchdog safeguards.",
+      category: "Cron Worker",
+      schedule: "* * * * *",
+      humanSchedule: "every 1m",
+      route: "/api/cron/email-outbox",
+      status: "Active",
+      icon: Mail,
+    },
+    {
+      id: "weekly_recognition",
+      name: "Weekly Recognition & Executive Synthesis",
+      description:
+        "Aggregates engineering sprint velocity, milestone accomplishments, and staff peer recognition into weekly executive digest summaries.",
+      category: "Cron Worker",
+      schedule: "0 9 * * 1",
+      humanSchedule: "Mondays 09:00 IST",
+      route: "/api/cron/weekly-recognition",
+      status: "Active",
+      icon: Sparkles,
+    },
+  ];
+
   return (
-    <div className="space-y-6">
-      <header className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <div className="mx-auto max-w-6xl space-y-8">
+      {/* Navigation & Header */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-[var(--lit-border-light,#DFE7EF)]">
         <div>
-          <h1 className="text-2xl font-bold text-white sm:text-3xl">Automations</h1>
-          <p className="text-sm text-zinc-400">
-            Read-only view of the n8n workflow instance. Execution data is never shown here.
+          <AdminBackLink href="/admin/command-center" label="Command Center" />
+          <div className="mt-3 flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-blue-200 bg-blue-50 text-[var(--lit-blue,#1565C0)] text-[10px] font-bold uppercase tracking-wider font-mono">
+              <Zap className="w-3 h-3" />
+              Automation Engine
+            </span>
+            <span
+              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wider font-mono ${stateUi.badge}`}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${stateUi.dot}`} />
+              {stateUi.label}
+            </span>
+          </div>
+          <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--lit-navy,#0B2545)]">
+            Automations &amp; Scheduled Pipelines
+          </h1>
+          <p className="text-sm text-[var(--lit-text-muted,#52677C)] mt-1">
+            Centralized orchestration ledger for background cron daemons, intent auto-scoring triggers, invoice reminders, and error recovery queues.
           </p>
         </div>
-        <span className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider ${STATE_TONE[snap.state]}`}>
-          {snap.state}
-        </span>
-      </header>
 
-      <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-5 text-sm text-zinc-300">
-        <p>{snap.detail}</p>
-        <p className="mt-1 text-xs text-zinc-500">
-          Liveness probe: {snap.healthy === null ? "not run" : snap.healthy ? "healthy" : "unreachable"}
-        </p>
+        {session.role === "super_admin" && (
+          <div className="sm:self-end">
+            <ImportButton />
+          </div>
+        )}
       </div>
 
-      {snap.state === "CONNECTED" ? (
-        <div className="overflow-x-auto rounded-xl border border-neutral-800">
-          <table className="w-full min-w-[520px] text-left text-sm">
-            <thead className="bg-neutral-900/60 text-xs uppercase tracking-wider text-neutral-500">
-              <tr>
-                <th className="px-4 py-3 font-semibold">Workflow</th>
-                <th className="px-4 py-3 font-semibold">ID</th>
-                <th className="px-4 py-3 font-semibold">State</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-800">
-              {snap.workflows.map((w) => (
-                <tr key={w.id}>
-                  <td className="px-4 py-3 text-neutral-200">{w.name}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-neutral-500">{w.id}</td>
-                  <td className="px-4 py-3">
+      {/* KPI Telemetry Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Managed Automations */}
+        <div className="p-5 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
+              Scheduled Pipelines
+            </span>
+            <span className="p-1.5 rounded-lg border border-blue-200 bg-blue-50 text-[var(--lit-blue,#1565C0)]">
+              <Cpu className="w-3.5 h-3.5" />
+            </span>
+          </div>
+          <div className="mt-4">
+            <span className="text-3xl font-extrabold font-mono tracking-tight text-[var(--lit-navy,#0B2545)]">
+              {automationsList.length}
+            </span>
+            <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1">Active cron daemons &amp; triggers</p>
+          </div>
+        </div>
+
+        {/* n8n Workflows */}
+        <div className="p-5 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
+              Blueprint Instances
+            </span>
+            <span className="p-1.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700">
+              <Layers className="w-3.5 h-3.5" />
+            </span>
+          </div>
+          <div className="mt-4">
+            <span className="text-3xl font-extrabold font-mono tracking-tight text-[var(--lit-navy,#0B2545)]">
+              {snap.workflows.length}
+            </span>
+            <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1">
+              {snap.state === "CONNECTED" ? "Synchronized on engine" : "Engine unconfigured"}
+            </p>
+          </div>
+        </div>
+
+        {/* Total Events */}
+        <div className="p-5 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
+              Dispatched Events
+            </span>
+            <span className="p-1.5 rounded-lg border border-purple-200 bg-purple-50 text-purple-700">
+              <Activity className="w-3.5 h-3.5" />
+            </span>
+          </div>
+          <div className="mt-4">
+            <span className="text-3xl font-extrabold font-mono tracking-tight text-[var(--lit-navy,#0B2545)]">
+              {totalEventsCount}
+            </span>
+            <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1">
+              <span className="font-mono font-semibold text-amber-700">{pendingEventsCount} pending</span> in queue
+            </p>
+          </div>
+        </div>
+
+        {/* Failure Queue */}
+        <div className="p-5 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
+              Failure Queue
+            </span>
+            <span
+              className={`p-1.5 rounded-lg border ${
+                failureCount > 0
+                  ? "border-rose-200 bg-rose-50 text-rose-700"
+                  : "border-emerald-200 bg-emerald-50 text-emerald-700"
+              }`}
+            >
+              {failureCount > 0 ? (
+                <AlertTriangle className="w-3.5 h-3.5" />
+              ) : (
+                <CheckCircle2 className="w-3.5 h-3.5" />
+              )}
+            </span>
+          </div>
+          <div className="mt-4">
+            <span
+              className={`text-3xl font-extrabold font-mono tracking-tight ${
+                failureCount > 0 ? "text-rose-600" : "text-[var(--lit-navy,#0B2545)]"
+              }`}
+            >
+              {failureCount}
+            </span>
+            <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1">
+              {failureCount > 0 ? "Items require attention" : "All pipelines healthy"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Engine Status & Diagnostic Banner */}
+      <div className="p-5 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-start gap-3.5">
+          <span className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-[var(--lit-navy,#0B2545)] mt-0.5">
+            <Server className="w-5 h-5 text-[var(--lit-blue,#1565C0)]" />
+          </span>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">
+                n8n Workflow Execution Runtime
+              </h3>
+              <span
+                className={`inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[10px] font-mono font-bold uppercase border ${stateUi.badge}`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${stateUi.dot}`} />
+                {snap.state}
+              </span>
+            </div>
+            <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-0.5">
+              {snap.detail}
+            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] font-mono text-slate-500">
+              <span className="flex items-center gap-1">
+                Liveness:{" "}
+                {snap.healthy === null ? (
+                  <span className="text-slate-400 font-semibold">Not Evaluated</span>
+                ) : snap.healthy ? (
+                  <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Healthy
+                  </span>
+                ) : (
+                  <span className="text-rose-700 font-semibold flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3 text-rose-600" /> Unreachable
+                  </span>
+                )}
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-600" /> Zero-Payload Privacy Guard Active
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {snap.state !== "CONNECTED" && (
+          <div className="p-3 rounded-xl border border-amber-200 bg-amber-50/70 text-xs text-amber-900 max-w-sm">
+            <p className="font-semibold">Setup Required</p>
+            <p className="text-[11px] text-amber-800 mt-0.5">
+              Set <code className="font-mono bg-white px-1 py-0.5 rounded border border-amber-300">N8N_BASE_URL</code> and <code className="font-mono bg-white px-1 py-0.5 rounded border border-amber-300">N8N_API_KEY</code> on your deployment environment to link this engine.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Main Section: Automations Grid / Catalog */}
+      <section className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-lg font-bold text-[var(--lit-navy,#0B2545)]">
+              Automated Pipelines &amp; Background Daemons
+            </h2>
+            <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
+              Scheduled cron workers, deterministic scoring matrices, billing dunning engines, and outreach sequencers.
+            </p>
+          </div>
+          <span className="text-xs font-mono text-[var(--lit-text-muted,#52677C)]">
+            Total configured: {automationsList.length}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {automationsList.map((auto) => {
+            const Icon = auto.icon;
+            return (
+              <div
+                key={auto.id}
+                className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 shadow-2xs flex flex-col justify-between space-y-4 hover:border-slate-300 transition-colors"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="p-2 rounded-xl border border-slate-200 bg-slate-50 text-[var(--lit-navy,#0B2545)]">
+                        <Icon className="w-4 h-4 text-[var(--lit-blue,#1565C0)]" />
+                      </span>
+                      <div>
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--lit-blue,#1565C0)]">
+                          {auto.category}
+                        </span>
+                        <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">
+                          {auto.name}
+                        </h3>
+                      </div>
+                    </div>
+
                     <span
-                      className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase ${
-                        w.active
-                          ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300"
-                          : "border-neutral-600/30 bg-neutral-700/20 text-neutral-400"
+                      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-mono font-bold uppercase tracking-wider ${
+                        auto.status === "Active"
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                          : auto.status === "Paused"
+                            ? "border-slate-200 bg-slate-50 text-slate-700"
+                            : "border-rose-200 bg-rose-50 text-rose-800"
                       }`}
                     >
-                      {w.active ? "Active" : "Inactive"}
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          auto.status === "Active"
+                            ? "bg-emerald-500"
+                            : auto.status === "Paused"
+                              ? "bg-slate-400"
+                              : "bg-rose-500"
+                        }`}
+                      />
+                      {auto.status}
                     </span>
-                  </td>
-                </tr>
-              ))}
-              {snap.workflows.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="px-4 py-10 text-center text-neutral-500">No workflows found on the instance.</td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-6 text-sm text-zinc-400">
-          {snap.state === "NOT CONFIGURED"
-            ? "Set N8N_BASE_URL and N8N_API_KEY on the deployment to connect this view."
-            : "The n8n instance could not be read. Check the base URL, API key, and that the instance is reachable."}
-        </div>
-      )}
+                  </div>
 
-      <section className="space-y-3">
-        <div>
-          <h2 className="text-lg font-semibold text-white">Failure queue</h2>
-          <p className="text-sm text-zinc-400">
-            Automation events and provisioning steps that need attention. Retry re-queues a failed step.
-          </p>
-        </div>
-        <div className="overflow-x-auto rounded-xl border border-neutral-800">
-          <table className="w-full min-w-[560px] text-left text-sm">
-            <thead className="bg-neutral-900/60 text-xs uppercase tracking-wider text-neutral-500">
-              <tr>
-                <th className="px-4 py-3 font-semibold">Type / Step</th>
-                <th className="px-4 py-3 font-semibold">Status</th>
-                <th className="px-4 py-3 font-semibold">Created</th>
-                <th className="px-4 py-3 font-semibold">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-800">
-              {failedEvents.map((e) => (
-                <tr key={`event-${e.id}`}>
-                  <td className="px-4 py-3 text-neutral-200">
-                    <span className="font-mono text-xs text-neutral-400">event</span> {e.event_type}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase ${statusBadge(e.status)}`}>
-                      {e.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-neutral-400">{formatIST(e.created_at, "datetime")}</td>
-                  <td className="px-4 py-3 text-neutral-600">—</td>
-                </tr>
-              ))}
-              {failedSteps.map((s) => (
-                <tr key={`step-${s.id}`}>
-                  <td className="px-4 py-3 text-neutral-200">
-                    <span className="font-mono text-xs text-neutral-400">step</span> {s.step}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase ${statusBadge(s.status)}`}>
-                      {s.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-neutral-400">{formatIST(s.created_at, "datetime")}</td>
-                  <td className="px-4 py-3">
-                    <form action={retryProvisioningStep}>
-                      <input type="hidden" name="stepId" value={s.id} />
+                  <p className="mt-3 text-xs text-[var(--lit-text-muted,#52677C)] leading-relaxed">
+                    {auto.description}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-[var(--lit-border-light,#DFE7EF)] flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5 text-slate-700">
+                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      <span className="font-mono text-[11px] font-semibold text-[var(--lit-navy,#0B2545)]">
+                        {auto.schedule}
+                      </span>
+                      <span className="text-[11px] text-[var(--lit-text-muted,#52677C)]">
+                        ({auto.humanSchedule})
+                      </span>
+                    </div>
+                    <div className="font-mono text-[10px] text-slate-400">
+                      Target: {auto.route}
+                    </div>
+                  </div>
+
+                  {auto.triggerAction && (
+                    <form action={auto.triggerAction}>
                       <button
                         type="submit"
-                        className="inline-flex items-center rounded-lg border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-xs font-semibold text-neutral-100 transition hover:bg-neutral-700"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-[var(--lit-navy,#0B2545)] hover:bg-white hover:border-[var(--lit-border-light,#DFE7EF)] shadow-2xs transition-all"
                       >
-                        Retry
+                        <Play className="w-3 h-3 text-[var(--lit-blue,#1565C0)]" />
+                        <span>{auto.actionLabel ?? "Run Now"}</span>
                       </button>
                     </form>
-                  </td>
-                </tr>
-              ))}
-              {failedEvents.length === 0 && failedSteps.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-4 py-10 text-center text-neutral-500">
-                    Nothing in the failure queue.
-                  </td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      {session.role === "super_admin" ? (
-        <section className="space-y-3 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-5">
+      {/* n8n Active Workflows Section */}
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-lg font-bold text-[var(--lit-navy,#0B2545)]">
+            n8n Registered Workflow Blueprints
+          </h2>
+          <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
+            Active workflows provisioned on the connected n8n automation runtime.
+          </p>
+        </div>
+
+        {snap.state === "CONNECTED" ? (
+          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px] text-left text-xs">
+                <thead className="border-b border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] font-mono uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
+                  <tr>
+                    <th className="px-5 py-3 font-semibold">Workflow Blueprint</th>
+                    <th className="px-5 py-3 font-semibold">Runtime Identifier</th>
+                    <th className="px-5 py-3 font-semibold">State</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--lit-border-light,#DFE7EF)]">
+                  {snap.workflows.map((w) => (
+                    <tr key={w.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-5 py-3.5 font-semibold text-[var(--lit-navy,#0B2545)]">
+                        <div className="flex items-center gap-2">
+                          <Layers className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{w.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-3.5 font-mono text-slate-500">{w.id}</td>
+                      <td className="px-5 py-3.5">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase border ${
+                            w.active
+                              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                              : "border-slate-200 bg-slate-50 text-slate-700"
+                          }`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              w.active ? "bg-emerald-500" : "bg-slate-400"
+                            }`}
+                          />
+                          {w.active ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                  {snap.workflows.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="px-5 py-10 text-center text-slate-500">
+                        No workflow blueprints found on the connected instance.
+                      </td>
+                    </tr>
+                  ) : null}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : (
+          <div className="p-6 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs text-center space-y-2">
+            <Server className="w-8 h-8 text-slate-400 mx-auto" />
+            <p className="text-sm font-semibold text-[var(--lit-navy,#0B2545)]">
+              Workflow Engine Offline or Not Configured
+            </p>
+            <p className="text-xs text-[var(--lit-text-muted,#52677C)] max-w-md mx-auto">
+              {snap.state === "NOT CONFIGURED"
+                ? "Set N8N_BASE_URL and N8N_API_KEY environment variables to inspect registered workflows."
+                : "The n8n instance could not be reached. Ensure the service is healthy and the API token has administrative permissions."}
+            </p>
+          </div>
+        )}
+      </section>
+
+      {/* Failure Recovery Queue */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-white">Import workflow definitions</h2>
-            <p className="text-sm text-zinc-400">
-              Create any missing LIT workflows on the n8n instance from the bundled definitions. Existing
-              workflows are left untouched and nothing is activated.
+            <h2 className="text-lg font-bold text-[var(--lit-navy,#0B2545)]">
+              Failure Recovery Queue
+            </h2>
+            <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
+              Automation events and provisioning pipeline steps marked failed or dead-lettered. Retrying re-queues them into pending state.
+            </p>
+          </div>
+          <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs">
+            {failureCount} items
+          </span>
+        </div>
+
+        <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[620px] text-left text-xs">
+              <thead className="border-b border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] font-mono uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
+                <tr>
+                  <th className="px-5 py-3 font-semibold">Entity / Type</th>
+                  <th className="px-5 py-3 font-semibold">Identifier / Action</th>
+                  <th className="px-5 py-3 font-semibold">Status</th>
+                  <th className="px-5 py-3 font-semibold">Failed At</th>
+                  <th className="px-5 py-3 font-semibold text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--lit-border-light,#DFE7EF)]">
+                {failedEvents.map((e) => (
+                  <tr key={`event-${e.id}`} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-5 py-3.5">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded font-mono text-[10px] font-bold uppercase bg-blue-50 text-[var(--lit-blue,#1565C0)] border border-blue-200">
+                        Event
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5 font-semibold text-[var(--lit-navy,#0B2545)]">
+                      {e.event_type}
+                      <span className="block font-mono text-[10px] text-slate-400 font-normal mt-0.5">
+                        {e.id}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase border ${
+                          e.status === "dead_letter"
+                            ? "border-rose-200 bg-rose-50 text-rose-800"
+                            : "border-amber-200 bg-amber-50 text-amber-800"
+                        }`}
+                      >
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            e.status === "dead_letter" ? "bg-rose-500" : "bg-amber-500"
+                          }`}
+                        />
+                        {e.status}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5 font-mono text-slate-600">
+                      {formatIST(e.created_at, "datetime")}
+                    </td>
+                    <td className="px-5 py-3.5 text-right">
+                      <form action={retryAutomationEvent}>
+                        <input type="hidden" name="eventId" value={e.id} />
+                        <button
+                          type="submit"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-semibold text-[var(--lit-navy,#0B2545)] hover:bg-white hover:border-[var(--lit-border-light,#DFE7EF)] shadow-2xs transition-all"
+                        >
+                          <RefreshCw className="w-3 h-3 text-[var(--lit-blue,#1565C0)]" />
+                          <span>Retry Event</span>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                ))}
+
+                {failedSteps.map((s) => (
+                  <tr key={`step-${s.id}`} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-5 py-3.5">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded font-mono text-[10px] font-bold uppercase bg-purple-50 text-purple-700 border border-purple-200">
+                        Step
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5 font-semibold text-[var(--lit-navy,#0B2545)]">
+                      {s.step}
+                      <span className="block font-mono text-[10px] text-slate-400 font-normal mt-0.5">
+                        {s.id}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase border border-rose-200 bg-rose-50 text-rose-800">
+                        <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                        {s.status}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3.5 font-mono text-slate-600">
+                      {formatIST(s.created_at, "datetime")}
+                    </td>
+                    <td className="px-5 py-3.5 text-right">
+                      <form action={retryProvisioningStep}>
+                        <input type="hidden" name="stepId" value={s.id} />
+                        <button
+                          type="submit"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-xs font-semibold text-[var(--lit-navy,#0B2545)] hover:bg-white hover:border-[var(--lit-border-light,#DFE7EF)] shadow-2xs transition-all"
+                        >
+                          <RefreshCw className="w-3 h-3 text-[var(--lit-blue,#1565C0)]" />
+                          <span>Retry Step</span>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                ))}
+
+                {failedEvents.length === 0 && failedSteps.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-5 py-12 text-center">
+                      <div className="flex flex-col items-center justify-center space-y-2">
+                        <span className="p-3 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-600">
+                          <CheckCircle2 className="w-6 h-6" />
+                        </span>
+                        <p className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">
+                          Failure Queue is Clear
+                        </p>
+                        <p className="text-xs text-[var(--lit-text-muted,#52677C)] max-w-sm">
+                          All background events, provisioning steps, and cron pipeline triggers are executing nominally without unhandled exceptions.
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* Super Admin Blueprint Import Callout */}
+      {session.role === "super_admin" && (
+        <section className="p-6 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="p-1.5 rounded-lg border border-blue-200 bg-blue-50 text-[var(--lit-blue,#1565C0)]">
+                <Layers className="w-4 h-4" />
+              </span>
+              <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">
+                Blueprint Synchronization &amp; Deployment
+              </h3>
+            </div>
+            <p className="text-xs text-[var(--lit-text-muted,#52677C)] max-w-2xl">
+              Sync repository automation definitions (<code className="font-mono text-slate-800">contract-signed.json</code>, <code className="font-mono text-slate-800">onboarding-submitted.json</code>) into your active n8n instance. Existing active instances remain untouched.
             </p>
           </div>
           <ImportButton />
         </section>
-      ) : null}
+      )}
     </div>
   );
 }
