@@ -32,7 +32,9 @@ export const COMPANY = {
   websiteUrl: 'https://www.logicintelligencetechnologies.in',
   logoIconPath: '/assets/logo-icon.jpg',
   logoFullPath: '/assets/logo.jpg',
-  bannerPath: '/assets/og-banner.png',
+  bannerPath: '/assets/og-banner.jpg',
+  bannerPngPath: '/assets/og-banner.png',
+  bannerJpgPath: '/assets/og-banner.jpg',
   tagline: 'Intelligent Technology. Connected Possibilities.',
   founder: {
     name: 'Vikash Saravanan',

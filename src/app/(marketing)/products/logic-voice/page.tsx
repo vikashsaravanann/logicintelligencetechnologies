@@ -3,7 +3,7 @@ import Link from "next/link";
 import { COMPANY } from "@/config/company";
 import { logicVoiceProductNode } from "@/lib/seo/schema";
 import BackButton from "@/components/navigation/back-button";
-import AudioThreatSimulator from "@/components/voice-shield/audio-threat-simulator";
+import LogicVoiceConsole from "@/components/logic-voice/logic-voice-console";
 import {
   Mic,
   Brain,
@@ -101,16 +101,16 @@ export default function LogicVoiceProductPage() {
           </div>
         </section>
 
-        {/* Product Visual / Interactive Threat & Waveform Console Preview */}
+        {/* Interactive Logic Voice Assistant & Reasoning Console */}
         <section className="relative rounded-3xl overflow-hidden border border-[#DFE7EF] shadow-sm bg-white p-2 sm:p-6">
-          <AudioThreatSimulator />
+          <LogicVoiceConsole />
           <div className="flex flex-wrap items-center justify-between gap-4 mt-5 px-3 text-xs font-mono text-[var(--lit-text-muted,#52677C)]">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#1FA9A2] animate-pulse" />
-              <span>LIVE VOCAL TELEMETRY & IN-BAND VERIFICATION ENGINE</span>
+              <span>VOICE-FIRST REASONING &amp; MULTI-STEP PLANNING RUNTIME</span>
             </div>
             <div className="flex items-center gap-4">
-              <span>ZERO UNAUTHORIZED MUTATIONS</span>
+              <span>ZERO UNAUTHORIZED TOOL MUTATIONS</span>
               <span>·</span>
               <span>SUB-400MS LATENCY TARGET</span>
             </div>

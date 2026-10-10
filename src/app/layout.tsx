@@ -89,19 +89,29 @@ export const metadata: Metadata = {
       'Logic Intelligence Technologies builds AI-driven products, intelligent automation and connected digital platforms — including LIT Healthcare and Logic Voice.',
     images: [
       {
-        url: COMPANY.bannerPath,
+        url: 'https://www.logicintelligencetechnologies.in/assets/og-banner.jpg',
+        secureUrl: 'https://www.logicintelligencetechnologies.in/assets/og-banner.jpg',
         width: 1200,
         height: 630,
-        alt: 'Logic Intelligence Technologies — Intelligent Technology. Connected Possibilities.',
+        type: 'image/jpeg',
+        alt: 'Logic Intelligence Technologies — Where Logic Meets Innovation',
+      },
+      {
+        url: 'https://www.logicintelligencetechnologies.in/assets/og-banner.png',
+        secureUrl: 'https://www.logicintelligencetechnologies.in/assets/og-banner.png',
+        width: 1200,
+        height: 630,
+        type: 'image/png',
+        alt: 'Logic Intelligence Technologies — Where Logic Meets Innovation',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Logic Intelligence Technologies | Intelligent Technology. Connected Possibilities.',
+    title: 'Logic Intelligence Technologies | Where Logic Meets Innovation',
     description:
-      'AI technology company building intelligent products and connected platforms. LIT Healthcare · Logic Voice · AI Agents.',
-    images: [COMPANY.bannerPath],
+      'Deterministic AI Platforms, Autonomous Voice Engines & Smart Hospital Infrastructure. Creators of LIT Healthcare, Logic Voice, and Voice Shield.',
+    images: ['https://www.logicintelligencetechnologies.in/assets/og-banner.jpg'],
   },
   icons: {
     icon: [

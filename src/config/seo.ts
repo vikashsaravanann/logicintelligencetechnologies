@@ -42,10 +42,20 @@ export const SEO_CONFIG = {
       'Coimbatore-based software engineering and AI automation studio. High-performance web systems, custom enterprise software, and private AI platforms.',
     images: [
       {
-        url: `${COMPANY.websiteUrl}${COMPANY.bannerPath}`,
+        url: `${COMPANY.websiteUrl}/assets/og-banner.jpg`,
+        secureUrl: `${COMPANY.websiteUrl}/assets/og-banner.jpg`,
         width: 1200,
         height: 630,
-        alt: `${COMPANY.displayName} - Software Engineering & Intelligent Automation`,
+        type: 'image/jpeg',
+        alt: `${COMPANY.displayName} — Where Logic Meets Innovation`,
+      },
+      {
+        url: `${COMPANY.websiteUrl}/assets/og-banner.png`,
+        secureUrl: `${COMPANY.websiteUrl}/assets/og-banner.png`,
+        width: 1200,
+        height: 630,
+        type: 'image/png',
+        alt: `${COMPANY.displayName} — Where Logic Meets Innovation`,
       },
     ],
   },

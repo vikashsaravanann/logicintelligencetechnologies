@@ -20,10 +20,38 @@ export const metadata: Metadata = {
   description:
     'Logic Intelligence Technologies develops intelligent AI products, connected digital infrastructure, and enterprise automation solutions, including LIT Healthcare, Logic Voice, and Voice Shield.',
   openGraph: {
-    title: `${COMPANY.legalName} — ${COMPANY.tagline}`,
+    type: 'website',
+    locale: 'en_IN',
+    url: 'https://www.logicintelligencetechnologies.in',
+    siteName: COMPANY.legalName,
+    title: 'Logic Intelligence Technologies | Where Logic Meets Innovation',
     description:
-      'AI technology company building intelligent AI products, automation solutions, and connected healthcare platforms.',
-    images: [{ url: COMPANY.bannerPath, width: 1200, height: 630, alt: 'Logic Intelligence Technologies' }],
+      'Deterministic AI Platforms, Autonomous Voice Engines & Smart Hospital Infrastructure. LIT Healthcare · Logic Voice · Voice Shield.',
+    images: [
+      {
+        url: 'https://www.logicintelligencetechnologies.in/assets/og-banner.jpg',
+        secureUrl: 'https://www.logicintelligencetechnologies.in/assets/og-banner.jpg',
+        width: 1200,
+        height: 630,
+        type: 'image/jpeg',
+        alt: 'Logic Intelligence Technologies — Where Logic Meets Innovation',
+      },
+      {
+        url: 'https://www.logicintelligencetechnologies.in/assets/og-banner.png',
+        secureUrl: 'https://www.logicintelligencetechnologies.in/assets/og-banner.png',
+        width: 1200,
+        height: 630,
+        type: 'image/png',
+        alt: 'Logic Intelligence Technologies — Where Logic Meets Innovation',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Logic Intelligence Technologies | Where Logic Meets Innovation',
+    description:
+      'Deterministic AI Platforms, Autonomous Voice Engines & Smart Hospital Infrastructure. LIT Healthcare · Logic Voice · Voice Shield.',
+    images: ['https://www.logicintelligencetechnologies.in/assets/og-banner.jpg'],
   },
 };
 
