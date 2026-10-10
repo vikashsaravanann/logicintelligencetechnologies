@@ -37,40 +37,23 @@ function buildProviders(): ProviderConfig[] {
     });
   }
 
-  // xAI (Grok)
-  if (process.env.GROK_API_KEY && !(process.env.GROQ_API_URL || "").includes("x.ai")) {
+  // xAI (Grok) — sole cloud LLM fallback after THROUGHPUTS
+  const xaiKey = process.env.XAI_API_KEY || process.env.GROK_API_KEY;
+  if (xaiKey) {
     list.push({
       id: "xai",
-      apiKey: process.env.GROK_API_KEY,
-      apiUrl: "https://api.x.ai/v1/chat/completions",
+      apiKey: xaiKey,
+      apiUrl:
+        process.env.XAI_API_URL ||
+        "https://api.x.ai/v1/chat/completions",
       models: [
         process.env.XAI_MODEL || "grok-3",
         "grok-3-mini",
       ].filter(Boolean),
     });
-  } else if (process.env.GROK_API_KEY && (process.env.GROQ_API_URL || "").includes("x.ai")) {
-    list.push({
-      id: "xai",
-      apiKey: process.env.GROK_API_KEY,
-      apiUrl: process.env.GROQ_API_URL || "https://api.x.ai/v1/chat/completions",
-      models: ["grok-3-mini"],
-    });
   }
 
-  // Groq
-  if (process.env.GROQ_API_KEY && !list.some((p) => p.id === "groq")) {
-    list.push({
-      id: "groq",
-      apiKey: process.env.GROQ_API_KEY,
-      apiUrl: "https://api.groq.com/openai/v1/chat/completions",
-      models: [
-        process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
-        "llama-3.1-8b-instant",
-      ],
-    });
-  }
-
-  // Sorting preference: throughputs -> xai -> groq
+  // Preference: throughputs -> xai
   list.sort((a, b) => {
     if (a.id === "throughputs") return -1;
     if (b.id === "throughputs") return 1;
@@ -78,7 +61,7 @@ function buildProviders(): ProviderConfig[] {
     if (b.id === "xai") return 1;
     return 0;
   });
-  
+
   return list.filter((p) => Boolean(p.apiKey));
 }
 
@@ -86,7 +69,7 @@ function computeExactHash(
   provider: string,
   model: string,
   messages: ChatMessage[],
-  options?: any
+  options?: unknown
 ): string {
   const payload = JSON.stringify({ provider, model, messages, options });
   return crypto.createHash('sha256').update(payload).digest('hex');
@@ -142,7 +125,6 @@ async function callProvider(
         signal: options?.signal ?? AbortSignal.timeout(20000),
       });
 
-      // Retry without tools if unsupported
       if (!res.ok && res.status === 400 && options?.tools?.length) {
         const errText = await res.text();
         if (/tool|function/i.test(errText)) {
@@ -269,7 +251,6 @@ export function hasAnyProvider(): boolean {
 
 /**
  * Stream from the first available provider.
- * Yields plain text chunks via async generator.
  */
 export async function* streamWithProviders(
   messages: ChatMessage[],

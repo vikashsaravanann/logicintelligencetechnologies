@@ -2,9 +2,10 @@
  * Serverless AI integration layer for Logic Intelligence Technologies.
  *
  * Runs entirely inside Vercel/Next.js Route Handlers:
- *   request → ground (RAG) → dual providers (xAI + Groq) → structured response
+ *   request → ground (RAG) → providers (THROUGHPUTS → xAI) → structured response
  *
  * No long-lived GPU process required for production chat.
+ * Groq has been permanently removed from the provider stack.
  */
 
 import "server-only";
@@ -17,15 +18,11 @@ import {
 import { buildQueryGroundedKnowledge } from "@/lib/ai/knowledge";
 
 export type ServerlessAIRequest = {
-  /** Latest user text (required for RAG grounding). */
   message: string;
-  /** Prior turns; system messages are ignored (we inject our own). */
   history?: Array<{ role: string; content: string }>;
-  /** Optional extra system instructions (portfolio persona, etc.). */
   systemExtra?: string;
   temperature?: number;
   max_tokens?: number;
-  /** When true, skip company RAG (pure general / persona-only). */
   skipRag?: boolean;
 };
 
@@ -45,9 +42,6 @@ function cleanReply(text: string): string {
     .trim();
 }
 
-/**
- * Core serverless completion: ground → race providers → return first good reply.
- */
 export async function runServerlessAI(
   req: ServerlessAIRequest
 ): Promise<ServerlessAIResponse> {
@@ -70,7 +64,7 @@ export async function runServerlessAI(
     return {
       success: false,
       reply:
-        "AI providers are not configured. Set XAI_API_KEY and/or GROQ_API_KEY on the server.",
+        "AI providers are not configured. Set THROUGHPUTS_API_KEY and/or XAI_API_KEY on the server.",
       provider: "none",
       model: "none",
       grounded: false,

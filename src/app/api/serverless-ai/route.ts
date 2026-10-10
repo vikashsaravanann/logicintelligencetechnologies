@@ -5,12 +5,10 @@ import { guardAiRequest, readBoundedAiJson, InvalidAiRequest } from "@/lib/ai/re
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-/** Serverless function wall time (Vercel). */
 export const maxDuration = 30;
 
 const bodySchema = z.object({
   message: z.string().min(1).max(4000).optional(),
-  /** OpenAI-style messages array (portfolio chatbot). */
   messages: z
     .array(
       z.object({
@@ -35,18 +33,6 @@ const bodySchema = z.object({
   max_tokens: z.number().int().min(64).max(1200).optional(),
 });
 
-/**
- * Unified serverless AI endpoint.
- *
- * POST /api/serverless-ai
- * Body (any of):
- *   { message: "..." }
- *   { messages: [{ role, content }, ...] }  // last user message used
- *   { message, history, systemExtra, skipRag }
- *
- * Response:
- *   { success, reply, generated_text, provider, model, grounded, latency_ms }
- */
 export async function POST(req: Request) {
   try {
     const auth = await guardAiRequest();
@@ -102,7 +88,6 @@ export async function POST(req: Request) {
       grounded: result.grounded,
       latency_ms: result.latency_ms,
       error: result.success ? undefined : "AI service unavailable",
-      // OpenAI-compatible shape for older clients
       choices: [
         {
           message: { role: "assistant", content: result.reply },
@@ -131,6 +116,6 @@ export async function GET() {
       chat: "/api/chat",
       ai: "/api/ai",
     },
-    providers: ["xai", "groq"],
+    providers: ["throughputs", "xai"],
   });
 }
