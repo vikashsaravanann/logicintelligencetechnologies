@@ -14,7 +14,7 @@ export type GroqCompletionOptions = {
 export type GroqResponse = {
   content: string;
   model: string;
-  provider: "groq";
+  provider: "lit-ai";
 };
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
@@ -89,8 +89,8 @@ export async function completeGroqChat(
       if (cleaned) {
         return {
           content: cleaned,
-          model,
-          provider: "groq",
+          model: "LIT Neural Engine",
+          provider: "lit-ai" as const,
         };
       }
     } catch (err) {
@@ -182,7 +182,7 @@ export async function streamGroqChat(
 
             const cleaned = cleanResponse(accumulated);
             controller.enqueue(
-              encoder.encode(`data: ${JSON.stringify({ type: "done", content: cleaned, model, provider: "groq" })}\n\n`)
+              encoder.encode(`data: ${JSON.stringify({ type: "done", content: cleaned, model: "LIT Neural Engine", provider: "lit-ai" })}\n\n`)
             );
             controller.enqueue(encoder.encode("data: [DONE]\n\n"));
             controller.close();

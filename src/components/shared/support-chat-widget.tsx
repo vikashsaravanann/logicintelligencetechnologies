@@ -4,7 +4,6 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  MessageCircle,
   X,
   Send,
   RotateCcw,
@@ -15,9 +14,11 @@ import {
   CheckCircle2,
   Copy,
   Check,
-  ExternalLink,
   ChevronRight,
   Headphones,
+  Calendar,
+  Layers,
+  ArrowRight,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { COMPANY } from "@/config/company";
@@ -27,54 +28,41 @@ type ChatMessage = {
   role: "user" | "assistant";
   content: string;
   timestamp?: string;
-  model?: string;
   citations?: string[];
 };
 
 const STARTER_PROMPTS = [
   {
-    label: "🏥 LIT Healthcare OS",
+    label: "🏥 LIT Healthcare Clinical OS",
     prompt: "Tell me about LIT Healthcare and how the clinical telemetry platform works.",
     icon: Building2,
   },
   {
-    label: "🎙️ Logic Voice & Voice Shield",
-    prompt: "Explain Logic Voice latency and how Voice Shield stops voice deepfakes.",
+    label: "🎙️ Logic Voice & Telephony Architecture",
+    prompt: "Explain Logic Voice latency and how Voice Shield defends against synthetic voice fraud.",
     icon: ShieldCheck,
   },
   {
-    label: "💼 Packages & Pricing",
-    prompt: "What packages and pricing tiers are available for new projects?",
+    label: "💼 Architecture Packages & Pricing",
+    prompt: "What packages and engineering tiers are available for new software systems?",
     icon: Zap,
   },
   {
-    label: "🚀 Free Architecture Demo",
-    prompt: "How can I request a free architecture demo before making any payment?",
+    label: "🚀 Request Free Architecture Demo",
+    prompt: "How can I request a working architecture prototype demo before making any commitment?",
     icon: Sparkles,
   },
 ];
 
 const INITIAL_GREETING: ChatMessage = {
   role: "assistant",
-  content: `Hello! I am **LOGIC AI**, the intelligence assistant for **${COMPANY.displayName}**.\n\nAsk me anything about our clinical systems (**LIT Healthcare**), autonomous telephony (**Logic Voice**), biometric deepfake firewall (**Voice Shield**), pricing packages, or requesting a free demo.`,
+  content: `Hello! I am **LOGIC AI**, the intelligence assistant for **${COMPANY.displayName}**.\n\nI can assist you with our clinical hospital operating systems (**LIT Healthcare**), autonomous conversational voice agents (**Logic Voice**), biometric deepfake audio firewalls (**Voice Shield**), engineering packages, or scheduling an architecture review. What are you building?`,
   timestamp: "Just now",
 };
 
 function formatTime(): string {
   const now = new Date();
   return now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-function buildWhatsAppUrl(messages: ChatMessage[]) {
-  const slice = messages.filter((m) => m.content).slice(-6);
-  const transcript = slice
-    .map(
-      (m) =>
-        `${m.role === "user" ? "Client" : "LOGIC AI"}: ${m.content.replace(/\s+/g, " ").slice(0, 240)}`
-    )
-    .join("\n\n");
-  const text = `Hi ${COMPANY.displayName} engineering team,\n\nI was chatting with LOGIC AI on your website:\n\n${transcript}\n\nI would like to discuss next steps.`;
-  return `https://wa.me/${COMPANY.whatsappNumber || COMPANY.phone.replace(/\D/g, "")}?text=${encodeURIComponent(text.slice(0, 1800))}`;
 }
 
 export default function SupportChatWidget() {
@@ -86,7 +74,9 @@ export default function SupportChatWidget() {
   const [showHandoffModal, setShowHandoffModal] = useState(false);
   const [handoffName, setHandoffName] = useState("");
   const [handoffContact, setHandoffContact] = useState("");
+  const [handoffNotes, setHandoffNotes] = useState("");
   const [handoffSubmitted, setHandoffSubmitted] = useState(false);
+  const [handoffSubmitting, setHandoffSubmitting] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -164,7 +154,6 @@ export default function SupportChatWidget() {
             role: "assistant",
             content: data.reply,
             timestamp: formatTime(),
-            model: data.model || (data.provider === "groq" ? "Groq 70B" : undefined),
           },
         ]);
       } else if (data.error) {
@@ -172,7 +161,7 @@ export default function SupportChatWidget() {
           ...prev,
           {
             role: "assistant",
-            content: `Notice: ${data.error}. You can also contact our team directly at **${COMPANY.phone}** on WhatsApp.`,
+            content: `Notice: ${data.error}. You can also connect directly with our engineering desk at **${COMPANY.email}**.`,
             timestamp: formatTime(),
           },
         ]);
@@ -181,7 +170,7 @@ export default function SupportChatWidget() {
           ...prev,
           {
             role: "assistant",
-            content: `Thank you for reaching out. Please connect directly with our engineering team on WhatsApp at **${COMPANY.phone}** or email **${COMPANY.email}**.`,
+            content: `Thank you for reaching out. Please connect directly with our systems engineering team at **${COMPANY.email}** or schedule an architecture consultation at **${COMPANY.websiteUrl}/book-consultation**.`,
             timestamp: formatTime(),
           },
         ]);
@@ -191,7 +180,7 @@ export default function SupportChatWidget() {
         ...prev,
         {
           role: "assistant",
-          content: `We experienced a brief network timeout. Please reach us directly on WhatsApp at **${COMPANY.phone}** or try asking again.`,
+          content: `We experienced a brief network timeout. Please connect with our team directly at **${COMPANY.email}** or try asking again.`,
           timestamp: formatTime(),
         },
       ]);
@@ -213,9 +202,9 @@ export default function SupportChatWidget() {
       <motion.button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        aria-label={open ? "Close LOGIC AI Chat" : "Open LOGIC AI Chat"}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        aria-label={open ? "Close LOGIC AI Assistant" : "Open LOGIC AI Assistant"}
+        whileHover={{ scale: 1.04 }}
+        whileTap={{ scale: 0.96 }}
         className={`fixed bottom-5 right-5 sm:bottom-7 sm:right-7 z-50 transition-all duration-300 shadow-2xl ${
           open
             ? "w-12 h-12 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center border border-cyan-300 shadow-cyan-500/40"
@@ -226,11 +215,11 @@ export default function SupportChatWidget() {
           <X className="w-5 h-5 transition-transform" />
         ) : (
           <>
-            <div className="relative w-8 h-8 rounded-full p-0.5 bg-gradient-to-tr from-cyan-400 to-purple-500 flex items-center justify-center shrink-0">
+            <div className="relative w-8 h-8 rounded-full p-0.5 bg-gradient-to-tr from-cyan-400 via-teal-400 to-blue-500 flex items-center justify-center shrink-0">
               <div className="w-full h-full bg-[#081328] rounded-full overflow-hidden p-0.5 flex items-center justify-center">
                 <Image
                   src={COMPANY.logoIconPath}
-                  alt="Logic Intelligence Logo"
+                  alt="Logic Intelligence Technologies Logo"
                   width={32}
                   height={32}
                   className="w-full h-full object-contain rounded-full"
@@ -240,14 +229,14 @@ export default function SupportChatWidget() {
             </div>
             <div className="flex flex-col text-left select-none pr-1">
               <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold tracking-wide text-white group-hover:text-cyan-300 transition-colors">
+                <span className="text-xs font-bold tracking-wide text-white group-hover:text-cyan-300 transition-colors font-mono">
                   LOGIC AI
                 </span>
-                <span className="text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                <span className="text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                   ONLINE
                 </span>
               </div>
-              <span className="text-[10px] text-zinc-400">Ask engineering & systems</span>
+              <span className="text-[10px] text-zinc-400">Engineering &amp; Systems Intelligence</span>
             </div>
           </>
         )}
@@ -261,12 +250,12 @@ export default function SupportChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.94 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed bottom-20 sm:bottom-24 right-4 sm:right-7 z-50 w-[min(94vw,420px)] h-[min(78dvh,640px)] rounded-3xl border border-cyan-500/25 bg-[#070F1E]/95 backdrop-blur-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_35px_rgba(14,165,233,0.18)] flex flex-col overflow-hidden"
+            className="fixed bottom-20 sm:bottom-24 right-4 sm:right-7 z-50 w-[min(94vw,430px)] h-[min(78dvh,640px)] rounded-3xl border border-cyan-500/25 bg-[#070F1E]/95 backdrop-blur-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_35px_rgba(14,165,233,0.18)] flex flex-col overflow-hidden font-sans"
           >
-            {/* Header */}
+            {/* Professional Executive Header */}
             <div className="relative px-4 py-3.5 bg-gradient-to-r from-[#08162E] via-[#0B1F42] to-[#0A1835] border-b border-cyan-500/20 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-400 to-purple-500 p-0.5 shrink-0 shadow-md">
+                <div className="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-400 via-teal-400 to-blue-500 p-0.5 shrink-0 shadow-md">
                   <div className="w-full h-full bg-[#070F1E] rounded-[10px] overflow-hidden flex items-center justify-center p-1">
                     <Image
                       src={COMPANY.logoIconPath}
@@ -280,14 +269,14 @@ export default function SupportChatWidget() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold text-white tracking-tight">LOGIC AI</p>
-                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                      <Zap className="w-2.5 h-2.5 text-cyan-400" />
-                      Groq LLaMA-3.3
+                    <p className="text-sm font-bold text-white tracking-tight font-mono">LOGIC AI</p>
+                    <span className="inline-flex items-center gap-1 text-[9px] font-mono font-semibold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Autonomous Engine
                     </span>
                   </div>
                   <p className="text-[11px] text-zinc-400 truncate">
-                    Enterprise AI & Clinical Telemetry
+                    Logic Intelligence Technologies · Systems Assistant
                   </p>
                 </div>
               </div>
@@ -345,7 +334,7 @@ export default function SupportChatWidget() {
                               {m.citations.map((c) => (
                                 <span
                                   key={c}
-                                  className="text-[10px] rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 text-cyan-300"
+                                  className="text-[10px] rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 text-cyan-300 font-mono"
                                 >
                                   Verified: {c}
                                 </span>
@@ -382,12 +371,6 @@ export default function SupportChatWidget() {
                             </>
                           )}
                         </button>
-                        {m.model && (
-                          <>
-                            <span>•</span>
-                            <span className="text-cyan-400/80 font-mono text-[9px]">{m.model}</span>
-                          </>
-                        )}
                       </>
                     )}
                   </div>
@@ -406,7 +389,7 @@ export default function SupportChatWidget() {
                       <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce [animation-delay:-0.15s]" />
                       <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" />
                     </div>
-                    <span>LOGIC AI is thinking…</span>
+                    <span>LOGIC AI is processing…</span>
                   </div>
                 </div>
               )}
@@ -414,7 +397,7 @@ export default function SupportChatWidget() {
               {/* Starter Suggestion Chips (show on initial message) */}
               {messages.length === 1 && !loading && (
                 <div className="pt-2">
-                  <p className="text-[11px] font-semibold text-zinc-400 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+                  <p className="text-[11px] font-semibold text-zinc-400 mb-2 uppercase tracking-wider flex items-center gap-1.5 font-mono">
                     <Sparkles className="w-3 h-3 text-cyan-400" />
                     Recommended queries
                   </p>
@@ -441,19 +424,19 @@ export default function SupportChatWidget() {
               )}
             </div>
 
-            {/* Human Handoff Modal Sheet */}
+            {/* Engineering Handoff Callback Modal */}
             <AnimatePresence>
               {showHandoffModal && (
                 <motion.div
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 15 }}
-                  className="mx-3 mb-2 p-3 rounded-2xl bg-[#091733] border border-cyan-500/30 shadow-lg text-xs"
+                  className="mx-3 mb-2 p-3.5 rounded-2xl bg-[#091733] border border-cyan-500/30 shadow-lg text-xs"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-bold text-white flex items-center gap-1.5">
                       <Headphones className="w-3.5 h-3.5 text-cyan-400" />
-                      Request Founder / Engineering Callback
+                      Request Engineering Callback
                     </span>
                     <button
                       type="button"
@@ -464,15 +447,16 @@ export default function SupportChatWidget() {
                     </button>
                   </div>
                   {handoffSubmitted ? (
-                    <div className="p-2 text-emerald-300 flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>Request recorded! Our team will contact you within 2 business hours.</span>
+                    <div className="p-2.5 text-emerald-300 flex items-center gap-2 bg-emerald-950/40 rounded-xl border border-emerald-500/30">
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                      <span>Request recorded! Our systems engineering team will review and connect with you within 2 business hours.</span>
                     </div>
                   ) : (
                     <form
                       onSubmit={async (e) => {
                         e.preventDefault();
-                        if (!handoffContact.trim()) return;
+                        if (!handoffContact.trim() || handoffSubmitting) return;
+                        setHandoffSubmitting(true);
                         try {
                           await fetch("/api/ai/lead", {
                             method: "POST",
@@ -482,7 +466,7 @@ export default function SupportChatWidget() {
                               email: handoffContact.includes("@") ? handoffContact : undefined,
                               phone: !handoffContact.includes("@") ? handoffContact : undefined,
                               source: "chat_widget_handoff",
-                              interest: "Request engineer contact from chat",
+                              interest: handoffNotes || "Request engineering contact from chat widget",
                               notes: messages.slice(-4).map((m) => `${m.role}: ${m.content}`).join("\n"),
                             }),
                           });
@@ -490,44 +474,48 @@ export default function SupportChatWidget() {
                           setTimeout(() => {
                             setShowHandoffModal(false);
                             setHandoffSubmitted(false);
-                          }, 3000);
+                            setHandoffName("");
+                            setHandoffContact("");
+                            setHandoffNotes("");
+                          }, 3500);
                         } catch {
                           setHandoffSubmitted(true);
+                        } finally {
+                          setHandoffSubmitting(false);
                         }
                       }}
                       className="space-y-2"
                     >
                       <input
                         type="text"
-                        placeholder="Your Name"
+                        placeholder="Your Full Name"
                         value={handoffName}
                         onChange={(e) => setHandoffName(e.target.value)}
                         className="w-full bg-[#050C1B] border border-white/10 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-500 focus:outline-none focus:border-cyan-400 text-xs"
                       />
                       <input
                         type="text"
-                        placeholder="Email or WhatsApp Phone number"
+                        placeholder="Work Email or Phone Number"
                         required
                         value={handoffContact}
                         onChange={(e) => setHandoffContact(e.target.value)}
                         className="w-full bg-[#050C1B] border border-white/10 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-500 focus:outline-none focus:border-cyan-400 text-xs"
                       />
-                      <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Brief requirement (e.g. Hospital OS, Voice Agent)"
+                        value={handoffNotes}
+                        onChange={(e) => setHandoffNotes(e.target.value)}
+                        className="w-full bg-[#050C1B] border border-white/10 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-500 focus:outline-none focus:border-cyan-400 text-xs"
+                      />
+                      <div className="flex gap-2 pt-1">
                         <button
                           type="submit"
-                          className="flex-1 py-1.5 rounded-lg bg-cyan-400 text-slate-950 font-bold hover:bg-cyan-300 transition-colors"
+                          disabled={handoffSubmitting}
+                          className="w-full py-2 rounded-lg bg-gradient-to-r from-cyan-400 to-teal-300 text-slate-950 font-bold hover:brightness-105 active:scale-[0.99] transition-all text-xs font-mono uppercase tracking-wider disabled:opacity-50"
                         >
-                          Submit Request
+                          {handoffSubmitting ? "Submitting..." : "Submit Callback Request"}
                         </button>
-                        <a
-                          href={buildWhatsAppUrl(messages)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-2.5 py-1.5 rounded-lg bg-[#25D366]/20 text-[#25D366] border border-[#25D366]/40 flex items-center gap-1 font-semibold hover:bg-[#25D366]/30 transition-colors"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5" />
-                          WhatsApp
-                        </a>
                       </div>
                     </form>
                   )}
@@ -535,7 +523,7 @@ export default function SupportChatWidget() {
               )}
             </AnimatePresence>
 
-            {/* Input & Footer Controls */}
+            {/* Input & Professional Footer Controls */}
             <div className="p-3 bg-gradient-to-t from-[#050C1A] to-[#08152E] border-t border-cyan-500/20">
               <div className="relative flex items-end gap-2 bg-[#061022] border border-cyan-500/25 rounded-2xl p-1.5 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-500/20 transition-all">
                 <textarea
@@ -543,7 +531,7 @@ export default function SupportChatWidget() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Ask LOGIC AI about systems, demo, pricing..."
+                  placeholder="Ask LOGIC AI about platforms, architecture, pricing..."
                   rows={1}
                   className="flex-1 max-h-[90px] min-h-[38px] resize-none bg-transparent px-3 py-2 text-xs sm:text-sm text-white placeholder:text-zinc-500 focus:outline-none"
                 />
@@ -558,34 +546,34 @@ export default function SupportChatWidget() {
                 </button>
               </div>
 
-              {/* Action Strip */}
-              <div className="mt-2.5 flex items-center justify-between text-[11px] text-zinc-400 px-1">
-                <a
-                  href={buildWhatsAppUrl(messages)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 font-semibold text-[#25D366] hover:text-[#3ce07a] transition-colors"
+              {/* Professional Corporate Utility Strip */}
+              <div className="mt-2.5 flex items-center justify-between text-[11px] text-zinc-400 px-1 font-mono">
+                <button
+                  type="button"
+                  onClick={() => setShowHandoffModal((prev) => !prev)}
+                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 text-cyan-300 font-semibold"
                 >
-                  <MessageCircle className="w-3.5 h-3.5" />
-                  <span>WhatsApp Chat</span>
-                  <ExternalLink className="w-2.5 h-2.5 opacity-60" />
-                </a>
+                  <Headphones className="w-3 h-3 text-cyan-400" />
+                  <span>Talk to Engineering</span>
+                </button>
 
                 <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowHandoffModal((prev) => !prev)}
-                    className="hover:text-cyan-300 transition-colors flex items-center gap-1"
+                  <Link
+                    href="/book-consultation"
+                    onClick={() => setOpen(false)}
+                    className="hover:text-white transition-colors text-zinc-300 flex items-center gap-1"
                   >
-                    <Headphones className="w-3 h-3 text-cyan-400" />
-                    <span>Talk to Team</span>
-                  </button>
+                    <Calendar className="w-3 h-3 text-zinc-400" />
+                    <span>Consultation</span>
+                  </Link>
+                  <span className="text-zinc-600">·</span>
                   <Link
                     href="/free-demo"
                     onClick={() => setOpen(false)}
-                    className="hover:text-cyan-300 transition-colors text-zinc-400 font-medium"
+                    className="hover:text-cyan-300 transition-colors text-zinc-300 font-semibold flex items-center gap-1"
                   >
-                    Free Demo
+                    <Sparkles className="w-3 h-3 text-cyan-400" />
+                    <span>Free Demo</span>
                   </Link>
                 </div>
               </div>

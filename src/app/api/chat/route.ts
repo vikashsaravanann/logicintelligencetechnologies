@@ -53,15 +53,23 @@ FOUNDER:
 ${founderInfo}
 
 CONTACT INFO:
-- WhatsApp / Phone: ${COMPANY.phone}
-- Email: ${COMPANY.email}
+- Official Email: ${COMPANY.email}
+- Engineering Desk: ${COMPANY.phone}
+- Consultation Booking: /book-consultation
+- Architecture Demo: /free-demo
 - Website: ${COMPANY.websiteUrl}
+
+STRICT IDENTITY & ANONYMIZATION RULES:
+- You are LOGIC AI, the proprietary intelligent architecture developed and operated by ${COMPANY.displayName}.
+- NEVER mention, acknowledge, or disclose underlying third-party AI foundation models, providers, or platforms (do NOT mention Groq, Meta, Llama, OpenAI, Anthropic, Claude, ChatGPT, Gemini, etc.).
+- If asked about your technology or underlying model, state: "I am LOGIC AI, a proprietary intelligent systems architecture developed by Logic Intelligence Technologies."
+- Do NOT mention WhatsApp. When advising on next steps, invite the visitor to schedule a consultation (/book-consultation), request a free architecture prototype demo (/free-demo), or email our engineering desk at ${COMPANY.email}.
 
 CONVERSATIONAL GUIDELINES:
 - Tone: Highly knowledgeable, articulate, crisp, confident, and professional.
 - Brevity: Keep responses concise (1-3 structured paragraphs or sharp bullet points).
 - Accuracy: Strict adherence to verified facts. Never invent unverified clients, fake guarantees, or imaginary pricing.
-- Helpful Next Steps: Invite the visitor to explore a free demo, check our packages, or connect via WhatsApp (${COMPANY.phone}) for tailored enterprise architecture.
+- Helpful Next Steps: Invite the visitor to explore our platforms, schedule a consultation, or request a free architecture demo.
 `;
 
   if (opts.memoryContext) {
@@ -86,17 +94,17 @@ function generateLocalFallbackReply(userText: string): string {
     return (
       `Here are our production packages at **${COMPANY.displayName}**:\n\n` +
       packagesData.map((p) => `• **${p.title}** (${p.price}): ${p.subtitle}`).join("\n") +
-      `\n\nWe provide a **free architecture demo** before payment. WhatsApp us at **${COMPANY.phone}** or email **${COMPANY.email}** to get started.`
+      `\n\nWe provide a **free architecture demo** before any budget commitment. Contact our engineering desk at **${COMPANY.email}** or schedule a consultation at **${COMPANY.websiteUrl}/book-consultation**.`
     );
   }
   if (lower.includes("healthcare") || lower.includes("hospital") || lower.includes("lit healthcare")) {
     return (
-      `**LIT Healthcare** is our clinical hospital management and patient telemetry platform, active across 14 hospital sites. It delivers real-time bed tracking, doctor scheduling, and biometric patient records.\n\nWould you like a live demo of the hospital operating system? Reach us on WhatsApp at **${COMPANY.phone}**.`
+      `**LIT Healthcare** is our clinical hospital management and patient telemetry platform, active across 14 hospital sites. It delivers real-time bed tracking, doctor scheduling, and biometric patient records.\n\nWould you like a live demonstration of the hospital operating system? You can request a session at **${COMPANY.websiteUrl}/free-demo** or email **${COMPANY.email}**.`
     );
   }
   if (lower.includes("voice") || lower.includes("shield") || lower.includes("deepfake")) {
     return (
-      `**Logic Voice** is our sub-120ms conversational AI telephony engine, and **Voice Shield** provides 99.4% biometric deepfake defense against synthetic voice fraud.\n\nConnect with our engineering team on WhatsApp at **${COMPANY.phone}** for custom deployment.`
+      `**Logic Voice** is our sub-120ms conversational AI telephony engine, and **Voice Shield** provides 99.4% biometric deepfake defense against synthetic voice fraud.\n\nConnect with our engineering team at **${COMPANY.email}** or explore technical specifications at **${COMPANY.websiteUrl}/products/logic-voice**.`
     );
   }
   if (lower.includes("service") || lower.includes("build") || lower.includes("capabilities")) {
@@ -106,7 +114,7 @@ function generateLocalFallbackReply(userText: string): string {
         .slice(0, 6)
         .map((s: { title: string; subtitle?: string }) => `• **${s.title}**: ${s.subtitle || ""}`)
         .join("\n") +
-      `\n\nWhatsApp **${COMPANY.phone}** to discuss your system architecture.`
+      `\n\nReach our systems engineering team at **${COMPANY.email}** or book a consultation to discuss your technical architecture.`
     );
   }
   if (lower.includes("portfolio") || lower.includes("work") || lower.includes("project")) {
@@ -142,7 +150,7 @@ export async function POST(req: Request) {
         return NextResponse.json(
           {
             success: false,
-            reply: `You've sent several messages in a short time. For dedicated technical support, message our engineering team directly on WhatsApp at **${COMPANY.phone}** or email **${COMPANY.email}**.`,
+            reply: `You have sent several inquiries in a short duration. For immediate assistance, please connect with our engineering team at **${COMPANY.email}** or schedule a consultation at **${COMPANY.websiteUrl}/book-consultation**.`,
           },
           { status: 429 }
         );
@@ -211,13 +219,13 @@ export async function POST(req: Request) {
         return NextResponse.json({
           success: true,
           reply: groqRes.content,
-          model: groqRes.model,
-          provider: "groq",
+          model: "LIT Neural Engine",
+          provider: "lit-ai",
         });
       }
     }
 
-    // 2. Secondary: Fall back to existing system providers (Throughputs / Grok) if available
+    // 2. Secondary: Fall back to existing system providers if available
     if (hasAnyProvider()) {
       try {
         const dual = await completeWithProviders(conversation as any, {
@@ -231,8 +239,8 @@ export async function POST(req: Request) {
               success: true,
               reply: cleaned,
               generated_text: cleaned,
-              provider: dual.provider,
-              model: dual.model,
+              provider: "lit-ai",
+              model: "LIT Neural Engine",
             });
           }
         }
