@@ -3,6 +3,7 @@ import Link from "next/link";
 import BackToHome from "@/components/ui/back-to-home";
 import { servicesData, getServiceVisual } from "@/data/servicesData";
 import {
+  LucideIcon,
   ArrowRight,
   CheckCircle2,
   Sparkles,
@@ -27,7 +28,7 @@ import {
   CodeSquare,
   Cloud,
 } from "lucide-react";
-import SafeImage from "@/components/ui/safe-image";
+import ServiceCardAnimation from "@/components/services/service-card-animation";
 import CTASection from "@/components/ui/cta-section";
 
 export const metadata: Metadata = {
@@ -49,7 +50,7 @@ export const metadata: Metadata = {
   },
 };
 
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+const iconMap: Record<string, LucideIcon> = {
   Code,
   Hotel,
   Plane,
@@ -189,26 +190,13 @@ export default function ServicesPage() {
                 key={svc.slug}
                 className="group relative flex flex-col justify-between rounded-2xl border border-[#DFE7EF] bg-white hover:border-[#1FA9A2]/40 hover:shadow-md transition-all duration-300 shadow-xs overflow-hidden"
               >
-                {/* Visual Thumbnail */}
-                <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-[#DFE7EF] bg-[#F7F9FC]">
-                  <SafeImage
-                    src={getServiceVisual(svc.slug)}
-                    alt={`${svc.title} Visual Architecture`}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
-                  <div className="absolute top-3 left-3 z-10">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/95 backdrop-blur-md shadow-xs border border-[#DFE7EF] text-[var(--lit-navy,#0B2545)] group-hover:text-[#1FA9A2] transition-colors">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <div className="absolute top-3 right-3 z-10">
-                    <span className="text-[10px] font-mono font-semibold uppercase tracking-wider bg-white/90 text-[var(--lit-navy,#0B2545)] backdrop-blur-md border border-[#DFE7EF] px-2.5 py-1 rounded-md shadow-2xs">
-                      {categoryTag}
-                    </span>
-                  </div>
-                </div>
+                {/* Visual Architecture Animation Canvas */}
+                <ServiceCardAnimation
+                  slug={svc.slug}
+                  title={svc.title}
+                  categoryTag={categoryTag}
+                  Icon={Icon}
+                />
 
                 {/* Content */}
                 <div className="p-6 sm:p-7 flex flex-col flex-1 justify-between">
