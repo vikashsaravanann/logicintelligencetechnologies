@@ -133,24 +133,111 @@ export default function HeroSection() {
             Logic Intelligence Technologies develops high-performance AI systems, connected digital backbones, and enterprise automation software. We replace brittle prompt wrappers with deterministic state machines, typed schemas, and human-in-the-loop oversight. Engineered for clinical hospital facilities, real-time voice operations, and security-critical enterprise environments.
           </p>
 
-          {/* Symmetrical Architecture Metric Chips to Fill Gaps Perfectly */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl w-full mx-auto mb-8">
-            <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-white/90 border border-[#E2E8F0] shadow-xs text-center">
+          {/* Symmetrical Architecture Metric Chips (Banner Telemetry Bar) */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl w-full mx-auto mb-8">
+            <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-white/90 border border-[#E2E8F0] shadow-xs text-center hover:border-[var(--lit-blue)]/40 transition-colors">
               <span className="text-xs font-mono font-bold text-[var(--lit-blue)]">&lt; 120ms P99</span>
               <span className="text-[10px] text-[var(--lit-text-muted)] uppercase tracking-wider font-mono">Telephony Latency</span>
             </div>
-            <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-white/90 border border-[#E2E8F0] shadow-xs text-center">
+            <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-white/90 border border-[#E2E8F0] shadow-xs text-center hover:border-[var(--lit-teal)]/40 transition-colors">
               <span className="text-xs font-mono font-bold text-[var(--lit-teal)]">14 Active Sites</span>
               <span className="text-[10px] text-[var(--lit-text-muted)] uppercase tracking-wider font-mono">Hospital Clinical OS</span>
             </div>
-            <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-white/90 border border-[#E2E8F0] shadow-xs text-center">
+            <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-white/90 border border-[#E2E8F0] shadow-xs text-center hover:border-[#7C3AED]/40 transition-colors">
               <span className="text-xs font-mono font-bold text-[#7C3AED]">99.4% Biometric</span>
               <span className="text-[10px] text-[var(--lit-text-muted)] uppercase tracking-wider font-mono">Voice Deepfake Gate</span>
             </div>
-            <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-white/90 border border-[#E2E8F0] shadow-xs text-center">
+            <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-white/90 border border-[#E2E8F0] shadow-xs text-center hover:border-emerald-500/40 transition-colors">
               <span className="text-xs font-mono font-bold text-emerald-600">100% Typed</span>
               <span className="text-[10px] text-[var(--lit-text-muted)] uppercase tracking-wider font-mono">Deterministic State</span>
             </div>
+          </div>
+
+          {/* Banner 3-Card Flagship Platform Architecture */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4.5 max-w-4xl w-full mx-auto mb-8 text-left">
+            {/* 1. LIT Healthcare */}
+            <Link
+              href="/healthcare"
+              className="group relative flex flex-col justify-between p-5 sm:p-6 rounded-2xl bg-white/95 border border-[#E2E8F0] shadow-xs hover:shadow-lg hover:border-[#1FA9A2] hover:-translate-y-1 transition-all duration-300"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[#E6FFFA] text-[#0D9488] border border-[#99F6E4]">
+                    <Activity className="w-3 h-3 text-[#0D9488]" />
+                    Healthcare OS
+                  </span>
+                  <span className="font-mono text-xs font-bold text-[#0D9488]">
+                    14 Active Sites
+                  </span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-extrabold text-[var(--lit-navy)] mb-2 tracking-tight group-hover:text-[#0D9488] transition-colors">
+                  LIT Healthcare
+                </h3>
+                <p className="text-xs sm:text-sm text-[var(--lit-text-muted)] leading-relaxed">
+                  Clinical hospital management, intelligent bed tracking &amp; patient telemetry platform.
+                </p>
+              </div>
+              <div className="pt-4 mt-4 border-t border-[#F1F5F9] flex items-center justify-between text-xs font-mono font-semibold text-[#0D9488]">
+                <span>Inspect Clinical OS</span>
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
+
+            {/* 2. Logic Voice */}
+            <Link
+              href="/products/logic-voice"
+              className="group relative flex flex-col justify-between p-5 sm:p-6 rounded-2xl bg-white/95 border border-[#E2E8F0] shadow-xs hover:shadow-lg hover:border-[#1565C0] hover:-translate-y-1 transition-all duration-300"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[#EFF6FF] text-[#2563EB] border border-[#BFDBFE]">
+                    <Mic className="w-3 h-3 text-[#2563EB]" />
+                    Voice AI
+                  </span>
+                  <span className="font-mono text-xs font-bold text-[#2563EB]">
+                    &lt; 120ms P99
+                  </span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-extrabold text-[var(--lit-navy)] mb-2 tracking-tight group-hover:text-[#2563EB] transition-colors">
+                  Logic Voice
+                </h3>
+                <p className="text-xs sm:text-sm text-[var(--lit-text-muted)] leading-relaxed">
+                  Sub-second autonomous voice intelligence &amp; multi-channel conversational agents.
+                </p>
+              </div>
+              <div className="pt-4 mt-4 border-t border-[#F1F5F9] flex items-center justify-between text-xs font-mono font-semibold text-[#2563EB]">
+                <span>Launch Logic Voice</span>
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
+
+            {/* 3. Voice Shield */}
+            <Link
+              href="/voice-shield"
+              className="group relative flex flex-col justify-between p-5 sm:p-6 rounded-2xl bg-white/95 border border-[#E2E8F0] shadow-xs hover:shadow-lg hover:border-[#7C3AED] hover:-translate-y-1 transition-all duration-300"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-[#FAF5FF] text-[#7C3AED] border border-[#E9D5FF]">
+                    <ShieldCheck className="w-3 h-3 text-[#7C3AED]" />
+                    Deepfake Gate
+                  </span>
+                  <span className="font-mono text-xs font-bold text-[#7C3AED]">
+                    99.4% Biometric
+                  </span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-extrabold text-[var(--lit-navy)] mb-2 tracking-tight group-hover:text-[#7C3AED] transition-colors">
+                  Voice Shield
+                </h3>
+                <p className="text-xs sm:text-sm text-[var(--lit-text-muted)] leading-relaxed">
+                  Zero-trust biometric voice firewall &amp; synthetic fraud defense gate for enterprise.
+                </p>
+              </div>
+              <div className="pt-4 mt-4 border-t border-[#F1F5F9] flex items-center justify-between text-xs font-mono font-semibold text-[#7C3AED]">
+                <span>Explore Audio Firewall</span>
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
           </div>
 
           {/* High-Impact Conversion Buttons Centered */}
