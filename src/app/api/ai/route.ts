@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { COMPANY } from "@/config/company";
 import { packagesData } from "@/data/packagesData";
 import { logAgentRun } from "@/lib/agent-eval/logger";
-import { estimateCostUsd } from "@/lib/agent-eval/cost";
 import { estimateFaithfulness } from "@/lib/agent-eval/faithfulness";
 import type { FailureClass } from "@/lib/agent-eval/types";
 import { buildQueryGroundedKnowledge } from "@/lib/ai/knowledge";
@@ -25,21 +24,6 @@ const aiSchema = z.object({
   stream: z.union([z.boolean(), z.literal("true"), z.literal("false")]).optional(),
   mode: z.enum(["company", "general"]).optional(),
 }).refine(data => Boolean(data.text?.trim() || data.message?.trim()), "Message required");
-
-const DEFAULT_GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const DEFAULT_MODEL = "openai/gpt-oss-120b";
-
-function getAiConfig() {
-  const apiKey =
-    process.env.GROK_API_KEY || process.env.XAI_API_KEY || process.env.GROQ_API_KEY;
-  const apiUrl =
-    process.env.GROQ_API_URL || process.env.XAI_API_URL || DEFAULT_GROQ_URL;
-  let model = process.env.GROQ_MODEL || process.env.GROK_MODEL || DEFAULT_MODEL;
-  if (apiUrl.includes("x.ai")) model = "grok-beta";
-  else if (apiUrl.includes("openrouter.ai"))
-    model = "qwen/qwen-2.5-72b-instruct";
-  return { apiKey, apiUrl, model };
-}
 
 function getLocalFallbackReply(userText: string): string {
   const lower = (userText || "").toLowerCase();
@@ -84,8 +68,6 @@ export async function POST(request: Request) {
   let usedFallback = false;
   let success = false;
   let reply = "";
-  let tokensIn = 0;
-  let tokensOut = 0;
   let toolCalls = 0;
   let steps = 1;
 
@@ -102,8 +84,7 @@ export async function POST(request: Request) {
       (typeof message === "string" && message) ||
       "";
     const wantStream = stream === true || stream === "true";
-    const { apiKey, apiUrl, model } = getAiConfig();
-    modelName = model;
+    modelName = null;
 
     const userId = auth.user.id;
     const memoryContext = userId ? await loadUserMemory(userId) : "";
@@ -316,212 +297,35 @@ export async function POST(request: Request) {
       } catch (e) {
         console.warn("[ai] provider failed", e);
       }
-      // A provider has already been attempted: no additional paid legacy retry.
       const fallback = getLocalFallbackReply(userText);
       return NextResponse.json({ success: true, generated_text: fallback, reply: fallback, run_id: runId });
     }
 
-    if (!apiKey) {
-      usedFallback = true;
-      failureClass = "dependency";
-      reply = getLocalFallbackReply(userText);
-      success = Boolean(reply);
-      await logAgentRun({
-        run_id: runId,
-        agent_role: "logic-ai",
-        success,
-        steps,
-        tool_calls: 0,
-        tokens_in: 0,
-        tokens_out: 0,
-        latency_ms: Date.now() - started,
-        cost_usd: 0,
-        failure_class: failureClass,
-        faithfulness: estimateFaithfulness(userText, reply),
-        used_fallback: true,
-        model: "local-fallback",
-        meta: { reason: "missing_api_key" },
-      });
-      return NextResponse.json({
-        success: true,
-        generated_text: reply,
-        reply,
-        run_id: runId,
-      });
-    }
-
-    let response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        messages: conversation,
-        tools: AI_TOOLS,
-        tool_choice: "auto",
-        temperature: 0.3,
-        top_p: 0.9,
-        max_tokens: typeof max_tokens === "number" ? max_tokens : 800,
-      }),
-      signal: AbortSignal.timeout(30000),
-    });
-
-    if (response.status === 400) {
-      const errText = await response.text();
-      if (/tool|function/i.test(errText)) {
-        response = await fetch(apiUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({
-            model,
-            messages: conversation,
-            temperature: 0.3,
-            max_tokens: typeof max_tokens === "number" ? max_tokens : 800,
-          }),
-          signal: AbortSignal.timeout(30000),
-        });
-      } else {
-        console.error("AI model error:", 400, errText);
-      }
-    }
-
-    if (!response.ok) {
-      const errText = await response.text().catch(() => "");
-      console.error("AI model error:", response.status, errText);
-      usedFallback = true;
-      failureClass = response.status >= 500 ? "infra" : "model";
-      reply = getLocalFallbackReply(userText);
-      success = Boolean(reply);
-      await logAgentRun({
-        run_id: runId,
-        agent_role: "logic-ai",
-        success,
-        steps,
-        tool_calls: 0,
-        tokens_in: 0,
-        tokens_out: 0,
-        latency_ms: Date.now() - started,
-        cost_usd: 0,
-        failure_class: failureClass,
-        faithfulness: estimateFaithfulness(userText, reply),
-        used_fallback: true,
-        model: modelName,
-        meta: { http_status: response.status },
-      });
-      return NextResponse.json({
-        success: true,
-        generated_text: reply,
-        reply,
-        run_id: runId,
-      });
-    }
-
-    let data = await response.json();
-    const usage = data.usage || {};
-    tokensIn = Number(usage.prompt_tokens || usage.input_tokens || 0);
-    tokensOut = Number(usage.completion_tokens || usage.output_tokens || 0);
-    let assistantMessage = data.choices?.[0]?.message;
-
-    for (let i = 0; i < 1 && assistantMessage?.tool_calls?.length; i++) {
-      toolCalls += assistantMessage.tool_calls.length;
-      steps = 1 + toolCalls;
-      const toolMessages: Array<Record<string, unknown>> = [];
-      for (const toolCall of assistantMessage.tool_calls.slice(0, 2)) {
-        let args: Record<string, unknown> = {};
-        try {
-          args = JSON.parse(toolCall.function.arguments || "{}");
-        } catch {
-          args = {};
-        }
-        const toolResult = await dispatchToolCall(
-          toolCall.function.name,
-          args,
-          toolCtx
-        );
-        toolMessages.push({
-          role: "tool",
-          tool_call_id: toolCall.id,
-          name: toolCall.function.name,
-          content: JSON.stringify(toolResult),
-        });
-      }
-
-      const followUp = [...conversation, assistantMessage, ...toolMessages];
-      const followupResponse = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model,
-          messages: followUp,
-          tools: AI_TOOLS,
-          tool_choice: "auto",
-          temperature: 0.3,
-          max_tokens: typeof max_tokens === "number" ? max_tokens : 800,
-        }),
-        signal: AbortSignal.timeout(30000),
-      });
-
-      if (!followupResponse.ok) break;
-      data = await followupResponse.json();
-      assistantMessage = data.choices?.[0]?.message;
-      conversation.push(...toolMessages);
-    }
-
-    const rawContent =
-      assistantMessage?.content || assistantMessage?.reasoning_content || "";
-    const cleaned = cleanedContent(rawContent);
-
-    if (cleaned) {
-      reply = cleaned;
-      success = true;
-    } else {
-      usedFallback = true;
-      failureClass = "model";
-      reply = getLocalFallbackReply(userText);
-      success = Boolean(reply);
-    }
-
-    const latency_ms = Date.now() - started;
-    const faithfulness = estimateFaithfulness(userText, reply);
-
+    usedFallback = true;
+    failureClass = "dependency";
+    reply = getLocalFallbackReply(userText);
+    success = Boolean(reply);
     await logAgentRun({
       run_id: runId,
       agent_role: "logic-ai",
       success,
       steps,
-      tool_calls: toolCalls,
-      tokens_in: tokensIn,
-      tokens_out: tokensOut,
-      latency_ms,
-      cost_usd: estimateCostUsd(tokensIn, tokensOut, modelName),
+      tool_calls: 0,
+      tokens_in: 0,
+      tokens_out: 0,
+      latency_ms: Date.now() - started,
+      cost_usd: 0,
       failure_class: failureClass,
-      faithfulness,
-      used_fallback: usedFallback,
-      model: modelName,
-      meta: { has_file: Boolean(file), tool_calls: toolCalls, mode },
+      faithfulness: estimateFaithfulness(userText, reply),
+      used_fallback: true,
+      model: "local-fallback",
+      meta: { reason: "no_cloud_provider" },
     });
-
     return NextResponse.json({
       success: true,
       generated_text: reply,
       reply,
       run_id: runId,
-      metrics: {
-        latency_ms,
-        tokens_in: tokensIn,
-        tokens_out: tokensOut,
-        faithfulness,
-        used_fallback: usedFallback,
-        tool_calls: toolCalls,
-      },
     });
   } catch (error: unknown) {
     if (error instanceof InvalidAiRequest) return NextResponse.json({ error: error.message }, { status: 400 });
