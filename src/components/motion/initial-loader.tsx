@@ -59,18 +59,18 @@ export default function InitialLoader() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.35, ease: "easeInOut" }}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0D1B3E] text-white pointer-events-none select-none"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#050608] text-white pointer-events-none select-none"
           aria-hidden="true"
         >
           {/* Subtle Ambient Radial Glow */}
 
-          <div className="relative flex flex-col items-center">
+          <div className="relative flex flex-col items-center px-4 max-w-full">
             {/* LIT Brand Mark Container */}
             <motion.div
               initial={{ scale: 0.92, opacity: 0.85 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.4, ease: "easeOut" }}
-              className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-cyan-500/30  bg-[#070b16] mb-5 p-1.5 flex items-center justify-center"
+              className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-cyan-500/30 bg-[#070b16] mb-5 p-1.5 flex items-center justify-center"
             >
               <Image
                 src="/assets/logo-icon.webp"
@@ -82,19 +82,16 @@ export default function InitialLoader() {
               />
             </motion.div>
 
-            {/* Brand Title */}
+            {/* Brand Title: single unbreakable line across desktop, tablet, and mobile */}
             <motion.div
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.3 }}
-              className="text-center"
+              className="text-center w-full flex justify-center"
             >
-              <h2 className="text-xs sm:text-sm font-bold tracking-[0.2em] uppercase text-white font-mono">
-                LOGIC INTELLIGENCE
+              <h2 className="text-[10px] min-[360px]:text-[11px] sm:text-xs md:text-sm font-bold tracking-[0.12em] min-[360px]:tracking-[0.16em] sm:tracking-[0.2em] uppercase text-white font-mono whitespace-nowrap">
+                LOGIC INTELLIGENCE TECHNOLOGIES
               </h2>
-              <p className="text-[10px] sm:text-[11px] font-medium tracking-widest text-cyan-400/80 mt-1 uppercase">
-                Technologies
-              </p>
             </motion.div>
 
             {/* Micro Progress Pulse Bar */}

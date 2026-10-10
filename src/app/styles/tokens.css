@@ -133,8 +133,8 @@
   --transition-slow:   0.75s cubic-bezier(0.4,0,0.2,1);
 
   /* ── Backward compat — map legacy neon vars to new corp colors ── */
-  --neon-blue:   var(--corp-blue);
-  --neon-purple: var(--accent-purple-strong);
+  --neon-blue:   var(--corp-cyan);
+  --neon-purple: var(--corp-teal);
   --bg-card:     var(--bg-surface);
   --bg-card-hover: var(--bg-elevated);
 }
