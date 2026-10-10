@@ -32,31 +32,30 @@ export default function CTASection({
   return (
     <section className={`relative py-16 md:py-24 overflow-hidden ${className}`}>
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-        <div className="relative rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/10 via-black/60 to-accent/10 p-8 sm:p-12 md:p-16 text-center overflow-hidden shadow-2xl shadow-primary/5">
-          {/* Background mesh light */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-primary/20 rounded-full blur-[140px] pointer-events-none" />
+        <div className="relative rounded-3xl border border-[#0B2545] bg-[var(--lit-navy)] p-8 sm:p-12 md:p-16 text-center overflow-hidden shadow-xl">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(31,169,162,0.18),transparent_55%)] pointer-events-none" />
 
           <div className="relative z-10 max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/40 bg-primary/20 text-primary text-xs font-semibold tracking-widest uppercase mb-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#45D9D2]/30 bg-[#45D9D2]/10 text-[#45D9D2] text-xs font-mono font-semibold tracking-widest uppercase mb-6 shadow-2xs">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Direct Engineering Engagement</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white tracking-tight leading-tight mb-6">
               {title}
             </h2>
 
-            <p className="text-base sm:text-lg text-zinc-300 leading-relaxed mb-10">
+            <p className="text-base sm:text-lg text-slate-300 leading-relaxed mb-10">
               {subtitle}
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href={primaryCta.href}
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-black font-bold text-sm hover:bg-primary/90 transition-all  flex items-center justify-center gap-2 group"
+                className="lit-btn lit-btn-primary lit-btn-lg w-full sm:w-auto justify-center"
               >
                 <span>{primaryCta.label}</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="w-4 h-4 ml-1.5 transition-transform group-hover:translate-x-1" />
               </Link>
               {secondaryCta && (
                 secondaryCta.isExternal ? (
@@ -64,14 +63,14 @@ export default function CTASection({
                     href={secondaryCta.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full sm:w-auto px-8 py-4 rounded-xl border border-white/20 bg-white/5 text-white font-bold text-sm hover:bg-white/10 transition-all text-center"
+                    className="lit-btn bg-white/10 hover:bg-white/20 text-white border border-white/20 lit-btn-lg w-full sm:w-auto justify-center"
                   >
                     {secondaryCta.label}
                   </a>
                 ) : (
                   <Link
                     href={secondaryCta.href}
-                    className="w-full sm:w-auto px-8 py-4 rounded-xl border border-white/20 bg-white/5 text-white font-bold text-sm hover:bg-white/10 transition-all text-center"
+                    className="lit-btn bg-white/10 hover:bg-white/20 text-white border border-white/20 lit-btn-lg w-full sm:w-auto justify-center"
                   >
                     {secondaryCta.label}
                   </Link>
