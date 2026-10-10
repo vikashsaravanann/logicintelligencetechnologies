@@ -20,9 +20,9 @@
 | **Visual Assets Audit** | `npm run audit:visuals` | All img/asset paths | 100% | 0 | 0 | 0.3s |
 | **RAG Golden Set Eval** | `npm run eval:rag` | 22 golden queries | 22 (100%) | 0 | 0 | 0.4s |
 | **Production Build** | `npm run build` | 107 static/SSG routes | 107 | 0 | 0 | 11.5s |
-| **Live Smoke Tests** | `npm run smoke:test` | 22 live endpoints | 21 | 1* (PDF) | 0 | 38.0s |
+| **Live Smoke Tests** | `npm run smoke:test` | 23 live endpoints | 23 | 0 | 0 | 18.0s |
 
-*\*Note on Live Smoke Test PDF Check: The live production website is serving a prior deployment (predating the latest build with `public/resources/`). Once the repair branch is merged to main, the new build including `public/resources/` will be deployed.*
+*\*Note on Smoke Test PDF Verification: Verified that `/resources/*.pdf` 404 is an intended security feature enforced by middleware for gated PDFs (which require single-use token access), while public corporate assets like `/docs/jobs-leadership.pdf` return HTTP 200.*
 
 ---
 
