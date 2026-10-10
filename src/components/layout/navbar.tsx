@@ -27,7 +27,7 @@ const NavLink = ({
     <Link
       href={href}
       onClick={onClick}
-      className={`relative inline-flex items-center h-10 px-3 text-xs font-semibold tracking-[0.05em] whitespace-nowrap transition-colors rounded-lg ${
+      className={`relative inline-flex items-center h-8 px-2 text-[10.5px] font-semibold tracking-[0.03em] whitespace-nowrap transition-colors rounded-md ${
         highlight
           ? isActive
             ? 'text-[var(--lit-blue)] font-bold bg-[var(--lit-light-blue)]'
@@ -38,13 +38,13 @@ const NavLink = ({
       }`}
     >
       {highlight && (
-        <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--lit-blue)] mr-1.5 animate-pulse" />
+        <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--lit-blue)] mr-1 animate-pulse" />
       )}
       {children}
       {isActive && (
         <motion.span
           layoutId="activeNav"
-          className="absolute left-3 right-3 bottom-1 h-[2px] rounded-full bg-[var(--lit-blue)]"
+          className="absolute left-2 right-2 bottom-0.5 h-[2px] rounded-full bg-[var(--lit-blue)]"
         />
       )}
     </Link>
@@ -117,10 +117,10 @@ export default function Navbar() {
             : "bg-white/90 backdrop-blur-sm border-[var(--lit-border-light)]/80 py-2.5"
         }`}
       >
-        <div className="mx-auto w-full max-w-[1680px] px-4 lg:px-6">
-          <div className="flex items-center gap-3 lg:gap-4 w-full h-11">
-            <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-              <div className="w-9 h-9 rounded-full overflow-hidden bg-white ring-1 ring-[var(--lit-border-light)] group-hover:ring-[var(--lit-blue)]/50 transition-all p-0.5 shadow-xs">
+        <div className="mx-auto w-full max-w-[1680px] px-3 sm:px-4 lg:px-6">
+          <div className="flex items-center justify-between gap-2 lg:gap-3 w-full h-11 flex-nowrap">
+            <Link href="/" className="flex items-center gap-2 shrink-0 group">
+              <div className="w-8 h-8 rounded-full overflow-hidden bg-white ring-1 ring-[var(--lit-border-light)] group-hover:ring-[var(--lit-blue)]/50 transition-all p-0.5 shadow-xs shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={COMPANY.logoIconPath}
@@ -128,25 +128,25 @@ export default function Navbar() {
                   className="w-full h-full object-cover rounded-full"
                 />
               </div>
-              <span className="text-[12px] font-bold text-[var(--lit-navy)] tracking-[0.12em] uppercase hidden min-[1480px]:inline group-hover:text-[var(--lit-blue)] transition-colors">
+              <span className="text-[11px] font-bold text-[var(--lit-navy)] tracking-[0.10em] uppercase hidden min-[1536px]:inline group-hover:text-[var(--lit-blue)] transition-colors whitespace-nowrap">
                 {COMPANY.displayName.toUpperCase()}
               </span>
-              <span className="text-[12px] font-bold text-[var(--lit-navy)] tracking-[0.10em] uppercase hidden min-[1280px]:inline min-[1480px]:hidden group-hover:text-[var(--lit-blue)] transition-colors">
+              <span className="text-[11px] font-bold text-[var(--lit-navy)] tracking-[0.08em] uppercase hidden xl:inline min-[1536px]:hidden group-hover:text-[var(--lit-blue)] transition-colors whitespace-nowrap">
                 LOGIC INTELLIGENCE
               </span>
             </Link>
 
-            <div className="hidden xl:flex items-center justify-center gap-1 flex-1 min-w-0">
+            <div className="hidden xl:flex items-center justify-center gap-0.5 min-w-0 shrink">
               {PRIMARY_NAV.map((item) => (
                 <NavLink key={item.href} href={item.href} highlight={item.highlight}>
                   {item.label.toUpperCase()}
                 </NavLink>
               ))}
 
-              <div ref={moreRef} className="relative">
+              <div ref={moreRef} className="relative shrink-0">
                 <button
                   type="button"
-                  className={`inline-flex items-center h-10 px-3 text-xs font-semibold tracking-[0.05em] rounded-lg transition-colors ${
+                  className={`inline-flex items-center h-8 px-2 text-[10.5px] font-semibold tracking-[0.03em] rounded-md transition-colors ${
                     moreOpen
                       ? "text-[var(--lit-blue)] bg-[var(--lit-cloud)]"
                       : "text-[var(--lit-text-secondary)] hover:text-[var(--lit-navy)] hover:bg-[var(--lit-cloud)]"
@@ -158,7 +158,7 @@ export default function Navbar() {
                 >
                   MORE
                   <ChevronDown
-                    className={`w-3.5 h-3.5 ml-1 transition-transform duration-200 ${moreOpen ? "rotate-180 text-[var(--lit-blue)]" : ""}`}
+                    className={`w-3 h-3 ml-0.5 transition-transform duration-200 ${moreOpen ? "rotate-180 text-[var(--lit-blue)]" : ""}`}
                   />
                 </button>
                 <AnimatePresence>
@@ -215,30 +215,30 @@ export default function Navbar() {
               </div>
             </div>
 
-            <div className="ml-auto flex items-center gap-2.5 shrink-0">
+            <div className="flex items-center gap-1.5 lg:gap-2 shrink-0 ml-auto xl:ml-0">
               <AuthNavControl />
               <Link
-                href={PRIMARY_CTA.href}
-                className="hidden min-[1680px]:inline-flex h-8 px-3.5 items-center rounded-full text-[10px] font-bold text-[var(--lit-navy)] uppercase tracking-[0.14em] border border-[var(--lit-border-light)] bg-white hover:bg-[var(--lit-cloud)] transition-all shadow-xs"
-              >
-                Book Consultation
-              </Link>
-              <Link
                 href="/contact"
-                className="hidden xl:inline-flex h-8 px-4 items-center rounded-full text-[10.5px] font-bold text-white uppercase tracking-[0.14em] bg-[var(--lit-blue)] hover:bg-[#0D47A1] shadow-xs transition-all"
+                className="hidden xl:inline-flex h-7.5 px-3 items-center rounded-full text-[10px] font-bold text-white uppercase tracking-[0.08em] bg-[var(--lit-blue)] hover:bg-[#0D47A1] shadow-xs transition-all shrink-0"
               >
                 Start Project
               </Link>
-              <ThemeToggle className="hidden xl:grid" />
+              <Link
+                href={PRIMARY_CTA.href}
+                className="hidden 2xl:inline-flex h-7.5 px-2.5 items-center rounded-full text-[9.5px] font-bold text-[var(--lit-navy)] uppercase tracking-[0.08em] border border-[var(--lit-border-light)] bg-white hover:bg-[var(--lit-cloud)] transition-all shadow-xs shrink-0"
+              >
+                Book Consultation
+              </Link>
+              <ThemeToggle className="hidden xl:grid shrink-0" />
               <button
                 type="button"
-                className="xl:hidden text-[var(--lit-navy)] p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors"
+                className="xl:hidden text-[var(--lit-navy)] p-1.5 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={isOpen ? "Close menu" : "Open menu"}
                 aria-expanded={isOpen}
                 aria-controls="mobile-menu"
               >
-                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
             </div>
           </div>

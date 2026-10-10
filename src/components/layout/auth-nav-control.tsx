@@ -156,7 +156,7 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
         className={
           mobile
             ? "h-11 w-full rounded-xl bg-slate-100 border border-[var(--lit-border-light)] animate-pulse"
-            : "hidden lg:block h-8 w-24 rounded-full bg-slate-100 border border-[var(--lit-border-light)] animate-pulse"
+            : "hidden lg:block h-7.5 w-20 rounded-full bg-slate-100 border border-[var(--lit-border-light)] animate-pulse shrink-0"
         }
         aria-hidden
       />
@@ -178,9 +178,9 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
     return (
       <Link
         href="/login"
-        className="hidden lg:inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full text-[10px] font-bold text-[var(--lit-navy)] hover:text-[var(--lit-blue)] uppercase tracking-[0.14em] border border-[var(--lit-border-light)] bg-white hover:bg-[var(--lit-cloud)] transition-all shadow-xs"
+        className="hidden lg:inline-flex items-center gap-1.5 h-7.5 px-2.5 rounded-full text-[9.5px] font-bold text-[var(--lit-navy)] hover:text-[var(--lit-blue)] uppercase tracking-[0.10em] border border-[var(--lit-border-light)] bg-white hover:bg-[var(--lit-cloud)] transition-all shadow-xs shrink-0"
       >
-        <LogIn className="w-3 h-3 text-[var(--lit-blue)]" />
+        <LogIn className="w-2.5 h-2.5 text-[var(--lit-blue)]" />
         Login
       </Link>
     );
@@ -260,19 +260,19 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="inline-flex items-center gap-1.5 h-8 pl-1.5 pr-2.5 rounded-full text-[10px] font-bold text-[var(--lit-navy)] uppercase tracking-[0.12em] border border-[var(--lit-border-light)] bg-white hover:bg-[var(--lit-cloud)] transition-all max-w-[11rem] shadow-xs"
+        className="inline-flex items-center gap-1.5 h-7.5 pl-1 pr-2 rounded-full text-[9.5px] font-bold text-[var(--lit-navy)] uppercase tracking-[0.10em] border border-[var(--lit-border-light)] bg-white hover:bg-[var(--lit-cloud)] transition-all max-w-[8.5rem] shadow-xs shrink-0"
       >
         {user.avatarUrl ? (
           <Image
             src={user.avatarUrl}
             alt=""
-            width={22}
-            height={22}
+            width={20}
+            height={20}
             className="rounded-full object-cover shrink-0"
             unoptimized
           />
         ) : (
-          <span className="w-[22px] h-[22px] rounded-full bg-[var(--lit-light-blue)] text-[var(--lit-blue)] text-[9px] font-bold flex items-center justify-center shrink-0">
+          <span className="w-5 h-5 rounded-full bg-[var(--lit-light-blue)] text-[var(--lit-blue)] text-[8.5px] font-bold flex items-center justify-center shrink-0">
             {initials}
           </span>
         )}
