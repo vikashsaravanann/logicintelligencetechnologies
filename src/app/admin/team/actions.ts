@@ -61,7 +61,66 @@ export async function setStaffRole(input: { targetId: string; role: string }): P
     return { ok: false, error: msg };
   }
 
+  await recordAdminAction({
+    actor: { userId: session.userId, email: session.email, role: session.role },
+    action: "team.role_change",
+    capability: "team.manage",
+    target: { type: "user", id: parsed.data.targetId },
+    outcome: "succeeded",
+    metadata: { role: parsed.data.role },
+  });
+
   revalidatePath("/admin/team");
   const result = (data ?? {}) as { old_role?: string; new_role?: string };
-  return { ok: true, message: `Role set to ${result.new_role ?? parsed.data.role}.` };
+  return { ok: true, message: `Role successfully updated to ${result.new_role ?? parsed.data.role}.` };
+}
+
+const inviteSchema = z.object({
+  email: z.string().trim().email("Please enter a valid email address"),
+  role: z.enum(ASSIGNABLE_ROLES),
+});
+
+/** Invite a new member by email with designated role. super_admin only (capability team.manage). */
+export async function inviteTeamMember(input: { email: string; role: string }): Promise<ActionResult> {
+  const session = await requireCapabilityAction("team.manage", "team.member_invite");
+
+  const parsed = inviteSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid invitation input." };
+  }
+
+  const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(parsed.data.email, {
+    data: { role: parsed.data.role },
+  });
+
+  if (error) {
+    await recordAdminAction({
+      actor: { userId: session.userId, email: session.email, role: session.role },
+      action: "team.member_invite",
+      capability: "team.manage",
+      outcome: "failed",
+      metadata: { email: parsed.data.email, attempted_role: parsed.data.role },
+      errorCode: error.code ?? "invite_failed",
+    });
+    return { ok: false, error: error.message || "Could not send member invitation." };
+  }
+
+  if (data?.user?.id) {
+    await supabaseAdmin.from("profiles").upsert({
+      id: data.user.id,
+      role: parsed.data.role,
+    });
+  }
+
+  await recordAdminAction({
+    actor: { userId: session.userId, email: session.email, role: session.role },
+    action: "team.member_invite",
+    capability: "team.manage",
+    target: { type: "user", id: data.user.id },
+    outcome: "succeeded",
+    metadata: { email: parsed.data.email, role: parsed.data.role },
+  });
+
+  revalidatePath("/admin/team");
+  return { ok: true, message: `Invitation successfully sent to ${parsed.data.email}.` };
 }
