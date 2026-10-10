@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { COMPANY } from "@/config/company";
+import ExecutiveSeatAnimation from "@/components/jobs/executive-seat-animation";
+import DirectorSeatAnimation from "@/components/jobs/director-seat-animation";
 import { Download, Phone, X, MapPin, Clock, ShieldCheck, Rocket, Lock, Mail, Upload, CheckCircle2, Briefcase, FileText, Calendar, Scale } from "lucide-react";
 
 type Seat = {
@@ -374,15 +376,8 @@ export default function JobsClient() {
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-14">
         <article className="relative isolate overflow-hidden rounded-3xl border border-[var(--lit-border-light,#DFE7EF)] shadow-md bg-white">
           <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[480px] lg:min-h-[540px]">
-            <div className="relative min-h-[240px] sm:min-h-[300px] lg:min-h-full order-1">
-              <Image src={featured.cover!} alt="CEO Executive Office" fill sizes="(max-width: 1024px) 100vw, 50vw" quality={75} className="object-cover object-center" priority />
-              <div className="absolute inset-0 bg-gradient-to-t from-[var(--lit-navy,#0B2545)]/40 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-black/10" />
-              <div className="absolute top-5 left-5 z-20">
-                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] rounded-full border border-[var(--lit-border-light,#DFE7EF)] bg-white/95 backdrop-blur-md px-3.5 py-1 text-[var(--lit-blue,#1565C0)] shadow-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--lit-blue,#1565C0)]" aria-hidden />
-                  Priority Role · Open Seat
-                </span>
-              </div>
+            <div className="relative min-h-[300px] lg:min-h-full order-1">
+              <ExecutiveSeatAnimation />
             </div>
             <div className="relative z-10 order-2 flex flex-col justify-center p-6 sm:p-9 lg:p-11 bg-white border-t lg:border-t-0 lg:border-l border-[var(--lit-border-light,#DFE7EF)]">
               <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -433,15 +428,7 @@ export default function JobsClient() {
             className="group rounded-3xl overflow-hidden border border-[var(--lit-border-light,#DFE7EF)] bg-white flex flex-col hover:border-[var(--lit-blue,#1565C0)]/40 hover:shadow-md transition-all duration-300 shadow-sm"
           >
             <div className="relative aspect-[16/10] shrink-0 overflow-hidden">
-              <Image
-                src={s.cover!}
-                alt=""
-                fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                quality={70}
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[var(--lit-navy,#0B2545)]/40 via-transparent to-transparent opacity-60" />
+              <DirectorSeatAnimation id={s.id} title={s.t} />
               <span className="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-[0.18em] rounded-full bg-white/95 border border-[var(--lit-border-light,#DFE7EF)] px-3 py-1 text-[var(--lit-teal,#1FA9A2)] backdrop-blur-md shadow-xs">
                 Directorship Open
               </span>

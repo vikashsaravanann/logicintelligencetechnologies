@@ -3,7 +3,7 @@ import Link from "next/link";
 import BackButton from "@/components/navigation/back-button";
 import { industriesData, getIndustryVisual } from "@/data/industriesData";
 import { ArrowRight, Building2, CheckCircle2, Cpu } from "lucide-react";
-import SafeImage from "@/components/ui/safe-image";
+import IndustryCardAnimation from "@/components/industries/industry-card-animation";
 
 export const metadata: Metadata = {
   title: "Industry Solutions & Vertical Architecture | Logic Intelligence Technologies",
@@ -47,16 +47,11 @@ export default function IndustriesPage() {
               className="group rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:border-[#1565C0] transition-all duration-300 p-6 sm:p-7 flex flex-col justify-between shadow-xs hover:shadow-md"
             >
               <div>
-                <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-6 border border-[var(--lit-border-light,#DFE7EF)] bg-slate-100">
-                  <SafeImage
-                    src={getIndustryVisual(ind.slug)}
-                    alt={`${ind.title} — professional industry visual`}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
-                </div>
+                <IndustryCardAnimation
+                  slug={ind.slug}
+                  title={ind.title}
+                  subtitle={ind.subtitle}
+                />
                 <h2 className="text-xl font-bold text-[var(--lit-navy,#0B2545)] mb-1.5 group-hover:text-[#1565C0] transition-colors leading-snug">
                   {ind.title}
                 </h2>

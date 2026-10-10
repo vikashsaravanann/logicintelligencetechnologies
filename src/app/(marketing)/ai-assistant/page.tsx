@@ -1,7 +1,7 @@
 import React from "react";
 import { Metadata } from "next";
 import Link from "next/link";
-import SafeImage from "@/components/ui/safe-image";
+import AiNeuralPipelineVisualizer from "@/components/ai/ai-neural-pipeline-visualizer";
 import { COMPANY } from "@/config/company";
 import {
   FileText,
@@ -150,16 +150,9 @@ export default function AiAssistantPage() {
               </Link>
             </div>
 
-            {/* Visual Architecture Banner */}
-            <div className="max-w-4xl mx-auto aspect-[21/9] relative rounded-3xl overflow-hidden border border-[var(--lit-border-light,#DFE7EF)] shadow-md bg-white mt-8">
-              <SafeImage
-                src="/assets/jobs/ai-lab.jpg"
-                alt="LIT Knowledge Assistant Architecture"
-                fill
-                priority
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[var(--lit-navy,#0B2545)]/60 via-transparent to-transparent" />
+            {/* Visual Architecture Animation Console */}
+            <div className="max-w-4xl mx-auto mt-8">
+              <AiNeuralPipelineVisualizer />
             </div>
           </section>
 

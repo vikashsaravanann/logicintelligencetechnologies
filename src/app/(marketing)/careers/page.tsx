@@ -20,7 +20,7 @@ import PageShell from "@/components/layout/page-shell";
 import BackButton from "@/components/navigation/back-button";
 import JsonLd from "@/components/seo/json-ld";
 import { breadcrumb } from "@/lib/seo/schema";
-import SafeImage from "@/components/ui/safe-image";
+import CareersCultureAnimation from "@/components/careers/careers-culture-animation";
 import CTASection from "@/components/ui/cta-section";
 import { COMPANY } from "@/config/company";
 
@@ -145,17 +145,9 @@ export default function CareersPage() {
               </Link>
             </div>
 
-            {/* Careers Visual Banner */}
+            {/* Careers Visual Animation Console */}
             <div className="pt-6 max-w-4xl mx-auto">
-              <div className="aspect-[21/9] relative rounded-3xl overflow-hidden border border-[var(--lit-border-light,#DFE7EF)] shadow-sm bg-white p-2">
-                <SafeImage
-                  src="/images/careers/tech-culture.svg"
-                  alt="LIT Engineering Culture & Careers"
-                  fill
-                  priority
-                  className="object-cover rounded-2xl"
-                />
-              </div>
+              <CareersCultureAnimation />
             </div>
           </div>
 

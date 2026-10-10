@@ -14,7 +14,7 @@ import {
   Loader2,
   RotateCcw,
 } from "lucide-react";
-import SafeImage from "@/components/ui/safe-image";
+import BlogCardAnimation from "@/components/blog/blog-card-animation";
 import type { BlogPost } from "@/data/blogData";
 
 interface Props {
@@ -171,20 +171,13 @@ export default function BlogFilterableList({ posts }: Props) {
               key={post.slug}
               className="group flex flex-col h-full rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white overflow-hidden hover:border-[#1565C0]/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 shadow-sm"
             >
-              {/* Visual Cover */}
-              <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-[var(--lit-border-light,#DFE7EF)] bg-slate-100">
-                <SafeImage
-                  src={post.image}
-                  alt={post.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-4 left-4 z-10">
-                  <span className="text-[10px] font-bold tracking-wider uppercase text-[var(--lit-blue,#1565C0)] bg-white/95 backdrop-blur-md px-3 py-1 rounded-full border border-[var(--lit-border-light,#DFE7EF)] shadow-sm">
-                    {post.category}
-                  </span>
-                </div>
-              </div>
+              {/* Visual Technical Canvas */}
+              <BlogCardAnimation
+                slug={post.slug}
+                title={post.title}
+                category={post.category}
+                readingTime={post.readingTime}
+              />
 
               {/* Body Content */}
               <div className="flex flex-col flex-1 p-6 sm:p-8">

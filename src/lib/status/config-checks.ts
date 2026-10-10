@@ -64,14 +64,14 @@ export function runConfigChecks(): ConfigCheckReport {
 
   // ── Rate limiting (Upstash Redis) ─────────────────────────────────────────
   const redisSet = Boolean(
-    (process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL) &&
-      (process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN)
+    (process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || process.env.KA_KV_REST_API_URL) &&
+      (process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || process.env.KA_KV_REST_API_TOKEN)
   );
   checks.rateLimit = redisSet
     ? { status: "ok" }
     : {
         status: "degraded",
-        note: "Neither UPSTASH_REDIS_REST_URL/_TOKEN nor KV_REST_API_URL/_TOKEN is set — in production the rate limiter fails closed, so AI, contact, booking, support and download requests are rejected",
+        note: "Neither UPSTASH_REDIS_REST_URL/_TOKEN nor KV_REST_API_URL/_TOKEN (or KA_KV_*) is set — in production the rate limiter fails closed, so AI, contact, booking, support and download requests are rejected",
       };
 
   // ── Overall status ────────────────────────────────────────────────────────

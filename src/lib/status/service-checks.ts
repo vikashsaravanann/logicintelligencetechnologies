@@ -45,10 +45,10 @@ export const PUBLIC_SERVICES: readonly ServiceDefinition[] = [
     kind: "page",
   },
   {
-    id: "logic-voice-web",
-    name: "Logic Voice web app",
-    description: "logicvoice.logicintelligencetechnologies.in",
-    url: "https://logicvoice.logicintelligencetechnologies.in/",
+    id: "voice-shield-web",
+    name: "Voice Shield platform",
+    description: "voiceshield.logicintelligencetechnologies.in",
+    url: "https://voiceshield.logicintelligencetechnologies.in/",
     kind: "page",
   },
 ];

@@ -12,7 +12,7 @@ import {
   ArrowRight,
   Sparkles,
 } from "lucide-react";
-import SafeImage from "@/components/ui/safe-image";
+import ServiceHeroConsole from "@/components/services/service-hero-console";
 import ProcessTimeline from "@/components/ui/process-timeline";
 import FAQAccordion from "@/components/ui/faq-accordion";
 import CTASection from "@/components/ui/cta-section";
@@ -71,17 +71,12 @@ export default async function ServiceDetailPage({ params }: Props) {
       <BackToHome href="/services" label="Back to Services" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Hero Visual Banner */}
-        <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-2xl overflow-hidden mb-10 sm:mb-12 border border-[#DFE7EF] shadow-xs bg-[#F7F9FC]">
-          <SafeImage
-            src={serviceVisualSrc}
-            alt={`${service.title} Architecture`}
-            fill
-            priority
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
-        </div>
+        {/* Hero Architecture Animation Console */}
+        <ServiceHeroConsole
+          title={service.title}
+          slug={canonicalSlug}
+          subtitle={service.subtitle}
+        />
 
         {/* Hero Description & Strategic Overview */}
         <div className="mb-14 sm:mb-16 border-b border-[#DFE7EF] pb-12">

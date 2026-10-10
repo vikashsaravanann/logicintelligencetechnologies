@@ -5,7 +5,7 @@ import BackButton from "@/components/navigation/back-button";
 import { Clock, Calendar, ArrowRight, BookOpen, CheckCircle2 } from "lucide-react";
 import { blogPosts, getPostBySlug } from "@/data/blogData";
 import ShareButton from "@/components/ui/share-button";
-import SafeImage from "@/components/ui/safe-image";
+import BlogHeroConsole from "@/components/blog/blog-hero-console";
 import CTASection from "@/components/ui/cta-section";
 import PageShell from "@/components/layout/page-shell";
 
@@ -94,16 +94,13 @@ export default async function BlogPostPage({
             </p>
           </header>
 
-          {/* Featured Visual Image */}
-          <div className="w-full aspect-[16/9] relative rounded-2xl overflow-hidden mb-8 border border-[var(--lit-border-light,#DFE7EF)] shadow-sm bg-slate-100">
-            <SafeImage
-              src={post.image}
-              alt={post.title}
-              fill
-              priority
-              className="object-cover"
-            />
-          </div>
+          {/* Featured Architecture Animation Console */}
+          <BlogHeroConsole
+            slug={post.slug}
+            title={post.title}
+            category={post.category}
+            readingTime={post.readingTime}
+          />
 
           {/* Author Byline & Social Share */}
           <div className="flex items-center justify-between border border-[var(--lit-border-light,#DFE7EF)] bg-white p-4 sm:p-5 rounded-2xl shadow-sm mb-10">

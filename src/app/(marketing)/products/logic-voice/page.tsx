@@ -3,7 +3,7 @@ import Link from "next/link";
 import { COMPANY } from "@/config/company";
 import { logicVoiceProductNode } from "@/lib/seo/schema";
 import BackButton from "@/components/navigation/back-button";
-import SafeImage from "@/components/ui/safe-image";
+import AudioThreatSimulator from "@/components/voice-shield/audio-threat-simulator";
 import {
   Mic,
   Brain,
@@ -101,21 +101,13 @@ export default function LogicVoiceProductPage() {
           </div>
         </section>
 
-        {/* Product Visual / Architecture Blueprint Preview */}
-        <section className="relative rounded-3xl overflow-hidden border border-[#DFE7EF] shadow-sm bg-white p-4 sm:p-6">
-          <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-2xl overflow-hidden border border-[#DFE7EF] bg-[#F7F9FC]">
-            <SafeImage
-              src="/images/products/logic-voice.svg"
-              alt="Logic Voice System Architecture Visual"
-              fill
-              priority
-              className="object-cover"
-            />
-          </div>
-          <div className="flex flex-wrap items-center justify-between gap-4 mt-4 px-2 text-xs font-mono text-[var(--lit-text-muted,#52677C)]">
+        {/* Product Visual / Interactive Threat & Waveform Console Preview */}
+        <section className="relative rounded-3xl overflow-hidden border border-[#DFE7EF] shadow-sm bg-white p-2 sm:p-6">
+          <AudioThreatSimulator />
+          <div className="flex flex-wrap items-center justify-between gap-4 mt-5 px-3 text-xs font-mono text-[var(--lit-text-muted,#52677C)]">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#1FA9A2] animate-pulse" />
-              <span>PRODUCTION PREVIEW: VOCAL WORKSPACE V1.0</span>
+              <span>LIVE VOCAL TELEMETRY & IN-BAND VERIFICATION ENGINE</span>
             </div>
             <div className="flex items-center gap-4">
               <span>ZERO UNAUTHORIZED MUTATIONS</span>

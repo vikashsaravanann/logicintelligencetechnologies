@@ -4,7 +4,7 @@ import Link from "next/link";
 import BackButton from "@/components/navigation/back-button";
 import { industriesData, getIndustryVisual } from "@/data/industriesData";
 import { CheckCircle2, AlertTriangle, ShieldCheck, ArrowRight, Building2, Layers } from "lucide-react";
-import SafeImage from "@/components/ui/safe-image";
+import IndustryHeroConsole from "@/components/industries/industry-hero-console";
 import CTASection from "@/components/ui/cta-section";
 
 interface Props {
@@ -61,17 +61,12 @@ export default async function IndustryDetailPage({ params }: Props) {
           <BackButton fallbackHref="/industries" label="Back to Industries" inline />
         </div>
 
-        {/* Visual Architecture Hero */}
-        <div className="relative w-full aspect-[21/9] sm:aspect-[24/9] rounded-2xl overflow-hidden mb-10 border border-[var(--lit-border-light,#DFE7EF)] shadow-sm bg-white">
-          <SafeImage
-            src={visualSrc}
-            alt={`${ind.title} Architecture Visual`}
-            fill
-            priority
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[rgba(11,37,69,0.35)] via-transparent to-transparent pointer-events-none" />
-        </div>
+        {/* Industry Architecture Hero Console */}
+        <IndustryHeroConsole
+          slug={slug}
+          title={ind.title}
+          subtitle={ind.subtitle}
+        />
 
         {/* Hero Content */}
         <div className="mb-14 border-b border-[var(--lit-border-light,#DFE7EF)] pb-12">

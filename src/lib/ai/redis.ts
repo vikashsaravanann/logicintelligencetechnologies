@@ -6,8 +6,8 @@ import { Redis } from '@upstash/redis';
  * integration creates with its default "KV" prefix. Either pair works.
  */
 export function redisCredentials(): { url: string; token: string } | null {
-  const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+  const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || process.env.KA_KV_REST_API_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || process.env.KA_KV_REST_API_TOKEN;
   if (!url || !token) return null;
 
   const trimmedUrl = url.trim();
