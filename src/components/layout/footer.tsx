@@ -94,9 +94,8 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#07090D] pt-20 pb-12 border-t border-white/[0.08] relative overflow-hidden">
-      <div aria-hidden className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--corp-cyan)]/50 to-transparent" />
-      <div aria-hidden className="absolute inset-0 pointer-events-none opacity-60 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(69,217,210,0.06),transparent_70%)]" />
+    <footer className="bg-[var(--lit-navy)] text-white pt-20 pb-12 border-t border-[var(--lit-border-light)]/20 relative overflow-hidden">
+      <div aria-hidden className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--lit-teal)]/40 to-transparent" />
 
       <div className="mx-auto max-w-[1400px] px-6 lg:px-8 relative z-10">
 

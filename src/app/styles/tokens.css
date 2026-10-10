@@ -14,6 +14,23 @@
   --color-accent:           var(--corp-teal);
   --color-accent-cyan:      var(--corp-cyan);
 
+  /* ─────────────── Healthcare Design Tokens ─────────────── */
+  --color-lit-white:        var(--lit-white);
+  --color-lit-cloud:        var(--lit-cloud);
+  --color-lit-navy:         var(--lit-navy);
+  --color-lit-ink:          var(--lit-ink);
+  --color-lit-light-purple: var(--lit-light-purple);
+  --color-lit-soft-lilac:   var(--lit-soft-lilac);
+  --color-lit-light-pink:   var(--lit-light-pink);
+  --color-lit-light-red:    var(--lit-light-red);
+  --color-lit-light-gold:   var(--lit-light-gold);
+  --color-lit-light-blue:   var(--lit-light-blue);
+  --color-lit-teal:         var(--lit-teal);
+  --color-lit-cyan:         var(--lit-cyan);
+  --color-lit-blue:         var(--lit-blue);
+  --color-lit-border-light: var(--lit-border-light);
+  --color-lit-text-muted:   var(--lit-text-muted);
+
   /* ─────────────── Font families ─────────────── */
   --font-sans:    var(--font-poppins-var, 'Poppins', sans-serif);
   --font-display: var(--font-poppins-var, 'Poppins', sans-serif);
@@ -30,9 +47,31 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   DARK MODE (default) — Healthcare-Inspired Navy/Blue/Teal Design
+   TARGET DESIGN SYSTEM TOKENS (Healthcare-Adapted Corporate Foundation)
    ═══════════════════════════════════════════════════════════════════ */
 :root {
+  /* ── Exact Target Design Tokens ── */
+  --lit-white: #FFFFFF;
+  --lit-cloud: #F7F9FC;
+  --lit-navy: #0B2545;
+  --lit-ink: #121826;
+
+  --lit-light-purple: #F1ECFF;
+  --lit-soft-lilac: #EDE7F6;
+  --lit-light-pink: #FCEAF3;
+  --lit-light-red: #FDE9E7;
+  --lit-light-gold: #FFF4D9;
+  --lit-light-blue: #E7F3FF;
+  --lit-light-teal: #F0FDFA;
+
+  --lit-teal: #1FA9A2;
+  --lit-cyan: #45D9D2;
+  --lit-blue: #1565C0;
+
+  --lit-border-light: #DFE7EF;
+  --lit-text-muted: #52677C;
+  --lit-text-secondary: #334155;
+
   /* ── Brand palette ── */
   --corp-navy:     #0B2545;
   --corp-blue:     #1565C0;
@@ -51,33 +90,33 @@
   --accent-gold:   #FFF1D6;
   --accent-gold-strong: #F9A825;
 
-  /* ── Semantic background tokens ── */
-  --bg-primary:    #0B1628;   /* Deep navy page bg */
-  --bg-secondary:  #0D1B3E;   /* Slightly lighter navy */
-  --bg-surface:    rgba(255,255,255,0.04);   /* Card / panel surface */
-  --bg-elevated:   rgba(255,255,255,0.07);   /* Elevated card / modal */
-  --bg-glass:      rgba(11,21,40,0.82);      /* Glassmorphism */
-  --bg-hero:       #0B2545;   /* Hero section bg */
+  /* ── Semantic background tokens (Default Light) ── */
+  --bg-primary:    #FFFFFF;
+  --bg-secondary:  #F7F9FC;
+  --bg-surface:    #FFFFFF;
+  --bg-elevated:   #FFFFFF;
+  --bg-glass:      rgba(255,255,255,0.92);
+  --bg-hero:       #0B2545;
 
   /* ── Semantic text tokens ── */
-  --text-primary:   #F0F4FF;
-  --text-secondary: #A8B8D8;
-  --text-muted:     #6B7FA3;
-  --text-inverse:   #0B1628;
+  --text-primary:   #121826;
+  --text-secondary: #334155;
+  --text-muted:     #52677C;
+  --text-inverse:   #FFFFFF;
 
   /* ── Semantic border tokens ── */
-  --border-default: rgba(255,255,255,0.10);
-  --border-subtle:  rgba(255,255,255,0.06);
-  --border-strong:  rgba(255,255,255,0.20);
-  --border-accent:  rgba(69,217,210,0.35);
-  --border-primary: rgba(21,101,192,0.50);
+  --border-default: #DFE7EF;
+  --border-subtle:  #F1F5F9;
+  --border-strong:  #CBD5E1;
+  --border-accent:  rgba(31,169,162,0.35);
+  --border-primary: rgba(21,101,192,0.30);
 
   /* ── Action tokens ── */
   --action-primary:    #1565C0;
-  --action-primary-hover: #1976D2;
-  --action-secondary:  rgba(255,255,255,0.08);
-  --action-secondary-hover: rgba(255,255,255,0.14);
-  --action-focus:      #45D9D2;
+  --action-primary-hover: #0D47A1;
+  --action-secondary:  #F1F5F9;
+  --action-secondary-hover: #E2E8F0;
+  --action-focus:      #1565C0;
 
   /* ── Status tokens ── */
   --status-success:  #1FA9A2;
@@ -89,32 +128,33 @@
   --gradient-hero:    linear-gradient(160deg, #0B1628 0%, #0D2B5E 60%, #0B2545 100%);
   --gradient-primary: linear-gradient(135deg, #1565C0 0%, #1FA9A2 100%);
   --gradient-teal:    linear-gradient(135deg, #1FA9A2 0%, #45D9D2 100%);
-  --gradient-card:    linear-gradient(145deg, rgba(21,101,192,0.08) 0%, rgba(31,169,162,0.06) 100%);
-  --gradient-text:    linear-gradient(90deg, #45D9D2, #1565C0);
+  --gradient-card:    linear-gradient(145deg, rgba(21,101,192,0.04) 0%, rgba(31,169,162,0.03) 100%);
+  --gradient-text:    linear-gradient(90deg, #1565C0, #1FA9A2);
   --gradient-button:  linear-gradient(135deg, #1565C0 0%, #1FA9A2 100%);
-  --gradient-glow:    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(21,101,192,0.18), transparent 70%);
+  --gradient-glow:    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(21,101,192,0.10), transparent 70%);
 
   /* ── Shadows ── */
-  --shadow-card:    0 8px 32px rgba(0,0,0,0.28);
-  --shadow-glow-primary: 0 0 24px rgba(21,101,192,0.30);
-  --shadow-glow-teal:    0 0 24px rgba(31,169,162,0.30);
+  --shadow-card:        0 4px 20px rgba(15,23,42,0.05);
+  --shadow-card-hover:  0 12px 32px rgba(15,23,42,0.09);
+  --shadow-glow-primary:0 0 24px rgba(21,101,192,0.15);
+  --shadow-glow-teal:   0 0 24px rgba(31,169,162,0.15);
 
   /* ── Glassmorphism ── */
-  --glass-bg:        rgba(11,22,42,0.78);
-  --glass-bg-strong: rgba(9,18,36,0.92);
-  --glass-border:    rgba(255,255,255,0.10);
+  --glass-bg:        rgba(255,255,255,0.90);
+  --glass-bg-strong: rgba(255,255,255,0.98);
+  --glass-border:    #DFE7EF;
   --glass-blur:      16px;
-  --glass-shadow:    0 12px 40px rgba(0,0,0,0.35);
+  --glass-shadow:    0 12px 40px rgba(15,23,42,0.06);
   --glass-radius-lg: 1.5rem;
 
   /* ── AI canvas tokens (reused for admin/AI pages) ── */
-  --ai-ink:    #F0F4FF;
-  --ai-muted:  #6B7FA3;
-  --ai-panel:  rgba(0,0,0,0.38);
-  --ai-border: rgba(255,255,255,0.12);
-  --ai-header: rgba(0,0,0,0.55);
-  --ai-user:   #1FA9A2;
-  --ai-glow:   radial-gradient(ellipse 70% 45% at 50% 115%, rgba(21,101,192,0.45), transparent 60%), radial-gradient(ellipse 40% 30% at 20% 100%, rgba(31,169,162,0.20), transparent), #0a0f1e;
+  --ai-ink:    #121826;
+  --ai-muted:  #52677C;
+  --ai-panel:  #FFFFFF;
+  --ai-border: #DFE7EF;
+  --ai-header: #F7F9FC;
+  --ai-user:   #1565C0;
+  --ai-glow:   radial-gradient(ellipse 70% 45% at 50% 115%, rgba(21,101,192,0.12), transparent 60%), #F7F9FC;
 
   /* ── Typography ── */
   --font-primary:  'Poppins', sans-serif;
@@ -122,8 +162,8 @@
   --font-editorial:'Lora', Georgia, serif;
 
   /* ── Borders & radii ── */
-  --border-glass:         1px solid rgba(255,255,255,0.08);
-  --border-teal:          1px solid rgba(69,217,210,0.30);
+  --border-glass:         1px solid #DFE7EF;
+  --border-teal:          1px solid rgba(31,169,162,0.30);
   --border-radius-card:   16px;
   --border-radius-button: 8px;
 
@@ -132,50 +172,142 @@
   --transition-smooth: 0.35s cubic-bezier(0.4,0,0.2,1);
   --transition-slow:   0.75s cubic-bezier(0.4,0,0.2,1);
 
-  /* ── Backward compat — map legacy neon vars to new corp colors ── */
-  --neon-blue:   var(--corp-cyan);
-  --neon-purple: var(--corp-teal);
+  /* ── Backward compat ── */
+  --neon-blue:   var(--lit-blue);
+  --neon-purple: var(--lit-teal);
   --bg-card:     var(--bg-surface);
   --bg-card-hover: var(--bg-elevated);
 }
 
 /* ═══════════════════════════════════════════════════════
-   LIGHT MODE — Cloud white surface for corporate pages
+   DARK MODE OVERRIDES (Optional Dark Theme)
    ═══════════════════════════════════════════════════════ */
-html.light {
-  --bg-primary:    #F7F9FC;
-  --bg-secondary:  #FFFFFF;
-  --bg-surface:    rgba(255,255,255,0.85);
-  --bg-elevated:   #FFFFFF;
-  --bg-glass:      rgba(247,249,252,0.90);
-  --bg-hero:       #0B2545;   /* Keep hero dark even in light mode */
+html.dark {
+  --bg-primary:    #0B1628;
+  --bg-secondary:  #0D1B3E;
+  --bg-surface:    rgba(255,255,255,0.04);
+  --bg-elevated:   rgba(255,255,255,0.07);
+  --bg-glass:      rgba(11,21,40,0.82);
+  --bg-hero:       #0B2545;
 
-  --text-primary:   #121826;
-  --text-secondary: #374569;
+  --text-primary:   #F0F4FF;
+  --text-secondary: #A8B8D8;
   --text-muted:     #6B7FA3;
-  --text-inverse:   #FFFFFF;
+  --text-inverse:   #0B1628;
 
-  --border-default: rgba(11,37,69,0.10);
-  --border-subtle:  rgba(11,37,69,0.06);
-  --border-strong:  rgba(11,37,69,0.20);
+  --border-default: rgba(255,255,255,0.10);
+  --border-subtle:  rgba(255,255,255,0.06);
+  --border-strong:  rgba(255,255,255,0.20);
 
-  --action-secondary:       rgba(11,37,69,0.06);
-  --action-secondary-hover: rgba(11,37,69,0.12);
+  --action-secondary:       rgba(255,255,255,0.08);
+  --action-secondary-hover: rgba(255,255,255,0.14);
 
-  --shadow-card: 0 4px 24px rgba(11,37,69,0.10);
+  --shadow-card: 0 8px 32px rgba(0,0,0,0.28);
 
-  --glass-bg:        rgba(247,249,252,0.88);
-  --glass-bg-strong: rgba(255,255,255,0.96);
-  --glass-border:    rgba(11,37,69,0.10);
+  --glass-bg:        rgba(11,22,42,0.78);
+  --glass-bg-strong: rgba(9,18,36,0.92);
+  --glass-border:    rgba(255,255,255,0.10);
 
-  --ai-ink:    #121826;
+  --ai-ink:    #F0F4FF;
   --ai-muted:  #6B7FA3;
-  --ai-panel:  rgba(255,255,255,0.88);
-  --ai-border: rgba(11,37,69,0.12);
-  --ai-header: rgba(255,255,255,0.88);
-  --ai-user:   #1565C0;
-  --ai-glow:   radial-gradient(ellipse 70% 45% at 50% 115%, rgba(21,101,192,0.14), transparent 60%), #F7F9FC;
-
-  --bg-card:      var(--bg-surface);
-  --bg-card-hover: var(--bg-elevated);
+  --ai-panel:  rgba(0,0,0,0.38);
+  --ai-border: rgba(255,255,255,0.12);
+  --ai-header: rgba(0,0,0,0.55);
+  --ai-user:   #1FA9A2;
+  --ai-glow:   radial-gradient(ellipse 70% 45% at 50% 115%, rgba(21,101,192,0.45), transparent 60%), #0a0f1e;
 }
+
+/* ═══════════════════════════════════════════════════════
+   HEALTHCARE & CORPORATE CANVAS SURFACES
+   ═══════════════════════════════════════════════════════ */
+.canvas-white {
+  background-color: var(--lit-white);
+  color: var(--lit-ink);
+}
+
+.canvas-cloud {
+  background-color: var(--lit-cloud);
+  color: var(--lit-ink);
+  border-top: 1px solid var(--lit-border-light);
+  border-bottom: 1px solid var(--lit-border-light);
+}
+
+.canvas-lavender {
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--lit-light-purple) 50%, #FFFFFF 100%);
+  color: var(--lit-ink);
+}
+
+.canvas-blush {
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--lit-light-pink) 50%, #FFFFFF 100%);
+  color: var(--lit-ink);
+}
+
+.canvas-gold {
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--lit-light-gold) 50%, #FFFFFF 100%);
+  color: var(--lit-ink);
+}
+
+.canvas-blue {
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--lit-light-blue) 50%, #FFFFFF 100%);
+  color: var(--lit-ink);
+}
+
+.canvas-navy {
+  background-color: var(--lit-navy);
+  color: var(--lit-white);
+}
+
+/* Eyebrows */
+.lit-eyebrow-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lit-eyebrow-pill-purple {
+  background-color: #F5F3FF;
+  color: #6D28D9;
+  border: 1px solid #DDD6FE;
+}
+
+.lit-eyebrow-pill-blue {
+  background-color: #F0F9FF;
+  color: #0369A1;
+  border: 1px solid #BAE6FD;
+}
+
+.lit-eyebrow-pill-teal {
+  background-color: #F0FDFA;
+  color: #0F766E;
+  border: 1px solid #99F6E4;
+}
+
+.lit-eyebrow-pill-green {
+  background-color: #F0FDF4;
+  color: #15803D;
+  border: 1px solid #BBF7D0;
+}
+
+.lit-eyebrow-pill-gold {
+  background-color: #FFFBEB;
+  color: #B45309;
+  border: 1px solid #FDE68A;
+}
+
+.lit-eyebrow-pill-coral {
+  background-color: #FFF1F2;
+  color: #BE123C;
+  border: 1px solid #FECDD3;
+}
+
+.lit-editorial-quote {
+  font-family: var(--font-lora, 'Lora', Georgia, serif);
+  font-style: italic;
+}
+

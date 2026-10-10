@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MessageSquareQuote, Star, ArrowRight, ShieldCheck, Cpu } from "lucide-react";
+import { Star, ArrowRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { testimonials } from "@/data/testimonialsData";
 
@@ -11,20 +11,25 @@ export default function TestimonialsSection() {
   return (
     <section
       id="testimonials"
-      className="py-24 md:py-32 bg-[#07090D] border-y border-white/[0.08] relative overflow-hidden"
+      className="py-24 md:py-32 bg-white border-b border-[#E2E8F0] relative overflow-hidden"
     >
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#10131A] border border-[#45D9D2]/30 text-[#45D9D2] text-[11px] font-mono uppercase tracking-[0.18em] mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#45D9D2]" />
+        <div className="text-center mb-16 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--lit-light-purple)] border border-[var(--lit-soft-lilac)] text-[#6B21A8] text-[11px] font-mono uppercase tracking-[0.16em] mb-4 font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED]" />
             Client Verification &amp; Engagement
           </div>
-          
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white mb-4 uppercase tracking-tight">
+
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-[var(--lit-ink)] mb-4 tracking-tight">
             Client Perspectives &amp; Verification
           </h2>
+
+          <p className="font-serif italic text-[var(--lit-blue)] text-lg mb-3">
+            &ldquo;Tested architectures delivering measurable outcomes.&rdquo;
+          </p>
+
           {hasTestimonials && (
-            <p className="text-[#B5BECC] max-w-2xl mx-auto text-base">
+            <p className="text-[var(--lit-text-muted)] max-w-2xl mx-auto text-base">
               Verified feedback from organizations powered by Logic Intelligence Technologies architectures.
             </p>
           )}
@@ -39,7 +44,7 @@ export default function TestimonialsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ delay: i * 0.08 }}
-                className="rounded-2xl border border-white/10 bg-[#0E121B] p-6 sm:p-7 flex flex-col justify-between shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all hover:border-[#45D9D2]/40 hover:bg-[#131722]"
+                className="rounded-2xl border border-[#E2E8F0] bg-white p-6 sm:p-7 flex flex-col justify-between shadow-sm transition-all hover:shadow-xl hover:border-[#CBD5E1]"
               >
                 <div>
                   {t.rating && (
@@ -48,25 +53,25 @@ export default function TestimonialsSection() {
                         <Star
                           key={idx}
                           className={`w-4 h-4 ${
-                            idx < t.rating! ? "fill-[#45D9D2] text-[#45D9D2]" : "text-zinc-700"
+                            idx < t.rating! ? "fill-amber-400 text-amber-400" : "text-slate-200"
                           }`}
                         />
                       ))}
                     </div>
                   )}
-                  <blockquote className="text-zinc-300 leading-relaxed text-sm sm:text-[15px]">
+                  <blockquote className="text-[var(--lit-ink)] leading-relaxed text-sm sm:text-[15px]">
                     &ldquo;{t.quote}&rdquo;
                   </blockquote>
                 </div>
-                <figcaption className="mt-6 pt-5 border-t border-white/10">
-                  <p className="text-white font-display font-bold text-sm">{t.name}</p>
-                  <p className="text-[#B5BECC] text-xs mt-0.5">
+                <figcaption className="mt-6 pt-5 border-t border-[#E2E8F0]">
+                  <p className="text-[var(--lit-ink)] font-display font-bold text-sm">{t.name}</p>
+                  <p className="text-[var(--lit-text-muted)] text-xs mt-0.5">
                     {t.role}, {t.company}
                   </p>
                   {t.projectSlug && (
                     <Link
                       href={`/work/${t.projectSlug}`}
-                      className="inline-flex items-center gap-1.5 mt-3 text-xs font-mono font-bold text-[#45D9D2] hover:underline"
+                      className="inline-flex items-center gap-1.5 mt-3 text-xs font-mono font-bold text-[var(--lit-blue)] hover:underline"
                     >
                       Case Study Specs <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
@@ -82,37 +87,32 @@ export default function TestimonialsSection() {
             viewport={{ once: true, amount: 0.2 }}
             className="max-w-3xl mx-auto"
           >
-            <div className="rounded-3xl border border-white/10 bg-[#0E121B] p-8 sm:p-12 text-center shadow-[0_25px_60px_rgba(0,0,0,0.7)] relative overflow-hidden">
-              <div
-                className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(69,217,210,0.1),transparent_70%)]"
-                aria-hidden
-              />
-
-              <div className="w-14 h-14 rounded-2xl bg-[#45D9D2]/10 border border-[#45D9D2]/25 flex items-center justify-center mx-auto mb-6 text-[#45D9D2] relative z-10 shadow-[0_0_20px_rgba(69,217,210,0.15)]">
+            <div className="rounded-3xl border border-[#BFDBFE] bg-gradient-to-br from-[#F0F7FF] via-[#FAFBFF] to-white p-8 sm:p-12 text-center shadow-sm relative overflow-hidden">
+              <div className="w-14 h-14 rounded-2xl bg-[var(--lit-light-blue)] border border-[#BFDBFE] flex items-center justify-center mx-auto mb-6 text-[var(--lit-blue)] shadow-sm">
                 <ShieldCheck className="w-7 h-7" />
               </div>
-              
-              <h3 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3 relative z-10">
+
+              <h3 className="text-2xl sm:text-3xl font-display font-bold text-[var(--lit-ink)] mb-3">
                 Partner as a Founding Enterprise Client
               </h3>
-              
-              <p className="text-[#B5BECC] leading-relaxed text-sm sm:text-base max-w-xl mx-auto mb-8 relative z-10">
+
+              <p className="text-[var(--lit-text-muted)] leading-relaxed text-sm sm:text-base max-w-xl mx-auto mb-8">
                 Experience our risk-free engineering commitment: request a functioning interactive prototype demonstration tailored to your exact business workflows before committing any budget.
               </p>
-              
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   href="/free-demo"
-                  className="inline-flex min-h-[48px] w-full sm:w-auto items-center justify-center rounded-xl bg-gradient-to-r from-[#45D9D2] to-[#1FA9A2] px-6 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-[#07090D] shadow-[0_0_25px_rgba(69,217,210,0.3)] transition-all hover:brightness-110"
+                  className="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-gradient-to-r from-[var(--lit-blue)] to-[var(--lit-teal)] px-6 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-white shadow-md hover:shadow-lg transition-all"
                 >
-                  <span>Request Free Prototype Demo</span>
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  Request Free Prototype Demo
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
                 <Link
-                  href="/book-consultation"
-                  className="inline-flex min-h-[48px] w-full sm:w-auto items-center justify-center rounded-xl border border-white/15 bg-[#141923] px-6 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-white transition-all hover:border-[#45D9D2]/40 hover:bg-[#181f2c]"
+                  href="/contact"
+                  className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-[#CBD5E1] bg-white px-6 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-[var(--lit-ink)] hover:bg-[#F8FAFC] shadow-sm transition-all"
                 >
-                  <span>Book Technical Scoping Slot</span>
+                  Contact Systems Engineering
                 </Link>
               </div>
             </div>

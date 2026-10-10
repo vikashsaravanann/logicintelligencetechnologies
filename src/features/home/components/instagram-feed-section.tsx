@@ -39,7 +39,7 @@ const instagramPosts = [
 
 export default function InstagramFeedSection() {
   return (
-    <section className="py-20 md:py-28 bg-[#07090D] border-t border-white/[0.08]">
+    <section className="py-20 md:py-28 bg-white border-b border-[#E2E8F0]">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <motion.div
@@ -48,18 +48,20 @@ export default function InstagramFeedSection() {
           viewport={{ once: true, amount: 0.2 }}
           className="text-center mb-14 max-w-2xl mx-auto"
         >
-          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-[#10131A] border border-white/10 text-[#45D9D2] mb-5 shadow-[0_0_20px_rgba(69,217,210,0.15)]">
+          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-[var(--lit-light-purple)] border border-[var(--lit-soft-lilac)] text-[#7C3AED] mb-4 shadow-sm">
             <InstagramIcon className="w-5 h-5" />
           </div>
-          <span className="lit-eyebrow mb-3 block">Visual Log</span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white mb-3 uppercase tracking-tight">
+          <span className="text-[11px] font-mono font-bold uppercase tracking-[0.16em] text-[var(--lit-text-muted)] mb-2 block">
+            Visual Log
+          </span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-[var(--lit-ink)] mb-3 tracking-tight">
             Follow Our Development
           </h2>
           <a
             href={COMPANY.instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#B5BECC] hover:text-[#45D9D2] transition-colors text-xs font-mono uppercase tracking-widest inline-flex items-center gap-1.5"
+            className="text-[var(--lit-blue)] hover:underline transition-colors text-xs font-mono uppercase tracking-widest inline-flex items-center gap-1.5 font-bold"
           >
             @logicintelligencetechnologies
             <ExternalLink className="w-3 h-3" />
@@ -78,7 +80,7 @@ export default function InstagramFeedSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ delay: i * 0.12 }}
-              className="group relative aspect-[4/5] rounded-2xl border border-white/10 overflow-hidden bg-[#10131A] shadow-[0_15px_40px_rgba(0,0,0,0.5)] hover:border-[#45D9D2]/40 transition-all duration-300"
+              className="group relative aspect-[4/5] rounded-2xl border border-[#E2E8F0] overflow-hidden bg-[#F8FAFC] shadow-sm hover:shadow-xl hover:border-[#CBD5E1] transition-all duration-300"
             >
               {/* Post image */}
               <div className="relative w-full h-full">
@@ -92,41 +94,17 @@ export default function InstagramFeedSection() {
               </div>
 
               {/* Hover overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#07090D] via-[#07090D]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--lit-navy)] via-[var(--lit-navy)]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
                 <p className="text-white text-xs sm:text-sm font-medium leading-relaxed">
                   {post.caption}
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1.5 text-[#45D9D2] text-xs font-mono font-bold uppercase tracking-wider">
+                <span className="mt-3 inline-flex items-center gap-1.5 text-[var(--lit-cyan)] text-xs font-mono font-bold uppercase tracking-wider">
                   View on Instagram <ExternalLink className="w-3.5 h-3.5" />
                 </span>
-              </div>
-
-              {/* Instagram badge */}
-              <div className="absolute top-3.5 right-3.5 w-8 h-8 rounded-xl bg-[#10131A]/90 backdrop-blur-md border border-white/15 flex items-center justify-center text-white group-hover:text-[#45D9D2] group-hover:border-[#45D9D2]/30 transition-all">
-                <InstagramIcon className="w-4 h-4" />
               </div>
             </motion.a>
           ))}
         </div>
-
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 1, y: 0 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ delay: 0.25 }}
-          className="text-center mt-12"
-        >
-          <a
-            href={COMPANY.instagramUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="lit-btn lit-btn--secondary lit-btn-md"
-          >
-            <InstagramIcon className="w-4 h-4 mr-2" />
-            Connect on Instagram
-          </a>
-        </motion.div>
       </div>
     </section>
   );

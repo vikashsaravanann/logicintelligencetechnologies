@@ -58,33 +58,47 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
   const loadUser = useCallback(async () => {
     try {
       const supabase = getClientSupabase();
-      const { data: { session } } = await supabase.auth.getSession();
-      const u = session?.user;
-      if (!u) {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.user) {
         setUser(null);
-        setReady(true);
         return;
       }
-      const meta = (u.user_metadata || {}) as Record<string, unknown>;
-      let profileName: string | null = null;
+
+      const su = session.user;
+      let displayName = "";
+      let avatarUrl: string | null =
+        typeof su.user_metadata?.avatar_url === "string"
+          ? su.user_metadata.avatar_url
+          : null;
+
       try {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("full_name")
-          .eq("id", u.id)
+          .select("full_name, avatar_url")
+          .eq("id", su.id)
           .maybeSingle();
-        profileName = (profile as { full_name?: string } | null)?.full_name ?? null;
+
+        if (profile?.avatar_url) avatarUrl = profile.avatar_url;
+        displayName = resolveDisplayName(
+          profile?.full_name,
+          su.user_metadata,
+          su.email
+        );
       } catch {
-        // profiles table may be unavailable; fall back to metadata
+        displayName = resolveDisplayName(
+          null,
+          su.user_metadata,
+          su.email
+        );
       }
-      const avatarUrl =
-        (typeof meta.avatar_url === "string" && meta.avatar_url) ||
-        (typeof meta.picture === "string" && meta.picture) ||
-        null;
+
       setUser({
-        id: u.id,
-        email: u.email ?? null,
-        displayName: resolveDisplayName(profileName, meta, u.email),
+        id: su.id,
+        email: su.email ?? null,
+        displayName,
         avatarUrl,
       });
     } catch {
@@ -96,12 +110,16 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
 
   useEffect(() => {
     void loadUser();
+
     const supabase = getClientSupabase();
-    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
       void loadUser();
     });
+
     return () => {
-      sub.subscription.unsubscribe();
+      subscription.unsubscribe();
     };
   }, [loadUser]);
 
@@ -137,8 +155,8 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
       <div
         className={
           mobile
-            ? "h-11 w-full rounded-xl bg-white/5 border border-white/10 animate-pulse"
-            : "hidden lg:block h-8 w-24 rounded-full bg-white/5 border border-white/10 animate-pulse"
+            ? "h-11 w-full rounded-xl bg-slate-100 border border-[var(--lit-border-light)] animate-pulse"
+            : "hidden lg:block h-8 w-24 rounded-full bg-slate-100 border border-[var(--lit-border-light)] animate-pulse"
         }
         aria-hidden
       />
@@ -150,9 +168,9 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
       return (
         <Link
           href="/login"
-          className="flex items-center gap-2 w-full py-3 px-3 rounded-xl text-sm font-bold uppercase tracking-[0.14em] text-zinc-200 border border-white/15 bg-white/5 hover:bg-white/10 min-h-[44px]"
+          className="flex items-center gap-2 w-full py-3 px-3 rounded-xl text-sm font-bold uppercase tracking-[0.14em] text-[var(--lit-navy)] border border-[var(--lit-border-light)] bg-white hover:bg-[var(--lit-cloud)] min-h-[44px] shadow-xs"
         >
-          <LogIn className="w-4 h-4 text-cyan-400" />
+          <LogIn className="w-4 h-4 text-[var(--lit-blue)]" />
           Login
         </Link>
       );
@@ -160,9 +178,9 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
     return (
       <Link
         href="/login"
-        className="hidden lg:inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full text-[10px] font-bold text-zinc-200 hover:text-white uppercase tracking-[0.14em] border border-white/15 bg-white/5 hover:bg-white/10 hover:border-cyan-400/40 transition-all shadow-sm"
+        className="hidden lg:inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full text-[10px] font-bold text-[var(--lit-navy)] hover:text-[var(--lit-blue)] uppercase tracking-[0.14em] border border-[var(--lit-border-light)] bg-white hover:bg-[var(--lit-cloud)] transition-all shadow-xs"
       >
-        <LogIn className="w-3 h-3 text-cyan-400" />
+        <LogIn className="w-3 h-3 text-[var(--lit-blue)]" />
         Login
       </Link>
     );
@@ -174,8 +192,8 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
 
   if (mobile) {
     return (
-      <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 space-y-2">
-        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-500">
+      <div className="rounded-xl border border-[var(--lit-border-light)] bg-[var(--lit-cloud)] p-3 space-y-2">
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--lit-text-muted)]">
           Signed in as
         </p>
         <div className="flex items-center gap-3">
@@ -185,40 +203,40 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
               alt=""
               width={36}
               height={36}
-              className="rounded-full object-cover border border-white/15"
+              className="rounded-full object-cover border border-[var(--lit-border-light)]"
               unoptimized
             />
           ) : (
-            <span className="w-9 h-9 rounded-full bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 text-xs font-bold flex items-center justify-center">
+            <span className="w-9 h-9 rounded-full bg-[var(--lit-light-blue)] border border-[var(--lit-blue)]/20 text-[var(--lit-blue)] text-xs font-bold flex items-center justify-center">
               {initials}
             </span>
           )}
           <div className="min-w-0">
-            <p className="text-sm font-bold text-white uppercase tracking-wide truncate">
+            <p className="text-sm font-bold text-[var(--lit-navy)] uppercase tracking-wide truncate">
               {fullUpper}
             </p>
             {user.email && (
-              <p className="text-[11px] text-zinc-500 truncate">{user.email}</p>
+              <p className="text-[11px] text-[var(--lit-text-muted)] truncate">{user.email}</p>
             )}
           </div>
         </div>
         <div className="pt-1 space-y-1">
           <Link
             href="/profile"
-            className="flex items-center gap-2 py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-zinc-300 hover:text-white hover:bg-white/5 min-h-[44px]"
+            className="flex items-center gap-2 py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-[var(--lit-ink)] hover:text-[var(--lit-blue)] hover:bg-white min-h-[44px]"
           >
-            <User className="w-4 h-4" /> Profile
+            <User className="w-4 h-4 text-[var(--lit-blue)]" /> Profile
           </Link>
           <Link
             href="/ai"
-            className="flex items-center gap-2 py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-zinc-300 hover:text-white hover:bg-white/5 min-h-[44px]"
+            className="flex items-center gap-2 py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-[var(--lit-ink)] hover:text-[var(--lit-blue)] hover:bg-white min-h-[44px]"
           >
-            <Sparkles className="w-4 h-4" /> AI Assistant
+            <Sparkles className="w-4 h-4 text-[var(--lit-teal)]" /> AI Assistant
           </Link>
           {user.email?.toLowerCase().endsWith('@logicintelligencetechnologies.in') && (
             <Link
               href="/admin/command-center"
-              className="flex items-center gap-2 py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-200 hover:bg-cyan-950/30 min-h-[44px]"
+              className="flex items-center gap-2 py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-[var(--lit-blue)] hover:bg-white min-h-[44px]"
             >
               <Sparkles className="w-4 h-4" /> Admin Dashboard
             </Link>
@@ -226,7 +244,7 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
           <button
             type="button"
             onClick={() => void signOut()}
-            className="flex items-center gap-2 w-full py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-zinc-300 hover:text-white hover:bg-white/5 min-h-[44px] text-left"
+            className="flex items-center gap-2 w-full py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-red-600 hover:bg-red-50 min-h-[44px] text-left"
           >
             <LogOut className="w-4 h-4" /> Sign Out
           </button>
@@ -242,7 +260,7 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="inline-flex items-center gap-1.5 h-8 pl-1.5 pr-2.5 rounded-full text-[10px] font-bold text-zinc-100 uppercase tracking-[0.12em] border border-white/15 bg-white/5 hover:bg-white/10 hover:border-cyan-400/40 transition-all max-w-[11rem]"
+        className="inline-flex items-center gap-1.5 h-8 pl-1.5 pr-2.5 rounded-full text-[10px] font-bold text-[var(--lit-navy)] uppercase tracking-[0.12em] border border-[var(--lit-border-light)] bg-white hover:bg-[var(--lit-cloud)] transition-all max-w-[11rem] shadow-xs"
       >
         {user.avatarUrl ? (
           <Image
@@ -254,23 +272,23 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
             unoptimized
           />
         ) : (
-          <span className="w-[22px] h-[22px] rounded-full bg-cyan-500/25 text-cyan-300 text-[9px] font-bold flex items-center justify-center shrink-0">
+          <span className="w-[22px] h-[22px] rounded-full bg-[var(--lit-light-blue)] text-[var(--lit-blue)] text-[9px] font-bold flex items-center justify-center shrink-0">
             {initials}
           </span>
         )}
         <span className="truncate">{shortName}</span>
-        <ChevronDown className={`w-3 h-3 text-zinc-400 transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown className={`w-3 h-3 text-[var(--lit-text-muted)] transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-xl border border-white/10 bg-[#0c1224]/98 backdrop-blur-md shadow-2xl shadow-black/40 py-1.5 z-50"
+          className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-xl border border-[var(--lit-border-light)] bg-white shadow-xl py-1.5 z-50"
         >
-          <div className="px-3 py-2 border-b border-white/8">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500">
+          <div className="px-3 py-2 border-b border-[var(--lit-border-light)]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--lit-text-muted)]">
               Account
             </p>
-            <p className="text-xs font-semibold text-white uppercase tracking-wide truncate mt-0.5">
+            <p className="text-xs font-semibold text-[var(--lit-navy)] uppercase tracking-wide truncate mt-0.5">
               {fullUpper}
             </p>
           </div>
@@ -278,24 +296,24 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
             role="menuitem"
             href="/profile"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-300 hover:text-white hover:bg-white/5"
+            className="flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--lit-ink)] hover:text-[var(--lit-blue)] hover:bg-[var(--lit-cloud)]"
           >
-            <User className="w-3.5 h-3.5" /> Profile
+            <User className="w-3.5 h-3.5 text-[var(--lit-blue)]" /> Profile
           </Link>
           <Link
             role="menuitem"
             href="/ai"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-300 hover:text-white hover:bg-white/5"
+            className="flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--lit-ink)] hover:text-[var(--lit-blue)] hover:bg-[var(--lit-cloud)]"
           >
-            <Sparkles className="w-3.5 h-3.5" /> AI Assistant
+            <Sparkles className="w-3.5 h-3.5 text-[var(--lit-teal)]" /> AI Assistant
           </Link>
           {user.email?.toLowerCase().endsWith('@logicintelligencetechnologies.in') && (
             <Link
               role="menuitem"
               href="/admin/command-center"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-200 hover:bg-cyan-950/30"
+              className="flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--lit-blue)] hover:bg-[var(--lit-cloud)]"
             >
               <Sparkles className="w-3.5 h-3.5" /> Admin Dashboard
             </Link>
@@ -304,7 +322,7 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
             type="button"
             role="menuitem"
             onClick={() => void signOut()}
-            className="flex items-center gap-2 w-full px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-300 hover:text-white hover:bg-white/5 text-left"
+            className="flex items-center gap-2 w-full px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-red-600 hover:bg-red-50 text-left"
           >
             <LogOut className="w-3.5 h-3.5" /> Sign Out
           </button>
