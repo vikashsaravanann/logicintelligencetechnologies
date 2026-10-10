@@ -9,6 +9,8 @@ import { recordAdminAction } from "@/lib/admin/audit";
 
 const sendProposalSchema = z.object({ proposalId: z.string().uuid() });
 
+export const dynamic = "force-dynamic";
+
 // A proposal can be (re)sent only from these states.
 const SENDABLE = new Set(["Draft", "Sent", "Viewed"]);
 

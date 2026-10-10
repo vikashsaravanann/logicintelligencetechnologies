@@ -271,7 +271,7 @@ export default function JobsClient() {
                 quality={75}
                 className="object-cover object-[center_18%] transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-transparent to-transparent opacity-60" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#10131A] via-transparent to-transparent opacity-60" />
               <div className="absolute bottom-4 left-4 right-4 text-center">
                 <span className="inline-block text-[10px] font-bold uppercase tracking-[0.2em] rounded-full border border-white/20 bg-black/70 backdrop-blur-md px-3 py-1 text-zinc-300">
                   Seat Status: Filled
@@ -374,11 +374,11 @@ export default function JobsClient() {
 
       {/* Featured CEO Card - half image / half glass content */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-14">
-        <article className="relative isolate overflow-hidden rounded-[32px] border border-white/12 shadow-[0_30px_90px_rgba(0,0,0,0.55)] bg-[#0A0F1E]">
+        <article className="relative isolate overflow-hidden rounded-[32px] border border-white/12 shadow-[0_30px_90px_rgba(0,0,0,0.55)] bg-[#10131A]">
           <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[480px] lg:min-h-[560px]">
             <div className="relative min-h-[220px] sm:min-h-[280px] lg:min-h-full order-1">
               <Image src={featured.cover!} alt="" fill sizes="(max-width: 1024px) 100vw, 50vw" quality={75} className="object-cover object-center" priority />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[#0A0F1E]/40" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#10131A] via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[#10131A]/40" />
               <div className="absolute top-5 left-5 z-20">
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] rounded-full border border-cyan-300/40 bg-black/65 backdrop-blur-md px-3.5 py-1 text-cyan-200">
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" aria-hidden />
@@ -386,7 +386,7 @@ export default function JobsClient() {
                 </span>
               </div>
             </div>
-            <div className="relative z-10 order-2 flex flex-col justify-center p-6 sm:p-9 lg:p-11 bg-[rgba(10,15,30,0.94)] lg:bg-[rgba(10,15,30,0.92)] border-t lg:border-t-0 lg:border-l border-white/10 backdrop-blur-xl">
+            <div className="relative z-10 order-2 flex flex-col justify-center p-6 sm:p-9 lg:p-11 bg-[rgba(16,19,26,0.94)] lg:bg-[rgba(16,19,26,0.92)] border-t lg:border-t-0 lg:border-l border-white/10 backdrop-blur-xl">
               <div className="flex flex-wrap items-center gap-2 mb-3">
                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-cyan-400">Executive Appointment</span>
                 <span className="text-zinc-600" aria-hidden>|</span>
@@ -443,13 +443,13 @@ export default function JobsClient() {
                 quality={70}
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-transparent to-transparent opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#10131A] via-transparent to-transparent opacity-80" />
               <span className="absolute top-3 left-3 text-[9px] font-black uppercase tracking-[0.18em] rounded-full bg-black/60 border border-white/15 px-3 py-1 text-cyan-200 backdrop-blur-md">
                 Directorship Open
               </span>
             </div>
 
-            <div className="relative z-10 p-6 sm:p-7 flex flex-col gap-3.5 flex-1 bg-[#0A0F1E]/95">
+            <div className="relative z-10 p-6 sm:p-7 flex flex-col gap-3.5 flex-1 bg-[#10131A]/95">
               <h3 className="text-xl font-black tracking-tight uppercase text-white">{s.t}</h3>
               <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-normal">{s.d}</p>
               
@@ -545,7 +545,7 @@ export default function JobsClient() {
 
       {/* 3 Gates / Hiring Process Section */}
       <section className="relative px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-16 overflow-hidden">
-        <div className="relative rounded-[32px] border border-white/12 overflow-hidden bg-[#0A0F1E] shadow-[0_30px_90px_rgba(0,0,0,0.6)]">
+        <div className="relative rounded-[32px] border border-white/12 overflow-hidden bg-[#10131A] shadow-[0_30px_90px_rgba(0,0,0,0.6)]">
           <Image
             src="/assets/jobs/apply-pane.jpg"
             alt=""
@@ -554,7 +554,7 @@ export default function JobsClient() {
             quality={50}
             className="object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-[#0A0F1E]/85" />
+          <div className="absolute inset-0 bg-[#10131A]/85" />
           
           <div className="relative z-10 p-8 sm:p-12 lg:p-14">
             <div className="max-w-2xl mb-12">
@@ -578,7 +578,7 @@ export default function JobsClient() {
                   transition={{ duration: 0.45, delay: i * 0.1 }}
                   className="relative sm:pl-20 pb-12 last:pb-0"
                 >
-                  <span className="hidden sm:grid absolute left-0 top-0 h-14 w-14 place-items-center rounded-2xl border border-cyan-400/40 bg-[#0A0F1E] text-cyan-300 shadow-[0_0_24px_rgba(34,211,238,0.2)]">
+                  <span className="hidden sm:grid absolute left-0 top-0 h-14 w-14 place-items-center rounded-2xl border border-cyan-400/40 bg-[#10131A] text-cyan-300 shadow-[0_0_24px_rgba(34,211,238,0.2)]">
                     <s.icon className="w-5 h-5" />
                   </span>
                   
@@ -657,7 +657,7 @@ export default function JobsClient() {
 
       {/* Confidential Application Form Section */}
       <section id="apply" className="relative px-3 sm:px-6 lg:px-8 max-w-5xl mx-auto pb-24 sm:pb-32 scroll-mt-28">
-        <div className="relative rounded-[28px] sm:rounded-[36px] border border-white/20 bg-[#0A0F1E] shadow-[0_40px_120px_rgba(0,0,0,0.7)] overflow-hidden">
+        <div className="relative rounded-[28px] sm:rounded-[36px] border border-white/20 bg-[#10131A] shadow-[0_40px_120px_rgba(0,0,0,0.7)] overflow-hidden">
           <div className="grid lg:grid-cols-[minmax(300px,38%)_minmax(0,1fr)] lg:items-stretch">
             {/* Left Info Panel */}
             <div className="relative hidden lg:block self-stretch min-h-full overflow-hidden">
@@ -669,7 +669,7 @@ export default function JobsClient() {
                 quality={70}
                 className="object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/90 via-[#0A0F1E]/50 to-[#0A0F1E]/80" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#10131A]/90 via-[#10131A]/50 to-[#10131A]/80" />
               
               <div className="relative z-10 p-8 sm:p-10 flex flex-col justify-between h-full gap-6">
                 <div>
@@ -727,7 +727,7 @@ export default function JobsClient() {
             </div>
 
             {/* Right Form Panel */}
-            <div className="min-w-0 p-6 sm:p-8 lg:p-10 bg-[#0A0F1E]/80 backdrop-blur-md">
+            <div className="min-w-0 p-6 sm:p-8 lg:p-10 bg-[#10131A]/80 backdrop-blur-md">
               <div className="lg:hidden mb-8 pb-6 border-b border-white/10">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-400/30 bg-cyan-950/40 mb-3">
                   <Lock className="w-3 h-3 text-cyan-300" />

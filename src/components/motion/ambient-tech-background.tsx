@@ -52,7 +52,7 @@ export default function AmbientTechBackground({
 
   return (
     <div className="lit-ambient pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      <div className="absolute inset-0 bg-[#0A0F1E]" />
+      <div className="absolute inset-0 bg-[#07090D]" />
 
       <div className="absolute inset-0" style={{ opacity: intensity }}>
         <div className="lit-ambient-grid absolute inset-0" />
@@ -96,8 +96,8 @@ export default function AmbientTechBackground({
       <div className="absolute top-1/3 right-0 h-64 w-64 rounded-full bg-accent/10 blur-[100px] sm:h-80 sm:w-80" />
       <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-primary/5 blur-[90px]" />
 
-      <div className="absolute inset-0 bg-[#0A0F1E]/35" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0A0F1E]/30 via-[#0A0F1E]/40 to-[#0A0F1E]/80" />
+      <div className="absolute inset-0 bg-[#07090D]/35" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#07090D]/30 via-[#07090D]/40 to-[#07090D]/80" />
     </div>
   );
 }

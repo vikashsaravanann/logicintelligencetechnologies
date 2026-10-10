@@ -5,6 +5,8 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { requireCapabilityApi } from "@/lib/auth/session";
 import { recordAdminAction } from "@/lib/admin/audit";
 
+export const dynamic = "force-dynamic";
+
 const proposalSchema = z.object({
   clientName: z.string().min(2).max(160),
   clientEmail: z.string().email().max(200),

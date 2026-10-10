@@ -13,7 +13,7 @@ export default function MarketingLayout({
     <>
       <InitialLoader />
       <Navbar />
-      <main id="main-content" tabIndex={-1} className="relative min-h-screen min-h-[100dvh] overflow-x-hidden bg-[#0A0F1E] focus:outline-none">
+      <main id="main-content" tabIndex={-1} className="relative min-h-screen min-h-[100dvh] overflow-x-hidden bg-[#07090D] text-[#F8FAFC] focus:outline-none">
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
           <AmbientTechBackground opacity={0.3} />
         </div>

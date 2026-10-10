@@ -94,10 +94,9 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#0A1530] pt-20 pb-10 border-t border-white/[0.06] relative overflow-hidden">
-
-      <div aria-hidden className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
-      <div aria-hidden className="absolute inset-0 pointer-events-none opacity-[0.5] bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(8,148,222,0.10),transparent_70%)]" />
+    <footer className="bg-[#07090D] pt-20 pb-12 border-t border-white/[0.08] relative overflow-hidden">
+      <div aria-hidden className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--corp-cyan)]/50 to-transparent" />
+      <div aria-hidden className="absolute inset-0 pointer-events-none opacity-60 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(69,217,210,0.06),transparent_70%)]" />
 
       <div className="mx-auto max-w-[1400px] px-6 lg:px-8 relative z-10">
 
@@ -105,39 +104,37 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-8 gap-y-12 mb-14">
 
           {/* Column 1: Brand */}
-          <div className="flex flex-col gap-8 overflow-hidden lg:col-span-3">
+          <div className="flex flex-col gap-7 overflow-hidden lg:col-span-3">
             <Link href="/" className="flex items-center gap-3 group w-full">
-              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center overflow-hidden ring-1 ring-white/15 shrink-0">
-                <div className="w-full h-full bg-[#0A1530] rounded-full flex items-center justify-center overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={COMPANY.logoIconPath}
-                    alt="Logo"
-                    className="w-full h-full object-cover "
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                      e.currentTarget.parentElement!.innerHTML = '<span class="font-bold text-white">LIT</span>';
-                    }}
-                  />
-                </div>
+              <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-full flex items-center justify-center overflow-hidden ring-1 ring-white/15 group-hover:ring-[var(--corp-cyan)]/50 transition-all shrink-0 bg-[#10131A] p-0.5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={COMPANY.logoIconPath}
+                  alt={`${COMPANY.displayName} logo`}
+                  className="w-full h-full object-cover rounded-full"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                    e.currentTarget.parentElement!.innerHTML = '<span class="font-bold text-white text-xs">LIT</span>';
+                  }}
+                />
               </div>
               <div className="flex items-center min-w-0">
-                <span className="text-[10px] lg:text-[11px] xl:text-xs font-bold text-white tracking-widest leading-tight uppercase">
+                <span className="text-[11px] xl:text-xs font-bold text-white tracking-[0.14em] leading-tight uppercase group-hover:text-[var(--corp-cyan)] transition-colors">
                   LOGIC INTELLIGENCE TECHNOLOGIES
                 </span>
               </div>
             </Link>
 
-            <ul className="flex flex-col gap-3 mt-2">
+            <ul className="flex flex-col gap-3 mt-1">
               {[
                 "LIT HEALTHCARE PLATFORM",
                 "INTELLIGENT AI PRODUCTS",
                 "AUTOMATION SOLUTIONS",
                 "VOICE-FIRST AI & ASSISTANTS",
-                "ENTERPRISE AI ARCHITECTURE"
+                "ENTERPRISE AI ARCHITECTURE",
               ].map((point, idx) => (
-                <li key={idx} className="flex items-start gap-3 text-xs xl:text-sm text-zinc-400 leading-relaxed font-medium uppercase tracking-wider">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                <li key={idx} className="flex items-center gap-2.5 text-xs text-[#B5BECC] leading-relaxed font-medium uppercase tracking-wider">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--corp-cyan)] shrink-0" />
                   <span>{point}</span>
                 </li>
               ))}
@@ -146,7 +143,8 @@ export default function Footer() {
 
           {/* Column 2: Products */}
           <div className="flex flex-col gap-5 lg:col-span-2">
-            <h3 className="text-primary font-semibold text-[11px] uppercase tracking-[0.2em]">
+            <h3 className="text-[var(--corp-cyan)] font-semibold text-[11px] uppercase tracking-[0.2em] flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-[var(--corp-cyan)]" />
               PRODUCTS
             </h3>
             <ul className="flex flex-col gap-2.5">
@@ -154,14 +152,14 @@ export default function Footer() {
                 { label: 'LIT HEALTHCARE', href: '/healthcare' },
                 { label: 'HEALTHCARE PLANS', href: '/healthcare/plans' },
                 { label: 'LOGIC VOICE', href: '/products/logic-voice' },
+                { label: 'OMNIPUBLISHER AI', href: '/omni' },
                 { label: 'ALL PRODUCTS', href: '/products' },
-                { label: 'AI ASSISTANT', href: '/ai' },
                 { label: 'PRICING', href: '/pricing' },
               ].map((item) => (
                 <li key={item.label}>
-                  <Link href={item.href} className="text-zinc-400 hover:text-white text-xs xl:text-[13px] uppercase tracking-[0.1em] font-medium flex items-center gap-3 group transition-colors truncate">
-                    <ArrowRight className="w-4 h-4 opacity-0 -ml-7 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300 text-primary shrink-0" />
-                    <span className="group-hover:translate-x-1 transition-transform duration-300 truncate">{item.label}</span>
+                  <Link href={item.href} className="text-[#B5BECC] hover:text-white text-xs xl:text-[13px] uppercase tracking-[0.08em] font-medium flex items-center gap-2.5 group transition-colors truncate">
+                    <ArrowRight className="w-3.5 h-3.5 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 text-[var(--corp-cyan)] shrink-0" />
+                    <span className="group-hover:translate-x-0.5 transition-transform duration-200 truncate">{item.label}</span>
                   </Link>
                 </li>
               ))}
@@ -170,15 +168,16 @@ export default function Footer() {
 
           {/* Column 3: Solutions */}
           <div className="flex flex-col gap-5 lg:col-span-2">
-            <h3 className="text-primary font-semibold text-[11px] uppercase tracking-[0.2em]">
+            <h3 className="text-[var(--corp-cyan)] font-semibold text-[11px] uppercase tracking-[0.2em] flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-[var(--corp-cyan)]" />
               SOLUTIONS
             </h3>
             <ul className="flex flex-col gap-2.5">
               {['AI INTEGRATION', 'WEB DEVELOPMENT', 'MOBILE APPS', 'UI/UX DESIGN', 'CUSTOM SOFTWARE'].map((item) => (
                 <li key={item}>
-                  <Link href="/services" className="text-zinc-400 hover:text-white text-xs xl:text-[13px] uppercase tracking-[0.1em] font-medium flex items-center gap-3 group transition-colors truncate">
-                    <ArrowRight className="w-4 h-4 opacity-0 -ml-7 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300 shrink-0" />
-                    <span className="group-hover:translate-x-1 transition-transform duration-300 truncate">{item}</span>
+                  <Link href="/services" className="text-[#B5BECC] hover:text-white text-xs xl:text-[13px] uppercase tracking-[0.08em] font-medium flex items-center gap-2.5 group transition-colors truncate">
+                    <ArrowRight className="w-3.5 h-3.5 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 text-[var(--corp-cyan)] shrink-0" />
+                    <span className="group-hover:translate-x-0.5 transition-transform duration-200 truncate">{item}</span>
                   </Link>
                 </li>
               ))}
@@ -187,7 +186,8 @@ export default function Footer() {
 
           {/* Column 4: Company */}
           <div className="flex flex-col gap-5 lg:col-span-2">
-            <h3 className="text-primary font-semibold text-[11px] uppercase tracking-[0.2em]">
+            <h3 className="text-[var(--corp-cyan)] font-semibold text-[11px] uppercase tracking-[0.2em] flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-[var(--corp-cyan)]" />
               COMPANY
             </h3>
             <ul className="flex flex-col gap-2.5">
@@ -201,9 +201,9 @@ export default function Footer() {
                 { label: 'PRIVACY POLICY', href: '/privacy' },
               ].map((item) => (
                 <li key={item.label}>
-                  <Link href={item.href} className="text-zinc-400 hover:text-white text-xs xl:text-[13px] uppercase tracking-[0.1em] font-medium flex items-center gap-3 group transition-colors truncate">
-                    <ArrowRight className="w-4 h-4 opacity-0 -ml-7 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300 text-primary shrink-0" />
-                    <span className="group-hover:translate-x-1 transition-transform duration-300 truncate">{item.label}</span>
+                  <Link href={item.href} className="text-[#B5BECC] hover:text-white text-xs xl:text-[13px] uppercase tracking-[0.08em] font-medium flex items-center gap-2.5 group transition-colors truncate">
+                    <ArrowRight className="w-3.5 h-3.5 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 text-[var(--corp-cyan)] shrink-0" />
+                    <span className="group-hover:translate-x-0.5 transition-transform duration-200 truncate">{item.label}</span>
                   </Link>
                 </li>
               ))}
@@ -211,15 +211,16 @@ export default function Footer() {
           </div>
 
           {/* Column 5: Stay Connected & Newsletter */}
-          <div className="flex flex-col gap-8 overflow-hidden lg:col-span-3">
-            <h3 className="text-primary font-semibold text-[11px] uppercase tracking-[0.2em]">
+          <div className="flex flex-col gap-7 overflow-hidden lg:col-span-3">
+            <h3 className="text-[var(--corp-cyan)] font-semibold text-[11px] uppercase tracking-[0.2em] flex items-center gap-1.5">
+              <span className="w-1 h-1 rounded-full bg-[var(--corp-cyan)]" />
               STAY CONNECTED
             </h3>
-            <p className="text-xs xl:text-sm text-zinc-400 leading-relaxed uppercase tracking-wider">
-              SUBSCRIBE TO OUR NEWSLETTER FOR THE LATEST UPDATES ON AI AND DEVELOPMENT.
+            <p className="text-xs text-[#B5BECC] leading-relaxed uppercase tracking-wider">
+              SUBSCRIBE TO OUR NEWSLETTER FOR THE LATEST UPDATES ON AI, AUTOMATION, AND DEVELOPMENT.
             </p>
 
-            <form onSubmit={handleSubscribe} className="relative mt-1 w-full" noValidate={false}>
+            <form onSubmit={handleSubscribe} className="relative mt-0.5 w-full" noValidate={false}>
               <input
                 type="email"
                 aria-label="Email address"
@@ -228,12 +229,12 @@ export default function Footer() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-[#0D1B3E] border border-white/15 rounded-[10px] px-4 min-h-[44px] text-xs xl:text-sm text-white placeholder:text-zinc-500 placeholder:uppercase placeholder:tracking-widest focus-visible:outline-2 focus-visible:outline-primary focus:border-primary/60 transition-colors pr-14"
+                className="w-full bg-[#10131A] border border-white/15 rounded-xl px-4 min-h-[44px] text-xs text-white placeholder:text-zinc-500 placeholder:uppercase placeholder:tracking-widest focus-visible:outline-2 focus-visible:outline-[var(--corp-cyan)] focus:border-[var(--corp-cyan)]/60 transition-colors pr-14"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="absolute right-1 top-1 bottom-1 w-11 bg-primary rounded-lg flex items-center justify-center text-[#0D1B3E] hover:bg-[#6DE6E0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute right-1 top-1 bottom-1 w-11 bg-gradient-to-r from-[var(--corp-teal)] to-[var(--corp-cyan)] rounded-lg flex items-center justify-center text-[#07090D] hover:opacity-95 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_10px_rgba(69,217,210,0.3)]"
                 title="Subscribe"
                 aria-label="Subscribe to newsletter"
               >
@@ -241,13 +242,13 @@ export default function Footer() {
               </button>
             </form>
             {subscribed && (
-              <p role="status" className="text-xs text-primary font-bold uppercase tracking-widest">THANK YOU FOR SUBSCRIBING!</p>
+              <p role="status" className="text-xs text-[var(--corp-cyan)] font-bold uppercase tracking-widest">THANK YOU FOR SUBSCRIBING!</p>
             )}
             {error && (
-              <p role="alert" className="text-xs text-red-400 font-bold uppercase tracking-widest">{error}</p>
+              <p role="alert" className="text-xs text-rose-400 font-bold uppercase tracking-widest">{error}</p>
             )}
 
-            <div className="flex items-center gap-2.5 mt-2 flex-wrap">
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
               {socialLinks.map(({ icon: Icon, label, href, hoverColor }) => (
                 <a
                   key={label}
@@ -255,7 +256,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="w-11 h-11 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-zinc-400 transition-colors hover:bg-white/10 hover:border-primary/40 group shrink-0"
+                  className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#B5BECC] transition-all hover:bg-white/10 hover:border-[var(--corp-cyan)]/40 hover:text-white group shrink-0"
                   title={label}
                 >
                   <Icon className={`w-4 h-4 transition-colors ${hoverColor}`} aria-hidden />
@@ -266,14 +267,16 @@ export default function Footer() {
 
         </div>
 
-        {/* Contact Info Row Centered under Solutions & Company */}
+        {/* Contact Info Row */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 mb-10 pt-8 border-t border-white/[0.07] w-full">
-          <a href={`mailto:${COMPANY.email}`} className="flex items-center gap-3 text-sm xl:text-base text-zinc-400 hover:text-white transition-colors group tracking-wide"><div className="w-11 h-11 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center group-hover:bg-primary/15 group-hover:text-primary transition-colors shrink-0">
+          <a href={`mailto:${COMPANY.email}`} className="flex items-center gap-3 text-xs sm:text-sm text-[#B5BECC] hover:text-white transition-colors group tracking-wide">
+            <div className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center group-hover:bg-[var(--corp-cyan)]/15 group-hover:text-[var(--corp-cyan)] transition-colors shrink-0">
               <Mail className="w-4 h-4" />
             </div>
             <span className="lowercase">{COMPANY.email}</span>
           </a>
-          <a href={`tel:${COMPANY.phone}`} className="flex items-center gap-3 text-sm xl:text-base text-zinc-400 hover:text-white transition-colors group tracking-wide"><div className="w-11 h-11 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center group-hover:bg-primary/15 group-hover:text-primary transition-colors shrink-0">
+          <a href={`tel:${COMPANY.phone}`} className="flex items-center gap-3 text-xs sm:text-sm text-[#B5BECC] hover:text-white transition-colors group tracking-wide">
+            <div className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center group-hover:bg-[var(--corp-cyan)]/15 group-hover:text-[var(--corp-cyan)] transition-colors shrink-0">
               <Phone className="w-4 h-4" />
             </div>
             <span>{COMPANY.phone}</span>
@@ -281,15 +284,14 @@ export default function Footer() {
         </div>
 
         {/* Bottom Banner */}
-        <div className="pt-8 pb-20 md:pb-16 md:px-16 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-6">
-          <Link href="/status" className="flex items-center gap-3 min-h-[44px] text-xs font-bold text-zinc-400 uppercase tracking-widest hover:text-white transition-colors">
-             <span aria-hidden className="w-2 h-2 rounded-full bg-primary" />
-             System status
+        <div className="pt-6 pb-4 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-4">
+          <Link href="/status" className="flex items-center gap-2.5 min-h-[44px] text-xs font-bold text-[#B5BECC] uppercase tracking-widest hover:text-white transition-colors">
+             <span aria-hidden className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+             System status: Operational
           </Link>
 
-          <p className="text-[10px] sm:text-xs text-zinc-400 text-center md:text-right uppercase tracking-widest leading-relaxed">
-            © {new Date().getFullYear()} {COMPANY.legalName}. ALL RIGHTS RESERVED.<br className="md:hidden" />
-
+          <p className="text-[10px] sm:text-xs text-[#B5BECC]/70 text-center md:text-right uppercase tracking-widest leading-relaxed">
+            © {new Date().getFullYear()} {COMPANY.legalName}. ALL RIGHTS RESERVED.
           </p>
         </div>
 

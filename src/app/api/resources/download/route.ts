@@ -5,6 +5,8 @@ import { PDF_RESOURCES } from "@/config/pdfs";
 import fs from "fs";
 import path from "path";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

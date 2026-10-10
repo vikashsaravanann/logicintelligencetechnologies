@@ -11,6 +11,7 @@ import { sendEmail } from "@/lib/email/send-email";
 import ResourceDeliveryEmail from "@/emails/resource-delivery-email";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {

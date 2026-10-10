@@ -1,6 +1,7 @@
 "use client";
+
 import { motion } from "framer-motion";
-import { MessageSquareQuote, Star } from "lucide-react";
+import { MessageSquareQuote, Star, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { testimonials } from "@/data/testimonialsData";
 
@@ -8,18 +9,18 @@ export default function TestimonialsSection() {
   const hasTestimonials = testimonials.length > 0;
 
   return (
-    <section id="testimonials" className="py-16 md:py-24 bg-[#0A1530] border-y border-white/5 relative overflow-hidden">
+    <section id="testimonials" className="py-20 md:py-28 bg-[#07090D] border-y border-white/[0.08] relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">
-            Client Stories
+          <span className="lit-eyebrow mb-4 block">
+            Client Verification
           </span>
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-            What Our Clients Say
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white mb-4 uppercase tracking-tight">
+            Client Perspectives &amp; Impact
           </h2>
           {hasTestimonials && (
-            <p className="text-zinc-400 max-w-2xl mx-auto">
-              Real feedback from businesses we&apos;ve built for.
+            <p className="text-[#B5BECC] max-w-2xl mx-auto text-base">
+              Verified feedback from organizations powered by Logic Intelligence Technologies architectures.
             </p>
           )}
         </div>
@@ -33,34 +34,36 @@ export default function TestimonialsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ delay: i * 0.08 }}
-                className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 flex flex-col"
+                className="rounded-2xl border border-white/10 bg-[#10131A] p-6 sm:p-7 flex flex-col justify-between shadow-[0_10px_30px_rgba(0,0,0,0.4)] transition-all hover:border-[#45D9D2]/30 hover:bg-[#151922]"
               >
-                {t.rating && (
-                  <div className="flex gap-0.5 mb-4">
-                    {Array.from({ length: 5 }).map((_, idx) => (
-                      <Star
-                        key={idx}
-                        className={`w-4 h-4 ${
-                          idx < t.rating! ? "fill-primary text-primary" : "text-zinc-700"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                )}
-                <blockquote className="text-zinc-200 leading-relaxed text-sm flex-1">
-                  &ldquo;{t.quote}&rdquo;
-                </blockquote>
-                <figcaption className="mt-6 pt-4 border-t border-white/10">
-                  <p className="text-white font-bold text-sm">{t.name}</p>
-                  <p className="text-zinc-400 text-xs">
+                <div>
+                  {t.rating && (
+                    <div className="flex gap-1 mb-4">
+                      {Array.from({ length: 5 }).map((_, idx) => (
+                        <Star
+                          key={idx}
+                          className={`w-4 h-4 ${
+                            idx < t.rating! ? "fill-[#45D9D2] text-[#45D9D2]" : "text-zinc-700"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  <blockquote className="text-zinc-300 leading-relaxed text-sm sm:text-[15px]">
+                    &ldquo;{t.quote}&rdquo;
+                  </blockquote>
+                </div>
+                <figcaption className="mt-6 pt-5 border-t border-white/10">
+                  <p className="text-white font-display font-bold text-sm">{t.name}</p>
+                  <p className="text-[#B5BECC] text-xs mt-0.5">
                     {t.role}, {t.company}
                   </p>
                   {t.projectSlug && (
                     <Link
                       href={`/work/${t.projectSlug}`}
-                      className="inline-block mt-2 text-xs text-primary hover:underline"
+                      className="inline-flex items-center gap-1.5 mt-3 text-xs font-mono font-bold text-[#45D9D2] hover:underline"
                     >
-                      View case study →
+                      Case Study Specs <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   )}
                 </figcaption>
@@ -72,23 +75,23 @@ export default function TestimonialsSection() {
             initial={{ opacity: 1, y: 0 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
-            className="max-w-3xl mx-auto"
+            className="max-w-2xl mx-auto"
           >
-            <div className="rounded-3xl border border-dashed border-white/15 bg-white/[0.02] p-6 md:p-10 md:p-8 md:p-14 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-6">
-                <MessageSquareQuote className="w-8 h-8 text-primary" />
+            <div className="rounded-3xl border border-white/10 bg-[#10131A] p-8 sm:p-12 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+              <div className="w-14 h-14 rounded-2xl bg-[#45D9D2]/10 border border-[#45D9D2]/25 flex items-center justify-center mx-auto mb-6 text-[#45D9D2]">
+                <MessageSquareQuote className="w-7 h-7" />
               </div>
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3">
-                Be one of our first featured clients
+              <h3 className="text-2xl font-display font-bold text-white mb-3">
+                Partner as a Founding Client
               </h3>
-              <p className="text-zinc-400 leading-relaxed max-w-lg mx-auto">
-                Start a free demo with us and get featured here as one of our founding case studies.
+              <p className="text-[#B5BECC] leading-relaxed text-sm sm:text-base max-w-lg mx-auto mb-8">
+                Request a working interactive prototype demo for your product. We build the direction first before you invest.
               </p>
               <Link
                 href="/free-demo"
-                className="inline-flex mt-6 px-6 py-3 rounded-xl text-sm font-bold text-black bg-primary"
+                className="lit-btn lit-btn-primary lit-btn-lg"
               >
-                Start a free demo
+                Request Free Prototype Demo <ArrowRight className="w-4 h-4 ml-1.5" />
               </Link>
             </div>
           </motion.div>

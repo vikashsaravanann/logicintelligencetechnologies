@@ -16,9 +16,9 @@ import FreeDemoCTA from '@/features/leads/components/free-demo-cta';
 import { COMPANY } from '@/config/company';
 
 export const metadata: Metadata = {
-  title: 'Logic Intelligence Technologies | AI Products & Healthcare Technology',
+  title: 'Logic Intelligence Technologies | AI Products, Voice Intelligence & Healthcare',
   description:
-    'Logic Intelligence Technologies builds AI-driven products, intelligent automation, and connected digital platforms, including LIT Healthcare and Logic Voice.',
+    'Logic Intelligence Technologies develops intelligent AI products, connected digital infrastructure, and enterprise automation solutions, including LIT Healthcare, Logic Voice, and OmniPublisher AI.',
   openGraph: {
     title: `${COMPANY.legalName} — ${COMPANY.tagline}`,
     description:
