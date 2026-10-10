@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import ProposalViewerClient from "./components/ProposalViewerClient";
-import PageShell from "@/components/layout/page-shell";
+import BackButton from "@/components/navigation/back-button";
 
 interface Props {
   params: Promise<{ secureToken: string }>;
@@ -35,10 +35,17 @@ export default async function ProposalPage({ params }: Props) {
 
   // View tracking is recorded asynchronously by the client component on mount.
   return (
-    <PageShell className="pt-32 pb-24">
-      <div className="max-w-5xl mx-auto px-6">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0] pt-28 sm:pt-36 pb-20 overflow-x-hidden"
+    >
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
+        <div className="mb-6">
+          <BackButton fallbackHref="/" label="Return to Home" inline />
+        </div>
         <ProposalViewerClient proposal={proposal} />
       </div>
-    </PageShell>
+    </main>
   );
 }
