@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Shield } from "lucide-react";
 import { usePathname } from "next/navigation";
 import type { AdminNavGroupView } from "@/config/admin-nav";
 import { AdminNavLinks } from "./AdminNavLinks";
@@ -37,7 +37,7 @@ export function AdminMobileNav({
     <>
       <button
         type="button"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-800 text-neutral-300 hover:bg-neutral-900 lg:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-cloud,#F7F9FC)] lg:hidden shadow-2xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lit-teal,#1FA9A2)]"
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
         aria-controls="admin-drawer"
@@ -49,35 +49,39 @@ export function AdminMobileNav({
       {open && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/60 lg:hidden"
+            className="fixed inset-0 z-40 bg-[var(--lit-navy,#0B2545)]/40 backdrop-blur-xs lg:hidden"
             aria-hidden
             onClick={() => setOpen(false)}
           />
           <div
             id="admin-drawer"
-            className="fixed left-0 top-0 z-50 flex h-[100dvh] w-[min(84vw,320px)] flex-col overflow-y-auto border-r border-neutral-800 bg-neutral-950 px-4 pb-6 pt-4 lg:hidden"
+            className="fixed left-0 top-0 z-50 flex h-[100dvh] w-[min(84vw,320px)] flex-col overflow-y-auto border-r border-[var(--lit-border-light,#DFE7EF)] bg-white px-5 pb-6 pt-5 shadow-xl lg:hidden"
           >
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-5 flex items-center justify-between border-b border-[var(--lit-border-light,#DFE7EF)] pb-4">
               <div className="min-w-0">
-                <p className="truncate text-xs text-neutral-400">{email ?? "Signed in"}</p>
-                <span className="mt-1 inline-block rounded-md border border-indigo-500/40 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-indigo-300">
+                <div className="flex items-center gap-2 mb-1">
+                  <Shield className="h-4 w-4 text-[var(--lit-teal,#1FA9A2)]" />
+                  <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)]">LIT Admin</span>
+                </div>
+                <p className="truncate text-xs font-mono text-[var(--lit-text-muted,#52677C)]">{email ?? "Signed in"}</p>
+                <span className="mt-1.5 inline-block rounded-md border border-[var(--lit-teal,#1FA9A2)]/30 bg-[var(--lit-teal,#1FA9A2)]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--lit-teal,#1FA9A2)]">
                   {roleLabel}
                 </span>
               </div>
               <button
                 type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-neutral-800 text-neutral-300"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-cloud,#F7F9FC)]"
                 aria-label="Close menu"
                 onClick={() => setOpen(false)}
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
             <AdminNavLinks groups={groups} onNavigate={() => setOpen(false)} />
-            <form action="/auth/signout" method="post" className="mt-6">
+            <form action="/auth/signout" method="post" className="mt-6 pt-4 border-t border-[var(--lit-border-light,#DFE7EF)]">
               <button
                 type="submit"
-                className="w-full rounded-lg border border-neutral-700 px-3 py-2.5 text-sm font-semibold text-neutral-300 hover:bg-neutral-900 hover:text-white"
+                className="w-full rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] px-3 py-2 text-xs font-semibold text-[var(--lit-navy,#0B2545)] hover:bg-slate-100"
               >
                 Sign out
               </button>

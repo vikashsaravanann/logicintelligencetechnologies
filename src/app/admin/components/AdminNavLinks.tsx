@@ -14,13 +14,13 @@ export function AdminNavLinks({
 }) {
   const pathname = usePathname() || "";
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6">
       {groups.map((group) => (
         <div key={group.label}>
-          <p className="px-2 pb-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-500">
+          <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--lit-text-muted,#52677C)]">
             {group.label}
           </p>
-          <ul className="space-y-0.5">
+          <ul className="space-y-1">
             {group.items.map((item) => {
               const active = isActiveNav(pathname, item.href);
               return (
@@ -29,10 +29,10 @@ export function AdminNavLinks({
                     href={item.href}
                     onClick={onNavigate}
                     aria-current={active ? "page" : undefined}
-                    className={`flex min-h-[40px] items-center rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ${
+                    className={`flex min-h-[36px] items-center rounded-lg px-3 text-xs font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lit-teal,#1FA9A2)] ${
                       active
-                        ? "bg-indigo-500/15 text-indigo-200"
-                        : "text-neutral-300 hover:bg-neutral-900 hover:text-white"
+                        ? "bg-[var(--lit-teal,#1FA9A2)]/10 font-bold text-[var(--lit-navy,#0B2545)] border-l-2 border-[var(--lit-teal,#1FA9A2)]"
+                        : "text-[var(--lit-text-muted,#52677C)] hover:bg-[var(--lit-cloud,#F7F9FC)] hover:text-[var(--lit-navy,#0B2545)]"
                     }`}
                   >
                     {item.label}
