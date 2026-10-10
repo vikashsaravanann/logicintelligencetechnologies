@@ -130,79 +130,89 @@ export default function HeroSection() {
       />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8">
-        {/* Main Grid: Left Value Proposition, Right Interactive Console */}
-        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-10">
+        {/* Main Centered Hero Block */}
+        <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
           
-          {/* Left Column: Heading, Value Props, Actions */}
-          <div className="lg:col-span-7 flex flex-col items-start text-left">
-            
-            {/* Enterprise Status Badge */}
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-[#45D9D2]/30 bg-[#10131A] px-3.5 py-1.5 mb-6 shadow-[0_0_20px_rgba(69,217,210,0.15)]">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#45D9D2] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#45D9D2]" />
-              </span>
-              <span className="text-[11px] font-mono font-semibold uppercase tracking-[0.16em] text-white">
-                Production AI Architecture · Enterprise Systems
-              </span>
+          {/* Logo & Company Name Centered */}
+          <div className="flex items-center justify-center gap-3 mb-6 p-2 rounded-full border border-white/10 bg-[#10131A]/80 backdrop-blur-md px-4 py-2 shadow-[0_0_25px_rgba(69,217,210,0.15)]">
+            <div className="w-8 h-8 rounded-full overflow-hidden bg-[#07090D] ring-2 ring-[#45D9D2]/50 p-0.5 shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={COMPANY.logoIconPath}
+                alt={`${COMPANY.displayName} logo`}
+                className="w-full h-full object-cover rounded-full"
+              />
             </div>
-
-            {/* Main Display Headline */}
-            <h1 className="font-display text-[clamp(2.35rem,1.5rem+4.8vw,4.75rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-white mb-6">
-              WHERE LOGIC MEETS{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#E2E8F0] to-[#45D9D2]">
-                INNOVATION.
-              </span>
-            </h1>
-
-            {/* Sub-headline */}
-            <p className="text-lg sm:text-xl text-[#F8FAFC] font-semibold mb-3 max-w-2xl leading-snug">
-              Deterministic AI Platforms, Autonomous Voice Engines &amp; Smart Hospital Infrastructure.
-            </p>
-
-            {/* Value Proposition Body */}
-            <p className="text-sm sm:text-base text-[#B5BECC] leading-relaxed mb-8 max-w-xl">
-              Logic Intelligence Technologies develops high-performance AI systems, connected digital backbones, and enterprise automation software. We replace brittle prompt wrappers with deterministic state machines, typed schemas, and human-in-the-loop oversight.
-            </p>
-
-            {/* High-Impact Conversion Buttons */}
-            <div className="flex w-full flex-col sm:w-auto sm:flex-row items-stretch sm:items-center gap-3.5 mb-8">
-              <Link
-                href="#products"
-                className="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-gradient-to-r from-[#45D9D2] to-[#1FA9A2] px-6 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-[#07090D] shadow-[0_0_25px_rgba(69,217,210,0.35)] transition-all duration-200 hover:brightness-110 hover:shadow-[0_0_35px_rgba(69,217,210,0.5)] active:translate-y-0.5"
-              >
-                <span>Explore Ecosystem</span>
-                <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
-              </Link>
-              
-              <Link
-                href="/free-demo"
-                className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-white/15 bg-[#10131A] px-6 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-white transition-all duration-200 hover:border-[#45D9D2]/50 hover:bg-[#151922] hover:text-[#45D9D2] active:translate-y-0.5"
-              >
-                <span>Free Prototype Demo</span>
-              </Link>
-
-              <a
-                href={wa}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-950/20 px-5 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-emerald-400 transition-all duration-200 hover:bg-emerald-900/30 hover:border-emerald-400/60"
-              >
-                <MessageSquare className="mr-2 h-3.5 w-3.5" />
-                <span>WhatsApp Us</span>
-              </a>
-            </div>
-
-            {/* Direct Engineering Assurance Note */}
-            <div className="flex items-center gap-3 pt-2 text-xs text-[#B5BECC]/80 font-mono">
-              <ShieldCheck className="h-4 w-4 text-[#45D9D2] shrink-0" />
-              <span>Direct access to AI systems engineering · No sales intermediaries</span>
-            </div>
+            <span className="text-xs sm:text-sm font-mono font-bold tracking-[0.18em] uppercase text-white">
+              {COMPANY.displayName.toUpperCase()}
+            </span>
           </div>
 
-          {/* Right Column: Interactive Enterprise Architecture Console */}
-          <div className="lg:col-span-5">
-            <div className="relative mx-auto w-full max-w-lg rounded-2xl border border-white/10 bg-[#0E121B] p-5 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.7)] backdrop-blur-xl">
+          {/* Enterprise Status Badge */}
+          <div className="inline-flex items-center gap-2.5 rounded-full border border-[#45D9D2]/30 bg-[#10131A] px-3.5 py-1.5 mb-6 shadow-[0_0_20px_rgba(69,217,210,0.15)]">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#45D9D2] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#45D9D2]" />
+            </span>
+            <span className="text-[11px] font-mono font-semibold uppercase tracking-[0.16em] text-white">
+              Production AI Architecture · Enterprise Systems
+            </span>
+          </div>
+
+          {/* Slogan: Where Logic Meets Innovation — Centered and in One Line */}
+          <h1 className="font-display text-[clamp(1.85rem,1.2rem+3.8vw,4.5rem)] font-extrabold leading-[1.05] tracking-[-0.03em] text-white mb-6 text-center whitespace-normal sm:whitespace-nowrap">
+            WHERE LOGIC MEETS{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#E2E8F0] to-[#45D9D2]">
+              INNOVATION.
+            </span>
+          </h1>
+
+          {/* Sub-headline & Information Centered */}
+          <p className="text-base sm:text-xl text-[#F8FAFC] font-semibold mb-3 max-w-3xl mx-auto leading-snug">
+            Deterministic AI Platforms, Autonomous Voice Engines &amp; Smart Hospital Infrastructure.
+          </p>
+
+          <p className="text-sm sm:text-base text-[#B5BECC] leading-relaxed mb-8 max-w-2xl mx-auto">
+            Logic Intelligence Technologies develops high-performance AI systems, connected digital backbones, and enterprise automation software. We replace brittle prompt wrappers with deterministic state machines, typed schemas, and human-in-the-loop oversight.
+          </p>
+
+          {/* High-Impact Conversion Buttons Centered */}
+          <div className="flex flex-wrap items-center justify-center gap-3.5 mb-6 w-full">
+            <Link
+              href="#products"
+              className="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-gradient-to-r from-[#45D9D2] to-[#1FA9A2] px-6 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-[#07090D] shadow-[0_0_25px_rgba(69,217,210,0.35)] transition-all duration-200 hover:brightness-110 hover:shadow-[0_0_35px_rgba(69,217,210,0.5)] active:translate-y-0.5"
+            >
+              <span>Explore Ecosystem</span>
+              <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
+            </Link>
+            
+            <Link
+              href="/free-demo"
+              className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-white/15 bg-[#10131A] px-6 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-white transition-all duration-200 hover:border-[#45D9D2]/50 hover:bg-[#151922] hover:text-[#45D9D2] active:translate-y-0.5"
+            >
+              <span>Free Prototype Demo</span>
+            </Link>
+
+            <a
+              href={wa}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-950/20 px-5 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-emerald-400 transition-all duration-200 hover:bg-emerald-900/30 hover:border-emerald-400/60"
+            >
+              <MessageSquare className="mr-2 h-3.5 w-3.5" />
+              <span>WhatsApp Us</span>
+            </a>
+          </div>
+
+          {/* Direct Engineering Assurance Note Centered */}
+          <div className="flex items-center justify-center gap-2 mb-12 text-xs text-[#B5BECC]/80 font-mono text-center">
+            <ShieldCheck className="h-4 w-4 text-[#45D9D2] shrink-0" />
+            <span>Direct access to AI systems engineering · No sales intermediaries</span>
+          </div>
+
+          {/* Interactive Animation & Architecture Console Centered */}
+          <div className="w-full max-w-3xl mx-auto text-left mb-6">
+            <div className="relative w-full rounded-2xl border border-white/10 bg-[#0E121B] p-5 sm:p-6 shadow-[0_25px_70px_rgba(0,0,0,0.8)] backdrop-blur-xl ring-1 ring-[#45D9D2]/20">
               
               {/* Window Header */}
               <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
