@@ -65,7 +65,7 @@ Strict Execution Rule: Work sequentially through every page template and dynamic
 | **058** | `/accessibility` | Accessibility Statement (WCAG) | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **059** | `/privacy` | Privacy Policy | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **060** | `/privacy-policy` | Alternative Privacy Document | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
-| **061** | `/terms` | Terms of Use | NOT STARTED | - | - | - | - | - | - |
+| **061** | `/terms` | Terms of Use | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **062** | `/terms-of-service` | Terms of Service Document | NOT STARTED | - | - | - | - | - | - |
 | **063** | `/cookie-policy` | Cookie Notice & Preferences | NOT STARTED | - | - | - | - | - | - |
 | **064** | `/refund-policy` | Commercial Refund Policy | NOT STARTED | - | - | - | - | - | - |
