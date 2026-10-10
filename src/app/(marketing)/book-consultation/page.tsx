@@ -3,7 +3,24 @@
 import { useState } from "react";
 import BackToHome from "@/components/ui/back-to-home";
 import { useRouter } from "next/navigation";
-import { Calendar as CalendarIcon, Clock, Globe, CheckCircle2, ShieldCheck, ArrowRight, Loader2, Sparkles } from "lucide-react";
+import { 
+  Calendar as CalendarIcon, 
+  Clock, 
+  Globe, 
+  CheckCircle2, 
+  ShieldCheck, 
+  ArrowRight, 
+  Loader2, 
+  Sparkles,
+  User,
+  Mail,
+  Phone,
+  Building,
+  FileText
+} from "lucide-react";
+import { PageShell } from "@/components/layout/page-shell";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import { trackEvent } from "@/lib/analytics";
 
 const CONSULTATION_TYPES = [
@@ -99,247 +116,281 @@ export default function BookConsultationPage() {
         timezone: selectedTimezone,
       });
 
-      router.push(
-        `/booking/success?name=${encodeURIComponent(name)}&type=${encodeURIComponent(
-          selectedType.title
-        )}&date=${encodeURIComponent(selectedDate)}&slot=${encodeURIComponent(
-          selectedSlot
-        )}&tz=${encodeURIComponent(selectedTimezone)}`
-      );
-    } catch (err: any) {
-      setError(err?.message || "An unexpected error occurred.");
+      const queryParams = new URLSearchParams({
+        name,
+        type: selectedType.title,
+        date: selectedDate,
+        slot: selectedSlot,
+        tz: selectedTimezone,
+      });
+
+      router.push(`/booking/success?${queryParams.toString()}`);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20 overflow-hidden">
-      <BackToHome href="/" label="Back to Home" />
-      <div className="absolute top-10 left-1/3 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
+    <PageShell>
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "Book Consultation", path: "/book-consultation" },
+        ])}
+      />
 
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-widest uppercase mb-4">
+      <div className="pt-28 sm:pt-32 pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <BackToHome href="/" label="Back to Home" />
+
+        {/* Hero Section */}
+        <div className="mt-8 mb-16 text-center max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-950/30 text-cyan-400 text-xs font-mono font-medium tracking-wider uppercase mb-6 shadow-[0_0_15px_rgba(69,217,210,0.15)]">
             <CalendarIcon className="w-3.5 h-3.5" />
-            <span>Direct Access to Principal Engineers</span>
+            Engineering Consultation Schedule
           </div>
-          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4 uppercase">
-            Schedule a Technical <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Consultation</span>
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white uppercase font-heading leading-tight">
+            Schedule a <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400">Technical Briefing</span>
           </h1>
-          <p className="text-sm sm:text-base text-zinc-400">
-            Select a session format, pick a time that matches your schedule, and meet directly with our systems architects.
+          <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed font-sans">
+            Direct 1-on-1 architecture review with our Principal Engineers. Scrutinize latency requirements, data compliance, and full-stack feasibility.
           </p>
         </div>
 
-        {error && (
-          <div className="max-w-4xl mx-auto mb-8 p-4 rounded-xl bg-accent/10 border border-accent/20 text-accent text-sm text-center font-semibold">
-            {error}
-          </div>
-        )}
+        <form onSubmit={handleSubmit} className="space-y-12">
+          {error && (
+            <div className="max-w-4xl mx-auto p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm">
+              {error}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          <div className="lg:col-span-7 space-y-8">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-8">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-primary" />
-                <span>1. Select Consultation Type</span>
+          {/* Step 1: Select Consultation Format */}
+          <div>
+            <div className="flex items-center justify-between mb-6 pb-2 border-b border-white/5">
+              <h2 className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-cyan-400">
+                1. Select Consultation Format
               </h2>
-              <div className="space-y-3">
-                {CONSULTATION_TYPES.map((type) => (
+              <span className="text-xs font-mono text-slate-500 uppercase">Step 1 of 3</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {CONSULTATION_TYPES.map((type) => {
+                const isSelected = selectedType.id === type.id;
+                return (
                   <div
                     key={type.id}
                     onClick={() => setSelectedType(type)}
-                    className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                      selectedType.id === type.id
-                        ? "border-primary bg-primary/10 "
-                        : "border-white/10 bg-white/5 hover:border-white/20"
+                    className={`cursor-pointer p-8 rounded-2xl border transition-all flex flex-col justify-between ${
+                      isSelected
+                        ? "border-cyan-400 bg-[#151922] shadow-[0_0_25px_rgba(69,217,210,0.15)] ring-1 ring-cyan-400/50"
+                        : "border-white/10 bg-[#10131A] hover:border-white/20 hover:bg-[#151922]"
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-bold text-sm sm:text-base text-white">{type.title}</h3>
-                      <span className="text-xs font-bold text-primary px-2 py-0.5 rounded bg-primary/20">
-                        {type.duration}
-                      </span>
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-cyan-500/30 bg-cyan-950/40 text-cyan-300 text-xs font-mono">
+                          <Clock className="w-3 h-3" />
+                          {type.duration}
+                        </span>
+                        {isSelected && <CheckCircle2 className="w-5 h-5 text-cyan-400" />}
+                      </div>
+                      <h3 className="text-base font-bold text-white uppercase font-heading tracking-wide mb-2">
+                        {type.title}
+                      </h3>
+                      <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                        {type.desc}
+                      </p>
                     </div>
-                    <p className="text-xs text-zinc-400 leading-relaxed">{type.desc}</p>
                   </div>
-                ))}
-              </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Step 2: Date & Slot Selection */}
+          <div>
+            <div className="flex items-center justify-between mb-6 pb-2 border-b border-white/5">
+              <h2 className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-cyan-400">
+                2. Choose Date, Slot & Timezone
+              </h2>
+              <span className="text-xs font-mono text-slate-500 uppercase">Step 2 of 3</span>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-8">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-white mb-6 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-primary" />
-                <span>2. Select Date & Slot</span>
-              </h2>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2">
-                    Date
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={selectedDate}
-                    min={new Date().toISOString().split("T")[0]}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <Globe className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>Timezone</span>
-                  </label>
-                  <select
-                    value={selectedTimezone}
-                    onChange={(e) => setSelectedTimezone(e.target.value)}
-                    className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary/50 transition-colors"
-                  >
-                    {TIMEZONES.map((tz) => (
-                      <option key={tz.value} value={tz.value}>
-                        {tz.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Timezone */}
+              <div className="p-6 rounded-2xl border border-white/10 bg-[#10131A]">
+                <label className="block text-xs font-mono font-bold uppercase text-slate-400 mb-3 flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-cyan-400" />
+                  Your Timezone
+                </label>
+                <select
+                  value={selectedTimezone}
+                  onChange={(e) => setSelectedTimezone(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-[#151922] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
+                >
+                  {TIMEZONES.map((tz) => (
+                    <option key={tz.value} value={tz.value} className="bg-[#10131A]">
+                      {tz.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-3">
-                  Available Slots
+              {/* Date */}
+              <div className="p-6 rounded-2xl border border-white/10 bg-[#10131A]">
+                <label className="block text-xs font-mono font-bold uppercase text-slate-400 mb-3 flex items-center gap-2">
+                  <CalendarIcon className="w-4 h-4 text-cyan-400" />
+                  Select Date
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {AVAILABLE_SLOTS.map((slot) => (
-                    <button
-                      type="button"
-                      key={slot}
-                      onClick={() => setSelectedSlot(slot)}
-                      className={`py-3 rounded-xl border text-xs font-bold transition-all ${
-                        selectedSlot === slot
-                          ? "border-primary bg-primary text-black "
-                          : "border-white/10 bg-white/5 text-zinc-300 hover:border-white/20"
-                      }`}
-                    >
-                      {slot}
-                    </button>
-                  ))}
+                <input
+                  type="date"
+                  value={selectedDate}
+                  min={new Date().toISOString().split("T")[0]}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-[#151922] border border-white/10 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors [color-scheme:dark]"
+                />
+              </div>
+
+              {/* Slots */}
+              <div className="p-6 rounded-2xl border border-white/10 bg-[#10131A]">
+                <label className="block text-xs font-mono font-bold uppercase text-slate-400 mb-3 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-cyan-400" />
+                  Available Slot
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {AVAILABLE_SLOTS.map((slot) => {
+                    const isSlot = selectedSlot === slot;
+                    return (
+                      <button
+                        type="button"
+                        key={slot}
+                        onClick={() => setSelectedSlot(slot)}
+                        className={`py-2 px-3 rounded-lg text-xs font-mono font-bold transition-all text-center ${
+                          isSlot
+                            ? "bg-cyan-400 text-slate-950 shadow-[0_0_15px_rgba(69,217,210,0.35)]"
+                            : "bg-[#151922] border border-white/5 text-slate-300 hover:border-cyan-500/40"
+                        }`}
+                      >
+                        {slot}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-5">
-            <div className="sticky top-28 rounded-2xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 backdrop-blur-sm shadow-2xl">
-              <h2 className="text-lg font-bold text-white mb-2">3. Your Contact Details</h2>
-              <p className="text-xs text-zinc-400 mb-6">
-                Meeting credentials and a calendar invite (.ics) will be sent here immediately.
-              </p>
+          {/* Step 3: Contact & Project Briefing Details */}
+          <div>
+            <div className="flex items-center justify-between mb-6 pb-2 border-b border-white/5">
+              <h2 className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-cyan-400">
+                3. Contact Information
+              </h2>
+              <span className="text-xs font-mono text-slate-500 uppercase">Step 3 of 3</span>
+            </div>
 
-              <div className="space-y-4 mb-6">
+            <div className="p-8 rounded-3xl border border-white/10 bg-[#151922] shadow-2xl space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
-                    Full Name *
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                    Full Name <span className="text-cyan-400">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Jane Doe"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary/50 transition-colors"
+                    placeholder="Alex Morgan"
+                    className="w-full px-4 py-3 rounded-xl bg-[#10131A] border border-white/10 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
-                    Corporate Email *
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                    Work Email <span className="text-cyan-400">*</span>
                   </label>
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="jane@company.com"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary/50 transition-colors"
+                    placeholder="alex@enterprise.com"
+                    className="w-full px-4 py-3 rounded-xl bg-[#10131A] border border-white/10 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50 transition-all"
                   />
                 </div>
+              </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+91 98765 43210"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary/50 transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
-                      Company
-                    </label>
-                    <input
-                      type="text"
-                      value={company}
-                      onChange={(e) => setCompany(e.target.value)}
-                      placeholder="Acme Inc"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary/50 transition-colors"
-                    />
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                    Phone / WhatsApp Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+91 98765 43210"
+                    className="w-full px-4 py-3 rounded-xl bg-[#10131A] border border-white/10 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50 transition-all"
+                  />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
-                    Project Scope / Notes
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                    Company / Organization
                   </label>
-                  <textarea
-                    rows={3}
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Briefly describe your objectives, existing stack, or key bottlenecks..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary/50 transition-colors"
+                  <input
+                    type="text"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    placeholder="Acme Systems"
+                    className="w-full px-4 py-3 rounded-xl bg-[#10131A] border border-white/10 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50 transition-all"
                   />
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 mb-6 text-xs text-primary flex items-center justify-between">
-                <span>{selectedDate} at {selectedSlot}</span>
-                <span className="font-bold">{selectedType.duration}</span>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                  Architecture Notes / Topics to Discuss
+                </label>
+                <textarea
+                  rows={3}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Outline your existing stack, cloud provider, latency targets, or compliance requirements…"
+                  className="w-full px-4 py-3 rounded-xl bg-[#10131A] border border-white/10 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50 transition-all"
+                />
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-4 rounded-xl bg-primary text-black font-bold text-sm uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center justify-center gap-2  disabled:opacity-50"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Confirming Reservation...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Confirm Consultation</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
+              <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/5">
+                <p className="text-xs text-slate-400 flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-cyan-400" />
+                  Calendar invite with Google Meet / Teams link dispatched automatically.
+                </p>
 
-              <div className="mt-4 flex items-center justify-center gap-2 text-[10px] text-zinc-500">
-                <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-                <span>NDA & Confidentiality Protected</span>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-400 via-teal-400 to-cyan-400 text-slate-950 font-mono font-bold text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(69,217,210,0.35)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Reserving Slot…</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Confirm Consultation</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>
         </form>
+
       </div>
-    </div>
+    </PageShell>
   );
 }

@@ -2,8 +2,9 @@ import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
 import Link from "next/link";
 import { PDF_RESOURCES } from "@/config/pdfs";
-import { ArrowRight, Download, FileText, BookOpen, Code2, Brain, BarChart3, Briefcase, FileCheck, Archive, Lock, MessageSquare } from "lucide-react";
+import { ArrowRight, Download, FileText, BookOpen, Code2, Brain, BarChart3, Briefcase, FileCheck, Archive, Lock, MessageSquare, Sparkles } from "lucide-react";
 import SafeImage from "@/components/ui/safe-image";
+import PageShell from "@/components/layout/page-shell";
 
 export const metadata: Metadata = {
   title: "Engineering Resources, Guides & Architecture Whitepapers | Logic Intelligence Technologies",
@@ -16,55 +17,62 @@ export const metadata: Metadata = {
 };
 
 const CATEGORY_STYLES: Record<string, { color: string; bg: string; border: string; Icon: React.ComponentType<{ className?: string }> }> = {
-  "Corporate":       { color: "#00BFFF", bg: "rgba(0,191,255,0.08)",  border: "rgba(0,191,255,0.2)",  Icon: Briefcase },
-  "Services":        { color: "#8B5CF6", bg: "rgba(139,92,246,0.08)", border: "rgba(139,92,246,0.2)", Icon: Code2 },
-  "Technical Guide": { color: "#10B981", bg: "rgba(16,185,129,0.08)", border: "rgba(16,185,129,0.2)", Icon: FileCheck },
-  "AI & Data":       { color: "#F59E0B", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)", Icon: Brain },
-  "Strategy":        { color: "#EC4899", bg: "rgba(236,72,153,0.08)", border: "rgba(236,72,153,0.2)", Icon: BarChart3 },
-  "Templates":       { color: "#6366F1", bg: "rgba(99,102,241,0.08)", border: "rgba(99,102,241,0.2)", Icon: Archive },
-  "Legal & Contracts": { color: "#F97316", bg: "rgba(249,115,22,0.08)", border: "rgba(249,115,22,0.2)", Icon: FileText },
-  "Case Studies":    { color: "#22C55E", bg: "rgba(34,197,94,0.08)",  border: "rgba(34,197,94,0.2)",  Icon: BookOpen },
+  "Corporate":       { color: "#45D9D2", bg: "rgba(69,217,210,0.1)",  border: "rgba(69,217,210,0.3)",  Icon: Briefcase },
+  "Services":        { color: "#8B5CF6", bg: "rgba(139,92,246,0.1)", border: "rgba(139,92,246,0.3)", Icon: Code2 },
+  "Technical Guide": { color: "#10B981", bg: "rgba(16,185,129,0.1)", border: "rgba(16,185,129,0.3)", Icon: FileCheck },
+  "AI & Data":       { color: "#38BDF8", bg: "rgba(56,189,248,0.1)", border: "rgba(56,189,248,0.3)", Icon: Brain },
+  "Strategy":        { color: "#F43F5E", bg: "rgba(244,63,94,0.1)",  border: "rgba(244,63,94,0.3)",  Icon: BarChart3 },
+  "Templates":       { color: "#6366F1", bg: "rgba(99,102,241,0.1)", border: "rgba(99,102,241,0.3)", Icon: Archive },
+  "Legal & Contracts": { color: "#F97316", bg: "rgba(249,115,22,0.1)", border: "rgba(249,115,22,0.3)", Icon: FileText },
+  "Case Studies":    { color: "#22C55E", bg: "rgba(34,197,94,0.1)",  border: "rgba(34,197,94,0.3)",  Icon: BookOpen },
 };
 
 export default function ResourcesPage() {
   return (
-    <div className="relative min-h-screen bg-[#060B18] text-white pt-24 pb-20 overflow-hidden">
+    <PageShell>
       <BackToHome href="/" label="Back to Home" />
-      <div className="absolute top-10 right-1/4 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-widest uppercase mb-6">
-            <BookOpen className="w-3.5 h-3.5" />
+      {/* Ambient lighting glows */}
+      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[85%] h-[55%] bg-[radial-gradient(ellipse_at_center,_rgba(69,217,210,0.10)_0%,_rgba(0,0,0,0)_70%)]" />
+        <div className="absolute bottom-[-10%] left-1/2 -translate-x-1/2 w-[65%] h-[45%] bg-[radial-gradient(ellipse_at_center,_rgba(31,169,162,0.06)_0%,_rgba(0,0,0,0)_60%)]" />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28 md:py-36 relative z-10">
+        <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20 space-y-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-xs font-semibold tracking-wider uppercase mb-2">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
             <span>Executive & Technical Knowledge Hub</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white mb-6 uppercase">
-            RESOURCES, FRAMEWORKS & <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">TECHNICAL BRIEFS</span>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white">
+            Resources, Frameworks &amp; Technical Briefs
           </h1>
-          <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
-            Company documents, guides and references. Free for signed-in members: choose a document and we email you the PDF.
+          <p className="text-base sm:text-lg text-zinc-400 leading-relaxed max-w-2xl mx-auto font-light">
+            Authoritative documents, architecture checklists and implementation guides. Free for signed-in members: choose a document and receive your verified PDF download.
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+
+          <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
             <a
               href="#library"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold uppercase tracking-wider text-black hover:bg-primary/90 transition-colors"
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 px-6 text-xs sm:text-sm font-bold uppercase tracking-wider text-black hover:opacity-95 shadow-lg shadow-cyan-500/25 transition-all"
             >
               <BookOpen className="h-4 w-4" aria-hidden />
               Browse documents
             </a>
             <Link
               href="/contact"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-6 text-sm font-bold uppercase tracking-wider text-white hover:border-primary/60 hover:bg-white/10 transition-colors"
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl border border-white/10 bg-[#151922] px-6 text-xs sm:text-sm font-bold uppercase tracking-wider text-white hover:border-cyan-500/40 hover:bg-[#181D28] transition-all"
             >
-              <MessageSquare className="h-4 w-4" aria-hidden />
+              <MessageSquare className="h-4 w-4 text-cyan-400" aria-hidden />
               Request a custom brief
             </Link>
           </div>
-          <ol className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left" aria-label="How to get a document">
+
+          <ol className="pt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 text-left max-w-3xl mx-auto" aria-label="How to get a document">
             {["Sign in or create a free account", "Open a document and confirm your details", "Receive the PDF link by email"].map((step, i) => (
-              <li key={step} className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-300">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/15 text-xs font-bold text-primary">{i + 1}</span>
-                {step}
+              <li key={step} className="flex items-start gap-3 rounded-xl border border-white/10 bg-[#151922] px-4 py-3 text-xs sm:text-sm text-zinc-300">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-cyan-500/20 text-[11px] font-bold text-cyan-400">{i + 1}</span>
+                <span>{step}</span>
               </li>
             ))}
           </ol>
@@ -73,15 +81,15 @@ export default function ResourcesPage() {
         <div id="library" className="scroll-mt-28 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {PDF_RESOURCES.map((res) => {
             const catStyle = CATEGORY_STYLES[res.category] ?? {
-              color: "#00BFFF",
-              bg: "rgba(0,191,255,0.08)",
-              border: "rgba(0,191,255,0.2)",
+              color: "#45D9D2",
+              bg: "rgba(69,217,210,0.1)",
+              border: "rgba(69,217,210,0.3)",
               Icon: FileText,
             };
             return (
               <div
                 key={res.id}
-                className="group glass-card flex flex-col justify-between transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,191,255,0.12)] overflow-hidden"
+                className="group rounded-2xl border border-white/10 bg-[#151922] flex flex-col justify-between transition-all duration-300 hover:border-cyan-500/40 hover:-translate-y-1.5 shadow-xl overflow-hidden"
               >
                 <div className="relative w-full aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/40">
                   <SafeImage
@@ -92,36 +100,36 @@ export default function ResourcesPage() {
                   />
                   <div className="absolute top-3 left-3 z-10">
                     <span
-                      className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full border backdrop-blur-md"
-                      style={{ color: catStyle.color, background: "rgba(10, 15, 30, 0.8)", borderColor: catStyle.border }}
+                      className="text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full border backdrop-blur-md"
+                      style={{ color: catStyle.color, background: "rgba(10, 15, 26, 0.85)", borderColor: catStyle.border }}
                     >
                       {res.category}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-6 sm:p-8 flex flex-col flex-1">
-                  <h2 className="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">
+                <div className="p-6 sm:p-7 flex flex-col flex-1">
+                  <h2 className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
                     {res.title}
                   </h2>
-                  <p className="text-sm text-zinc-400 mb-6 leading-relaxed flex-grow">
+                  <p className="text-xs sm:text-sm text-zinc-400 mb-6 leading-relaxed flex-grow font-light">
                     {res.description}
                   </p>
 
-                  <div className="pt-6 border-t border-white/10 mt-auto space-y-3">
+                  <div className="pt-5 border-t border-white/10 mt-auto space-y-2.5">
                     <Link
                       href={`/resources/${res.slug}`}
                       aria-label={`${res.accessType === "public" ? "Open" : "Get"} ${res.title}`}
-                      className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold uppercase tracking-wider text-black hover:bg-primary/90 transition-colors"
+                      className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 px-5 text-xs font-bold uppercase tracking-wider text-black hover:opacity-95 shadow-md shadow-cyan-500/20 transition-all"
                     >
                       <Download className="w-4 h-4" aria-hidden />
                       <span>{res.accessType === "public" ? "Open PDF" : "Get this PDF"}</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden />
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden />
                     </Link>
                     {res.accessType !== "public" && (
-                      <p className="flex items-center justify-center gap-1.5 text-xs text-zinc-400">
-                        <Lock className="w-3.5 h-3.5" aria-hidden />
-                        Free with an account
+                      <p className="flex items-center justify-center gap-1.5 text-[11px] text-zinc-400">
+                        <Lock className="w-3 h-3 text-cyan-400" aria-hidden />
+                        Free with verified account
                       </p>
                     )}
                   </div>
@@ -131,6 +139,7 @@ export default function ResourcesPage() {
           })}
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }
+

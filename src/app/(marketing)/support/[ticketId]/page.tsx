@@ -2,8 +2,9 @@ import { Metadata } from "next";
 import BackButton from "@/components/navigation/back-button";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Clock, HelpCircle, MessageSquare, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Clock, HelpCircle, MessageSquare, ShieldCheck, Ticket } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import PageShell from "@/components/layout/page-shell";
 
 interface Props {
   params: Promise<{ ticketId: string }>;
@@ -28,49 +29,51 @@ export default async function TicketDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20">
+    <PageShell className="pt-32 pb-24">
       <div className="max-w-4xl mx-auto px-6 space-y-8">
         <div>
-          <BackButton fallbackHref="/support" label="Back to Support" inline />
+          <BackButton fallbackHref="/support" label="Back to Support Hub" inline />
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8 space-y-6">
+        <div className="rounded-3xl border border-white/10 bg-[#10131A] p-6 sm:p-10 space-y-6 shadow-2xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
             <div>
-              <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest block mb-1">
+              <span className="text-xs font-mono font-bold text-cyan-400 tracking-widest uppercase block mb-1">
                 Ticket ID: {ticket.id}
               </span>
-              <h1 className="uppercase text-2xl font-bold text-white">{ticket.subject}</h1>
+              <h1 className="uppercase text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                {ticket.subject}
+              </h1>
             </div>
             <span
-              className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider self-start sm:self-auto ${
+              className={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider self-start sm:self-auto ${
                 ticket.status === "Open"
-                  ? "bg-accent/20 text-accent border border-accent/30"
-                  : "bg-primary/20 text-primary border border-primary/30"
+                  ? "bg-cyan-500/15 text-cyan-400 border border-cyan-500/30"
+                  : "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
               }`}
             >
               {ticket.status}
             </span>
           </div>
 
-          <div className="space-y-4">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+          <div className="space-y-3">
+            <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400">
               Original Submission
             </h2>
-            <div className="p-4 rounded-xl bg-white/5 border border-white/5 text-sm text-zinc-200 whitespace-pre-line leading-relaxed">
+            <div className="p-5 rounded-2xl bg-[#07090D] border border-white/5 text-sm text-zinc-200 whitespace-pre-line leading-relaxed font-mono">
               {ticket.message}
             </div>
           </div>
 
-          <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-zinc-400 gap-2">
+          <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-zinc-400 gap-3 font-mono">
             <span>Opened: {new Date(ticket.created_at).toLocaleString()}</span>
-            <span className="text-primary flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Assigned to On-Call Architect</span>
+            <span className="text-cyan-400 flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Assigned to On-Call Systems Architect</span>
             </span>
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }

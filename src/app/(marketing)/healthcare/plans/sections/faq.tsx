@@ -31,10 +31,11 @@ export default function PlansFAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="py-20 md:py-32" style={{ background: '#0B1A36' }}>
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 md:py-32 relative bg-[#10131A] overflow-hidden">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-white mb-4">Frequently Asked Questions</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight">Frequently Asked Questions</h2>
+          <p className="text-sm text-slate-400">Everything you need to know about licensing, setup, and scaling.</p>
         </div>
 
         <div className="flex flex-col gap-4">
@@ -43,18 +44,18 @@ export default function PlansFAQ() {
             return (
               <div
                 key={idx}
-                className="rounded-2xl overflow-hidden transition-colors"
-                style={{
-                  background: isOpen ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(255,255,255,0.08)'
-                }}
+                className={`rounded-2xl overflow-hidden transition-all duration-300 border ${
+                  isOpen
+                    ? 'bg-[#151922] border-[#1FA9A2]/40 shadow-lg shadow-black/30'
+                    : 'bg-[#151922]/60 border-white/5 hover:border-white/15'
+                }`}
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : idx)}
-                  className="w-full flex items-center justify-between p-6 text-left"
+                  className="w-full flex items-center justify-between p-6 text-left cursor-pointer transition-colors"
                 >
                   <span className="text-base font-semibold text-white pr-8">{faq.q}</span>
-                  <span className="shrink-0 text-[#1FA9A2]">
+                  <span className="shrink-0 text-[#45D9D2]">
                     {isOpen ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
                   </span>
                 </button>
@@ -66,7 +67,7 @@ export default function PlansFAQ() {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <div className="px-6 pb-6 text-sm text-slate-400 leading-relaxed">
+                      <div className="px-6 pb-6 text-sm text-slate-300 leading-relaxed border-t border-white/5 pt-4">
                         {faq.a}
                       </div>
                     </motion.div>

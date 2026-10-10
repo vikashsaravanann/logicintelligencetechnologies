@@ -46,11 +46,15 @@ export default function HealthcareOverview() {
   return (
     <section
       aria-label="Platform overview"
-      className="py-24 md:py-32 relative overflow-hidden"
-      style={{ background: '#0B1A36' }}
+      className="py-24 md:py-32 relative overflow-hidden bg-[#10131A]"
     >
-      <div aria-hidden className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(21,101,192,0.12), transparent 60%)' }} />
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(31,169,162,0.08), transparent 60%)',
+        }}
+      />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section heading */}
@@ -60,11 +64,10 @@ export default function HealthcareOverview() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6"
-            style={{ background: 'rgba(31,169,162,0.10)', border: '1px solid rgba(31,169,162,0.25)' }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 border border-[#1FA9A2]/30 bg-[#1FA9A2]/10"
           >
-            <span className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#1FA9A2]">
-              Platform Overview
+            <span className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#45D9D2]">
+              Platform Architecture
             </span>
           </motion.div>
 
@@ -76,7 +79,7 @@ export default function HealthcareOverview() {
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight mb-5"
           >
             A Platform Built for{' '}
-            <span style={{ background: 'linear-gradient(90deg, #1FA9A2, #45D9D2)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#1FA9A2] to-[#45D9D2]">
               Healthcare Organizations
             </span>
           </motion.h2>
@@ -86,7 +89,7 @@ export default function HealthcareOverview() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.55, delay: 0.12 }}
-            className="text-base sm:text-lg text-slate-400 leading-relaxed"
+            className="text-base sm:text-lg text-slate-300 leading-relaxed"
           >
             LIT Healthcare centralizes the operational workflows of clinics and hospitals into a structured digital platform.
             Organizations can manage multiple facilities, define roles precisely, and give each team member a workspace
@@ -103,16 +106,20 @@ export default function HealthcareOverview() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="p-8 rounded-2xl"
-              style={{ background: pillar.bg, border: `1px solid ${pillar.border}` }}
+              className="p-8 rounded-2xl bg-[#151922] border border-white/5 hover:border-[#1FA9A2]/30 transition-all duration-300 relative group overflow-hidden"
             >
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
-                style={{ background: `${pillar.bg}`, border: `1px solid ${pillar.border}` }}
+                aria-hidden
+                className="absolute -right-12 -top-12 w-32 h-32 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none blur-2xl"
+                style={{ background: pillar.color }}
+              />
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 border"
+                style={{ background: pillar.bg, borderColor: pillar.border }}
               >
                 <pillar.icon className="w-6 h-6" style={{ color: pillar.color }} aria-hidden />
               </div>
-              <h3 className="text-lg font-bold text-white mb-3">{pillar.title}</h3>
+              <h3 className="text-xl font-bold text-white mb-3 tracking-tight">{pillar.title}</h3>
               <p className="text-sm text-slate-400 leading-relaxed">{pillar.description}</p>
             </motion.div>
           ))}

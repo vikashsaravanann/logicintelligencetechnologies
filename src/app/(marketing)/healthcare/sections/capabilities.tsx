@@ -86,22 +86,25 @@ export default function HealthcareCapabilities() {
   return (
     <section
       aria-label="Platform capabilities"
-      className="py-24 md:py-32 relative"
-      style={{ background: '#0B1628' }}
+      className="py-24 md:py-32 relative bg-[#10131A]"
     >
-      <div aria-hidden className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse 60% 40% at 50% 100%, rgba(31,169,162,0.08), transparent 60%)' }} />
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 60% 40% at 50% 100%, rgba(31,169,162,0.06), transparent 60%)',
+        }}
+      />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section heading */}
-        <div className="text-center mb-6 max-w-3xl mx-auto">
+        <div className="text-center mb-8 max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6"
-            style={{ background: 'rgba(69,217,210,0.08)', border: '1px solid rgba(69,217,210,0.25)' }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 border border-[#45D9D2]/30 bg-[#45D9D2]/10"
           >
             <span className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#45D9D2]">
               Platform Capabilities
@@ -113,7 +116,7 @@ export default function HealthcareCapabilities() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.06 }}
-            className="text-3xl sm:text-4xl font-bold text-white leading-tight tracking-tight mb-4"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight mb-4"
           >
             Comprehensive Healthcare Operations
           </motion.h2>
@@ -122,7 +125,7 @@ export default function HealthcareCapabilities() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.12 }}
-            className="text-base text-slate-400 leading-relaxed mb-6"
+            className="text-base sm:text-lg text-slate-300 leading-relaxed mb-6"
           >
             LIT Healthcare covers the key operational areas of a modern healthcare facility.
             Each module&apos;s availability is noted transparently below.
@@ -132,8 +135,11 @@ export default function HealthcareCapabilities() {
         {/* Status legend */}
         <div className="flex flex-wrap justify-center gap-3 mb-12">
           {(Object.entries(STATUS_CONFIG) as [FeatureStatus, typeof STATUS_CONFIG[FeatureStatus]][]).map(([key, cfg]) => (
-            <div key={key} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium"
-              style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.color}40` }}>
+            <div
+              key={key}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border"
+              style={{ background: cfg.bg, color: cfg.color, borderColor: `${cfg.color}35` }}
+            >
               <cfg.Icon className="w-3.5 h-3.5" aria-hidden />
               {cfg.label}
             </div>
@@ -151,26 +157,24 @@ export default function HealthcareCapabilities() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.45, delay: i * 0.04 }}
-                className="p-6 rounded-2xl flex flex-col gap-4"
-                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+                className="p-6 rounded-2xl flex flex-col justify-between gap-4 bg-[#151922] border border-white/5 hover:border-[#1FA9A2]/30 transition-all duration-300 group"
               >
-                <div className="flex items-start justify-between gap-2">
-                  <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                    style={{ background: 'rgba(21,101,192,0.12)', border: '1px solid rgba(21,101,192,0.25)' }}
-                  >
-                    <cap.icon className="w-5 h-5 text-[#1565C0]" aria-hidden />
-                  </div>
-                  <div
-                    className="flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold shrink-0"
-                    style={{ background: sc.bg, color: sc.color }}
-                  >
-                    <sc.Icon className="w-3 h-3" aria-hidden />
-                    {sc.label}
-                  </div>
-                </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white mb-1.5">{cap.name}</h3>
+                  <div className="flex items-start justify-between gap-2 mb-4">
+                    <div
+                      className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border border-[#1565C0]/30 bg-[#1565C0]/10"
+                    >
+                      <cap.icon className="w-5 h-5 text-[#45D9D2]" aria-hidden />
+                    </div>
+                    <div
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold shrink-0 border"
+                      style={{ background: sc.bg, color: sc.color, borderColor: `${sc.color}30` }}
+                    >
+                      <sc.Icon className="w-3 h-3" aria-hidden />
+                      {sc.label}
+                    </div>
+                  </div>
+                  <h3 className="text-base font-bold text-white mb-2">{cap.name}</h3>
                   <p className="text-xs text-slate-400 leading-relaxed">{cap.description}</p>
                 </div>
               </motion.div>
@@ -183,7 +187,7 @@ export default function HealthcareCapabilities() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-center text-xs text-slate-600 mt-10 max-w-2xl mx-auto"
+          className="text-center text-xs text-slate-500 mt-12 max-w-2xl mx-auto leading-relaxed"
         >
           Feature availability depends on subscription tier, deployment configuration, and organizational requirements.
           LIT Healthcare does not autonomously diagnose, prescribe, or replace clinical judgment.

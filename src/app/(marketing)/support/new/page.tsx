@@ -4,7 +4,8 @@ import { useState } from "react";
 import BackButton from "@/components/navigation/back-button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, HelpCircle, Loader2, Send } from "lucide-react";
+import { ArrowLeft, CheckCircle2, HelpCircle, Loader2, Send, ShieldAlert } from "lucide-react";
+import PageShell from "@/components/layout/page-shell";
 
 export default function NewSupportTicketPage() {
   const router = useRouter();
@@ -50,114 +51,113 @@ export default function NewSupportTicketPage() {
     }
   };
 
+  const inputClass =
+    "w-full bg-[#07090D] border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/40 transition-colors font-sans";
+  const labelClass =
+    "block text-xs font-mono font-bold text-zinc-300 uppercase tracking-wider mb-2";
+
   return (
-    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20">
+    <PageShell className="pt-32 pb-24">
       <div className="max-w-3xl mx-auto px-6">
         <div className="mb-8">
-          <BackButton fallbackHref="/support" label="Back to Support" inline />
+          <BackButton fallbackHref="/support" label="Back to Support Hub" inline />
         </div>
 
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white uppercase tracking-tight mb-2">
-            SUBMIT SUPPORT TICKET
+        <div className="mb-10 text-center sm:text-left">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 text-xs font-mono uppercase tracking-widest mb-4">
+            <ShieldAlert className="w-3.5 h-3.5" />
+            <span>Direct Engineering Intake</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-white uppercase tracking-tight mb-2">
+            Submit Support Ticket
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-400">
-            Our engineering team will triage your issue according to selected priority.
+          <p className="text-sm text-zinc-400 font-light">
+            Our engineering team will triage your issue according to selected priority and response SLA.
           </p>
         </div>
 
         {error && (
-          <div className="p-4 rounded-xl bg-accent/10 border border-accent/20 text-accent text-xs mb-6">
+          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs mb-6">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="rounded-2xl border border-white/10 bg-white/[0.02] p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="rounded-3xl border border-white/10 bg-[#10131A] p-6 sm:p-10 shadow-2xl space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
-                Your Name *
-              </label>
+              <label className={labelClass}>Your Name *</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Marcus Vance"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary/50"
+                className={inputClass}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
-                Corporate Email *
-              </label>
+              <label className={labelClass}>Corporate Email *</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="marcus@company.com"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary/50"
+                placeholder="marcus@vance.io"
+                className={inputClass}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
             <div className="sm:col-span-8">
-              <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
-                Subject / Issue Summary *
-              </label>
+              <label className={labelClass}>Subject / Issue Summary *</label>
               <input
                 type="text"
                 required
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="e.g. Database connection timeout during peak webhook payload"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary/50"
+                className={inputClass}
               />
             </div>
 
             <div className="sm:col-span-4">
-              <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
-                Severity Level
-              </label>
+              <label className={labelClass}>Severity Level</label>
               <select
                 value={priority}
                 onChange={(e: any) => setPriority(e.target.value)}
-                className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary/50"
+                className={inputClass}
               >
-                <option value="Low">Low (General Inquiry)</option>
-                <option value="Medium">Medium (Minor Glitch)</option>
-                <option value="High">High (Service Degradation)</option>
-                <option value="Critical">Critical (Outage)</option>
+                <option value="Low" className="bg-[#10131A]">Low (Inquiry)</option>
+                <option value="Medium" className="bg-[#10131A]">Medium (Minor Glitch)</option>
+                <option value="High" className="bg-[#10131A]">High (Degradation)</option>
+                <option value="Critical" className="bg-[#10131A]">Critical (Outage)</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
-              Detailed Description & Logs *
-            </label>
+            <label className={labelClass}>Detailed Description & Logs *</label>
             <textarea
               required
               rows={6}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Describe the steps to reproduce, URLs affected, error messages, and browser/OS details..."
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary/50"
+              placeholder="Describe steps to reproduce, affected endpoint URLs, stack traces, and environment details..."
+              className={inputClass}
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all  flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full py-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-[#07090D] font-bold text-xs uppercase tracking-widest transition-all shadow-[0_0_25px_rgba(69,217,210,0.25)] hover:shadow-[0_0_35px_rgba(69,217,210,0.4)] flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Creating Ticket...</span>
+                <span>Creating Ticket…</span>
               </>
             ) : (
               <>
@@ -168,6 +168,6 @@ export default function NewSupportTicketPage() {
           </button>
         </form>
       </div>
-    </div>
+    </PageShell>
   );
 }

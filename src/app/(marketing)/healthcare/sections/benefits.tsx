@@ -52,20 +52,26 @@ export default function HealthcareBenefits() {
   return (
     <section
       aria-label="Platform benefits"
-      className="py-24 md:py-32"
-      style={{ background: '#0D2248' }}
+      className="py-24 md:py-32 relative bg-[#07090D] overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(21,101,192,0.06), transparent 70%)',
+        }}
+      />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6"
-            style={{ background: 'rgba(31,169,162,0.10)', border: '1px solid rgba(31,169,162,0.25)' }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 border border-[#1FA9A2]/30 bg-[#1FA9A2]/10"
           >
-            <span className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#1FA9A2]">
+            <span className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#45D9D2]">
               Platform Benefits
             </span>
           </motion.div>
@@ -75,10 +81,10 @@ export default function HealthcareBenefits() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.06 }}
-            className="text-3xl sm:text-4xl font-bold text-white leading-tight tracking-tight mb-4"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight mb-4"
           >
             Why Healthcare Organizations Choose{' '}
-            <span style={{ background: 'linear-gradient(90deg, #1FA9A2, #45D9D2)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#1FA9A2] to-[#45D9D2]">
               LIT Healthcare
             </span>
           </motion.h2>
@@ -87,7 +93,7 @@ export default function HealthcareBenefits() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.12 }}
-            className="text-base text-slate-400 leading-relaxed"
+            className="text-base sm:text-lg text-slate-300 leading-relaxed"
           >
             LIT Healthcare is designed to bring operational structure, access clarity, and workflow consistency
             to healthcare organizations of all sizes.
@@ -102,16 +108,15 @@ export default function HealthcareBenefits() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.07 }}
-              className="p-7 rounded-2xl group hover:border-opacity-40 transition-all"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+              className="p-8 rounded-2xl bg-[#151922] border border-white/5 hover:border-[#1FA9A2]/30 transition-all duration-300 group relative overflow-hidden"
             >
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
-                style={{ background: `${benefit.color}14`, border: `1px solid ${benefit.color}35` }}
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 border transition-transform group-hover:scale-105 duration-300"
+                style={{ background: `${benefit.color}15`, borderColor: `${benefit.color}35` }}
               >
                 <benefit.icon className="w-6 h-6" style={{ color: benefit.color }} aria-hidden />
               </div>
-              <h3 className="text-base font-bold text-white mb-3">{benefit.title}</h3>
+              <h3 className="text-lg font-bold text-white mb-3 tracking-tight">{benefit.title}</h3>
               <p className="text-sm text-slate-400 leading-relaxed">{benefit.description}</p>
             </motion.div>
           ))}

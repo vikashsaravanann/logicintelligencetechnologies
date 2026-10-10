@@ -1,16 +1,19 @@
 import React from "react";
-import { Terminal, Key, Webhook, FileJson, ArrowRight } from "lucide-react";
+import { Terminal, Key, Webhook, FileJson, ArrowRight, ShieldCheck, Cpu } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
   title: "Developer API Documentation | Logic Intelligence Technologies",
-  description: "Integrate enterprise AI endpoints, real-time voice intelligence, and healthcare platform services with Logic Intelligence Technologies REST APIs.",
+  description: "Integrate enterprise AI endpoints, real-time voice intelligence, and platform services with Logic Intelligence Technologies REST APIs.",
+  alternates: {
+    canonical: "/docs/api",
+  },
 };
 
 export default function ApiDocsPage() {
-  const codeSnippet = `curl -X POST https://api.logicintelligencetechnologies.in/v1/analyze \\
+  const codeSnippet = `curl -X POST https://api.logicintelligencetechnologies.in/v1/voice/analyze \\
   -H "Authorization: Bearer lit_live_YOUR_API_KEY" \\
   -H "Content-Type: multipart/form-data" \\
   -F "audio=@/path/to/stream.wav" \\
@@ -20,73 +23,76 @@ export default function ApiDocsPage() {
   "id": "req_8f73b2a",
   "status": "completed",
   "verdict": "VERIFIED",
+  "confidence": 0.984,
   "latency_ms": 42
 }`;
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 selection:bg-primary selection:text-slate-950 pt-32 pb-24">
-      <BackToHome />
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(16,185,129,0.1),_transparent_50%)]" />
+    <div className="min-h-screen bg-[#07090D] text-slate-100 selection:bg-primary selection:text-slate-950 pt-32 pb-24 overflow-x-hidden">
+      <BackToHome href="/products" label="Back to Products" />
+      
+      {/* Ambient background glow */}
+      <div className="pointer-events-none absolute top-12 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-[radial-gradient(ellipse_at_top,_rgba(69,217,210,0.1),_transparent_70%)] blur-[120px]" />
 
-      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
+      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-16">
         
         {/* Header */}
-        <div className="mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/10 mb-4">
+        <div className="space-y-4 max-w-3xl">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/20 bg-primary/10">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-primary uppercase">
-              API Reference v1.2
+              Developer Reference v1.2
             </span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-bold tracking-[0.12em] text-white uppercase">
+          <h1 className="text-[clamp(2.5rem,5vw,4rem)] font-bold tracking-tight text-white uppercase leading-[1.05]">
             Platform APIs
           </h1>
-          <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl">
-            Embed real-time intelligence directly into your infrastructure stack. 
-            Connect via REST or WebSocket and receive instant structured responses.
+          <p className="text-base sm:text-lg text-slate-400 leading-relaxed font-light">
+            Embed real-time machine intelligence directly into your infrastructure stack. 
+            Connect via secure REST or streaming WebSockets to receive instant structured classifications and entity payloads.
           </p>
         </div>
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* Left Column: Endpoints & Explanations */}
-          <div className="lg:col-span-5 space-y-8">
+          {/* Left Column: Endpoints & Authentication */}
+          <div className="lg:col-span-5 space-y-6">
             
             {/* Auth Section */}
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md p-6 shadow-xl">
-              <h2 className="text-sm font-mono font-bold tracking-widest text-white uppercase mb-4 flex items-center gap-2">
+            <div className="rounded-3xl border border-white/10 bg-[#10131A] p-6 sm:p-8 space-y-4">
+              <h2 className="text-xs font-mono font-bold tracking-widest text-white uppercase flex items-center gap-2">
                 <Key className="w-4 h-4 text-primary" />
-                Authentication
+                <span>Authentication</span>
               </h2>
-              <p className="text-sm text-slate-400 leading-relaxed mb-4">
-                Authenticate your API requests using your secret key in the <code className="text-primary bg-slate-800/50 px-1 py-0.5 rounded">Authorization</code> header. Do not share this key in client-side code.
+              <p className="text-sm text-slate-400 leading-relaxed font-light">
+                Authenticate your API requests using your secret key in the <code className="text-primary bg-[#151922] px-2 py-0.5 rounded font-mono text-xs border border-white/10">Authorization</code> header. Keys are issued following enterprise security verification.
               </p>
             </div>
 
             {/* Analysis Endpoint */}
-            <div className="rounded-2xl border border-primary/50 bg-primary/10 backdrop-blur-md p-6 shadow-xl">
-              <h2 className="text-sm font-mono font-bold tracking-widest text-white uppercase mb-2 flex items-center gap-2">
+            <div className="rounded-3xl border border-primary/30 bg-[#10131A] p-6 sm:p-8 space-y-4">
+              <h2 className="text-xs font-mono font-bold tracking-widest text-white uppercase flex items-center gap-2">
                 <Terminal className="w-4 h-4 text-primary" />
-                Analyze Stream
+                <span>Analyze Audio Stream</span>
               </h2>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-[10px] font-mono font-bold px-2 py-1 bg-primary/20 text-primary rounded">POST</span>
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-mono font-bold px-2.5 py-1 bg-primary/20 text-primary rounded-md border border-primary/30">POST</span>
                 <code className="text-xs text-slate-300 font-mono">/v1/voice/analyze</code>
               </div>
-              <p className="text-sm text-slate-400 leading-relaxed">
-                Uploads an audio buffer for immediate DNN inference. Supports PCM, WAV, and MP3 formats. Max duration per request is 60 seconds.
+              <p className="text-sm text-slate-400 leading-relaxed font-light">
+                Uploads an audio buffer for immediate DNN inference. Supports PCM, WAV, and MP3 acoustic formats. Max duration per synchronous payload is 60 seconds.
               </p>
             </div>
 
             {/* Webhooks Endpoint */}
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 backdrop-blur-md p-6 shadow-xl">
-              <h2 className="text-sm font-mono font-bold tracking-widest text-white uppercase mb-4 flex items-center gap-2">
+            <div className="rounded-3xl border border-white/10 bg-[#10131A] p-6 sm:p-8 space-y-4">
+              <h2 className="text-xs font-mono font-bold tracking-widest text-white uppercase flex items-center gap-2">
                 <Webhook className="w-4 h-4 text-primary" />
-                Webhooks
+                <span>Asynchronous Webhooks</span>
               </h2>
-              <p className="text-sm text-slate-400 leading-relaxed">
-                Register a webhook URL to receive asynchronous alerts when a continuous SIP stream crosses your configured risk threshold.
+              <p className="text-sm text-slate-400 leading-relaxed font-light">
+                Register a validated TLS webhook URL to receive asynchronous status updates and completed transcription payloads with HMAC signature verification.
               </p>
             </div>
 
@@ -96,12 +102,12 @@ export default function ApiDocsPage() {
           <div className="lg:col-span-7 space-y-6">
             
             {/* Request Snippet */}
-            <div className="rounded-2xl border border-slate-800 bg-[#0a0e17] overflow-hidden shadow-2xl">
-              <div className="flex items-center justify-between px-4 py-3 bg-slate-900/80 border-b border-slate-800">
-                <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase">Request Example</span>
-                <span className="text-[10px] font-mono text-slate-500">cURL</span>
+            <div className="rounded-3xl border border-white/10 bg-[#10131A] overflow-hidden shadow-2xl">
+              <div className="flex items-center justify-between px-6 py-4 bg-[#151922] border-b border-white/10">
+                <span className="text-[11px] font-mono tracking-widest text-slate-400 uppercase">Request Example</span>
+                <span className="text-[11px] font-mono text-primary font-bold">cURL</span>
               </div>
-              <div className="p-4 overflow-x-auto">
+              <div className="p-6 overflow-x-auto">
                 <pre className="text-xs font-mono text-slate-300 leading-relaxed">
                   <code>{codeSnippet}</code>
                 </pre>
@@ -109,31 +115,38 @@ export default function ApiDocsPage() {
             </div>
 
             {/* Response Snippet */}
-            <div className="rounded-2xl border border-slate-800 bg-[#0a0e17] overflow-hidden shadow-2xl">
-              <div className="flex items-center justify-between px-4 py-3 bg-slate-900/80 border-b border-slate-800">
-                <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase flex items-center gap-2">
-                  <FileJson className="w-3 h-3" /> Response
+            <div className="rounded-3xl border border-white/10 bg-[#10131A] overflow-hidden shadow-2xl">
+              <div className="flex items-center justify-between px-6 py-4 bg-[#151922] border-b border-white/10">
+                <span className="text-[11px] font-mono tracking-widest text-slate-400 uppercase flex items-center gap-2">
+                  <FileJson className="w-3.5 h-3.5 text-primary" /> 
+                  <span>Response Payload</span>
                 </span>
-                <span className="text-[10px] font-mono text-primary">200 OK</span>
+                <span className="text-[11px] font-mono text-primary font-bold">200 OK</span>
               </div>
-              <div className="p-4 overflow-x-auto">
-                <pre className="text-xs font-mono text-primary/80 leading-relaxed">
+              <div className="p-6 overflow-x-auto">
+                <pre className="text-xs font-mono text-primary/90 leading-relaxed">
                   <code>{jsonResponse}</code>
                 </pre>
               </div>
             </div>
 
-            <div className="pt-6 text-right">
+            <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-2 text-xs font-mono text-slate-500">
+                <ShieldCheck className="w-4 h-4 text-primary" />
+                <span>Strict Rate Limiting &amp; TLS 1.3 Mandate</span>
+              </div>
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-primary hover:bg-primary/90 text-black font-mono font-bold text-xs tracking-[0.15em] uppercase transition-all"
+                className="inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-primary hover:bg-[#6DE6E0] text-slate-950 font-bold text-xs uppercase tracking-wider transition-all min-h-[44px]"
               >
-                Request API Access <ArrowRight className="w-4 h-4" />
+                <span>Request API Credentials</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
           </div>
         </div>
+
       </div>
     </div>
   );

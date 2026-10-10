@@ -41,14 +41,22 @@ const categories = [
 
 export default function PlansFeatures() {
   return (
-    <section className="py-20 md:py-32" style={{ background: '#0D2248' }}>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 md:py-32 relative bg-[#07090D] overflow-hidden">
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(21,101,192,0.06), transparent 70%)',
+        }}
+      />
+
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <motion.h2
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl font-bold text-white mb-4"
+            className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight"
           >
             Compare Plan Features
           </motion.h2>
@@ -57,44 +65,44 @@ export default function PlansFeatures() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-slate-400 max-w-2xl mx-auto"
+            className="text-base text-slate-400 max-w-2xl mx-auto"
           >
             Detailed breakdown of capabilities available in each subscription tier.
           </motion.p>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px]">
+        <div className="overflow-x-auto rounded-2xl border border-white/5 bg-[#10131A] p-2 md:p-4">
+          <table className="w-full text-left border-collapse min-w-[760px]">
             <thead>
-              <tr>
-                <th className="w-1/3 p-4 border-b border-white/10 text-sm font-semibold text-white">Features</th>
-                <th className="p-4 border-b border-white/10 text-center text-sm font-semibold text-[#1FA9A2]">Essential</th>
-                <th className="p-4 border-b border-white/10 text-center text-sm font-semibold text-[#1565C0]">Professional</th>
-                <th className="p-4 border-b border-white/10 text-center text-sm font-semibold text-[#45D9D2]">Standard</th>
-                <th className="p-4 border-b border-white/10 text-center text-sm font-semibold text-[#1FA9A2]">Advanced</th>
+              <tr className="border-b border-white/10">
+                <th className="w-1/3 p-4 text-sm font-semibold text-white">Features</th>
+                <th className="p-4 text-center text-sm font-semibold text-[#1FA9A2]">Essential</th>
+                <th className="p-4 text-center text-sm font-semibold text-[#45D9D2]">Professional</th>
+                <th className="p-4 text-center text-sm font-semibold text-[#1565C0]">Standard</th>
+                <th className="p-4 text-center text-sm font-semibold text-[#1FA9A2]">Advanced</th>
               </tr>
             </thead>
             <tbody>
               {categories.map((category) => (
                 <React.Fragment key={category.name}>
                   <tr>
-                    <td colSpan={5} className="p-4 pt-8 pb-3 text-xs font-bold uppercase tracking-wider text-slate-500 bg-[#0D2248]">
+                    <td colSpan={5} className="p-4 pt-8 pb-3 text-xs font-bold uppercase tracking-wider text-slate-400 bg-white/[0.02]">
                       {category.name}
                     </td>
                   </tr>
                   {category.features.map((feature) => (
-                    <tr key={feature.name} className="border-b border-white/5 hover:bg-white/[0.02]">
-                      <td className="p-4 text-sm text-slate-300">{feature.name}</td>
+                    <tr key={feature.name} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                      <td className="p-4 text-sm text-slate-300 font-medium">{feature.name}</td>
                       {feature.tiers.map((val, idx) => (
                         <td key={idx} className="p-4 text-center">
                           {typeof val === 'boolean' ? (
                             val ? (
-                              <Check className="w-4 h-4 text-[#1FA9A2] mx-auto" />
+                              <Check className="w-4 h-4 text-[#45D9D2] mx-auto" />
                             ) : (
                               <Minus className="w-4 h-4 text-slate-700 mx-auto" />
                             )
                           ) : (
-                            <span className="text-sm font-medium text-slate-300">{val}</span>
+                            <span className="text-xs font-semibold text-slate-300 font-mono">{val}</span>
                           )}
                         </td>
                       ))}

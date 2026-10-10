@@ -1,10 +1,25 @@
 "use client";
-import FloatingElements from "@/components/motion/floating-elements";
-import BackToHome from "@/components/ui/back-to-home";
-import PageBackdrop from "@/components/ui/page-backdrop";
+
 import { useState } from "react";
-import { Send, CheckCircle2, ArrowRight, ArrowLeft, AlertCircle } from "lucide-react";
+import { 
+  Send, 
+  CheckCircle2, 
+  ArrowRight, 
+  ArrowLeft, 
+  AlertCircle, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Clock, 
+  Sparkles,
+  ShieldCheck,
+  MessageSquare
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { PageShell } from "@/components/layout/page-shell";
+import BackToHome from "@/components/ui/back-to-home";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import { COMPANY } from "@/config/company";
 
 type FormData = {
@@ -37,7 +52,6 @@ const initialForm: FormData = {
   notes: "",
 };
 
-// Per-step required fields for inline validation
 const stepRequirements: Record<number, (keyof FormData)[]> = {
   1: ["businessName", "industry"],
   2: ["serviceType"],
@@ -73,7 +87,6 @@ export default function ContactPage() {
 
   const update = (field: keyof FormData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
-    // Clear error on edit
     if (fieldErrors[field]) setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
@@ -91,7 +104,6 @@ export default function ContactPage() {
       return;
     }
 
-    // Final step — submit to API
     setIsSubmitting(true);
     setServerError(null);
     try {
@@ -128,235 +140,395 @@ export default function ContactPage() {
   };
 
   const inputBase =
-    "w-full px-5 py-4 bg-zinc-900/50 border rounded-xl text-base md:text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner";
+    "w-full px-4 py-3.5 bg-[#10131A] border rounded-xl text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-cyan-400 focus:bg-[#151922] focus:ring-1 focus:ring-cyan-400/40 transition-all shadow-inner";
   const inputClass = (field: keyof FormData) =>
-    `${inputBase} ${fieldErrors[field] ? "border-red-500/50" : "border-white/10"}`;
-  const labelClass = "block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2";
+    `${inputBase} ${fieldErrors[field] ? "border-rose-500/50" : "border-white/10"}`;
+  const labelClass = "block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2";
 
   return (
-    <div className="min-h-screen bg-transparent text-white pt-24">
-      <BackToHome />
+    <PageShell>
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "Contact", path: "/contact" },
+        ])}
+      />
 
-      <section className="relative py-16 px-6 lg:px-8 overflow-hidden min-h-[80vh] flex flex-col justify-center">
-        <PageBackdrop src="/assets/backdrops/contact-hero.jpg" />
+      <div className="pt-28 sm:pt-32 pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <BackToHome href="/" label="Back to Home" />
 
-        <div className="max-w-3xl mx-auto w-full relative z-10">
-          <div className="text-center mb-12">
-            <h1 className="uppercase text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">START YOUR PROJECT</h1>
-            <p className="text-zinc-400">Tell us about your requirements and we'll get back to you within 24 hours.</p>
+        {/* Header Hero */}
+        <div className="mt-8 mb-16 text-center max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-950/30 text-cyan-400 text-xs font-mono font-medium tracking-wider uppercase mb-6 shadow-[0_0_15px_rgba(69,217,210,0.15)]">
+            <Sparkles className="w-3.5 h-3.5" />
+            Project Intake & Consultation
           </div>
-
-          <div className="bg-zinc-900/40 backdrop-blur-md border border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
-            {sent ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-16"
-              >
-                <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8 ">
-                  <CheckCircle2 className="h-12 w-12 text-primary" />
-                </div>
-                <h3 className="text-3xl font-bold text-white mb-4">Inquiry Submitted!</h3>
-                <p className="text-zinc-400 max-w-sm mx-auto mb-8">
-                  Thank you for sharing your project details. We will review them and contact you within 24 hours.
-                </p>
-                <a
-                  href={`https://wa.me/${COMPANY.whatsappNumber}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#25D366]/10 text-[#25D366] font-bold text-sm border border-[#25D366]/20 hover:bg-[#25D366] hover:text-black transition-all"
-                >
-                  <svg
-                    className="w-4 h-4 fill-current"
-                    viewBox="0 0 448 512"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 415.2c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 334.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 186.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-12.5 2.8-3.7 5.6-14.3 17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
-                  </svg>
-                  Message us on WhatsApp for faster response
-                </a>
-              </motion.div>
-            ) : (
-              <form onSubmit={handleSubmit} noValidate>
-                {/* Progress Indicator */}
-                <div className="flex items-center justify-between mb-12 relative">
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-white/5 rounded-full z-0" />
-                  <div
-                    className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-primary rounded-full z-0 transition-all duration-500"
-                    style={{ width: `${((step - 1) / 2) * 100}%` }}
-                  />
-                  {[1, 2, 3].map((s) => (
-                    <div
-                      key={s}
-                      className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 ${
-                        step >= s
-                          ? "bg-primary text-black "
-                          : "bg-transparent text-zinc-500 border border-white/10"
-                      }`}
-                    >
-                      {step > s ? <CheckCircle2 className="w-5 h-5" /> : s}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Server Error */}
-                {serverError && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-start gap-2"
-                  >
-                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                    {serverError}
-                  </motion.div>
-                )}
-
-                <AnimatePresence mode="wait">
-                  {/* Step 1 */}
-                  {step === 1 && (
-                    <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
-                      <h3 className="text-xl font-bold text-white mb-6">1. Business Details</h3>
-                      <div>
-                        <label className={labelClass}>Business / Company Name *</label>
-                        <input type="text" value={form.businessName} onChange={(e) => update("businessName", e.target.value)} className={inputClass("businessName")} placeholder="Acme Corp" />
-                        {fieldErrors.businessName && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.businessName}</p>}
-                      </div>
-                      <div>
-                        <label className={labelClass}>Industry / Niche *</label>
-                        <input type="text" value={form.industry} onChange={(e) => update("industry", e.target.value)} className={inputClass("industry")} placeholder="e.g. Real Estate, Hotel, E-commerce" />
-                        {fieldErrors.industry && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.industry}</p>}
-                      </div>
-                      <div>
-                        <label className={labelClass}>Existing Website URL (Optional)</label>
-                        <input type="url" value={form.existingUrl} onChange={(e) => update("existingUrl", e.target.value)} className={inputClass("existingUrl")} placeholder="https://example.com" />
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Step 2 */}
-                  {step === 2 && (
-                    <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
-                      <h3 className="text-xl font-bold text-white mb-6">2. Project Scope</h3>
-                      <div>
-                        <label className={labelClass}>Type of Service Needed *</label>
-                        <select value={form.serviceType} onChange={(e) => update("serviceType", e.target.value)} className={inputClass("serviceType")}>
-                          <option value="" disabled>Select Service</option>
-                          <option className="bg-zinc-900">Corporate Website</option>
-                          <option className="bg-zinc-900">E-Commerce Store</option>
-                          <option className="bg-zinc-900">Custom Web App / Portal</option>
-                          <option className="bg-zinc-900">Mobile App</option>
-                          <option className="bg-zinc-900">UI/UX Design</option>
-                          <option className="bg-zinc-900">Other</option>
-                        </select>
-                        {fieldErrors.serviceType && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.serviceType}</p>}
-                      </div>
-                      <div>
-                        <label className={labelClass}>Key Features Required</label>
-                        <textarea rows={3} value={form.keyFeatures} onChange={(e) => update("keyFeatures", e.target.value)} className={inputClass("keyFeatures")} placeholder="e.g. Booking system, Payment gateway, User login…"></textarea>
-                      </div>
-                      <div>
-                        <label className={labelClass}>Design References (Optional)</label>
-                        <input type="text" value={form.designRefs} onChange={(e) => update("designRefs", e.target.value)} className={inputClass("designRefs")} placeholder="Links to websites you like" />
-                      </div>
-                      <div>
-                        <label className={labelClass}>Is your content (text/images) ready?</label>
-                        <select value={form.contentReady} onChange={(e) => update("contentReady", e.target.value)} className={inputClass("contentReady")}>
-                          <option className="bg-zinc-900">Yes, completely ready</option>
-                          <option className="bg-zinc-900">Partially ready</option>
-                          <option className="bg-zinc-900">No, I need help with content</option>
-                        </select>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Step 3 */}
-                  {step === 3 && (
-                    <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
-                      <h3 className="text-xl font-bold text-white mb-6">3. Scale &amp; Contact</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className={labelClass}>Project scale *</label>
-                          <select value={form.budget} onChange={(e) => update("budget", e.target.value)} className={inputClass("budget")}>
-                            <option value="" disabled className="bg-zinc-900">Select scale</option>
-                            <option className="bg-zinc-900">Exploring options</option>
-                            <option className="bg-zinc-900">Starter project</option>
-                            <option className="bg-zinc-900">Growth project</option>
-                            <option className="bg-zinc-900">Enterprise / multi-system</option>
-                            <option className="bg-zinc-900">Prefer not to say</option>
-                          </select>
-                          {fieldErrors.budget && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.budget}</p>}
-                        </div>
-                        <div>
-                          <label className={labelClass}>Expected Timeline *</label>
-                          <select value={form.timeline} onChange={(e) => update("timeline", e.target.value)} className={inputClass("timeline")}>
-                            <option value="" disabled>Select Timeline</option>
-                            <option className="bg-zinc-900">ASAP (Urgent)</option>
-                            <option className="bg-zinc-900">1-2 Weeks</option>
-                            <option className="bg-zinc-900">3-4 Weeks</option>
-                            <option className="bg-zinc-900">Flexible</option>
-                          </select>
-                          {fieldErrors.timeline && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.timeline}</p>}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className={labelClass}>Email Address *</label>
-                          <input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} className={inputClass("email")} placeholder="you@example.com" />
-                          {fieldErrors.email && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.email}</p>}
-                        </div>
-                        <div>
-                          <label className={labelClass}>Phone / WhatsApp *</label>
-                          <input type="tel" value={form.phone} onChange={(e) => update("phone", e.target.value)} className={inputClass("phone")} placeholder="+91 98765 43210" />
-                          {fieldErrors.phone && <p className="mt-1.5 text-xs text-red-400">{fieldErrors.phone}</p>}
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className={labelClass}>Any other notes?</label>
-                        <textarea rows={2} value={form.notes} onChange={(e) => update("notes", e.target.value)} className={inputClass("notes")}></textarea>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <div className="mt-10 flex items-center justify-between pt-6 border-t border-white/5">
-                  {step > 1 ? (
-                    <button
-                      type="button"
-                      onClick={() => { setStep(step - 1); setFieldErrors({}); }}
-                      className="px-6 py-4 rounded-xl text-sm font-bold text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 transition-all flex items-center gap-2"
-                    >
-                      <ArrowLeft className="w-4 h-4" /> Back
-                    </button>
-                  ) : (
-                    <div />
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="px-8 py-4 rounded-xl text-sm font-bold text-black bg-white hover:bg-primary transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover: flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <span className="w-4 h-4 border-2 border-black/40 border-t-black rounded-full animate-spin" />
-                        Submitting…
-                      </>
-                    ) : step === 3 ? (
-                      <><Send className="w-4 h-4" /> Submit Inquiry</>
-                    ) : (
-                      <>Next Step <ArrowRight className="w-4 h-4" /></>
-                    )}
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white uppercase font-heading leading-tight">
+            Start Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400">Engineering Project</span>
+          </h1>
+          <p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed font-sans">
+            Tell us about your requirements. Our solutions architects review every inquiry and respond with a technical scope and clear estimation within 24 hours.
+          </p>
         </div>
-      </section>
 
-      <FloatingElements />
-    </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          
+          {/* Left Column: Direct Contacts & Commitments */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="rounded-3xl border border-white/10 bg-[#10131A] p-8 shadow-xl space-y-6">
+              <h2 className="text-lg font-bold text-white uppercase font-heading tracking-wide">
+                Direct Contact Desk
+              </h2>
+
+              <div className="space-y-5">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 flex items-center justify-center shrink-0">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-mono text-slate-400 uppercase tracking-wider block">Email Inquiries</span>
+                    <a href={`mailto:${COMPANY.email}`} className="text-sm font-semibold text-white hover:text-cyan-400 transition-colors">
+                      {COMPANY.email}
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-950/50 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+                    <MessageSquare className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-mono text-slate-400 uppercase tracking-wider block">WhatsApp Direct</span>
+                    <a
+                      href={`https://wa.me/${COMPANY.whatsappNumber}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-semibold text-white hover:text-emerald-400 transition-colors"
+                    >
+                      +{COMPANY.whatsappNumber} (Fast Response)
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 flex items-center justify-center shrink-0">
+                    <MapPin className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-mono text-slate-400 uppercase tracking-wider block">Headquarters</span>
+                    <span className="text-sm text-slate-300 leading-relaxed block">
+                      {COMPANY.address}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 flex items-center justify-center shrink-0">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-mono text-slate-400 uppercase tracking-wider block">Response Commitment</span>
+                    <span className="text-sm text-slate-300 font-medium">
+                      Guaranteed within 24 hours (Monday – Saturday)
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Assurance Box */}
+            <div className="rounded-3xl border border-cyan-500/20 bg-gradient-to-br from-[#10131A] via-[#151922] to-[#10131A] p-8 shadow-xl space-y-4">
+              <div className="flex items-center gap-2 text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider">
+                <ShieldCheck className="w-4 h-4" />
+                NDA & Privacy Protection
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                All submitted technical project details, intellectual property, and requirements are treated under strict confidentiality. We never sell or share client data.
+              </p>
+            </div>
+          </div>
+
+          {/* Right Column: Multi-Step Form */}
+          <div className="lg:col-span-7">
+            <div className="rounded-3xl border border-white/10 bg-[#151922] p-8 sm:p-10 shadow-2xl relative">
+              {sent ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center py-12"
+                >
+                  <div className="w-20 h-20 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto mb-6 text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+                    <CheckCircle2 className="h-10 w-10" />
+                  </div>
+                  <h3 className="text-2xl font-bold font-heading text-white uppercase tracking-wide mb-3">
+                    Inquiry Received
+                  </h3>
+                  <p className="text-sm text-slate-300 max-w-md mx-auto mb-8 leading-relaxed font-sans">
+                    Thank you for sharing your project specifications. Our engineering lead will analyze your requirements and email you an architectural plan within 24 hours.
+                  </p>
+                  <a
+                    href={`https://wa.me/${COMPANY.whatsappNumber}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all"
+                  >
+                    Message on WhatsApp for Immediate Priority
+                  </a>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} noValidate>
+                  {/* Step Progress Meter */}
+                  <div className="mb-10">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
+                        Step {step} of 3
+                      </span>
+                      <span className="text-xs font-mono text-slate-400 uppercase">
+                        {step === 1 && "Business Context"}
+                        {step === 2 && "Technical Scope"}
+                        {step === 3 && "Scale & Timeline"}
+                      </span>
+                    </div>
+
+                    <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-cyan-400 to-teal-400 transition-all duration-300"
+                        style={{ width: `${(step / 3) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {serverError && (
+                    <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>{serverError}</span>
+                    </div>
+                  )}
+
+                  <AnimatePresence mode="wait">
+                    {/* Step 1 */}
+                    {step === 1 && (
+                      <motion.div
+                        key="step1"
+                        initial={{ opacity: 0, x: 15 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -15 }}
+                        className="space-y-6"
+                      >
+                        <div>
+                          <label className={labelClass}>Business / Organization Name <span className="text-cyan-400">*</span></label>
+                          <input
+                            type="text"
+                            value={form.businessName}
+                            onChange={(e) => update("businessName", e.target.value)}
+                            className={inputClass("businessName")}
+                            placeholder="e.g. Apex Health Systems"
+                          />
+                          {fieldErrors.businessName && <p className="mt-1.5 text-xs text-rose-400">{fieldErrors.businessName}</p>}
+                        </div>
+
+                        <div>
+                          <label className={labelClass}>Industry / Sector <span className="text-cyan-400">*</span></label>
+                          <input
+                            type="text"
+                            value={form.industry}
+                            onChange={(e) => update("industry", e.target.value)}
+                            className={inputClass("industry")}
+                            placeholder="e.g. Healthcare, Fintech, Hospitality, Enterprise SaaS"
+                          />
+                          {fieldErrors.industry && <p className="mt-1.5 text-xs text-rose-400">{fieldErrors.industry}</p>}
+                        </div>
+
+                        <div>
+                          <label className={labelClass}>Existing Website / App URL (Optional)</label>
+                          <input
+                            type="url"
+                            value={form.existingUrl}
+                            onChange={(e) => update("existingUrl", e.target.value)}
+                            className={inputClass("existingUrl")}
+                            placeholder="https://example.com"
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Step 2 */}
+                    {step === 2 && (
+                      <motion.div
+                        key="step2"
+                        initial={{ opacity: 0, x: 15 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -15 }}
+                        className="space-y-6"
+                      >
+                        <div>
+                          <label className={labelClass}>Primary Engineering Solution Needed <span className="text-cyan-400">*</span></label>
+                          <select
+                            value={form.serviceType}
+                            onChange={(e) => update("serviceType", e.target.value)}
+                            className={inputClass("serviceType")}
+                          >
+                            <option value="" disabled className="bg-[#10131A]">Select Solution Category</option>
+                            <option value="Enterprise Web Application" className="bg-[#10131A]">Enterprise Web Application (Next.js / React / TypeScript)</option>
+                            <option value="Voice AI / Speech Pipeline" className="bg-[#10131A]">Voice AI / Speech Pipeline (Logic Voice)</option>
+                            <option value="Healthcare Platform Intelligence" className="bg-[#10131A]">Healthcare Platform Intelligence (LIT Clinical)</option>
+                            <option value="Autonomous AI Agents" className="bg-[#10131A]">Autonomous AI Agents & RAG Integration</option>
+                            <option value="Cloud Modernization & APIs" className="bg-[#10131A]">Cloud Modernization, Microservices & Custom APIs</option>
+                            <option value="Other Custom Solution" className="bg-[#10131A]">Other Custom Engineering Solution</option>
+                          </select>
+                          {fieldErrors.serviceType && <p className="mt-1.5 text-xs text-rose-400">{fieldErrors.serviceType}</p>}
+                        </div>
+
+                        <div>
+                          <label className={labelClass}>Key Capabilities & Technical Requirements</label>
+                          <textarea
+                            rows={3}
+                            value={form.keyFeatures}
+                            onChange={(e) => update("keyFeatures", e.target.value)}
+                            className={inputClass("keyFeatures")}
+                            placeholder="e.g. Sub-200ms latency, multi-tenant RBAC, FHIR clinical schema, CRM integration…"
+                          />
+                        </div>
+
+                        <div>
+                          <label className={labelClass}>Design References / Benchmark Systems (Optional)</label>
+                          <input
+                            type="text"
+                            value={form.designRefs}
+                            onChange={(e) => update("designRefs", e.target.value)}
+                            className={inputClass("designRefs")}
+                            placeholder="URLs or systems whose architecture or UX you admire"
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Step 3 */}
+                    {step === 3 && (
+                      <motion.div
+                        key="step3"
+                        initial={{ opacity: 0, x: 15 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -15 }}
+                        className="space-y-6"
+                      >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className={labelClass}>Target Budget Scale <span className="text-cyan-400">*</span></label>
+                            <select
+                              value={form.budget}
+                              onChange={(e) => update("budget", e.target.value)}
+                              className={inputClass("budget")}
+                            >
+                              <option value="" disabled className="bg-[#10131A]">Select Scope</option>
+                              <option value="Starter Pack (< ₹15,000 / $250)" className="bg-[#10131A]">Starter Launch Scope</option>
+                              <option value="Growth Scale (₹15,000 - ₹50,000 / $250 - $750)" className="bg-[#10131A]">Growth System Scope</option>
+                              <option value="Enterprise Architecture (> ₹50,000 / > $1,000)" className="bg-[#10131A]">Enterprise Architecture</option>
+                              <option value="Custom Engineering Quote" className="bg-[#10131A]">Custom Engineering Quote</option>
+                            </select>
+                            {fieldErrors.budget && <p className="mt-1.5 text-xs text-rose-400">{fieldErrors.budget}</p>}
+                          </div>
+
+                          <div>
+                            <label className={labelClass}>Deployment Timeline <span className="text-cyan-400">*</span></label>
+                            <select
+                              value={form.timeline}
+                              onChange={(e) => update("timeline", e.target.value)}
+                              className={inputClass("timeline")}
+                            >
+                              <option value="" disabled className="bg-[#10131A]">Select Timeline</option>
+                              <option value="Immediate / Urgent (< 2 Weeks)" className="bg-[#10131A]">Immediate (&lt; 2 Weeks)</option>
+                              <option value="Standard Sprint (2 - 4 Weeks)" className="bg-[#10131A]">Standard Sprint (2 - 4 Weeks)</option>
+                              <option value="Multi-Phase Enterprise (1 - 3 Months)" className="bg-[#10131A]">Multi-Phase (1 - 3 Months)</option>
+                              <option value="Flexible Roadmapping" className="bg-[#10131A]">Flexible Roadmapping</option>
+                            </select>
+                            {fieldErrors.timeline && <p className="mt-1.5 text-xs text-rose-400">{fieldErrors.timeline}</p>}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className={labelClass}>Work Email <span className="text-cyan-400">*</span></label>
+                            <input
+                              type="email"
+                              value={form.email}
+                              onChange={(e) => update("email", e.target.value)}
+                              className={inputClass("email")}
+                              placeholder="alex@organization.com"
+                            />
+                            {fieldErrors.email && <p className="mt-1.5 text-xs text-rose-400">{fieldErrors.email}</p>}
+                          </div>
+
+                          <div>
+                            <label className={labelClass}>Phone / WhatsApp <span className="text-cyan-400">*</span></label>
+                            <input
+                              type="tel"
+                              value={form.phone}
+                              onChange={(e) => update("phone", e.target.value)}
+                              className={inputClass("phone")}
+                              placeholder="+91 98765 43210"
+                            />
+                            {fieldErrors.phone && <p className="mt-1.5 text-xs text-rose-400">{fieldErrors.phone}</p>}
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className={labelClass}>Additional Architectural Notes (Optional)</label>
+                          <textarea
+                            rows={2}
+                            value={form.notes}
+                            onChange={(e) => update("notes", e.target.value)}
+                            className={inputClass("notes")}
+                            placeholder="Any infrastructure constraints, compliance considerations, or specific questions…"
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Form Step Buttons */}
+                  <div className="mt-10 flex items-center justify-between pt-6 border-t border-white/5">
+                    {step > 1 ? (
+                      <button
+                        type="button"
+                        onClick={() => { setStep(step - 1); setFieldErrors({}); }}
+                        className="px-5 py-3 rounded-xl text-xs font-mono font-bold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 transition-all flex items-center gap-2"
+                      >
+                        <ArrowLeft className="w-4 h-4" /> Previous Step
+                      </button>
+                    ) : (
+                      <div />
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="px-8 py-3.5 rounded-xl text-xs font-mono font-bold uppercase tracking-wider text-slate-950 bg-gradient-to-r from-cyan-400 via-teal-400 to-cyan-400 hover:brightness-110 active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(69,217,210,0.35)] flex items-center gap-2 disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <span className="w-4 h-4 border-2 border-slate-950/40 border-t-slate-950 rounded-full animate-spin" />
+                          Transmitting…
+                        </>
+                      ) : step === 3 ? (
+                        <>
+                          <Send className="w-4 h-4" /> Transmit Inquiry
+                        </>
+                      ) : (
+                        <>
+                          Next Step <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </PageShell>
   );
 }

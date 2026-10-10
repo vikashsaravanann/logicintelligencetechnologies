@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { XCircle, ArrowRight, Calendar as CalendarIcon } from "lucide-react";
+import { XCircle, Calendar as CalendarIcon, ArrowRight, ShieldCheck, Home } from "lucide-react";
+import PageShell from "@/components/layout/page-shell";
 
 export const metadata: Metadata = {
   title: "Booking Cancelled | Logic Intelligence Technologies",
@@ -9,35 +10,52 @@ export const metadata: Metadata = {
 
 export default function BookingCancelledPage() {
   return (
-    <div className="relative min-h-screen bg-[#0A1530] text-white pt-24 pb-20 flex items-center justify-center">
-      <div className="max-w-md mx-auto px-6 w-full text-center">
-        <div className="w-16 h-16 rounded-full bg-accent/20 text-accent border border-accent/30 flex items-center justify-center mx-auto mb-6">
-          <XCircle className="w-8 h-8" />
+    <PageShell className="pt-32 pb-24 flex items-center justify-center">
+      <div className="max-w-xl mx-auto px-6 w-full text-center">
+        {/* Status Icon */}
+        <div className="relative mx-auto w-20 h-20 mb-8 flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full bg-cyan-500/10 blur-xl animate-pulse" />
+          <div className="relative w-20 h-20 rounded-2xl bg-[#10131A] border border-white/10 flex items-center justify-center text-cyan-400 shadow-2xl">
+            <XCircle className="w-10 h-10 text-cyan-400" />
+          </div>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl font-bold text-white uppercase tracking-tight mb-2">
-          CONSULTATION CANCELLED
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-zinc-400 text-xs font-mono uppercase tracking-widest mb-6">
+          <span>Session Released</span>
+        </div>
+
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-white uppercase tracking-tight mb-4">
+          Consultation Cancelled
         </h1>
-        <p className="text-sm text-zinc-400 mb-8 leading-relaxed">
-          Your reservation has been released. If your schedule changes or you need to discuss a project at a later date, you can rebook anytime.
+        <p className="text-base text-zinc-400 mb-10 leading-relaxed max-w-md mx-auto">
+          Your reservation slot has been released. If your schedule changes or you wish to discuss an engineering engagement at a later time, you are welcome to pick another date.
         </p>
 
+        {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/book-consultation"
-            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-8 py-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-[#07090D] font-bold text-xs uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(69,217,210,0.25)] hover:shadow-[0_0_35px_rgba(69,217,210,0.4)]"
           >
             <CalendarIcon className="w-4 h-4" />
-            <span>Pick a New Time</span>
+            <span>Select New Slot</span>
           </Link>
           <Link
             href="/"
-            className="w-full sm:w-auto px-6 py-3 rounded-xl border border-white/10 bg-white/5 text-white font-bold text-xs uppercase tracking-wider hover:bg-white/10 transition-all"
+            className="w-full sm:w-auto px-8 py-4 rounded-xl border border-white/10 bg-[#10131A] hover:bg-white/[0.06] text-white font-bold text-xs uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2"
           >
-            Return Home
+            <Home className="w-4 h-4 text-zinc-400" />
+            <span>Return Home</span>
           </Link>
         </div>
+
+        {/* Reassurance */}
+        <div className="mt-12 pt-8 border-t border-white/5 flex items-center justify-center gap-2 text-xs text-zinc-500 font-mono">
+          <ShieldCheck className="w-4 h-4 text-cyan-400" />
+          <span>No charges or obligations incurred</span>
+        </div>
       </div>
-    </div>
+    </PageShell>
   );
 }

@@ -43,10 +43,17 @@ export default function HealthcareAudience() {
   return (
     <section
       aria-label="Who the platform is for"
-      className="py-24 md:py-32"
-      style={{ background: '#0D1F3E' }}
+      className="py-24 md:py-32 relative bg-[#07090D] overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(21,101,192,0.06), transparent 70%)',
+        }}
+      />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Organization types */}
         <div className="text-center mb-16 max-w-3xl mx-auto">
           <motion.div
@@ -54,11 +61,10 @@ export default function HealthcareAudience() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6"
-            style={{ background: 'rgba(21,101,192,0.10)', border: '1px solid rgba(21,101,192,0.25)' }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 border border-[#1565C0]/30 bg-[#1565C0]/10"
           >
             <span className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#45D9D2]">
-              Organization Types
+              Operational Scope
             </span>
           </motion.div>
 
@@ -67,7 +73,7 @@ export default function HealthcareAudience() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.06 }}
-            className="text-3xl sm:text-4xl font-bold text-white leading-tight tracking-tight mb-4"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight mb-4"
           >
             Built for Healthcare Organizations of All Sizes
           </motion.h2>
@@ -76,14 +82,14 @@ export default function HealthcareAudience() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.12 }}
-            className="text-base text-slate-400 leading-relaxed"
+            className="text-base sm:text-lg text-slate-300 leading-relaxed"
           >
             LIT Healthcare supports a range of organization types, from individual clinics to large hospital groups,
             with subscription tiers matched to operational scale.
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-24">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
           {organizationTypes.map((org, i) => (
             <motion.div
               key={org.type}
@@ -91,16 +97,15 @@ export default function HealthcareAudience() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.45, delay: i * 0.07 }}
-              className="p-6 rounded-2xl text-center"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+              className="p-7 rounded-2xl text-center bg-[#151922] border border-white/5 hover:border-[#1FA9A2]/30 transition-all duration-300 group"
             >
               <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-                style={{ background: `${org.color}1A`, border: `1px solid ${org.color}40` }}
+                className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 border transition-transform group-hover:scale-105 duration-300"
+                style={{ background: `${org.color}15`, borderColor: `${org.color}35` }}
               >
                 <org.icon className="w-7 h-7" style={{ color: org.color }} aria-hidden />
               </div>
-              <h3 className="text-base font-bold text-white mb-2">{org.type}</h3>
+              <h3 className="text-lg font-bold text-white mb-2">{org.type}</h3>
               <p className="text-xs text-slate-400 leading-relaxed">{org.description}</p>
             </motion.div>
           ))}
@@ -129,7 +134,7 @@ export default function HealthcareAudience() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {roleWorkspaces.map((ws, i) => (
             <motion.div
               key={ws.role}
@@ -137,17 +142,15 @@ export default function HealthcareAudience() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.45, delay: i * 0.06 }}
-              className="flex gap-4 p-6 rounded-2xl"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+              className="flex gap-4 p-6 rounded-2xl bg-[#151922] border border-white/5 hover:border-[#1565C0]/35 transition-all duration-300"
             >
               <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                style={{ background: 'rgba(31,169,162,0.12)', border: '1px solid rgba(31,169,162,0.25)' }}
+                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border border-[#1FA9A2]/30 bg-[#1FA9A2]/10"
               >
-                <ws.icon className="w-5 h-5 text-[#1FA9A2]" aria-hidden />
+                <ws.icon className="w-5 h-5 text-[#45D9D2]" aria-hidden />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white mb-1">{ws.role}</h3>
+                <h3 className="text-base font-bold text-white mb-1">{ws.role}</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">{ws.tasks}</p>
               </div>
             </motion.div>

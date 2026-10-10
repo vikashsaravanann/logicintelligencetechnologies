@@ -1,17 +1,16 @@
 "use client";
-import FloatingElements from "@/components/motion/floating-elements";
-import BackToHome from "@/components/ui/back-to-home";
-import PageBackdrop from "@/components/ui/page-backdrop";
+
 import { useState } from "react";
-import { Send, CheckCircle2, MessageSquare, ChevronRight, ChevronLeft, Download } from "lucide-react";
+import { Send, CheckCircle2, MessageSquare, ChevronRight, ChevronLeft, Download, Compass, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import PageShell from "@/components/layout/page-shell";
 
 export default function DiscoveryPage() {
   const [sent, setSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   
-  // Create an array of 31 empty strings for the answers
+  // 31 questions
   const [answers, setAnswers] = useState<string[]>(Array(31).fill(""));
   const [email, setEmail] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -78,24 +77,25 @@ export default function DiscoveryPage() {
 
   const nextStep = () => {
     if (currentStep < sections.length) {
-      setCurrentStep(prev => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setCurrentStep((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setCurrentStep((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
   
   const handleDownload = () => {
     const blob = new Blob(
       [
-        `Logic Intelligence Technologies — Discovery Responses\n`,
+        `Logic Intelligence Technologies — Project Discovery Responses\n`,
+        `Generated: ${new Date().toISOString()}\n`,
         `Email: ${email || "not provided"}\n\n`,
-        answers.map((a, i) => `Q${i + 1}: ${a || "—"}`).join("\n"),
+        answers.map((a, i) => `Q${i + 1} (${questions[i]}):\n${a || "—"}\n`).join("\n"),
       ],
       { type: "text/plain;charset=utf-8" }
     );
@@ -110,7 +110,7 @@ export default function DiscoveryPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
-      setSubmitError("Please provide an email address to receive a copy.");
+      setSubmitError("Please provide a valid work email address to receive your copy.");
       return;
     }
     setIsSubmitting(true);
@@ -126,7 +126,7 @@ export default function DiscoveryPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok || data?.success === false) {
         throw new Error(
-          data?.message || "Submission failed. Please try again or contact us on WhatsApp."
+          data?.message || "Submission failed. Please try again or reach out directly on WhatsApp."
         );
       }
       setSent(true);
@@ -139,95 +139,110 @@ export default function DiscoveryPage() {
     }
   };
 
-  const inputClass = "w-full px-4 py-3 bg-zinc-900/50 border border-white/10 rounded-xl text-base md:text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner";
+  const inputClass =
+    "w-full px-4 py-3.5 bg-[#07090D] border border-white/10 rounded-xl text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/40 transition-colors";
   
   return (
-    <div className="min-h-screen bg-[#0A0D1A] text-white pt-24 overflow-x-hidden">
-      <BackToHome />
-      {/* Hero Section */}
-      <section className="relative py-12 px-6 lg:px-8 overflow-hidden">
-        <PageBackdrop src="/assets/jobs/sales-room.jpg" />
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-6">
-             Enterprise Onboarding
-          </motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="uppercase text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 tracking-tight leading-tight">
-            PROJECT DISCOVERY <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Questionnaire</span>
-          </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="text-lg text-zinc-400 max-w-2xl mx-auto font-light mb-8">
-            Tell us about your project in detail below. The more information you provide, the better we can scope your requirements and prepare a tailored demo.
-          </motion.p>
+    <PageShell className="pt-32 pb-24">
+      {/* Hero Header */}
+      <section className="px-6 lg:px-8 mb-12 text-center max-w-4xl mx-auto">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 text-xs font-mono uppercase tracking-widest mb-6">
+          <Compass className="w-3.5 h-3.5" />
+          <span>Engineering Discovery · Scope Blueprint</span>
         </div>
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight uppercase mb-4 leading-tight">
+          Project Discovery <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-blue-500">
+            Questionnaire
+          </span>
+        </h1>
+        <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto font-light leading-relaxed">
+          Provide your specifications below across six key architectural dimensions. The more comprehensive your answers, the faster we scope an exact architecture and prototype.
+        </p>
       </section>
 
-      {/* Main Form Content */}
-      <section className="pb-20 px-6 lg:px-8 relative z-10">
+      {/* Main Content */}
+      <section className="px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           {sent ? (
-             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-20 bg-[#12172b] rounded-3xl border border-white/10 shadow-2xl p-6 md:p-12">
-               <div className="w-24 h-24 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-8 ">
-                 <CheckCircle2 className="h-12 w-12 text-primary" />
-               </div>
-               <h3 className="text-4xl font-bold text-white mb-4">Discovery Form Submitted!</h3>
-               <p className="text-lg text-zinc-400 mb-8">Thanks for the details. Our team will review your requirements and reach out to you shortly.</p>
-               <a href="https://wa.me/917550067712" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#25D366]/10 text-[#25D366] font-bold text-sm border border-[#25D366]/20 hover:bg-[#25D366] hover:text-black transition-all">
-                 <MessageSquare className="w-4 h-4" /> Message on WhatsApp
-               </a>
-             </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-16 px-8 bg-[#10131A] rounded-3xl border border-white/10 shadow-2xl"
+            >
+              <div className="w-20 h-20 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto mb-8 shadow-2xl">
+                <CheckCircle2 className="h-10 w-10 text-cyan-400" />
+              </div>
+              <span className="inline-block px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono uppercase tracking-widest mb-4">
+                Answers Logged
+              </span>
+              <h2 className="text-3xl font-extrabold text-white uppercase tracking-tight mb-4">
+                Discovery Submitted Successfully
+              </h2>
+              <p className="text-base text-zinc-400 mb-8 max-w-lg mx-auto leading-relaxed">
+                Thank you for the detailed brief. Our lead systems architect will review your technical answers and reach out with an engineering roadmap.
+              </p>
+              <a
+                href="https://wa.me/917550067712"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-black font-bold text-xs uppercase tracking-widest transition-all shadow-[0_0_25px_rgba(37,211,102,0.3)]"
+              >
+                <MessageSquare className="w-4 h-4" /> Message Lead Architect on WhatsApp
+              </a>
+            </motion.div>
           ) : (
-            <div className="bg-[#12172b] rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden">
-              
+            <div className="bg-[#10131A] rounded-3xl border border-white/10 shadow-2xl relative overflow-hidden">
               {/* Progress Indicator */}
-              <div className="px-6 py-5 md:px-10 md:py-6 border-b border-white/5 bg-white/[0.01]">
-                <div className="flex justify-between text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-3">
+              <div className="px-6 py-5 md:px-10 md:py-6 border-b border-white/5 bg-[#07090D]/50">
+                <div className="flex justify-between text-xs font-mono font-bold text-zinc-400 uppercase tracking-wider mb-3">
                   <span>Step {currentStep + 1} of {sections.length + 1}</span>
-                  <span>{Math.round((currentStep / sections.length) * 100)}% Completed</span>
+                  <span className="text-cyan-400">{Math.round((currentStep / sections.length) * 100)}% Completed</span>
                 </div>
-                <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                   <motion.div 
-                    className="h-full bg-gradient-to-r from-primary to-accent rounded-full" 
+                    className="h-full bg-gradient-to-r from-cyan-400 to-teal-400 rounded-full" 
                     initial={{ width: 0 }}
                     animate={{ width: `${(currentStep / sections.length) * 100}%` }}
-                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
                   />
                 </div>
               </div>
 
-              <div className="p-6 md:p-10 min-h-[400px] relative">
+              <div className="p-6 md:p-10 min-h-[420px] relative">
                 <AnimatePresence mode="wait">
                   {currentStep < sections.length ? (
                     <motion.div
                       key={currentStep}
-                      initial={{ opacity: 0, x: 20 }}
+                      initial={{ opacity: 0, x: 16 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.3 }}
+                      exit={{ opacity: 0, x: -16 }}
+                      transition={{ duration: 0.25 }}
                     >
-                      <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-4">
-                        <span className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xl shrink-0 border border-primary/20 ">
-                          {currentStep + 1}
+                      <h2 className="text-xl sm:text-2xl font-extrabold text-white mb-8 flex items-center gap-3">
+                        <span className="w-9 h-9 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-mono font-bold text-sm shrink-0 border border-cyan-500/20">
+                          0{currentStep + 1}
                         </span> 
-                        {sections[currentStep].title}
+                        <span>{sections[currentStep].title}</span>
                       </h2>
                       
-                      <div className="space-y-8">
+                      <div className="space-y-6">
                         {questions.slice(sections[currentStep].start, sections[currentStep].end).map((q, idx) => {
                           const globalIdx = sections[currentStep].start + idx;
                           return (
-                            <div key={globalIdx} className="group">
-                              <label className="flex items-start gap-3 text-sm font-bold text-zinc-200 mb-3 group-hover:text-white transition-colors">
-                                <span className="w-6 h-6 rounded bg-white/5 text-primary flex items-center justify-center shrink-0 text-xs mt-0.5 border border-white/10 group-hover:bg-primary/10 group-hover:border-primary/30 transition-all">
+                            <div key={globalIdx} className="space-y-2">
+                              <label className="flex items-start gap-3 text-xs sm:text-sm font-semibold text-zinc-200">
+                                <span className="w-5 h-5 rounded-md bg-white/5 text-cyan-400 flex items-center justify-center shrink-0 text-[10px] font-mono mt-0.5 border border-white/10">
                                   {globalIdx + 1}
                                 </span>
-                                <span className="pt-1 leading-snug">{q}</span>
+                                <span className="leading-snug">{q}</span>
                               </label>
-                              <div className="pl-9">
+                              <div className="pl-8">
                                 <textarea 
                                   rows={3} 
-                                  placeholder="Your answer..." 
+                                  placeholder="Type your response..." 
                                   value={answers[globalIdx]} 
-                                  onChange={e => handleAnswerChange(globalIdx, e.target.value)} 
+                                  onChange={(e) => handleAnswerChange(globalIdx, e.target.value)} 
                                   className={inputClass} 
                                 />
                               </div>
@@ -240,48 +255,64 @@ export default function DiscoveryPage() {
                     // Final Submit Step
                     <motion.div
                       key="submit-step"
-                      initial={{ opacity: 0, x: 20 }}
+                      initial={{ opacity: 0, x: 16 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.3 }}
+                      exit={{ opacity: 0, x: -16 }}
+                      transition={{ duration: 0.25 }}
                       className="flex flex-col items-center justify-center text-center py-6 md:py-10"
                     >
-                      <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6  border border-primary/20">
-                        <CheckCircle2 className="w-12 h-12 text-primary" />
+                      <div className="w-20 h-20 bg-cyan-500/10 rounded-2xl flex items-center justify-center mb-6 border border-cyan-500/20 shadow-xl">
+                        <CheckCircle2 className="w-10 h-10 text-cyan-400" />
                       </div>
-                      <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Almost Done!</h2>
-                      <p className="text-zinc-400 mb-10 max-w-md text-lg">
-                        Please provide your email address to receive a copy of your requirements and submit the form.
+                      <h2 className="text-2xl md:text-3xl font-extrabold text-white uppercase tracking-tight mb-3">
+                        Almost Ready to Scope
+                      </h2>
+                      <p className="text-zinc-400 mb-8 max-w-md text-sm leading-relaxed">
+                        Enter your work email address below to receive an instant copy of your discovery answers and submit them to our engineering team.
                       </p>
                       
-                      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-8">
+                      <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
                         <div className="text-left">
-                          <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-2">Email to receive your copy *</label>
+                          <label className="block text-xs font-mono font-bold text-zinc-300 uppercase tracking-wider mb-2">
+                            Work Email to Receive Copy *
+                          </label>
                           <input 
                             type="email" 
                             required 
-                            placeholder="you@company.com" 
+                            placeholder="marcus@vance.io" 
                             value={email} 
-                            onChange={e => setEmail(e.target.value)} 
+                            onChange={(e) => setEmail(e.target.value)} 
                             className={inputClass} 
                           />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <button type="button" onClick={handleDownload} className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-white bg-zinc-800 hover:bg-zinc-700 transition-all border border-white/10">
-                            <Download className="w-5 h-5" /> Download Copy
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <button
+                            type="button"
+                            onClick={handleDownload}
+                            className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl font-bold text-xs uppercase tracking-widest text-white bg-[#07090D] hover:bg-white/[0.06] transition-all border border-white/10"
+                          >
+                            <Download className="w-4 h-4 text-cyan-400" />
+                            <span>Download File</span>
                           </button>
                           <button 
                             type="submit" 
                             disabled={isSubmitting} 
-                            className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-black bg-white hover:bg-primary transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] hover: disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl font-bold text-xs uppercase tracking-widest text-[#07090D] bg-cyan-500 hover:bg-cyan-400 transition-all shadow-[0_0_25px_rgba(69,217,210,0.25)] hover:shadow-[0_0_35px_rgba(69,217,210,0.4)] disabled:opacity-50"
                           >
-                            {isSubmitting ? 'Submitting...' : <><Send className="w-5 h-5" /> Send Answers</>}
+                            {isSubmitting ? (
+                              "Submitting…"
+                            ) : (
+                              <>
+                                <Send className="w-4 h-4" />
+                                <span>Send Answers</span>
+                              </>
+                            )}
                           </button>
                         </div>
-                        {submitError && <p className="text-sm text-red-400">{submitError}</p>}
-                        <p className="text-center text-xs text-zinc-500 flex justify-center items-center">
-                          Downloading is instant. Sending shares a copy with our team.
+                        {submitError && <p className="text-xs text-red-400">{submitError}</p>}
+                        <p className="text-center text-xs text-zinc-500 font-mono">
+                          Instant file download available. Submission sends a copy to our solutions team.
                         </p>
                       </form>
                     </motion.div>
@@ -290,14 +321,14 @@ export default function DiscoveryPage() {
               </div>
               
               {/* Navigation Footer */}
-              <div className="px-6 py-5 md:px-10 md:py-6 border-t border-white/5 bg-white/[0.01] flex justify-between items-center">
+              <div className="px-6 py-5 md:px-10 md:py-6 border-t border-white/5 bg-[#07090D]/50 flex justify-between items-center">
                 <button
                   type="button"
                   onClick={prevStep}
-                  className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all ${
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all ${
                     currentStep === 0 
                       ? "text-zinc-600 cursor-not-allowed" 
-                      : "text-zinc-300 hover:text-white hover:bg-white/5 bg-white/5 border border-white/10"
+                      : "text-zinc-300 hover:text-white hover:bg-white/5 bg-[#07090D] border border-white/10"
                   }`}
                   disabled={currentStep === 0}
                 >
@@ -308,21 +339,19 @@ export default function DiscoveryPage() {
                   <button
                     type="button"
                     onClick={nextStep}
-                    className="flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-sm bg-primary/10 text-primary hover:bg-primary hover:text-black transition-all border border-primary/20 hover:"
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest bg-cyan-500 hover:bg-cyan-400 text-[#07090D] transition-all shadow-[0_0_20px_rgba(69,217,210,0.2)]"
                   >
-                    Next Step <ChevronRight className="w-4 h-4" />
+                    <span>Next Section</span> <ChevronRight className="w-4 h-4" />
                   </button>
                 )}
                 {currentStep === sections.length && (
-                   <div className="px-8 py-3 opacity-0 pointer-events-none">Placeholder</div>
+                  <div className="px-6 py-2.5 opacity-0 pointer-events-none">Placeholder</div>
                 )}
               </div>
             </div>
           )}
         </div>
       </section>
-
-      <FloatingElements />
-    </div>
+    </PageShell>
   );
 }
