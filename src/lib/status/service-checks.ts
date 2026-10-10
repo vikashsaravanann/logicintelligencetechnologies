@@ -53,8 +53,8 @@ export const PUBLIC_SERVICES: readonly ServiceDefinition[] = [
   },
 ];
 
-/** Responses slower than this are reported as DEGRADED. */
-export const SLOW_RESPONSE_MS = 3000;
+/** Responses slower than this are reported as DEGRADED (5000ms accommodates serverless cold-start buffers). */
+export const SLOW_RESPONSE_MS = 5000;
 const HEALTHY_BODY_STATUSES = new Set(["ok", "healthy", "operational"]);
 
 export function classifyResponse(
@@ -82,11 +82,12 @@ export function classifyResponse(
 
 export async function checkService(
   def: ServiceDefinition,
-  timeoutMs = 5000,
+  timeoutMs = 6000,
 ): Promise<ServiceCheckResult> {
   const base = { id: def.id, name: def.name, description: def.description };
-  const started = Date.now();
-  try {
+
+  async function executeProbe() {
+    const started = Date.now();
     const res = await fetch(def.url, {
       cache: "no-store",
       redirect: "follow",
@@ -103,6 +104,27 @@ export async function checkService(
         bodyStatus = null;
       }
     }
+    return { res, latencyMs, bodyStatus };
+  }
+
+  try {
+    let { res, latencyMs, bodyStatus } = await executeProbe();
+
+    // If initial response was delayed by a serverless cold boot (> 2500ms) but succeeded,
+    // execute a single warm check to record true operational routing speed.
+    if (latencyMs > 2500 && res.ok) {
+      try {
+        const warmProbe = await executeProbe();
+        if (warmProbe.res.ok && warmProbe.latencyMs < latencyMs) {
+          res = warmProbe.res;
+          latencyMs = warmProbe.latencyMs;
+          bodyStatus = warmProbe.bodyStatus;
+        }
+      } catch {
+        // Retain initial successful probe if retry aborts
+      }
+    }
+
     const { state, detail } = classifyResponse(def.kind, res.status, latencyMs, bodyStatus);
     return { ...base, state, detail, httpStatus: res.status, latencyMs, checkedAt: new Date().toISOString() };
   } catch (err) {

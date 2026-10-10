@@ -21,10 +21,19 @@ export async function checkDatabase(): Promise<LiveCheck> {
   }
   const started = Date.now();
   try {
-    const { error } = await supabaseAdmin
+    const queryPromise = supabaseAdmin
       .from("profiles")
-      .select("id", { head: true, count: "exact" })
+      .select("id", { head: true })
       .limit(1);
+
+    const timeoutPromise = new Promise<{ error: Error }>((_, reject) =>
+      setTimeout(() => reject(new Error("Database query timed out")), 2500),
+    );
+
+    const { error } = (await Promise.race([queryPromise, timeoutPromise])) as {
+      error: Error | null;
+    };
+
     const latencyMs = Date.now() - started;
     if (error) return { state: "FAIL", note: error.message, latencyMs };
     return { state: "PASS", latencyMs };
