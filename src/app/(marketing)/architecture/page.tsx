@@ -1,30 +1,74 @@
 import React from "react";
-import { 
-  Server, 
-  Activity, 
-  BrainCircuit, 
-  ShieldCheck, 
-  Database, 
-  Lock, 
-  Cpu, 
-  Network, 
-  Clock, 
-  CheckCircle2, 
+import {
+  Server,
+  Activity,
+  BrainCircuit,
+  ShieldCheck,
+  Lock,
+  Cpu,
+  Network,
+  CheckCircle2,
   ArrowRight,
   Layers,
-  Terminal
+  Terminal,
 } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
-import { PageShell } from "@/components/layout/page-shell";
-import BackToHome from "@/components/ui/back-to-home";
+import PageShell from "@/components/layout/page-shell";
+import BackButton from "@/components/navigation/back-button";
 import JsonLd from "@/components/seo/json-ld";
 import { breadcrumb } from "@/lib/seo/schema";
+import CTASection from "@/components/ui/cta-section";
+import ArchitectureTopologyVisualizer from "./components/ArchitectureTopologyVisualizer";
 
 export const metadata: Metadata = {
   title: "Systems Architecture | Logic Intelligence Technologies",
-  description: "Explore the enterprise-grade infrastructure, distributed inference engines, and zero-persistence security topology powering Logic Intelligence Technologies platforms.",
+  description:
+    "Explore the enterprise-grade infrastructure, distributed inference engines, and zero-persistence security topology powering Logic Intelligence Technologies platforms.",
+  alternates: {
+    canonical: "/architecture",
+  },
+  openGraph: {
+    title: "Systems Architecture | Logic Intelligence Technologies",
+    description:
+      "Enterprise infrastructure blueprints, distributed edge inference topologies, and zero-persistence memory isolation powering real-time enterprise AI.",
+    images: [
+      {
+        url: "/api/og?title=Systems+Architecture&category=Infrastructure+Blueprint",
+        width: 1200,
+        height: 630,
+        alt: "LIT Systems Architecture",
+      },
+    ],
+  },
 };
+
+const BENCHMARKS = [
+  {
+    label: "Edge Audio Ingestion Latency",
+    value: "< 25ms",
+    note: "Global Anycast median",
+    accent: "bg-[#E7F3FF] text-[#1565C0] border-[#BBDEFB]",
+  },
+  {
+    label: "End-to-End Voice Inference",
+    value: "< 280ms",
+    note: "Speech-to-Speech pipeline",
+    accent: "bg-[#E0F2F1] text-[#00796B] border-[#B2DFDB]",
+  },
+  {
+    label: "High-Availability SLA Target",
+    value: "99.95%",
+    note: "Core infrastructure services",
+    accent: "bg-[#E8F5E9] text-[#2E7D32] border-[#C8E6C9]",
+  },
+  {
+    label: "Audio Disk Persistence",
+    value: "0 bytes",
+    note: "100% volatile memory processing",
+    accent: "bg-[#EDE7F6] text-[#5E35B1] border-[#D1C4E9]",
+  },
+];
 
 const PIPELINE_NODES = [
   {
@@ -34,6 +78,7 @@ const PIPELINE_NODES = [
     icon: Server,
     desc: "Raw audio streams and structured telemetry payloads are ingested via secure WebSocket and HTTP/3 edge nodes. Multi-region routing keeps round-trip transmission latency under 25ms globally.",
     metrics: "< 25ms Edge Latency",
+    accent: "bg-[#E7F3FF] text-[#1565C0] border-[#BBDEFB]",
   },
   {
     step: "02",
@@ -42,6 +87,7 @@ const PIPELINE_NODES = [
     icon: Activity,
     desc: "Input streams are segmented into micro-frames in volatile RAM. Spectral audio features, semantic tokens, and clinical schema structures are parsed with strict boundary validation before inference dispatch.",
     metrics: "Volatile Memory Only",
+    accent: "bg-[#E0F2F1] text-[#00796B] border-[#B2DFDB]",
   },
   {
     step: "03",
@@ -50,6 +96,7 @@ const PIPELINE_NODES = [
     icon: BrainCircuit,
     desc: "Dynamic task dispatchers evaluate token intent against deterministic safety gates, enterprise knowledge bases, and domain-adapted foundation models with verified citation validation.",
     metrics: "Sub-200ms Processing",
+    accent: "bg-[#EDE7F6] text-[#5E35B1] border-[#D1C4E9]",
   },
   {
     step: "04",
@@ -58,6 +105,7 @@ const PIPELINE_NODES = [
     icon: ShieldCheck,
     desc: "Outputs pass through automated PII redaction filters and policy gates before downstream delivery. All audit logs record cryptographic verification without persisting sensitive customer payload data.",
     metrics: "Zero Disk Persistence",
+    accent: "bg-[#FFF8E1] text-[#B78103] border-[#FFE082]",
   },
 ];
 
@@ -65,6 +113,7 @@ const ARCHITECTURE_SPECIFICATIONS = [
   {
     category: "Compute & Execution",
     icon: Cpu,
+    accent: "bg-[#E7F3FF] text-[#1565C0] border-[#BBDEFB]",
     points: [
       "Distributed serverless execution topology with regional autoscaling",
       "Ephemeral memory-isolated containers preventing cross-tenant leakage",
@@ -75,6 +124,7 @@ const ARCHITECTURE_SPECIFICATIONS = [
   {
     category: "Network & Resilience",
     icon: Network,
+    accent: "bg-[#E0F2F1] text-[#00796B] border-[#B2DFDB]",
     points: [
       "Edge routing across low-latency global Tier-1 network backbones",
       "Full TLS 1.3 cryptographic cipher enforcement with automated mTLS",
@@ -85,20 +135,14 @@ const ARCHITECTURE_SPECIFICATIONS = [
   {
     category: "Governance & Privacy",
     icon: Lock,
+    accent: "bg-[#EDE7F6] text-[#5E35B1] border-[#D1C4E9]",
     points: [
       "Zero customer conversation or clinical data used for foundational model training",
       "Encrypted data in transit and managed KMS-backed database volumes at rest",
       "Role-Based Access Control (RBAC) enforced across every microservice API",
-      "Strict compliance alignment with GDPR, ISO 27001, and SOC2 principles",
+      "Strict compliance alignment with DPDP, GDPR, ISO 27001, and SOC2 principles",
     ],
   },
-];
-
-const BENCHMARKS = [
-  { label: "Edge Audio Ingestion Latency", value: "< 25ms", note: "Global Anycast median" },
-  { label: "End-to-End Voice Inference", value: "< 280ms", note: "Speech-to-Speech pipeline" },
-  { label: "High-Availability SLA Target", value: "99.95%", note: "Core infrastructure services" },
-  { label: "Audio Disk Persistence", value: "0 bytes", note: "100% volatile memory processing" },
 ];
 
 export default function ArchitecturePage() {
@@ -111,173 +155,218 @@ export default function ArchitecturePage() {
         ])}
       />
 
-      <div className="pt-28 sm:pt-32 pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <BackToHome href="/" label="Back to Home" />
-
-        {/* Header Hero */}
-        <div className="mt-8 mb-20 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-950/30 text-cyan-400 text-xs font-mono font-medium tracking-wider uppercase mb-6 shadow-[0_0_15px_rgba(69,217,210,0.15)]">
-            <Layers className="w-3.5 h-3.5" />
-            Distributed Systems Blueprint
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0] pt-28 sm:pt-36 pb-20 overflow-x-hidden"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-20">
+          {/* Back Navigation */}
+          <div>
+            <BackButton fallbackHref="/" label="Home" inline className="mb-6" />
           </div>
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white uppercase font-heading leading-tight">
-            High-Concurrency <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400">AI Architecture</span>
-          </h1>
-          <p className="mt-6 text-base sm:text-lg text-slate-300 leading-relaxed font-sans">
-            Engineered for high concurrency, deterministic safety gates, and ultra-low latency across real-time voice intelligence, automated web agents, and clinical platforms.
-          </p>
-        </div>
 
-        {/* Core Latency & Reliability Metrics */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-20">
-          {BENCHMARKS.map((item, idx) => (
-            <div
-              key={idx}
-              className="p-6 rounded-2xl border border-white/10 bg-[#10131A] relative overflow-hidden group hover:border-cyan-500/40 transition-all"
-            >
-              <div className="text-2xl sm:text-3xl font-bold font-heading text-white tracking-tight group-hover:text-cyan-400 transition-colors">
-                {item.value}
-              </div>
-              <div className="text-xs font-mono uppercase tracking-wider text-slate-400 mt-2 font-medium">
-                {item.label}
-              </div>
-              <div className="text-[11px] text-slate-500 mt-1">
-                {item.note}
-              </div>
-              <div className="absolute top-0 right-0 h-1 w-12 bg-gradient-to-r from-transparent to-cyan-400/50" />
+          {/* Hero Header */}
+          <div className="text-center max-w-3xl mx-auto space-y-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[var(--lit-teal,#1FA9A2)]/30 bg-[var(--lit-teal,#1FA9A2)]/10 text-[var(--lit-teal,#1FA9A2)] text-xs font-semibold tracking-wider uppercase">
+              <Layers className="w-3.5 h-3.5" />
+              <span>Distributed Systems Blueprint • Production Architecture</span>
             </div>
-          ))}
-        </div>
 
-        {/* Section: 4-Stage Core Ingestion & Execution Pipeline */}
-        <div className="mb-24">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-            <div>
-              <p className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-cyan-400 mb-2">
-                Execution Flow
-              </p>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white uppercase font-heading">
-                End-to-End Processing Topology
-              </h2>
-            </div>
-            <p className="text-xs sm:text-sm text-slate-400 max-w-md">
-              From raw audio packet reception at the edge to authenticated deterministic response generation.
+            <h1 className="font-poppins text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--lit-navy,#0B2545)]">
+              Enterprise AI &amp; Cloud Systems Architecture
+            </h1>
+
+            <p className="font-serif italic text-base sm:text-lg md:text-xl text-[var(--lit-teal,#1FA9A2)]">
+              Deterministic safety gates, sub-40ms real-time voice intelligence, and zero-persistence memory isolation.
+            </p>
+
+            <p className="text-sm sm:text-base text-[var(--lit-text-muted,#52677C)] leading-relaxed max-w-2xl mx-auto">
+              Engineered for high concurrency, deterministic safety gates, and ultra-low latency across real-time voice intelligence, automated web agents, and clinical platforms.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {PIPELINE_NODES.map((node) => (
-              <div
-                key={node.step}
-                className="relative p-8 rounded-2xl border border-white/10 bg-[#151922] shadow-2xl hover:border-cyan-500/40 hover:bg-[#181d28] transition-all group flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(69,217,210,0.2)]">
-                      <node.icon className="w-6 h-6" />
-                    </div>
-                    <span className="text-3xl font-mono font-bold text-white/20 group-hover:text-cyan-400/40 transition-colors">
-                      {node.step}
-                    </span>
-                  </div>
-
-                  <h3 className="text-lg font-bold text-white uppercase font-heading tracking-wide mb-1">
-                    {node.title}
-                  </h3>
-                  <p className="text-xs font-mono text-cyan-400/90 uppercase tracking-wider mb-4">
-                    {node.subtitle}
-                  </p>
-                  <p className="text-sm text-slate-300 leading-relaxed font-sans mb-6">
-                    {node.desc}
-                  </p>
-                </div>
-
-                <div className="pt-4 border-t border-white/5 flex items-center justify-between text-xs font-mono text-slate-400">
-                  <span>Latency Target</span>
-                  <span className="font-bold text-cyan-300">{node.metrics}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Section: Architectural Specifications */}
-        <div className="mb-24">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <p className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-cyan-400 mb-2">
-              Engineering Standards
-            </p>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white uppercase font-heading">
-              Enterprise Resilience & Controls
-            </h2>
-            <p className="text-sm text-slate-400 mt-3">
-              Built on battle-tested distributed protocols ensuring zero-downtime reliability and enterprise privacy compliance.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {ARCHITECTURE_SPECIFICATIONS.map((spec, idx) => (
+          {/* Latency & Reliability Benchmarks Strip */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {BENCHMARKS.map((item, idx) => (
               <div
                 key={idx}
-                className="p-8 rounded-2xl border border-white/10 bg-[#10131A] shadow-xl flex flex-col justify-between"
+                className="bg-white rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] p-5 sm:p-6 shadow-xs hover:border-[var(--lit-teal,#1FA9A2)]/50 transition-colors"
               >
-                <div>
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-cyan-950/40 border border-cyan-500/20 text-cyan-400 mb-6">
-                    <spec.icon className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-lg font-bold text-white uppercase font-heading tracking-wide mb-6">
-                    {spec.category}
-                  </h3>
-                  <ul className="space-y-4">
-                    {spec.points.map((pt, pidx) => (
-                      <li key={pidx} className="flex items-start gap-3 text-sm text-slate-300">
-                        <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                        <span className="leading-relaxed">{pt}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="font-poppins text-2xl sm:text-3xl font-bold text-[var(--lit-navy,#0B2545)] tracking-tight">
+                  {item.value}
+                </div>
+                <div className="text-xs font-mono uppercase tracking-wider text-[var(--lit-text-muted,#52677C)] mt-2 font-semibold">
+                  {item.label}
+                </div>
+                <div className="text-[11px] text-[var(--lit-text-muted,#52677C)]/80 mt-1">
+                  {item.note}
                 </div>
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Security & Zero-Persistence Guarantee Banner */}
-        <div className="rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-[#10131A] via-[#151922] to-[#10131A] p-8 sm:p-12 shadow-2xl relative overflow-hidden">
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="space-y-4 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-500/30 bg-cyan-950/40 text-cyan-300 text-xs font-mono font-semibold uppercase">
-                <Lock className="w-3.5 h-3.5" />
-                Zero-Persistence Architecture
+          {/* Interactive Topology Visualizer */}
+          <ArchitectureTopologyVisualizer />
+
+          {/* Section: 4-Stage Ingestion & Processing Topology */}
+          <div className="space-y-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <div>
+                <p className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-[var(--lit-teal,#1FA9A2)] mb-1">
+                  Execution Flow
+                </p>
+                <h2 className="font-poppins text-2xl sm:text-3xl font-bold text-[var(--lit-navy,#0B2545)]">
+                  End-to-End Processing Topology
+                </h2>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold font-heading text-white uppercase tracking-tight">
-                Complete RAM-Only Audio Stream Isolation
-              </h2>
-              <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-                Voice streams and sensitive telemetry are processed entirely in volatile memory. No audio bytes or personally identifiable biometric signatures are ever stored to physical disk storage during live inference, ensuring natural compliance with SOC2, GDPR, and HIPAA data segregation standards.
+              <p className="text-xs sm:text-sm text-[var(--lit-text-muted,#52677C)] max-w-md">
+                From raw audio packet reception at the edge to authenticated deterministic response generation.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 shrink-0 w-full lg:w-auto">
-              <Link
-                href="/docs/api"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 via-teal-400 to-cyan-400 text-slate-950 font-mono font-bold text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(69,217,210,0.35)] hover:brightness-110 active:scale-[0.98] transition-all"
-              >
-                <Terminal className="w-4 h-4" />
-                API Documentation
-              </Link>
-              <Link
-                href="/security"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08] hover:border-cyan-500/40 font-mono font-bold text-xs uppercase tracking-wider transition-all"
-              >
-                Security Overview
-                <ArrowRight className="w-4 h-4 text-cyan-400" />
-              </Link>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {PIPELINE_NODES.map((node) => {
+                const Icon = node.icon;
+                return (
+                  <div
+                    key={node.step}
+                    className="bg-white rounded-3xl border border-[var(--lit-border-light,#DFE7EF)] p-6 sm:p-8 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-6">
+                        <div
+                          className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${node.accent}`}
+                        >
+                          <Icon className="w-6 h-6" />
+                        </div>
+                        <span className="text-2xl sm:text-3xl font-mono font-bold text-[var(--lit-border-light,#DFE7EF)]">
+                          {node.step}
+                        </span>
+                      </div>
+
+                      <h3 className="font-poppins text-lg font-bold text-[var(--lit-navy,#0B2545)] mb-1">
+                        {node.title}
+                      </h3>
+                      <p className="text-xs font-mono text-[var(--lit-teal,#1FA9A2)] uppercase tracking-wider mb-3">
+                        {node.subtitle}
+                      </p>
+                      <p className="text-sm text-[var(--lit-text-muted,#52677C)] leading-relaxed mb-6">
+                        {node.desc}
+                      </p>
+                    </div>
+
+                    <div className="pt-4 border-t border-[var(--lit-border-light,#DFE7EF)] flex items-center justify-between text-xs font-mono text-[var(--lit-text-muted,#52677C)]">
+                      <span>Latency Target</span>
+                      <span className="font-bold text-[var(--lit-navy,#0B2545)]">
+                        {node.metrics}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </div>
 
-      </div>
+          {/* Section: Architectural Specifications */}
+          <div className="space-y-12">
+            <div className="text-center max-w-2xl mx-auto space-y-3">
+              <p className="text-xs font-mono font-bold uppercase tracking-[0.2em] text-[var(--lit-teal,#1FA9A2)]">
+                Engineering Standards
+              </p>
+              <h2 className="font-poppins text-2xl sm:text-3xl font-bold text-[var(--lit-navy,#0B2545)]">
+                Enterprise Resilience &amp; Controls
+              </h2>
+              <p className="text-sm text-[var(--lit-text-muted,#52677C)]">
+                Built on battle-tested distributed protocols ensuring zero-downtime reliability and enterprise privacy compliance.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+              {ARCHITECTURE_SPECIFICATIONS.map((spec, idx) => {
+                const Icon = spec.icon;
+                return (
+                  <div
+                    key={idx}
+                    className="bg-white rounded-3xl border border-[var(--lit-border-light,#DFE7EF)] p-8 shadow-xs flex flex-col justify-between"
+                  >
+                    <div>
+                      <div
+                        className={`w-12 h-12 rounded-2xl border flex items-center justify-center mb-6 ${spec.accent}`}
+                      >
+                        <Icon className="w-6 h-6" />
+                      </div>
+                      <h3 className="font-poppins text-lg font-bold text-[var(--lit-navy,#0B2545)] mb-6">
+                        {spec.category}
+                      </h3>
+                      <ul className="space-y-4">
+                        {spec.points.map((pt, pidx) => (
+                          <li
+                            key={pidx}
+                            className="flex items-start gap-3 text-sm text-[var(--lit-text-muted,#52677C)]"
+                          >
+                            <CheckCircle2 className="w-4 h-4 text-[var(--lit-teal,#1FA9A2)] shrink-0 mt-0.5" />
+                            <span className="leading-relaxed">{pt}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Security & Zero-Persistence Guarantee Banner */}
+          <div className="rounded-3xl border border-[#0B2545] bg-[var(--lit-navy,#0B2545)] text-white p-8 sm:p-12 shadow-xl relative overflow-hidden">
+            <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+              <div className="space-y-4 max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#45D9D2]/30 bg-[#45D9D2]/10 text-[#45D9D2] text-xs font-mono font-semibold uppercase">
+                  <Lock className="w-3.5 h-3.5" />
+                  <span>Zero-Persistence Architecture</span>
+                </div>
+                <h2 className="font-poppins text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                  Complete RAM-Only Audio Stream Isolation
+                </h2>
+                <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-light">
+                  Voice streams and sensitive telemetry are processed entirely in volatile memory. No audio bytes or personally identifiable biometric signatures are ever stored to physical disk storage during live inference, ensuring natural compliance with SOC2, GDPR, and HIPAA data segregation standards.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 shrink-0 w-full lg:w-auto">
+                <Link
+                  href="/docs/api"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[var(--lit-teal,#1FA9A2)] hover:bg-[#188a84] text-white font-mono font-bold text-xs uppercase tracking-wider shadow-sm transition-all"
+                >
+                  <Terminal className="w-4 h-4" />
+                  API Documentation
+                </Link>
+                <Link
+                  href="/security"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-white font-mono font-bold text-xs uppercase tracking-wider transition-all"
+                >
+                  <span>Security Overview</span>
+                  <ArrowRight className="w-4 h-4 text-[#45D9D2]" />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Canonical CTA */}
+          <CTASection
+            title="Architected for Uncompromising Enterprise Standards"
+            subtitle="Schedule an architectural deep dive with our Principal Systems Engineers or request custom deployment documentation."
+            primaryCta={{
+              label: "Schedule Architecture Review",
+              href: "/book-consultation",
+            }}
+            secondaryCta={{
+              label: "View API Specifications",
+              href: "/docs/api",
+            }}
+          />
+        </div>
+      </main>
     </PageShell>
   );
 }
