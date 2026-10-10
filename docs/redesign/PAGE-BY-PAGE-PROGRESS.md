@@ -67,7 +67,7 @@ Strict Execution Rule: Work sequentially through every page template and dynamic
 | **060** | `/privacy-policy` | Alternative Privacy Document | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **061** | `/terms` | Terms of Use | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **062** | `/terms-of-service` | Terms of Service Document | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
-| **063** | `/cookie-policy` | Cookie Notice & Preferences | NOT STARTED | - | - | - | - | - | - |
+| **063** | `/cookie-policy` | Cookie Notice & Preferences | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **064** | `/refund-policy` | Commercial Refund Policy | NOT STARTED | - | - | - | - | - | - |
 | **065** | `/login` | Secure User Login | NOT STARTED | - | - | - | - | - | - |
 | **066** | `/reset-password` | Password Recovery Flow | NOT STARTED | - | - | - | - | - | - |
