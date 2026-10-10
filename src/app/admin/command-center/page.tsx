@@ -8,6 +8,11 @@ import { formatINR } from "@/lib/format/datetime";
 
 export const metadata: Metadata = {
   title: "Executive Command Center | Logic Intelligence Technologies",
+  description: "Real-time enterprise operations telemetry, CRM pipeline, consultation schedules, and revenue metrics.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export const revalidate = 0;
@@ -45,32 +50,80 @@ export default async function AdminCommandCenterPage() {
   const leads = leadsRes.data ?? [];
 
   const tiles = [
-    { label: "Settled Revenue", value: invoicesRes.error ? "—" : formatINR(settled), note: "Paid invoices", icon: DollarSign, tone: "text-emerald-400" },
-    { label: "Outstanding", value: invoicesRes.error ? "—" : formatINR(outstanding), note: "Pending + overdue", icon: FileText, tone: "text-amber-400" },
-    { label: "Active Projects", value: projectsRes.error ? "—" : String(projectsRes.count ?? 0), note: "Not completed/cancelled", icon: Briefcase, tone: "text-blue-400" },
-    { label: "Upcoming Bookings", value: bookingsRes.error ? "—" : String(bookingsRes.count ?? 0), note: "Scheduled, future", icon: Calendar, tone: "text-primary" },
-    { label: "Open Tickets", value: ticketsRes.error ? "—" : String(ticketsRes.count ?? 0), note: "Awaiting resolution", icon: Ticket, tone: "text-rose-400" },
-    { label: "New Leads (7d)", value: newLeadsRes.error ? "—" : String(newLeadsRes.count ?? 0), note: "Last 7 days", icon: Users, tone: "text-fuchsia-400" },
+    {
+      label: "Settled Revenue",
+      value: invoicesRes.error ? "—" : formatINR(settled),
+      note: "Paid invoices ledger",
+      icon: DollarSign,
+      tone: "text-emerald-700 bg-emerald-50 border-emerald-200",
+    },
+    {
+      label: "Outstanding",
+      value: invoicesRes.error ? "—" : formatINR(outstanding),
+      note: "Pending + overdue balance",
+      icon: FileText,
+      tone: "text-amber-700 bg-amber-50 border-amber-200",
+    },
+    {
+      label: "Active Projects",
+      value: projectsRes.error ? "—" : String(projectsRes.count ?? 0),
+      note: "In-flight delivery SOWs",
+      icon: Briefcase,
+      tone: "text-blue-700 bg-blue-50 border-blue-200",
+    },
+    {
+      label: "Upcoming Bookings",
+      value: bookingsRes.error ? "—" : String(bookingsRes.count ?? 0),
+      note: "Scheduled client sessions",
+      icon: Calendar,
+      tone: "text-purple-700 bg-purple-50 border-purple-200",
+    },
+    {
+      label: "Open Tickets",
+      value: ticketsRes.error ? "—" : String(ticketsRes.count ?? 0),
+      note: "Awaiting support resolution",
+      icon: Ticket,
+      tone: "text-rose-700 bg-rose-50 border-rose-200",
+    },
+    {
+      label: "New Leads (7d)",
+      value: newLeadsRes.error ? "—" : String(newLeadsRes.count ?? 0),
+      note: "Inbound demand trailing 7d",
+      icon: Users,
+      tone: "text-teal-700 bg-teal-50 border-teal-200",
+    },
   ];
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-800">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--lit-border-light,#DFE7EF)]">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-1">Executive Command Center</h1>
-          <p className="text-zinc-400 text-sm">Operational telemetry, CRM pipeline, consultations, and revenue metrics.</p>
+          <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-800 text-[10px] font-bold uppercase tracking-wider mb-2 font-mono">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            Live Telemetry · Internal Operations
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--lit-navy,#0B2545)] mb-1">
+            Executive Command Center
+          </h1>
+          <p className="text-[var(--lit-text-muted,#52677C)] text-sm">
+            Operational telemetry, CRM pipeline, consultations, and revenue metrics.
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Link
             href="/admin/invoices/new"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-black font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--lit-navy,#0B2545)] text-white font-bold text-xs uppercase tracking-wider hover:bg-[var(--lit-navy,#0B2545)]/90 transition-all shadow-2xs"
           >
             <Plus className="w-4 h-4" />
             <span>New Invoice</span>
           </Link>
           <Link
             href="/admin/proposals/new"
-            className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs uppercase tracking-wider transition-all"
+            className="px-4 py-2 rounded-xl bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] font-bold text-xs uppercase tracking-wider hover:bg-[var(--lit-cloud,#F7F9FC)] hover:border-slate-300 transition-all shadow-2xs"
           >
             Draft Proposal
           </Link>
@@ -78,26 +131,40 @@ export default async function AdminCommandCenterPage() {
       </div>
 
       {anyError ? (
-        <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-300 flex items-center gap-2" role="alert">
-          <AlertTriangle className="w-4 h-4 shrink-0" />
-          Some metrics could not be loaded. Figures showing “—” failed to query; the rest are live.
+        <div
+          className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-xs font-medium text-amber-800 flex items-center gap-2.5 shadow-2xs"
+          role="alert"
+        >
+          <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
+          <span>Some metrics could not be loaded. Figures showing “—” failed to query; the rest are live.</span>
         </div>
       ) : null}
 
+      {/* KPI Tiles Grid */}
       <div className="grid gap-6 grid-cols-2 lg:grid-cols-3">
         {tiles.map((t) => (
-          <div key={t.label} className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6">
+          <div
+            key={t.label}
+            className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 sm:p-6 shadow-2xs transition-all hover:border-[var(--lit-teal,#1FA9A2)]/30"
+          >
             <div className="flex items-center justify-between pb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">{t.label}</span>
-              <t.icon className={`w-5 h-5 ${t.tone}`} />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
+                {t.label}
+              </span>
+              <div className={`p-2 rounded-xl border ${t.tone}`}>
+                <t.icon className="w-4 h-4" />
+              </div>
             </div>
-            <div className="text-2xl font-black text-white">{t.value}</div>
-            <p className="text-[10px] text-zinc-500 mt-1">{t.note}</p>
+            <div className="text-2xl sm:text-3xl font-black text-[var(--lit-navy,#0B2545)] font-mono tracking-tight">
+              {t.value}
+            </div>
+            <p className="text-[11px] font-medium text-[var(--lit-text-muted,#52677C)] mt-1.5">{t.note}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+      {/* Quick Launchpad Navigation */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
           { href: "/admin/leads", label: "CRM Leads Ledger" },
           { href: "/admin/invoices", label: "Invoices" },
@@ -109,52 +176,70 @@ export default async function AdminCommandCenterPage() {
           <Link
             key={q.href}
             href={q.href}
-            className="p-4 rounded-xl border border-neutral-800 bg-neutral-900/30 hover:bg-neutral-900/60 transition-colors flex items-center justify-between text-xs font-bold text-white"
+            className="p-3.5 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] hover:border-[var(--lit-teal,#1FA9A2)]/50 transition-all flex items-center justify-between text-xs font-bold text-[var(--lit-navy,#0B2545)] shadow-2xs group"
           >
             <span>{q.label}</span>
-            <ArrowRight className="w-4 h-4 text-primary" />
+            <ArrowRight className="w-3.5 h-3.5 text-[var(--lit-teal,#1FA9A2)] group-hover:translate-x-0.5 transition-transform" />
           </Link>
         ))}
       </div>
 
-      <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
-            <Users className="w-4 h-4 text-primary" />
+      {/* Recent Inbound Leads Section */}
+      <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 shadow-2xs space-y-4">
+        <div className="flex items-center justify-between border-b border-[var(--lit-border-light,#DFE7EF)] pb-4">
+          <h2 className="text-sm font-bold text-[var(--lit-navy,#0B2545)] uppercase tracking-wider flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-teal,#1FA9A2)]/10 text-[var(--lit-teal,#1FA9A2)]">
+              <Users className="w-4 h-4" />
+            </span>
             <span>Recent Inbound Inquiries</span>
           </h2>
-          <Link href="/admin/leads" className="text-xs text-primary font-bold hover:underline">
-            View All Leads
+          <Link
+            href="/admin/leads"
+            className="text-xs text-[var(--lit-teal,#1FA9A2)] font-bold hover:underline flex items-center gap-1"
+          >
+            <span>View All Leads</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         {leadsRes.error ? (
-          <p className="text-xs text-rose-300 py-4 text-center">Could not load recent leads.</p>
+          <p className="text-xs text-rose-600 py-6 text-center font-medium">Could not load recent leads.</p>
         ) : (
-          <div className="divide-y divide-neutral-800">
+          <div className="divide-y divide-[var(--lit-border-light,#DFE7EF)]">
             {leads.length > 0 ? (
               leads.map((l) => (
-                <div key={l.id} className="py-3.5 flex items-center justify-between text-xs">
-                  <div>
-                    <Link href={`/admin/leads/${l.id}`} className="font-bold text-white hover:underline text-sm block">
+                <div
+                  key={l.id}
+                  className="py-3.5 px-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs hover:bg-[var(--lit-cloud,#F7F9FC)] rounded-xl transition-colors"
+                >
+                  <div className="min-w-0">
+                    <Link
+                      href={`/admin/leads/${l.id}`}
+                      className="font-bold text-[var(--lit-navy,#0B2545)] hover:text-[var(--lit-teal,#1FA9A2)] text-sm block truncate transition-colors"
+                    >
                       {l.name}
                     </Link>
-                    <p className="text-zinc-400 text-[11px]">
+                    <p className="text-[var(--lit-text-muted,#52677C)] text-xs mt-0.5 truncate">
                       {l.email} {l.company ? `· ${l.company}` : ""}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-primary/10 text-primary border border-primary/20">
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-[var(--lit-teal,#1FA9A2)]/10 text-[var(--lit-teal,#1FA9A2)] border border-[var(--lit-teal,#1FA9A2)]/20">
                       Score: {leadScoreLabel(l.lead_score)}
                     </span>
-                    <Link href={`/admin/leads/${l.id}`} className="text-primary hover:underline font-semibold">
+                    <Link
+                      href={`/admin/leads/${l.id}`}
+                      className="px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-xs font-semibold text-[var(--lit-navy,#0B2545)] shadow-2xs transition-colors"
+                    >
                       Dossier →
                     </Link>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-xs text-zinc-500 py-4 text-center">No leads recorded yet.</p>
+              <p className="text-xs text-[var(--lit-text-muted,#52677C)] py-8 text-center font-medium">
+                No leads recorded yet.
+              </p>
             )}
           </div>
         )}
