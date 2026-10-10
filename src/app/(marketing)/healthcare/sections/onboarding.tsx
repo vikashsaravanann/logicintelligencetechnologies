@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { Store, Settings, Users, CheckCircle } from 'lucide-react';
+import { Store, Settings, Users, CheckCircle, ExternalLink } from 'lucide-react';
 
 const steps = [
   {
@@ -15,7 +15,7 @@ const steps = [
       href: 'https://healthcare.logicintelligencetechnologies.in/organization-store',
       external: true,
     },
-    color: '#1FA9A2',
+    accent: 'bg-[#1FA9A2]/10 text-[#0E7A74] border-[#1FA9A2]/25',
   },
   {
     number: '02',
@@ -23,7 +23,7 @@ const steps = [
     title: 'Select Your Plan',
     description:
       'Choose the subscription tier that matches your organization type and operational requirements — Clinic Essential, Clinic Professional, Hospital Standard, or Hospital Advanced.',
-    color: '#1565C0',
+    accent: 'bg-[#E7F3FF] text-[#1565C0] border-[#BFDBFE]',
   },
   {
     number: '03',
@@ -31,7 +31,7 @@ const steps = [
     title: 'Organization Configuration',
     description:
       'Set up your organization profile, facilities, departments, and initial configuration. Our team supports deployment and onboarding.',
-    color: '#45D9D2',
+    accent: 'bg-[#F1ECFF] text-[#7C3AED] border-[#DDD6FE]',
   },
   {
     number: '04',
@@ -39,7 +39,7 @@ const steps = [
     title: 'Onboard Your Team',
     description:
       'Add staff members, assign roles, configure facility access, and activate the workspaces appropriate to your organization\'s structure.',
-    color: '#1FA9A2',
+    accent: 'bg-[#ECFDF5] text-[#059669] border-[#A7F3D0]',
   },
 ];
 
@@ -47,26 +47,18 @@ export default function HealthcareOnboarding() {
   return (
     <section
       aria-label="Onboarding journey"
-      className="py-24 md:py-32 relative bg-[#10131A] overflow-hidden"
+      className="py-16 md:py-20 relative bg-transparent border-t border-[#DFE7EF]"
     >
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse 50% 40% at 50% 50%, rgba(21,101,192,0.06), transparent 60%)',
-        }}
-      />
-
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16 max-w-3xl mx-auto">
+        <div className="text-center mb-14 max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 border border-[#1565C0]/30 bg-[#1565C0]/10"
+            transition={{ duration: 0.4 }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-4 border border-[#1565C0]/25 bg-[#E7F3FF] shadow-2xs"
           >
-            <span className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#45D9D2]">
+            <span className="text-xs font-mono font-semibold tracking-wider uppercase text-[#1565C0]">
               Implementation Process
             </span>
           </motion.div>
@@ -75,8 +67,8 @@ export default function HealthcareOnboarding() {
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.06 }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight mb-4"
+            transition={{ duration: 0.45, delay: 0.05 }}
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--lit-navy,#0B2545)] leading-tight tracking-tight mb-4"
           >
             How Onboarding Works
           </motion.h2>
@@ -84,8 +76,8 @@ export default function HealthcareOnboarding() {
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.12 }}
-            className="text-base sm:text-lg text-slate-300 leading-relaxed"
+            transition={{ duration: 0.45, delay: 0.1 }}
+            className="text-base sm:text-lg text-[var(--lit-text-muted,#52677C)] leading-relaxed font-normal"
           >
             Getting your organization onto LIT Healthcare is a structured process designed
             to ensure proper configuration and a smooth start for your team.
@@ -96,39 +88,38 @@ export default function HealthcareOnboarding() {
           {steps.map((step, i) => (
             <motion.div
               key={step.title}
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.09 }}
-              className="relative p-7 rounded-2xl bg-[#151922] border border-white/5 hover:border-[#1FA9A2]/30 transition-all duration-300 group flex flex-col justify-between"
+              transition={{ duration: 0.45, delay: i * 0.05 }}
+              className="p-8 rounded-3xl bg-white border border-[#DFE7EF] hover:border-[#1FA9A2]/40 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group relative"
             >
               <div>
-                {/* Step number */}
-                <div
-                  className="text-4xl font-extrabold mb-5 leading-none font-mono tracking-tight"
-                  style={{ color: step.color, opacity: 0.35 }}
-                >
-                  {step.number}
+                <div className="flex items-center justify-between mb-6">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${step.accent} group-hover:scale-105 transition-transform duration-200`}>
+                    <step.icon className="w-6 h-6" aria-hidden />
+                  </div>
+                  <span className="text-2xl font-bold font-mono text-[#CBD5E1] group-hover:text-[var(--lit-blue,#1565C0)] transition-colors">
+                    {step.number}
+                  </span>
                 </div>
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 border transition-transform group-hover:scale-105 duration-300"
-                  style={{ background: `${step.color}15`, borderColor: `${step.color}35` }}
-                >
-                  <step.icon className="w-6 h-6" style={{ color: step.color }} aria-hidden />
-                </div>
-                <h3 className="text-base font-bold text-white mb-2">{step.title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed mb-6">{step.description}</p>
+                <h3 className="text-lg font-bold text-[var(--lit-navy,#0B2545)] mb-3 tracking-tight">
+                  {step.title}
+                </h3>
+                <p className="text-sm text-[var(--lit-text-muted,#52677C)] leading-relaxed font-normal mb-6">
+                  {step.description}
+                </p>
               </div>
+
               {step.action && (
                 <a
                   href={step.action.href}
-                  target={step.action.external ? '_blank' : undefined}
-                  rel={step.action.external ? 'noopener noreferrer' : undefined}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold transition-colors mt-auto group-hover:underline"
-                  style={{ color: step.color }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--lit-blue,#1565C0)] hover:underline pt-2 border-t border-[#DFE7EF]"
                 >
-                  {step.action.label}
-                  <span aria-hidden>→</span>
+                  <span>{step.action.label}</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               )}
             </motion.div>

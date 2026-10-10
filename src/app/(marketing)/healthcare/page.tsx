@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { COMPANY } from '@/config/company';
 import { SITE, healthcarePlatformNode, breadcrumb } from '@/lib/seo/schema';
+import BackButton from '@/components/navigation/back-button';
 import HealthcareHero from './sections/hero';
 import HealthcareOverview from './sections/overview';
 import HealthcareAudience from './sections/audience';
@@ -46,11 +47,14 @@ export default function HealthcarePage() {
   };
 
   return (
-    <main id="main-content" tabIndex={-1} className="min-h-screen overflow-x-hidden">
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0] pt-28 sm:pt-36 pb-20 overflow-x-hidden">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ldJson) }}
       />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4">
+        <BackButton fallbackHref="/products" label="Back to Products" inline />
+      </div>
       <HealthcareHero />
       <HealthcareOverview />
       <HealthcareAudience />
