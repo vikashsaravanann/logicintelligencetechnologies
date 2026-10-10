@@ -3,45 +3,48 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { PRICING_CONFIG, Currency, formatPrice, isCustomPlan, PRICING_DISCLAIMER } from '@/config/pricing';
-import PageShell from '@/components/layout/page-shell';
 import { Check, HelpCircle, Shield, Lock, FileCheck, Sparkles, ArrowRight } from 'lucide-react';
-import { motion } from 'framer-motion';
-import BackToHome from "@/components/ui/back-to-home";
+import BackButton from "@/components/navigation/back-button";
 
 export default function PricingPage() {
   const [currency, setCurrency] = useState<Currency>('USD');
 
   return (
-    <PageShell>
-      <BackToHome />
-      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[85%] h-[60%] bg-[radial-gradient(ellipse_at_center,_rgba(69,217,210,0.10)_0%,_rgba(0,0,0,0)_70%)]" />
-        <div className="absolute bottom-[-10%] left-1/2 -translate-x-1/2 w-[65%] h-[50%] bg-[radial-gradient(ellipse_at_center,_rgba(31,169,162,0.06)_0%,_rgba(0,0,0,0)_60%)]" />
-      </div>
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0] pt-28 sm:pt-36 pb-20 overflow-x-hidden"
+    >
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Navigation Breadcrumb */}
+        <div className="mb-6">
+          <BackButton fallbackHref="/" label="Back to Home" inline />
+        </div>
 
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28 md:py-36">
-        <div className="text-center mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold tracking-wider uppercase mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" /> Transparent Commercial Pricing
+        {/* Hero Header */}
+        <div className="text-center mb-14 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#1565C0]/20 bg-[#E7F3FF] text-[#1565C0] text-xs font-semibold tracking-wider uppercase mb-4 shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#1565C0]" />
+            <span>Transparent Commercial Pricing</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-poppins text-[var(--lit-navy,#0B2545)] tracking-tight mb-4 leading-[1.08]">
             Simple, Transparent Pricing
           </h1>
-          <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             Choose the right AI solution for your business. Controlled USD and INR display prices with no hidden surprises.
           </p>
         </div>
 
         {/* Currency Switcher */}
         <div className="flex justify-center mb-16">
-          <div className="bg-[#10131A] border border-white/10 rounded-full p-1.5 inline-flex shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+          <div className="bg-white border border-[var(--lit-border-light,#DFE7EF)] rounded-full p-1.5 inline-flex shadow-xs">
             <button
               onClick={() => setCurrency('USD')}
               aria-pressed={currency === 'USD'}
-              className={`px-7 py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide transition-all duration-300 ${
+              className={`px-7 py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200 ${
                 currency === 'USD'
-                  ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-black shadow-md shadow-cyan-500/20'
-                  : 'text-zinc-400 hover:text-white'
+                  ? 'bg-[var(--lit-navy,#0B2545)] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-[var(--lit-navy,#0B2545)]'
               }`}
             >
               USD ($)
@@ -49,10 +52,10 @@ export default function PricingPage() {
             <button
               onClick={() => setCurrency('INR')}
               aria-pressed={currency === 'INR'}
-              className={`px-7 py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide transition-all duration-300 ${
+              className={`px-7 py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200 ${
                 currency === 'INR'
-                  ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-black shadow-md shadow-cyan-500/20'
-                  : 'text-zinc-400 hover:text-white'
+                  ? 'bg-[var(--lit-navy,#0B2545)] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-[var(--lit-navy,#0B2545)]'
               }`}
             >
               INR (₹)
@@ -60,17 +63,17 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* ── Grouped pricing grid ── */}
-        <div className="space-y-16 mb-28">
-          {PRICING_CONFIG.map((product, productIdx) => (
+        {/* Grouped pricing grid */}
+        <div className="space-y-16 mb-24">
+          {PRICING_CONFIG.map((product) => (
             <div key={product.id}>
               {/* Product group label */}
               <div className="flex items-center gap-4 mb-8">
-                <div className="h-px flex-1 bg-white/10" />
-                <span className="text-xs font-mono font-semibold tracking-[0.2em] text-cyan-400/90 uppercase px-4 py-1 rounded-full bg-cyan-500/5 border border-cyan-500/20">
+                <div className="h-px flex-1 bg-[var(--lit-border-light,#DFE7EF)]" />
+                <span className="text-xs font-mono font-bold tracking-[0.18em] text-[#1565C0] uppercase px-4 py-1.5 rounded-full bg-[#E7F3FF] border border-[#1565C0]/20 shadow-2xs">
                   {product.name}
                 </span>
-                <div className="h-px flex-1 bg-white/10" />
+                <div className="h-px flex-1 bg-[var(--lit-border-light,#DFE7EF)]" />
               </div>
 
               {/* 3-column row */}
@@ -81,89 +84,83 @@ export default function PricingPage() {
                   ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto'
                   : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
               }`}>
-                {product.plans.map((plan, planIdx) => {
+                {product.plans.map((plan) => {
                   const isPopular = plan.popular;
-                  const globalIdx = PRICING_CONFIG
-                    .slice(0, productIdx)
-                    .reduce((acc, p) => acc + p.plans.length, 0) + planIdx;
                   return (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: globalIdx * 0.08 }}
+                    <div
                       key={`${product.id}-${plan.name}`}
-                      className={`relative flex flex-col rounded-2xl border backdrop-blur-md transition-all duration-300 hover:-translate-y-1.5 ${
+                      className={`relative flex flex-col rounded-2xl border transition-all duration-300 hover:-translate-y-1 ${
                         isPopular
-                          ? 'border-cyan-500/50 bg-[#181D28] shadow-[0_20px_50px_-20px_rgba(69,217,210,0.2)]'
-                          : 'border-white/10 bg-[#151922] hover:border-cyan-500/30'
+                          ? 'border-[#1FA9A2] ring-2 ring-[#1FA9A2]/20 bg-white shadow-md'
+                          : 'border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-xs hover:border-[#1565C0]/40'
                       }`}
                     >
                       {isPopular && (
                         <div className="absolute -top-3.5 inset-x-0 flex justify-center">
-                          <div className="bg-gradient-to-r from-cyan-500 to-teal-500 text-black text-[10px] font-bold tracking-widest uppercase px-4 py-1 rounded-full shadow-md whitespace-nowrap">
+                          <div className="bg-[var(--lit-navy,#0B2545)] text-white text-[10px] font-bold tracking-widest uppercase px-4 py-1 rounded-full shadow-sm whitespace-nowrap">
                             Most Popular
                           </div>
                         </div>
                       )}
 
                       <div className="p-7 flex flex-col flex-1">
-                        <div className="text-[10px] font-mono font-semibold tracking-[0.2em] text-cyan-400/80 uppercase mb-2 text-center">
+                        <div className="text-[10px] font-mono font-semibold tracking-[0.2em] text-[#1565C0] uppercase mb-2 text-center">
                           {product.name}
                         </div>
-                        <h2 className="text-2xl font-bold text-white mb-4 text-center">{plan.name}</h2>
+                        <h2 className="text-2xl font-bold font-poppins text-[var(--lit-navy,#0B2545)] mb-4 text-center">{plan.name}</h2>
 
-                        <div className="flex flex-col items-center gap-1 pb-6 mb-6 border-b border-white/10">
+                        <div className="flex flex-col items-center gap-1 pb-6 mb-6 border-b border-[var(--lit-border-light,#DFE7EF)]">
                           <div className="flex items-baseline gap-1">
                             {isCustomPlan(plan) ? (
-                              <span className={`text-4xl font-bold ${isPopular ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300' : 'text-white'}`}>
+                              <span className="text-4xl font-bold font-poppins text-[var(--lit-navy,#0B2545)]">
                                 Custom
                               </span>
                             ) : (
                               <>
-                                <span className={`text-4xl sm:text-5xl font-bold tracking-tight ${isPopular ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300' : 'text-white'}`}>
+                                <span className="text-4xl sm:text-5xl font-bold font-poppins text-[var(--lit-navy,#0B2545)] tracking-tight">
                                   {formatPrice(plan.monthlyPrice[currency], currency)}
                                 </span>
-                                <span className="text-zinc-400 text-sm font-medium">/mo</span>
+                                <span className="text-slate-500 text-sm font-medium">/mo</span>
                               </>
                             )}
                           </div>
                           <div className="min-h-[44px] flex flex-col items-center justify-center gap-1 text-center">
                             {plan.setupFee && (
-                              <span className="text-xs font-medium text-zinc-400">
+                              <span className="text-xs font-medium text-slate-500">
                                 + {formatPrice(plan.setupFee[currency], currency)} one-time setup
                               </span>
                             )}
                             {plan.usageFee && (
-                              <span className="text-xs font-semibold text-cyan-400">
+                              <span className="text-xs font-semibold text-[#1565C0]">
                                 + {formatPrice(plan.usageFee[currency], currency)} {plan.usageFee.description}
                               </span>
                             )}
                             {!plan.setupFee && !plan.usageFee && !isCustomPlan(plan) && (
-                              <span className="text-xs font-semibold text-emerald-400">No setup fees</span>
+                              <span className="text-xs font-semibold text-emerald-600">No setup fees</span>
                             )}
                             {isCustomPlan(plan) && (
-                              <span className="text-xs font-semibold text-zinc-400">Quoted after scoping</span>
+                              <span className="text-xs font-semibold text-slate-500">Quoted after scoping</span>
                             )}
                           </div>
                         </div>
 
                         <div className="flex-1 flex flex-col">
-                          <p className="text-[10px] font-semibold tracking-[0.2em] text-zinc-400 uppercase mb-4 text-center">
+                          <p className="text-[10px] font-semibold tracking-[0.2em] text-slate-400 uppercase mb-4 text-center font-mono">
                             What&apos;s included
                           </p>
                           <ul className="space-y-3 flex-1">
                             {plan.features.map((feature, fIdx) => (
                               <li key={fIdx} className="flex items-start gap-3">
-                                <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isPopular ? 'bg-cyan-500/20 text-cyan-400' : 'bg-white/10 text-zinc-300'}`}>
+                                <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isPopular ? 'bg-teal-50 text-teal-600' : 'bg-slate-100 text-slate-600'}`}>
                                   <Check className="w-2.5 h-2.5" />
                                 </div>
-                                <span className="text-xs sm:text-sm text-zinc-300 leading-snug">{feature}</span>
+                                <span className="text-xs sm:text-sm text-slate-700 leading-snug">{feature}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
 
-                        <div className="mt-8 pt-6 border-t border-white/10">
+                        <div className="mt-8 pt-6 border-t border-[var(--lit-border-light,#DFE7EF)]">
                           <Link
                             href={
                               plan.ctaHref ||
@@ -173,8 +170,8 @@ export default function PricingPage() {
                             }
                             className={`w-full flex items-center justify-center h-11 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-200 ${
                               isPopular
-                                ? 'bg-gradient-to-r from-cyan-500 to-teal-500 text-black hover:opacity-95 shadow-lg shadow-cyan-500/25'
-                                : 'bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-white/20'
+                                ? 'bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white shadow-sm'
+                                : 'bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] border border-[var(--lit-border-light,#DFE7EF)] hover:bg-slate-100'
                             }`}
                           >
                             {plan.ctaLabel ||
@@ -186,7 +183,7 @@ export default function PricingPage() {
                           </Link>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   );
                 })}
               </div>
@@ -195,23 +192,23 @@ export default function PricingPage() {
         </div>
 
         {/* Feature Comparison Table */}
-        <section className="mb-28">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3">Compare All Plans</h2>
-            <p className="text-zinc-400 text-sm sm:text-base">A clear breakdown of included usage and commercial tiers.</p>
+        <section className="mb-24">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-poppins text-[var(--lit-navy,#0B2545)] mb-3">Compare All Plans</h2>
+            <p className="text-slate-600 text-sm sm:text-base">A clear breakdown of included usage and commercial tiers.</p>
           </div>
-          <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#10131A] backdrop-blur-md shadow-xl">
+          <div className="overflow-x-auto rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-sm">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/10 bg-[#151922]">
-                  <th className="text-left p-4 sm:p-5 text-zinc-400 font-semibold w-1/3">Feature</th>
-                  <th className="p-4 sm:p-5 text-white font-bold text-center">Free</th>
-                  <th className="p-4 sm:p-5 text-cyan-400 font-bold text-center bg-cyan-500/5">Pro (Web)</th>
-                  <th className="p-4 sm:p-5 text-cyan-400 font-bold text-center bg-cyan-500/5">Pro (Voice)</th>
-                  <th className="p-4 sm:p-5 text-white font-bold text-center">Enterprise</th>
+                <tr className="border-b border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]">
+                  <th className="text-left p-4 sm:p-5 text-slate-600 font-semibold w-1/3">Feature</th>
+                  <th className="p-4 sm:p-5 text-[var(--lit-navy,#0B2545)] font-bold text-center">Free</th>
+                  <th className="p-4 sm:p-5 text-[#1565C0] font-bold text-center bg-blue-50/50">Pro (Web)</th>
+                  <th className="p-4 sm:p-5 text-[#1565C0] font-bold text-center bg-blue-50/50">Pro (Voice)</th>
+                  <th className="p-4 sm:p-5 text-[var(--lit-navy,#0B2545)] font-bold text-center">Enterprise</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-[var(--lit-border-light,#DFE7EF)]">
                 {[
                   { label: 'Monthly Price', values: ['$0', '$39', '$149', 'Custom'] },
                   { label: 'One-Time Setup', values: ['None', '$199', '$599', 'Custom'] },
@@ -223,14 +220,14 @@ export default function PricingPage() {
                   { label: 'Analytics', values: ['Basic', 'Usage analytics', 'Call analytics', 'Enterprise suite'] },
                   { label: 'Support', values: ['Email', 'Standard', 'Standard', 'Dedicated SLA'] },
                 ].map((row, i) => (
-                  <tr key={i} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="p-4 sm:p-5 text-zinc-400 font-medium">{row.label}</td>
+                  <tr key={i} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="p-4 sm:p-5 text-slate-700 font-medium">{row.label}</td>
                     {row.values.map((val, j) => (
                       <td
                         key={j}
                         className={`p-4 sm:p-5 text-center font-semibold text-xs sm:text-sm ${
-                          j === 1 || j === 2 ? 'text-cyan-400 bg-cyan-500/[0.02]' : 'text-zinc-300'
-                        } ${val === '—' ? 'text-zinc-600' : ''}`}
+                          j === 1 || j === 2 ? 'text-[#1565C0] bg-blue-50/20' : 'text-slate-700'
+                        } ${val === '—' ? 'text-slate-400' : ''}`}
                       >
                         {val}
                       </td>
@@ -240,19 +237,19 @@ export default function PricingPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-xs text-zinc-500 mt-4 text-center">
+          <p className="text-xs text-slate-500 mt-4 text-center">
             * Enterprise AI and healthcare deployments are quoted based on organizational scope. Healthcare plans are available at{' '}
-            <Link href="/healthcare/plans" className="text-cyan-400 hover:underline">
+            <Link href="/healthcare/plans" className="text-[#1565C0] font-semibold hover:underline">
               /healthcare/plans
             </Link>.
           </p>
         </section>
 
         {/* Security & Privacy */}
-        <section className="mb-28">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3">Security & Privacy</h2>
-            <p className="text-sm sm:text-base text-zinc-400 max-w-2xl mx-auto">
+        <section className="mb-24">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-poppins text-[var(--lit-navy,#0B2545)] mb-3">Security &amp; Privacy</h2>
+            <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto">
               Designed with privacy and access-control considerations. Actual compliance depends on deployment configuration, providers and contracts.
             </p>
           </div>
@@ -274,29 +271,28 @@ export default function PricingPage() {
                 desc: 'Retention, residency and subprocessors depend on the selected product deployment. Enterprise customers can discuss audit and contractual requirements during scoping.',
               },
             ].map((item, idx) => (
-              <div key={idx} className="flex flex-col items-center text-center bg-[#151922] border border-white/10 p-8 rounded-2xl hover:border-cyan-500/30 transition-all duration-300 group">
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-5 text-cyan-400 group-hover:scale-105 transition-transform">
-                  <item.icon className="w-5 h-5 text-cyan-400" />
+              <div key={idx} className="flex flex-col items-center text-center bg-white border border-[var(--lit-border-light,#DFE7EF)] p-8 rounded-2xl shadow-xs hover:border-[#1565C0]/40 transition-all duration-300 group">
+                <div className="w-12 h-12 rounded-xl bg-[#E7F3FF] border border-[#1565C0]/20 flex items-center justify-center mb-5 text-[#1565C0] group-hover:scale-105 transition-transform">
+                  <item.icon className="w-5 h-5 text-[#1565C0]" />
                 </div>
-                <h4 className="text-lg font-bold text-white mb-2">{item.title}</h4>
-                <p className="text-zinc-400 leading-relaxed text-sm">{item.desc}</p>
+                <h3 className="text-lg font-bold font-poppins text-[var(--lit-navy,#0B2545)] mb-2">{item.title}</h3>
+                <p className="text-slate-600 leading-relaxed text-sm">{item.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Custom Enterprise Banner */}
-        <section className="mb-28">
-          <div className="relative bg-gradient-to-br from-[#10131A] via-[#151922] to-[#10131A] border border-cyan-500/30 rounded-3xl p-8 sm:p-12 md:p-14 overflow-hidden shadow-[0_20px_60px_-20px_rgba(69,217,210,0.15)]">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+        <section className="mb-24">
+          <div className="relative rounded-3xl border border-[#0B2545] bg-[var(--lit-navy,#0B2545)] p-8 sm:p-12 md:p-14 overflow-hidden shadow-xl text-white">
             <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10 text-center lg:text-left">
               <div className="space-y-4 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold tracking-wider uppercase">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#45D9D2]/10 border border-[#45D9D2]/30 text-[#45D9D2] text-xs font-semibold tracking-wider uppercase">
                   Enterprise Tier
                 </div>
-                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">Need a custom solution?</h3>
-                <p className="text-sm sm:text-base text-zinc-400 leading-relaxed">
-                  For complex workflows, higher volume, or stricter security requirements, we scope Enterprise agreements after discovery — without inventing fixed enterprise list prices.
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold font-poppins text-white tracking-tight">Need a custom solution?</h3>
+                <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                  For complex workflows, higher volume, or stricter security requirements, we scope Enterprise agreements after discovery — without backend guesswork.
                 </p>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-left">
                   {[
@@ -307,11 +303,11 @@ export default function PricingPage() {
                     'Custom configuration (not unrestricted fine-tuning claims)',
                     'Enterprise support options',
                   ].map((f, i) => (
-                    <li key={i} className="flex items-center gap-2.5 text-xs sm:text-sm text-zinc-300">
-                      <div className="w-4 h-4 rounded-full bg-cyan-500/20 flex items-center justify-center shrink-0">
-                        <Check className="w-2.5 h-2.5 text-cyan-400" />
+                    <li key={i} className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-200">
+                      <div className="w-4 h-4 rounded-full bg-[#1FA9A2]/20 flex items-center justify-center shrink-0">
+                        <Check className="w-2.5 h-2.5 text-[#45D9D2]" />
                       </div>
-                      {f}
+                      <span>{f}</span>
                     </li>
                   ))}
                 </ul>
@@ -319,11 +315,12 @@ export default function PricingPage() {
               <div className="shrink-0 flex flex-col items-center gap-3 w-full lg:w-auto">
                 <Link
                   href="/contact"
-                  className="w-full lg:w-60 text-center px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-teal-500 text-black font-bold tracking-wider uppercase text-xs sm:text-sm rounded-xl hover:opacity-95 transition-all shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2"
+                  className="w-full lg:w-60 text-center px-8 py-3.5 bg-white text-[var(--lit-navy,#0B2545)] font-bold tracking-wider uppercase text-xs sm:text-sm rounded-xl hover:bg-slate-100 transition-all shadow-md flex items-center justify-center gap-2"
                 >
-                  Contact Sales <ArrowRight className="w-4 h-4" />
+                  <span>Contact Sales</span>
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
-                <p className="text-xs text-zinc-500">Response within 1 business day</p>
+                <p className="text-xs text-slate-400">Response within 1 business day</p>
               </div>
             </div>
           </div>
@@ -331,9 +328,9 @@ export default function PricingPage() {
 
         {/* FAQs */}
         <section className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3">Frequently Asked Questions</h2>
-            <p className="text-zinc-400 text-sm sm:text-base">Pricing and billing fundamentals.</p>
+          <div className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-poppins text-[var(--lit-navy,#0B2545)] mb-3">Frequently Asked Questions</h2>
+            <p className="text-slate-600 text-sm sm:text-base">Pricing and billing fundamentals.</p>
           </div>
 
           <div className="space-y-4">
@@ -365,13 +362,13 @@ export default function PricingPage() {
             ].map((faq, i) => (
               <div
                 key={i}
-                className="bg-[#151922] border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-colors"
+                className="bg-white border border-[var(--lit-border-light,#DFE7EF)] rounded-2xl p-6 shadow-xs"
               >
                 <div className="flex items-start gap-3.5">
-                  <HelpCircle className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
+                  <HelpCircle className="w-5 h-5 text-[#1565C0] shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="text-base font-bold text-white mb-2">{faq.q}</h4>
-                    <p className="text-sm text-zinc-400 leading-relaxed">{faq.a}</p>
+                    <h3 className="text-base font-bold font-poppins text-[var(--lit-navy,#0B2545)] mb-2">{faq.q}</h3>
+                    <p className="text-sm text-slate-600 leading-relaxed">{faq.a}</p>
                   </div>
                 </div>
               </div>
@@ -379,11 +376,10 @@ export default function PricingPage() {
           </div>
         </section>
 
-        <p className="text-center text-xs text-zinc-600 mt-20 max-w-3xl mx-auto leading-relaxed">
+        <p className="text-center text-xs text-slate-500 mt-16 max-w-3xl mx-auto leading-relaxed">
           {PRICING_DISCLAIMER}
         </p>
       </div>
-    </PageShell>
+    </main>
   );
 }
-
