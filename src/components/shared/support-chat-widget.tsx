@@ -205,39 +205,34 @@ export default function SupportChatWidget() {
         aria-label={open ? "Close LOGIC AI Assistant" : "Open LOGIC AI Assistant"}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.96 }}
-        className={`fixed bottom-5 right-5 sm:bottom-7 sm:right-7 z-50 transition-all duration-300 shadow-2xl ${
+        className={`fixed bottom-5 right-5 sm:bottom-7 sm:right-7 z-50 transition-all duration-300 shadow-xl ${
           open
-            ? "w-12 h-12 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center border border-cyan-300 shadow-cyan-500/40"
-            : "h-13 px-4 rounded-full bg-gradient-to-r from-[#071328]/95 via-[#0B1C3D]/95 to-[#08152E]/95 border border-cyan-500/40 backdrop-blur-xl shadow-[0_8px_30px_rgba(14,165,233,0.35)] hover:border-cyan-400 flex items-center gap-3 text-white group"
+            ? "w-10 h-10 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center border border-cyan-300 shadow-cyan-500/40"
+            : "h-10 px-3 rounded-full bg-gradient-to-r from-[#071328]/95 via-[#0B1C3D]/95 to-[#08152E]/95 border border-cyan-500/40 backdrop-blur-xl shadow-[0_6px_20px_rgba(14,165,233,0.3)] hover:border-cyan-400 flex items-center gap-2 text-white group"
         }`}
       >
         {open ? (
-          <X className="w-5 h-5 transition-transform" />
+          <X className="w-4 h-4 transition-transform" />
         ) : (
           <>
-            <div className="relative w-8 h-8 rounded-full p-0.5 bg-gradient-to-tr from-cyan-400 via-teal-400 to-blue-500 flex items-center justify-center shrink-0">
+            <div className="relative w-6 h-6 rounded-full p-0.5 bg-gradient-to-tr from-cyan-400 via-teal-400 to-blue-500 flex items-center justify-center shrink-0">
               <div className="w-full h-full bg-[#081328] rounded-full overflow-hidden p-0.5 flex items-center justify-center">
                 <Image
                   src={COMPANY.logoIconPath}
                   alt="Logic Intelligence Technologies Logo"
-                  width={32}
-                  height={32}
+                  width={24}
+                  height={24}
                   className="w-full h-full object-contain rounded-full"
                 />
               </div>
-              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#081328] animate-pulse" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#081328] animate-pulse" />
             </div>
-            <div className="flex flex-col text-left select-none pr-1">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold tracking-wide text-white group-hover:text-cyan-300 transition-colors font-mono">
-                  LOGIC AI
-                </span>
-                <span className="text-[9px] font-mono font-semibold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  ONLINE
-                </span>
-              </div>
-              <span className="text-[10px] text-zinc-400">Engineering &amp; Systems Intelligence</span>
-            </div>
+            <span className="text-xs font-bold tracking-wide text-white group-hover:text-cyan-300 transition-colors font-mono">
+              LOGIC AI
+            </span>
+            <span className="text-[8px] font-mono font-semibold px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              ONLINE
+            </span>
           </>
         )}
       </motion.button>
@@ -255,17 +250,17 @@ export default function SupportChatWidget() {
             {/* Professional Executive Header */}
             <div className="relative px-4 py-3.5 bg-gradient-to-r from-[#08162E] via-[#0B1F42] to-[#0A1835] border-b border-cyan-500/20 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-400 via-teal-400 to-blue-500 p-0.5 shrink-0 shadow-md">
-                  <div className="w-full h-full bg-[#070F1E] rounded-[10px] overflow-hidden flex items-center justify-center p-1">
+                <div className="relative w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 via-teal-400 to-blue-500 p-0.5 shrink-0 shadow-md">
+                  <div className="w-full h-full bg-[#070F1E] rounded-full overflow-hidden flex items-center justify-center p-0.5">
                     <Image
                       src={COMPANY.logoIconPath}
                       alt="Logic Intelligence Logo"
-                      width={32}
-                      height={32}
-                      className="w-full h-full object-contain"
+                      width={28}
+                      height={28}
+                      className="w-full h-full object-contain rounded-full"
                     />
                   </div>
-                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-[#070F1E]" />
+                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#070F1E]" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
@@ -315,7 +310,7 @@ export default function SupportChatWidget() {
                 >
                   <div className="flex items-end gap-2 max-w-[90%]">
                     {m.role === "assistant" && (
-                      <div className="w-6 h-6 rounded-lg bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center shrink-0 mb-1">
+                      <div className="w-6 h-6 rounded-full bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center shrink-0 mb-1">
                         <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
                       </div>
                     )}

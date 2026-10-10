@@ -62,6 +62,29 @@
   to   { transform: translate3d(-10vmax, -6vmax, 0); }
 }
 
+@keyframes dash {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+@keyframes scan {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lit-ambient-net,
   .lit-ambient-node,
@@ -69,3 +92,4 @@
     animation: none !important;
   }
 }
+

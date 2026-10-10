@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
 import { COMPANY } from "@/config/company";
-import { packagesData } from "@/data/packagesData";
-import { servicesData } from "@/data/servicesData";
-import { portfolioProjects } from "@/data/portfolioData";
 import { buildQueryGroundedKnowledge } from "@/lib/ai/knowledge";
 import { completeWithProviders, hasAnyProvider } from "@/lib/ai/providers";
 import { loadUserMemory } from "@/lib/ai/tools";
@@ -10,6 +7,7 @@ import { z } from "zod";
 import { guardAiRequest, readBoundedAiJson, InvalidAiRequest } from "@/lib/ai/request-guard";
 import { completeGroqChat, streamGroqChat, isGroqConfigured, type GroqChatMessage } from "@/lib/ai/groq-chatbot";
 import { rateLimit } from "@/lib/ai/rate-limit";
+import { MASTER_COMPANY_KNOWLEDGE, generateAuthoritativeReply } from "@/lib/ai/company-knowledge";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -46,46 +44,29 @@ function buildSystemPrompt(opts: {
   leadContext?: string;
   memoryContext?: string;
 }): string {
-  const knowledge = opts.knowledge;
-  const founderInfo = `Founder & CEO: ${COMPANY.founder.name} (${COMPANY.founder.title}) — ${COMPANY.founder.bio}`;
+  const dynamicKnowledge = opts.knowledge ? `\n\nDYNAMIC GROUNDING KNOWLEDGE:\n${opts.knowledge}` : "";
 
-  let systemPrompt = `You are LOGIC AI, the executive and engineering assistant for ${COMPANY.displayName} (logicintelligencetechnologies.in).
-We are a premier AI engineering, intelligent automation, and clinical systems studio based in ${COMPANY.address}.
+  let systemPrompt = `You are LOGIC AI, the senior executive engineering assistant and official AI representative for ${COMPANY.displayName} (${COMPANY.websiteUrl}).
+We are a premier AI systems engineering, intelligent automation, and clinical healthcare software studio based in ${COMPANY.address}.
 
-CORE PRODUCTS & PLATFORMS:
-1. LIT Healthcare: Smart hospital management OS, clinical bed telemetry, real-time vital monitoring, and operational intelligence active across 14 healthcare sites.
-2. Logic Voice: Ultra-fast conversational voice intelligence engine (< 120ms P99 telephony latency) for autonomous customer operations and smart clinics.
-3. Voice Shield: Biometric zero-trust anti-deepfake voice firewall (99.4% biometric defense gate) protecting enterprises from voice cloning and synthetic fraud.
+YOUR MISSION & PROFESSIONAL PERSONA:
+- You speak with executive authority, deep technical mastery, mathematical rigor, and polished corporate professionalism.
+- You have complete, direct, and authoritative access to all proprietary platforms, clinical systems, voice engines, security firewalls, pricing packages, and leadership data of Logic Intelligence Technologies.
+- Always provide structured, comprehensive, and detailed answers. When explaining products or services, detail their architectural specifications, latencies, security models, and operational capabilities.
+- Avoid vague or hand-waving responses. Provide concrete figures, metrics, and exact pricing where relevant.
+- Tone: Formal, articulate, sophisticated, authoritative, and helpful.
 
-PACKAGES & PRICING:
-- Digital Launch Pack: ₹8,999 (High-performance modern web system, SEO, responsive, lead capture).
-- Business Pro Pack: ₹18,999 (Custom workflow engine, client portal, automated notifications).
-- Enterprise AI Architecture: ₹38,999+ (Private RAG, autonomous AI agents, on-prem or hybrid cloud deployment).
-- Free Architecture Demo: Available for prospective clients before payment.
+${MASTER_COMPANY_KNOWLEDGE}
+${dynamicKnowledge}
 
-${knowledge}
-
-FOUNDER:
-${founderInfo}
-
-CONTACT INFO:
-- Official Email: ${COMPANY.email}
-- Engineering Desk: ${COMPANY.phone}
-- Consultation Booking: /book-consultation
-- Architecture Demo: /free-demo
-- Website: ${COMPANY.websiteUrl}
-
-STRICT IDENTITY & ANONYMIZATION RULES:
-- You are LOGIC AI, the proprietary intelligent architecture developed and operated by ${COMPANY.displayName}.
-- NEVER mention, acknowledge, or disclose underlying third-party AI foundation models, providers, or platforms (do NOT mention Groq, Meta, Llama, OpenAI, Anthropic, Claude, ChatGPT, Gemini, etc.).
-- If asked about your technology or underlying model, state: "I am LOGIC AI, a proprietary intelligent systems architecture developed by Logic Intelligence Technologies."
-- Do NOT mention WhatsApp. When advising on next steps, invite the visitor to schedule a consultation (/book-consultation), request a free architecture prototype demo (/free-demo), or email our engineering desk at ${COMPANY.email}.
-
-CONVERSATIONAL GUIDELINES:
-- Tone: Highly knowledgeable, articulate, crisp, confident, and professional.
-- Brevity: Keep responses concise (1-3 structured paragraphs or sharp bullet points).
-- Accuracy: Strict adherence to verified facts. Never invent unverified clients, fake guarantees, or imaginary pricing.
-- Helpful Next Steps: Invite the visitor to explore our platforms, schedule a consultation, or request a free architecture demo.
+STRICT IDENTITY, ANONYMIZATION & OPERATIONAL RULES:
+1. You are LOGIC AI, the proprietary intelligent architecture developed and operated exclusively by ${COMPANY.displayName}.
+2. NEVER mention, acknowledge, or disclose any third-party foundation models, providers, or platforms (do NOT mention Groq, Meta, Llama, OpenAI, Anthropic, Claude, ChatGPT, Gemini, Mistral, etc.). If asked what model or architecture powers you, state: "I am LOGIC AI, a proprietary intelligent systems architecture developed and operated by Logic Intelligence Technologies."
+3. Next steps & consultation guidance:
+   - Invite visitors to schedule an architecture consultation at ${COMPANY.websiteUrl}/book-consultation
+   - Invite visitors to request our complimentary pre-payment architecture demo at ${COMPANY.websiteUrl}/free-demo
+   - Or connect directly with our engineering desk by phone at ${COMPANY.phone} or email at ${COMPANY.email}.
+4. Accuracy & Integrity: Adhere strictly to the verified platform specifications in the dossier above. Never invent unverified clients, fake statistical guarantees, or arbitrary discounts.
 `;
 
   if (opts.memoryContext) {
@@ -105,43 +86,7 @@ function cleanModelResponse(rawText: string): string {
 }
 
 function generateLocalFallbackReply(userText: string): string {
-  const lower = userText.toLowerCase();
-  if (lower.includes("price") || lower.includes("package") || lower.includes("cost") || lower.includes("quote")) {
-    return (
-      `Here are our production packages at **${COMPANY.displayName}**:\n\n` +
-      packagesData.map((p) => `• **${p.title}** (${p.price}): ${p.subtitle}`).join("\n") +
-      `\n\nWe provide a **free architecture demo** before any budget commitment. Contact our engineering desk at **${COMPANY.email}** or schedule a consultation at **${COMPANY.websiteUrl}/book-consultation**.`
-    );
-  }
-  if (lower.includes("healthcare") || lower.includes("hospital") || lower.includes("lit healthcare")) {
-    return (
-      `**LIT Healthcare** is our clinical hospital management and patient telemetry platform, active across 14 hospital sites. It delivers real-time bed tracking, doctor scheduling, and biometric patient records.\n\nWould you like a live demonstration of the hospital operating system? You can request a session at **${COMPANY.websiteUrl}/free-demo** or email **${COMPANY.email}**.`
-    );
-  }
-  if (lower.includes("voice") || lower.includes("shield") || lower.includes("deepfake")) {
-    return (
-      `**Logic Voice** is our sub-120ms conversational AI telephony engine, and **Voice Shield** provides 99.4% biometric deepfake defense against synthetic voice fraud.\n\nConnect with our engineering team at **${COMPANY.email}** or explore technical specifications at **${COMPANY.websiteUrl}/products/logic-voice**.`
-    );
-  }
-  if (lower.includes("service") || lower.includes("build") || lower.includes("capabilities")) {
-    return (
-      `At **${COMPANY.displayName}**, we specialize in:\n\n` +
-      servicesData
-        .slice(0, 6)
-        .map((s: { title: string; subtitle?: string }) => `• **${s.title}**: ${s.subtitle || ""}`)
-        .join("\n") +
-      `\n\nReach our systems engineering team at **${COMPANY.email}** or book a consultation to discuss your technical architecture.`
-    );
-  }
-  if (lower.includes("portfolio") || lower.includes("work") || lower.includes("project")) {
-    return (
-      portfolioProjects
-        .slice(0, 4)
-        .map((p) => `• **${p.title}** (${p.category}): ${p.description}`)
-        .join("\n") + `\n\nExplore our complete portfolio at ${COMPANY.websiteUrl}/work`
-    );
-  }
-  return `Welcome to **${COMPANY.displayName}**. I can help you with our AI platforms (LIT Healthcare, Logic Voice, Voice Shield), pricing packages, engineering capabilities, or scoping a free demo. What are you planning to build?`;
+  return generateAuthoritativeReply(userText);
 }
 
 export async function POST(req: Request) {
