@@ -152,7 +152,7 @@ export default function Footer() {
                 { label: 'LIT HEALTHCARE', href: '/healthcare' },
                 { label: 'HEALTHCARE PLANS', href: '/healthcare/plans' },
                 { label: 'LOGIC VOICE', href: '/products/logic-voice' },
-                { label: 'OMNIPUBLISHER AI', href: '/omni' },
+                { label: 'VOICE SHIELD', href: '/voice-shield' },
                 { label: 'ALL PRODUCTS', href: '/products' },
                 { label: 'PRICING', href: '/pricing' },
               ].map((item) => (

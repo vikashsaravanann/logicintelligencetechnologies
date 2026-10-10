@@ -20,11 +20,11 @@ export default function CommunityPage() {
       icon: Cpu,
     },
     {
-      title: "OmniPublisher AI automated multi-channel copy adaptation & distribution",
+      title: "Voice Shield real-time acoustic phase analysis & deepfake telephony firewall",
       author: "systems_lead",
       replies: 34,
-      category: "Automation",
-      icon: Sparkles,
+      category: "AI Security",
+      icon: ShieldCheck,
     },
     {
       title: "Multi-tenant hospital governance with LIT Healthcare architecture",
@@ -120,7 +120,7 @@ export default function CommunityPage() {
                 Join the Network
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed mb-6">
-                Collaborate directly with the engineers building Logic Voice, OmniPublisher AI, and the LIT Healthcare platform. Get early access to RFCs and system specifications.
+                Collaborate directly with the engineers building Logic Voice, Voice Shield, and the LIT Healthcare platform. Get early access to RFCs and system specifications.
               </p>
               <Link
                 href="/contact"

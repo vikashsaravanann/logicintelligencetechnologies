@@ -13,7 +13,7 @@ export const PUBLIC_MARKETING_PREFIXES: readonly string[] = [
   "/onboard", "/packages", "/press", "/privacy", "/privacy-policy", "/products",
   "/proposal", "/refund-policy", "/resources", "/roi-calculator", "/sales",
   "/search", "/services", "/status", "/support", "/terms",
-  "/terms-of-service", "/work",
+  "/terms-of-service", "/voice-shield", "/work",
   // Public pages that live outside the (marketing) group
   "/ai", "/company", "/pricing", "/security",
 ];
@@ -46,7 +46,7 @@ export function isPublicPath(path: string): boolean {
  * unprotected.
  */
 export const PROTECTED_PREFIXES: readonly string[] = [
-  "/admin", "/client", "/dashboard", "/omni", "/profile",
+  "/admin", "/client", "/dashboard", "/profile",
 ];
 
 /** Decoded, slash-collapsed, lower-cased path; null when the encoding is malformed. */

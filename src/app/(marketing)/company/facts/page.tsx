@@ -175,26 +175,26 @@ export default function CompanyFactsPage() {
               </div>
             </div>
 
-            {/* OmniPublisher AI */}
-            <div className="bg-[#10131A] border border-white/10 hover:border-indigo-500/40 rounded-2xl p-6 space-y-4 flex flex-col justify-between transition-all group shadow-xl">
+            {/* Voice Shield */}
+            <div className="bg-[#10131A] border border-white/10 hover:border-cyan-500/40 rounded-2xl p-6 space-y-4 flex flex-col justify-between transition-all group shadow-xl">
               <div className="space-y-3">
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 inline-block">
-                  Autonomous Marketing AI
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 inline-block">
+                  AI Biometrics &amp; Security
                 </span>
-                <h3 className="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">OmniPublisher AI</h3>
-                <p className="text-xs text-indigo-400/90 font-semibold uppercase tracking-wider">
-                  Multi-Channel Autonomous Distribution
+                <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">Voice Shield</h3>
+                <p className="text-xs text-cyan-400/90 font-semibold uppercase tracking-wider">
+                  Real-Time Audio Defense &amp; Deepfake Intercept
                 </p>
                 <p className="text-sm text-slate-300 leading-relaxed">
-                  Autonomous enterprise content distribution engine that drafts, schedules, optimizes, and broadcasts publications across social platforms and developer communities with centralized human review.
+                  Enterprise real-time audio security firewall and voice biometric verification engine engineered to defend contact centers, SIP trunking, and telephony workflows from synthetic voice clones and AI deepfake fraud under 15ms.
                 </p>
               </div>
               <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                <Link href="/omni" className="text-xs text-[#45D9D2] font-bold hover:underline flex items-center gap-1">
+                <Link href="/voice-shield" className="text-xs text-[#45D9D2] font-bold hover:underline flex items-center gap-1">
                   Product Overview <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
-                <Link href="/omni" className="text-[11px] text-slate-400 hover:text-white">
-                  Studio Portal ↗
+                <Link href="/voice-shield" className="text-[11px] text-slate-400 hover:text-white">
+                  Security Specs ↗
                 </Link>
               </div>
             </div>

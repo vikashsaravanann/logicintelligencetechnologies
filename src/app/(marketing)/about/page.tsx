@@ -24,7 +24,7 @@ import {
 export const metadata: Metadata = {
   title: "About Us | Logic Intelligence Technologies",
   description:
-    "Logic Intelligence Technologies is an AI technology company based in Coimbatore, Tamil Nadu, India, developing intelligent AI products and automation solutions including Logic Voice, LIT Healthcare, and OmniPublisher AI.",
+    "Logic Intelligence Technologies is an AI technology company based in Coimbatore, Tamil Nadu, India, developing intelligent AI products and automation solutions including Logic Voice, LIT Healthcare, and Voice Shield.",
 };
 
 const values = [

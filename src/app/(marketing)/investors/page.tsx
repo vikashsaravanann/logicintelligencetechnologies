@@ -18,7 +18,7 @@ const points = [
   },
   {
     t: "What is Live in Production",
-    d: "LIT Healthcare platform, Logic Voice AI OS, OmniPublisher AI distribution engine, the corporate portal, and client delivery pipelines. Working prototypes first; source code on complete delivery."
+    d: "LIT Healthcare platform, Logic Voice AI OS, Voice Shield acoustic defense firewall, the corporate portal, and client delivery pipelines. Working prototypes first; source code on complete delivery."
   },
   {
     t: "Transparent Commercial Floors",

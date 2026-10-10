@@ -29,7 +29,7 @@ export default function InvestorBriefPage() {
             Architectural Vision & <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#45D9D2] via-teal-200 to-white">Performance</span>
           </h1>
           <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-3xl">
-            {COMPANY.displayName} is expanding its footprint in enterprise intelligent systems through three core production architectures: LIT Healthcare, Logic Voice OS, and OmniPublisher AI autonomous distribution.
+            {COMPANY.displayName} is expanding its footprint in enterprise intelligent systems through three core production architectures: LIT Healthcare, Logic Voice OS, and Voice Shield real-time acoustic threat firewall.
           </p>
         </div>
 
@@ -51,7 +51,7 @@ export default function InvestorBriefPage() {
             <Rocket className="w-5 h-5 text-[#45D9D2] mb-3" />
             <div className="text-3xl font-bold text-white mb-1">3</div>
             <div className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Flagship Platforms</div>
-            <p className="text-[11px] text-slate-400 mt-2">LIT Healthcare, Logic Voice, and OmniPublisher AI</p>
+            <p className="text-[11px] text-slate-400 mt-2">LIT Healthcare, Logic Voice, and Voice Shield</p>
           </div>
           <div className="p-6 rounded-2xl border border-white/10 bg-[#10131A] shadow-xl">
             <LineChart className="w-5 h-5 text-[#45D9D2] mb-3" />
@@ -76,7 +76,7 @@ export default function InvestorBriefPage() {
                   The rapid evolution of generative AI presents both unprecedented enterprise opportunities and severe security challenges. Voice-based attack vectors and synthetic media make legacy biometric systems vulnerable.
                 </p>
                 <p>
-                  In response, our <strong className="text-white">OmniPublisher AI</strong> architecture provides autonomous multi-platform content distribution and social orchestration with centralized editorial governance.
+                  In response, our <strong className="text-white">Voice Shield</strong> architecture provides sub-15ms real-time acoustic threat firewalling, synthetic voice detection, and telephony biometrics with zero persistent voice retention.
                 </p>
                 <p>
                   Simultaneously, the <strong className="text-white">LIT Healthcare</strong> platform provides hospital networks with an enterprise-grade smart clinical operating system. By combining multi-tenant data governance with modular clinical workflows, we provide healthcare systems with mathematically reliable, auditable automation.
@@ -156,7 +156,7 @@ export default function InvestorBriefPage() {
 
         <CTASection
           title="Inspect the Live Platforms"
-          subtitle="Explore the live deployments of LIT Healthcare, Logic Voice, and OmniPublisher AI."
+          subtitle="Explore the live deployments of LIT Healthcare, Logic Voice, and Voice Shield."
           primaryCta={{ label: "View Products", href: "/products" }}
           secondaryCta={{ label: "Technical Architecture", href: "/architecture" }}
         />

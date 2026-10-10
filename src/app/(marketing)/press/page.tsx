@@ -31,7 +31,7 @@ const PILLARS = [
 ];
 
 const STATS = [
-  { k: "Flagship", v: "Enterprise Platforms (Healthcare, Logic Voice, OmniPublisher AI)" },
+  { k: "Flagship", v: "Enterprise Platforms (Healthcare, Logic Voice, Voice Shield)" },
   { k: "16", v: "Verified Engineering Credentials & Certifications" },
   { k: "100%", v: "Deterministic Scaffolding & Zero Fabricated Numbers" },
 ];
@@ -108,7 +108,7 @@ export default function PressPage() {
               Logic Intelligence Technologies is a Coimbatore-headquartered technology company engineering production AI architectures, autonomous automation, and secure enterprise web systems. The company architects systems end-to-end — from PostgreSQL schemas and FastAPI backends to Next.js App Router frontends — with deterministic scaffolding around every LLM inference call.
             </p>
             <p className="text-sm text-slate-300 leading-relaxed">
-              Founder Vikash Saravanan leads product architecture, systems engineering, and client scoping personally. The company delivers flagship platforms — including LIT Healthcare, Logic Voice, and OmniPublisher AI — alongside custom enterprise software and published pricing models.
+              Founder Vikash Saravanan leads product architecture, systems engineering, and client scoping personally. The company delivers flagship platforms — including LIT Healthcare, Logic Voice, and Voice Shield — alongside custom enterprise software and published pricing models.
             </p>
           </div>
 

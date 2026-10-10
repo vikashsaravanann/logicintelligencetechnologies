@@ -45,7 +45,7 @@ test("public pages outside the (marketing) group stay reachable", () => {
 });
 
 test("authenticated areas stay behind login", () => {
-  for (const p of ["/admin", "/admin/leads", "/dashboard", "/client/dashboard", "/profile", "/omni"]) {
+  for (const p of ["/admin", "/admin/leads", "/dashboard", "/client/dashboard", "/profile"]) {
     assert.equal(isPublicPath(p), false, `${p} must not be public`);
   }
 });

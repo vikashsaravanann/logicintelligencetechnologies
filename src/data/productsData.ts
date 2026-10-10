@@ -58,24 +58,25 @@ export const productsData: ProductItem[] = [
     repositoryUrl: "https://github.com/vikashsaravanann/lit-smart-hospital-platform"
   },
   {
-    slug: "omni-publisher",
-    name: "OmniPublisher AI",
-    tagline: "Autonomous Multi-Platform Content Distribution & Social Orchestration",
-    category: "AI Marketing & Automation",
-    description: "An intelligent autonomous distribution engine that drafts, schedules, optimizes, and broadcasts enterprise content across social networks, newsletters, and developer blogs with centralized approval.",
+    slug: "voice-shield",
+    name: "Voice Shield",
+    tagline: "Real-Time AI Voice Biometrics, Deepfake Defense & Acoustic Threat Firewall",
+    category: "AI Security & Voice Biometrics",
+    description: "An enterprise-grade real-time audio security firewall and voice biometric verification engine engineered by Logic Intelligence Technologies, defending telephony, SIP trunking, WebRTC, and voice interfaces against synthetic voice cloning and deepfake fraud.",
     features: [
-      "AI Copy Adaptation for LinkedIn, Twitter/X, and Medium",
-      "Automated UTM & Lead Attribution Tracking",
-      "Dynamic Trend Analysis & Hashtag Optimization",
-      "Multi-Brand Management Workspace"
+      "Sub-15ms zero-LLM fast path acoustic frequency & spectral phase verification",
+      "Real-time synthetic voice cloning & deepfake anomaly detection",
+      "Dynamic acoustic challenge-response liveness validation",
+      "DPDP Act 2023 & HIPAA compliant zero-retention raw audio processing"
     ],
-    techStack: ["Next.js", "Supabase", "FastAPI", "Tailwind CSS", "Redis"],
+    techStack: ["Rust", "Python", "FastAPI", "WebRTC", "SIP Trunking", "PyTorch"],
     status: "Enterprise Ready",
     metrics: [
-      { label: "Publishing Workflow", value: "Autonomous" },
-      { label: "Platform Adaptation", value: "Multi-Channel" },
-      { label: "Editorial Control", value: "Centralized" }
-    ]
+      { label: "Verification Latency", value: "<15ms" },
+      { label: "Deepfake Accuracy", value: "99.4%" },
+      { label: "Compliance", value: "Zero-Retention" }
+    ],
+    websiteUrl: "/voice-shield"
   },
   {
     slug: "nexus-crm",

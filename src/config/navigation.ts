@@ -63,6 +63,7 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
       { href: "/healthcare", label: "LIT HEALTHCARE", description: "SMART HOSPITAL MANAGEMENT PLATFORM", highlight: true },
       { href: "/healthcare/plans", label: "HEALTHCARE PLANS", description: "SUBSCRIPTION TIERS AND PRICING" },
       { href: "/products/logic-voice", label: "LOGIC VOICE", description: "VOICE-FIRST PERSONAL AI ASSISTANT" },
+      { href: "/voice-shield", label: "VOICE SHIELD", description: "AI VOICE BIOMETRICS & DEEPFAKE DEFENSE" },
       { href: "/products/ai-voice-agents", label: "AI VOICE AGENTS", description: "AI FRONT DESK FOR CALLS" },
       { href: "/products/ai-website-agents", label: "AI WEBSITE AGENTS", description: "TURN VISITORS INTO LEADS" },
       { href: "/ai", label: "AI WEBSITE BUILDER", description: "BUILD AND GROW YOUR SITE" },

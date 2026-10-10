@@ -80,7 +80,7 @@ const XIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-type ConsoleTab = "healthcare" | "voice" | "omni";
+type ConsoleTab = "healthcare" | "voice" | "shield";
 
 export default function HeroSection() {
   const [activeTab, setActiveTab] = useState<ConsoleTab>("healthcare");
@@ -90,7 +90,7 @@ export default function HeroSection() {
     {
       kicker: "Flagship Platforms",
       value: "3 Autonomous Engines",
-      detail: "LIT Healthcare, Logic Voice, OmniPublisher AI",
+      detail: "LIT Healthcare, Logic Voice, Voice Shield",
       icon: Layers,
     },
     {
@@ -250,15 +250,15 @@ export default function HeroSection() {
 
                 <button
                   type="button"
-                  onClick={() => setActiveTab("omni")}
+                  onClick={() => setActiveTab("shield")}
                   className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-[11px] font-mono font-semibold transition-all ${
-                    activeTab === "omni"
-                      ? "bg-[#60A5FA] text-[#07090D] shadow-sm font-bold"
+                    activeTab === "shield"
+                      ? "bg-[#00D2C4] text-[#07090D] shadow-sm font-bold"
                       : "text-[#B5BECC] hover:text-white hover:bg-white/5"
                   }`}
                 >
-                  <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate">Omni AI</span>
+                  <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Voice Shield</span>
                 </button>
               </div>
 
@@ -362,46 +362,46 @@ export default function HeroSection() {
                   </div>
                 )}
 
-                {activeTab === "omni" && (
+                {activeTab === "shield" && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#60A5FA]" />
-                        OmniPublisher Content Mesh
+                        <span className="w-2 h-2 rounded-full bg-[#00D2C4]" />
+                        Voice Shield Audio Firewall
                       </span>
-                      <span className="text-[10px] font-mono text-[#60A5FA] bg-[#60A5FA]/10 border border-[#60A5FA]/25 px-2 py-0.5 rounded">
-                        Multi-Channel Sync
+                      <span className="text-[10px] font-mono text-[#00D2C4] bg-[#00D2C4]/10 border border-[#00D2C4]/25 px-2 py-0.5 rounded">
+                        Sub-15ms Defense
                       </span>
                     </div>
 
                     <div className="p-3.5 rounded-xl bg-[#141923] border border-white/5 space-y-2.5">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-[#B5BECC]">Syndication Nodes</span>
-                        <span className="font-mono text-[#60A5FA] font-semibold">LinkedIn · X · DevBlogs</span>
+                        <span className="text-[#B5BECC]">Telephony Inspection</span>
+                        <span className="font-mono text-[#00D2C4] font-semibold">SIP / WebRTC Inline</span>
                       </div>
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-[#B5BECC]">Brand Safety Audit</span>
-                        <span className="font-mono text-emerald-400 font-semibold">100% Policy Adherent</span>
+                        <span className="text-[#B5BECC]">Deepfake Intercept</span>
+                        <span className="font-mono text-emerald-400 font-semibold">99.4% Biometric Gate</span>
                       </div>
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-[#B5BECC]">Queue Throughput</span>
-                        <span className="font-mono text-white">24 Active Broadcasts</span>
+                        <span className="text-[#B5BECC]">Audio Retention</span>
+                        <span className="font-mono text-white">Zero Disk Storage</span>
                       </div>
                     </div>
 
                     <div className="p-3 rounded-lg bg-[#07090D] border border-white/5 text-[11px] font-mono text-zinc-400 space-y-1">
-                      <p className="text-[#60A5FA]">{`> copy.adapt(target="technical_executives")`}</p>
-                      <p>{`> multi_touch_attribution.embed_utm(): COMPLETE`}</p>
-                      <p className="text-emerald-400">{`> broadcast.scheduled(channels=["linkedin", "x"])`}</p>
+                      <p className="text-[#00D2C4]">{`> audio.packet_stream: 48kHz PCM`}</p>
+                      <p>{`> spectral_phase.analyze(): vocoder_anomaly=0.00%`}</p>
+                      <p className="text-emerald-400">{`> verdict: LIVENESS VERIFIED (200 OK)`}</p>
                     </div>
 
                     <div className="pt-2">
                       <Link
-                        href="/products"
-                        className="flex items-center justify-between w-full p-2.5 rounded-xl bg-[#151922] border border-white/10 hover:border-[#60A5FA]/40 text-xs font-mono text-white transition-all group"
+                        href="/voice-shield"
+                        className="flex items-center justify-between w-full p-2.5 rounded-xl bg-[#151922] border border-white/10 hover:border-[#00D2C4]/40 text-xs font-mono text-white transition-all group"
                       >
-                        <span>Inspect OmniPublisher Suite</span>
-                        <ChevronRight className="w-4 h-4 text-[#60A5FA] group-hover:translate-x-1 transition-transform" />
+                        <span>Inspect Voice Shield Architecture</span>
+                        <ChevronRight className="w-4 h-4 text-[#00D2C4] group-hover:translate-x-1 transition-transform" />
                       </Link>
                     </div>
                   </div>

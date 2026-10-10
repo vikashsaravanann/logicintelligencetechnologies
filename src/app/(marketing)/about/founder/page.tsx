@@ -26,7 +26,7 @@ import { SITE, breadcrumb, founderNode, organizationNode } from "@/lib/seo/schem
 
 export const metadata: Metadata = {
   title: `${FOUNDER.name} — ${FOUNDER.title} | ${FOUNDER.company}`,
-  description: `Meet ${FOUNDER.name}, ${FOUNDER.title} at ${FOUNDER.company}. AI systems engineer, full-stack developer, and architect of Logic Voice, LIT Healthcare, and OmniPublisher AI.`,
+  description: `Meet ${FOUNDER.name}, ${FOUNDER.title} at ${FOUNDER.company}. AI systems engineer, full-stack developer, and architect of Logic Voice, LIT Healthcare, and Voice Shield.`,
   alternates: { canonical: "/about/founder" },
   openGraph: {
     title: `${FOUNDER.name} — ${FOUNDER.title}`,

@@ -23,6 +23,7 @@ export const APP_ROUTES: Record<string, AppRoute> = {
   services: { path: "/services", label: "Solutions", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
   industries: { path: "/industries", label: "Industries", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
   products: { path: "/products", label: "Products", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
+  voiceShield: { path: "/voice-shield", label: "Voice Shield", isProtected: false, category: "marketing", backTarget: { label: "Back to Products", href: "/products" } },
   work: { path: "/work", label: "Work", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
   packages: { path: "/packages", label: "Packages", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
   blog: { path: "/blog", label: "Blog", isProtected: false, category: "marketing", backTarget: { label: "Back to Home", href: "/" } },
@@ -76,4 +77,5 @@ export const ROUTE_MIGRATION_MAP: Record<string, string> = {
   "/client/login": "/login",
   "/vikashs-portfolio": "/about",
   "/vikash-portfolio": "/about",
+  "/omni": "/voice-shield",
 };
