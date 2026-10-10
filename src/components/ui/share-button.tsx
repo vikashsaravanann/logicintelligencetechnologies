@@ -7,10 +7,12 @@ export default function ShareButton({
   title,
   text,
   url: customUrl,
+  className,
 }: {
   title: string;
   text?: string;
   url?: string;
+  className?: string;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -42,11 +44,14 @@ export default function ShareButton({
     <button
       type="button"
       onClick={handleShare}
-      className="p-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:text-primary transition-colors text-zinc-300"
+      className={
+        className ||
+        "p-2.5 rounded-full bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] hover:bg-slate-100 text-[var(--lit-navy,#0B2545)] transition-colors"
+      }
       aria-label="Share this article"
       title={copied ? "Link copied" : "Share"}
     >
-      {copied ? <Check className="w-4 h-4 text-primary" /> : <Share2 className="w-4 h-4" />}
+      {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4" />}
     </button>
   );
 }
