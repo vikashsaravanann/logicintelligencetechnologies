@@ -27,10 +27,10 @@ export default function MasonryGrid({ projects }: { projects: PortfolioProject[]
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 ${
+              className={`px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-200 ${
                 isActive
-                  ? "bg-gradient-to-r from-cyan-500 to-teal-500 text-black shadow-md shadow-cyan-500/20"
-                  : "bg-[#151922] text-zinc-400 border border-white/10 hover:border-white/20 hover:text-white"
+                  ? "bg-[var(--lit-navy,#0B2545)] text-white shadow-sm border border-[var(--lit-navy,#0B2545)]"
+                  : "bg-white text-slate-600 border border-[var(--lit-border-light,#DFE7EF)] hover:border-slate-300 hover:text-[var(--lit-navy,#0B2545)] shadow-2xs"
               }`}
             >
               {category}
@@ -50,20 +50,20 @@ export default function MasonryGrid({ projects }: { projects: PortfolioProject[]
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.4, delay: (idx % 3) * 0.08 }}
-              className="group rounded-2xl border border-white/10 bg-[#151922] overflow-hidden hover:border-cyan-500/40 transition-all duration-500 flex flex-col relative shadow-xl hover:-translate-y-1.5"
+              className="group rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white overflow-hidden hover:border-[#1565C0]/40 transition-all duration-300 flex flex-col relative shadow-xs hover:shadow-md hover:-translate-y-1"
             >
-              <div className="relative aspect-[16/10] w-full overflow-hidden bg-black/40">
+              <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
                 <Image
                   src={project.image}
                   alt={project.title}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#151922] via-[#151922]/40 to-transparent flex items-end p-6">
-                  <div className="relative z-10 w-full">
+                <div className="absolute inset-0 bg-gradient-to-t from-[rgba(11,37,69,0.85)] via-[rgba(11,37,69,0.25)] to-transparent flex items-end p-6 pointer-events-none">
+                  <div className="relative z-10 w-full pointer-events-auto">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-cyan-400">
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-[#45D9D2] bg-[rgba(11,37,69,0.6)] px-2.5 py-0.5 rounded-full backdrop-blur-xs">
                         {project.category}
                       </span>
                       {project.externalUrl && (
@@ -71,7 +71,7 @@ export default function MasonryGrid({ projects }: { projects: PortfolioProject[]
                           href={project.externalUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-zinc-400 hover:text-white transition-colors"
+                          className="text-white/80 hover:text-white transition-colors bg-[rgba(11,37,69,0.6)] p-1 rounded-md"
                           onClick={(e) => e.stopPropagation()}
                           aria-label={`Visit live site for ${project.title}`}
                         >
@@ -79,7 +79,7 @@ export default function MasonryGrid({ projects }: { projects: PortfolioProject[]
                         </a>
                       )}
                     </div>
-                    <h2 className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors drop-shadow-sm">
+                    <h2 className="text-xl font-bold font-poppins text-white group-hover:text-[#45D9D2] transition-colors drop-shadow-xs">
                       {project.title}
                     </h2>
                   </div>
@@ -87,7 +87,7 @@ export default function MasonryGrid({ projects }: { projects: PortfolioProject[]
               </div>
 
               <div className="p-6 flex flex-col flex-1">
-                <p className="text-zinc-400 leading-relaxed mb-6 flex-1 text-sm">
+                <p className="text-slate-600 leading-relaxed mb-6 flex-1 text-sm">
                   {project.description}
                 </p>
 
@@ -95,21 +95,26 @@ export default function MasonryGrid({ projects }: { projects: PortfolioProject[]
                   {project.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-2.5 py-1 rounded-md text-[11px] font-medium tracking-wide text-zinc-300 bg-white/5 border border-white/10"
+                      className="px-2.5 py-1 rounded-md text-[11px] font-medium tracking-wide text-slate-700 bg-slate-50 border border-[var(--lit-border-light,#DFE7EF)]"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
 
-                <div className="pt-4 border-t border-white/10">
+                <div className="pt-4 border-t border-[var(--lit-border-light,#DFE7EF)] flex items-center justify-between">
                   <Link
                     href={`/work/${project.slug}`}
-                    className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-cyan-400 hover:text-cyan-300 transition-all group/btn"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#1565C0] hover:text-[#0B2545] transition-all group/btn"
                   >
-                    Read Case Study
+                    <span>Read Case Study</span>
                     <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1" />
                   </Link>
+                  {project.client && (
+                    <span className="text-[11px] text-slate-400 font-medium truncate max-w-[140px]">
+                      {project.client}
+                    </span>
+                  )}
                 </div>
               </div>
             </motion.article>
@@ -119,4 +124,3 @@ export default function MasonryGrid({ projects }: { projects: PortfolioProject[]
     </div>
   );
 }
-
