@@ -74,8 +74,8 @@ export function PortalTabs({ portalData, profileDetails }: PortalTabsProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full">
-      <nav className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 p-2 rounded-2xl border border-white/12 bg-white/[0.04] backdrop-blur-md">
+    <div className="flex flex-col gap-6 w-full">
+      <nav className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 p-1.5 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -84,10 +84,10 @@ export function PortalTabs({ portalData, profileDetails }: PortalTabsProps) {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center justify-center gap-2 min-h-11 px-2 rounded-xl text-[12px] font-semibold text-center transition-all ${
+              className={`flex items-center justify-center gap-2 min-h-11 px-3 rounded-xl text-xs font-semibold text-center transition-all duration-200 ${
                 isActive
-                  ? "bg-gradient-to-r from-cyan-300 to-sky-400 text-[#041018]"
-                  : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                  ? "bg-[var(--lit-navy,#0B2545)] text-white shadow-xs"
+                  : "text-[var(--lit-text-muted,#52677C)] hover:bg-[var(--lit-cloud,#F7F9FC)] hover:text-[var(--lit-navy,#0B2545)]"
               }`}
             >
               <Icon className="w-4 h-4 shrink-0" />
