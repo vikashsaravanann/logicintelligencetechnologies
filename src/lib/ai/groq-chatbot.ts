@@ -18,8 +18,14 @@ export type GroqResponse = {
 };
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const PRIMARY_MODEL = "llama-3.3-70b-versatile";
-const FALLBACK_MODEL = "llama-3.1-8b-instant";
+const CANDIDATE_MODELS = [
+  "llama-3.3-70b-versatile",
+  "llama-3.1-8b-instant",
+  "llama3-70b-8192",
+  "llama3-8b-8192",
+  "mixtral-8x7b-32768",
+  "gemma2-9b-it",
+];
 
 export function isGroqConfigured(): boolean {
   const key = process.env.GROQ_API_KEY;
@@ -35,7 +41,7 @@ function cleanResponse(raw: string): string {
 
 /**
  * Execute a completion via Groq, exclusively for the website chatbot.
- * Tries llama-3.3-70b-versatile first, falling back to llama-3.1-8b-instant on rate-limits.
+ * Cascades through candidate models (Llama 3.3 70B, Llama 3.1 8B, Llama 3, Mixtral).
  */
 export async function completeGroqChat(
   messages: GroqChatMessage[],
@@ -47,9 +53,7 @@ export async function completeGroqChat(
   const temperature = options?.temperature ?? 0.4;
   const max_tokens = Math.min(1200, Math.max(64, options?.max_tokens ?? 900));
 
-  const candidateModels = [PRIMARY_MODEL, FALLBACK_MODEL];
-
-  for (const model of candidateModels) {
+  for (const model of CANDIDATE_MODELS) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 12000);
@@ -75,11 +79,8 @@ export async function completeGroqChat(
       if (!res.ok) {
         const errText = await res.text().catch(() => "");
         console.warn(`[GroqChat] Model ${model} returned ${res.status}: ${errText.slice(0, 150)}`);
-        // If 429 or 503, try next candidate model
-        if (res.status === 429 || res.status >= 500) {
-          continue;
-        }
-        return null;
+        // If 404, 429, 400 or 5xx, try next model in candidate list
+        continue;
       }
 
       const json = await res.json();
@@ -115,9 +116,7 @@ export async function streamGroqChat(
   const temperature = options?.temperature ?? 0.4;
   const max_tokens = Math.min(1200, Math.max(64, options?.max_tokens ?? 900));
 
-  const candidateModels = [PRIMARY_MODEL, FALLBACK_MODEL];
-
-  for (const model of candidateModels) {
+  for (const model of CANDIDATE_MODELS) {
     try {
       const res = await fetch(GROQ_API_URL, {
         method: "POST",
