@@ -3,13 +3,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import BackToHome from "@/components/ui/back-to-home";
 import { COMPANY } from "@/config/company";
-import { Cpu, Mic, ShieldCheck, ExternalLink, GitBranch, ArrowRight } from "lucide-react";
+import { Cpu, Mic, Heart, ExternalLink, GitBranch, ArrowRight } from "lucide-react";
 
 import CTASection from "@/components/ui/cta-section";
 export const metadata: Metadata = {
   title: "Product Facts | Logic Intelligence Technologies",
   description:
-    "Authoritative public fact sheet for Logic Voice and VoiceShield — products developed by Logic Intelligence Technologies",
+    "Authoritative public fact sheet for Logic Voice and LIT Healthcare — products developed by Logic Intelligence Technologies",
 };
 
 export default function ProductFactsPage() {
@@ -32,7 +32,7 @@ export default function ProductFactsPage() {
 
         {/* Essential Corporate Governance Notice */}
         <div className="p-4 rounded-xl bg-blue-950/40 border border-blue-500/30 text-sm text-blue-200 leading-relaxed">
-          <strong>Corporate Notice:</strong> Both <strong>Logic Voice</strong> and <strong>VoiceShield</strong> are official products of <strong>Logic Intelligence Technologies</strong> Neither product is an independent legal entity or company.
+          <strong>Corporate Notice:</strong> Both <strong>Logic Voice</strong> and <strong>LIT Healthcare</strong> are official products of <strong>Logic Intelligence Technologies</strong> Neither product is an independent legal entity or company.
         </div>
 
         {/* Product 1: Logic Voice */}
@@ -97,19 +97,19 @@ export default function ProductFactsPage() {
           </div>
         </section>
 
-        {/* Product 2: VoiceShield */}
+        {/* Product 2: LIT Healthcare */}
         <section className="bg-slate-900/60 border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
             <div>
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-primary" />
-                <h2 className="text-2xl font-bold text-white">VoiceShield</h2>
+                <Heart className="w-5 h-5 text-teal-400" />
+                <h2 className="text-2xl font-bold text-white">LIT Healthcare</h2>
               </div>
-              <p className="text-sm text-primary font-semibold mt-1">
-                Voice Security & Risk Intelligence
+              <p className="text-sm text-teal-400 font-semibold mt-1">
+                Smart Hospital Management & Healthcare Intelligence
               </p>
             </div>
-            <span className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/30 self-start sm:self-auto font-medium">
+            <span className="text-xs px-3 py-1 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/30 self-start sm:self-auto font-medium">
               Product of Logic Intelligence Technologies
             </span>
           </div>
@@ -117,55 +117,50 @@ export default function ProductFactsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Category</p>
-              <p className="text-slate-200 mt-1">Voice Security · Voice Risk Intelligence · Compliance Analytics</p>
+              <p className="text-slate-200 mt-1">Healthcare Technology · Hospital Management System (HMS)</p>
             </div>
             <div>
               <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Target Environments</p>
-              <p className="text-slate-200 mt-1">BPOs, Contact Centers, Financial Services, Telecom</p>
+              <p className="text-slate-200 mt-1">Clinics, Multispecialty Clinics, Hospitals, Healthcare Groups</p>
             </div>
             <div>
               <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Public Website</p>
               <a
-                href={COMPANY.products.voiceShield.websiteUrl}
+                href={COMPANY.products.healthcare.websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary hover:underline flex items-center gap-1 mt-1 font-mono text-xs"
+                className="text-teal-400 hover:underline flex items-center gap-1 mt-1 font-mono text-xs"
               >
-                {COMPANY.products.voiceShield.websiteUrl} <ExternalLink className="w-3.5 h-3.5" />
+                {COMPANY.products.healthcare.websiteUrl} <ExternalLink className="w-3.5 h-3.5" />
               </a>
             </div>
             <div>
               <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Repository</p>
-              <a
-                href={COMPANY.products.voiceShield.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline flex items-center gap-1 mt-1 font-mono text-xs"
-              >
-                vikashsaravanann/voice-shield <GitBranch className="w-3.5 h-3.5" />
-              </a>
+              <p className="flex items-center gap-1 mt-1 font-mono text-xs text-slate-300">
+                Private repository <GitBranch className="w-3.5 h-3.5" aria-hidden />
+              </p>
             </div>
           </div>
 
           <div className="space-y-2">
             <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Architecture Flow & Defensible Positioning</p>
             <p className="text-sm text-slate-300 leading-relaxed">
-              VoiceShield follows an architecture flow: <em>Voice / Call Interaction → Audio Processing & Analysis → Risk Signals → Structured Evidence → API / Workflow Integration</em>.
-              VoiceShield provides configurable risk intelligence without making unsubstantiated guarantees of 100% fraud detection or zero false positives.
+              LIT Healthcare provides a multi-organization, role-based workspace architecture: <em>Patient Registration → Clinical Records → Pharmacy → Billing & Operations</em>.
+              The platform centralizes facility administration while ensuring intelligence features operate under strict human oversight without autonomously replacing clinical judgment.
             </p>
           </div>
 
           <div className="pt-2">
             <Link
-              href="/voice-shield"
-              className="inline-flex items-center gap-2 text-sm text-primary font-bold hover:underline"
+              href="/healthcare"
+              className="inline-flex items-center gap-2 text-sm text-teal-400 font-bold hover:underline"
             >
-              Explore VoiceShield Architecture & Documentation <ArrowRight className="w-4 h-4" />
+              Explore LIT Healthcare Features & Plans <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </section>
       </div>
-      <CTASection title="See the products in action" subtitle="Explore Logic Voice and VoiceShield, or talk to us about your use case." primaryCta={{ label: "Explore products", href: "/products" }} secondaryCta={{ label: "Contact us", href: "/contact" }} />
+      <CTASection title="See the products in action" subtitle="Explore Logic Voice and LIT Healthcare, or talk to us about your use case." primaryCta={{ label: "Explore products", href: "/products" }} secondaryCta={{ label: "Contact us", href: "/contact" }} />
     </div>
   );
 }

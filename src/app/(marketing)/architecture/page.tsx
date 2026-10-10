@@ -6,35 +6,35 @@ import { COMPANY } from "@/config/company";
 import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
-  title: "VoiceShield Architecture | Logic Intelligence Technologies",
-  description: "Explore the enterprise-grade infrastructure and ultra-low latency inference engine powering VoiceShield's anti-spoofing technology.",
+  title: "Systems Architecture | Logic Intelligence Technologies",
+  description: "Explore the enterprise-grade infrastructure and ultra-low latency inference engines powering Logic Intelligence Technologies platforms.",
 };
 
 export default function ArchitecturePage() {
   const steps = [
     {
       id: "01",
-      title: "Audio Ingestion Node",
+      title: "Audio & Telemetry Ingestion Node",
       icon: Server,
-      desc: "Raw VoIP/WebRTC streams are ingested via secure WebSocket or gRPC endpoints at edge locations to minimize transmission latency to under 20ms globally.",
+      desc: "Raw audio streams and clinical telemetry are ingested via secure WebSocket or gRPC endpoints at edge locations to minimize transmission latency to under 20ms globally.",
     },
     {
       id: "02",
-      title: "Feature Extraction Pipeline",
+      title: "Feature Extraction & Parsing",
       icon: Activity,
-      desc: "Audio is segmented into 10ms micro-frames. Mel-frequency cepstral coefficients (MFCCs) and phase perturbations are extracted to expose synthetic anomalies.",
+      desc: "Input streams are segmented into micro-frames. Spectral coefficients and structured clinical payloads are parsed into validated schema boundaries in memory.",
     },
     {
       id: "03",
-      title: "Deep Neural Network (DNN)",
+      title: "Intelligent Reasoning & Inference",
       icon: BrainCircuit,
-      desc: "Our proprietary AI engine evaluates the acoustic features against known zero-day voice cloning algorithms (e.g., ElevenLabs, VALL-E) with 99.9% precision.",
+      desc: "Our AI engines evaluate features with deterministic safety gates, RAG context synthesis, and state-machine-driven execution models.",
     },
     {
       id: "04",
-      title: "Policy & Risk Enforcement",
+      title: "Policy & Governance Enforcement",
       icon: ShieldCheck,
-      desc: "A final probabilistic risk score (0-100) is returned to your contact center software, allowing automated call routing, agent alerts, or immediate termination.",
+      desc: "Structured responses and verified audit logs are transmitted to enterprise workflows, ensuring strict role-based data isolation and zero unauthorized state mutations.",
     },
   ];
 
@@ -46,13 +46,13 @@ export default function ArchitecturePage() {
       <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
         <div className="mb-16 text-center space-y-4">
           <p className="text-[11px] font-mono font-bold tracking-[0.28em] text-primary uppercase">
-            VoiceShield Internal Systems
+            Logic Intelligence Technologies Systems
           </p>
           <h1 className="text-3xl sm:text-5xl font-bold tracking-[0.12em] text-white uppercase">
             System Architecture
           </h1>
           <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
-            Engineered for massive concurrency and ultra-low latency. VoiceShield detects synthetic audio in real-time before the caller finishes their first sentence.
+            Engineered for high concurrency, deterministic safety gates, and low latency across voice intelligence and healthcare platform operations.
           </p>
         </div>
 

@@ -38,18 +38,11 @@ export const PUBLIC_SERVICES: readonly ServiceDefinition[] = [
     kind: "health",
   },
   {
-    id: "voiceshield-web",
-    name: "VoiceShield web app",
-    description: "voiceshield.logicintelligencetechnologies.in",
-    url: "https://voiceshield.logicintelligencetechnologies.in/",
+    id: "healthcare-web",
+    name: "LIT Healthcare platform",
+    description: "healthcare.logicintelligencetechnologies.in",
+    url: "https://healthcare.logicintelligencetechnologies.in/",
     kind: "page",
-  },
-  {
-    id: "voiceshield-api",
-    name: "VoiceShield detection API",
-    description: "Inference backend health endpoint",
-    url: "https://voiceshield-sih-2026-production.up.railway.app/health",
-    kind: "health",
   },
   {
     id: "logic-voice-web",

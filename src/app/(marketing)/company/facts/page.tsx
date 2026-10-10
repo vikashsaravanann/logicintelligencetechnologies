@@ -119,19 +119,19 @@ export default function CompanyFactsPage() {
             </div>
 
             <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-6 space-y-3">
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-400 border border-teal-500/20">
                 Product of Logic Intelligence Technologies
               </span>
-              <h3 className="text-lg font-bold text-white">VoiceShield</h3>
-              <p className="text-xs text-primary font-semibold uppercase tracking-wider">
-                Voice Security & Risk Intelligence
+              <h3 className="text-lg font-bold text-white">LIT Healthcare</h3>
+              <p className="text-xs text-teal-400 font-semibold uppercase tracking-wider">
+                Connected Healthcare. Intelligent Decisions.
               </p>
               <p className="text-sm text-slate-300 leading-relaxed">
-                Voice security and risk intelligence platform analyzing voice interactions to produce structured signals across fraud, security, and compliance.
+                Enterprise smart hospital management and clinical intelligence platform delivering modular clinical workflows, multi-tenant hospital operations, and healthcare automation.
               </p>
               <div className="pt-2">
-                <Link href="/voice-shield" className="text-xs text-cyan-400 font-bold hover:underline">
-                  VoiceShield Overview →
+                <Link href="/healthcare" className="text-xs text-cyan-400 font-bold hover:underline">
+                  Healthcare Platform Overview →
                 </Link>
               </div>
             </div>

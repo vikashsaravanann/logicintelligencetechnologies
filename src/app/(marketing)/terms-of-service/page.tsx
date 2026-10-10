@@ -22,7 +22,7 @@ export default function TermsOfServicePage() {
 
         <div className="prose prose-invert prose-emerald mt-12">
           <p>
-            Welcome to Logic Intelligence Technologies. These Terms of Service govern your use of our website and products, including VoiceShield, an AI security product by Logic Intelligence Technologies
+            Welcome to Logic Intelligence Technologies. These Terms of Service govern your use of our website and products, including Logic Voice and LIT Healthcare, developed by Logic Intelligence Technologies.
           </p>
 
           <h2>1. Acceptance of Terms</h2>
@@ -32,7 +32,7 @@ export default function TermsOfServicePage() {
 
           <h2>2. Use of Services</h2>
           <p>
-            You agree to use our services only for lawful purposes. VoiceShield is provided to assist with voice security and verification.
+            You agree to use our services only for lawful purposes in accordance with applicable enterprise service agreements and platform guidelines.
           </p>
 
           <h2>3. Intellectual Property</h2>
@@ -42,7 +42,7 @@ export default function TermsOfServicePage() {
 
           <h2>4. Limitation of Liability</h2>
           <p>
-            Our services, including VoiceShield, are provided "as is". Logic Intelligence Technologies is not liable for any damages arising from your use of the services.
+            Our services and software platforms are provided "as is". Logic Intelligence Technologies is not liable for any damages arising from your use of the services.
           </p>
 
           <h2>5. Governing Law</h2>

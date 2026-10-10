@@ -11,7 +11,7 @@ export interface ProductItem {
   description: string;
   features: string[];
   techStack: string[];
-  status: 'Live' | 'Beta' | 'Enterprise Ready' | 'Active Development';
+  status: 'Live' | 'Beta' | 'Enterprise Ready' | 'Active Development' | 'In Pilot';
   metrics?: ProductMetric[];
   websiteUrl?: string;
   repositoryUrl?: string;
@@ -19,6 +19,26 @@ export interface ProductItem {
 }
 
 export const PRODUCTS_CONFIG: ProductItem[] = [
+  {
+    slug: 'healthcare',
+    name: 'LIT Healthcare',
+    tagline: 'Smart Hospital Management & Healthcare Intelligence Platform',
+    category: 'Healthcare Technology',
+    description:
+      'LIT Healthcare is a comprehensive hospital and clinic management platform developed by Logic Intelligence Technologies, designed to connect clinical workflows, administrative operations, and facility management into a single organized workspace. The platform supports multi-organization deployment with role-based access, facility-aware navigation, and structured healthcare data flows.',
+    features: [
+      'Multi-organization and multi-facility architecture with role-based workspaces',
+      'Patient registration, appointment scheduling, and clinical records management',
+      'Staff management, shift scheduling, and role-specific navigation',
+      'Pharmacy management, billing operations, and claims processing',
+      'Healthcare intelligence with human oversight and configurable access governance',
+      'Subscription-based organization store for onboarding and plan selection',
+    ],
+    techStack: ['React', 'Vite', 'FastAPI', 'Python', 'Supabase', 'PostgreSQL'],
+    status: 'In Pilot',
+    websiteUrl: 'https://healthcare.logicintelligencetechnologies.in',
+    portalUrl: '/healthcare',
+  },
   {
     slug: 'logic-voice',
     name: 'Logic Voice',
@@ -43,31 +63,6 @@ export const PRODUCTS_CONFIG: ProductItem[] = [
     websiteUrl: 'https://logicvoice.logicintelligencetechnologies.in/',
     repositoryUrl: 'https://github.com/vikashsaravanann/logic-voice',
     portalUrl: '/products/logic-voice',
-  },
-  {
-    slug: 'voice-shield',
-    name: 'VoiceShield',
-    tagline: 'Voice Security & Risk Intelligence',
-    category: 'Voice Security & Risk Intelligence',
-    description:
-      'VoiceShield is an enterprise voice-security and voice-risk intelligence product developed by Logic Intelligence Technologies, designed to analyze voice interactions and produce structured intelligence around security, fraud, risk, and compliance-related signals.',
-    features: [
-      'Acoustic signal analysis and synthetic speech anomaly indicators',
-      'Structured risk intelligence and evidence generation for enterprise workflows',
-      'Deterministic real-time detection path without an LLM in the hot loop',
-      'Async forensic analysis lab for transcription and in-depth review',
-      'API-first architecture for BPOs, contact centers, and financial telecom',
-    ],
-    techStack: ['Python', 'FastAPI', 'Acoustic Signal Processing', 'DSP Feature Extraction', 'WebRTC', 'Supabase'],
-    status: 'Beta',
-    metrics: [
-      { label: 'Detection Loop', value: 'Streaming DSP' },
-      { label: 'Forensic Lab', value: 'Async Queue' },
-      { label: 'Integration', value: 'API-First' },
-    ],
-    websiteUrl: 'https://voiceshield.logicintelligencetechnologies.in/',
-    repositoryUrl: 'https://github.com/vikashsaravanann/voice-shield',
-    portalUrl: '/voice-shield',
   },
   {
     slug: 'omni-apply',

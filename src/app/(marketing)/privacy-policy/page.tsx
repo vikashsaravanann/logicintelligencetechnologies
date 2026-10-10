@@ -22,22 +22,22 @@ export default function PrivacyPolicyPage() {
 
         <div className="prose prose-invert prose-emerald mt-12">
           <p>
-            At Logic Intelligence Technologies, we take your privacy seriously. This Privacy Policy describes how we collect, use, and protect your information when you use our website and services, including VoiceShield, an AI security product by Logic Intelligence Technologies
+            At Logic Intelligence Technologies, we take your privacy seriously. This Privacy Policy describes how we collect, use, and protect your information when you use our website, platforms, and services.
           </p>
 
           <h2>1. Information We Collect</h2>
           <p>
-            We collect information you provide directly to us, such as when you request a demo, fill out a form, or use our services. We also collect usage data to improve our offerings.
+            We collect information you provide directly to us, such as when you request a demo, fill out a contact form, or use our digital services. We also collect operational telemetry to improve reliability and performance.
           </p>
 
           <h2>2. Use of Information</h2>
           <p>
-            We use your information to provide, maintain, and improve our services. Our services, including VoiceShield, are designed to support data protection and compliance.
+            We use your information to provide, maintain, and improve our services. Our platforms are designed to uphold modern data protection and compliance standards.
           </p>
 
-          <h2>3. VoiceShield Data Processing</h2>
+          <h2>3. Real-Time Data Processing & Privacy</h2>
           <p>
-            VoiceShield processes audio data in real-time. By default, raw audio is not stored or written to disk. Processing occurs in-memory and data is discarded after inference, designed to support GDPR and DPDP compliance.
+            Our intelligent AI systems and platform services adhere strictly to zero-persistence principles where applicable. In-memory processing and strict boundary isolation are employed to ensure enterprise privacy and regulatory compliance.
           </p>
 
           <h2>4. Data Sharing</h2>

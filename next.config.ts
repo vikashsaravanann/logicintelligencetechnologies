@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
       { source: '/vikash-portfolio/:path*', destination: '/about', permanent: true },
       { source: '/client/profile', destination: '/profile', permanent: true },
       { source: '/client/login', destination: '/login', permanent: true },
+      { source: '/voice-shield', destination: '/healthcare', permanent: true },
+      { source: '/voice-shield/:path*', destination: '/healthcare', permanent: true },
+      { source: '/products/voice-shield', destination: '/healthcare', permanent: true },
       // The old /dashboard portal was a non-functional mock; the real admin
       // tools live under /admin. Route the closest equivalents, then catch-all.
       { source: '/dashboard/leads', destination: '/admin/leads', permanent: false },

@@ -42,7 +42,7 @@ export function organizationNode() {
       caption: "Logic Intelligence Technologies",
     },
     description:
-      "Logic Intelligence Technologies is an AI technology company based in Coimbatore, Tamil Nadu, India, developing intelligent AI products and automation solutions including Logic Voice and VoiceShield.",
+      "Logic Intelligence Technologies is an AI technology company based in Coimbatore, Tamil Nadu, India, developing intelligent AI products, automation solutions, and connected digital platforms — including LIT Healthcare and Logic Voice.",
     foundingDate: "2025",
     address: {
       "@type": "PostalAddress",
@@ -315,19 +315,35 @@ export function logicVoiceProductNode() {
   };
 }
 
-export function voiceShieldProductNode() {
+/** VoiceShield has been retired. This function is preserved only as a
+ *  historical record and must NOT be used in active pages or structured data. */
+export function voiceShieldProductNode_RETIRED() {
+  return null;
+}
+
+export function healthcarePlatformNode() {
   return {
-    "@type": "Product",
-    "@id": `${SITE}/voice-shield/#product`,
-    name: "VoiceShield",
+    "@type": "SoftwareApplication",
+    "@id": `${SITE}/healthcare/#product`,
+    name: "LIT Healthcare",
+    applicationCategory: "HealthApplication",
+    operatingSystem: "Web",
     brand: {
       "@type": "Brand",
       name: "Logic Intelligence Technologies",
     },
     description:
-      "VoiceShield is an AI voice security and risk intelligence product by Logic Intelligence Technologies, designed to analyze voice interactions and produce structured intelligence around security, fraud, risk, and compliance signals.",
-    url: `${SITE}/voice-shield`,
-    manufacturer: { "@id": ORG_ID },
+      "LIT Healthcare is a comprehensive hospital and clinic management platform by Logic Intelligence Technologies, providing multi-organization deployment with role-based workspaces, patient management, clinical records, pharmacy, billing, and healthcare operations.",
+    url: `${SITE}/healthcare`,
+    provider: { "@id": ORG_ID },
+    offers: {
+      "@type": "AggregateOffer",
+      priceCurrency: "INR",
+      lowPrice: "5999",
+      highPrice: "99999",
+      offerCount: "4",
+      url: `${SITE}/healthcare/plans`,
+    },
   };
 }
 

@@ -29,7 +29,7 @@ export default function InvestorBriefPage() {
             Performance & Vision
           </h1>
           <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl">
-            {COMPANY.displayName} is accelerating its market presence in enterprise AI security, specifically through our flagship VoiceShield infrastructure.
+            {COMPANY.displayName} is accelerating its market presence in enterprise intelligent solutions, specifically through our flagship LIT Healthcare platform and Logic Voice assistant technologies.
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export default function InvestorBriefPage() {
                   The surge in generative AI has created an unprecedented vector for cyberattacks, particularly deepfake audio and voice spoofing in financial contact centers. Traditional biometric systems are failing against modern architectures like ElevenLabs and VALL-E.
                 </p>
                 <p>
-                  Our VoiceShield API has established itself as a critical middleware layer for enterprise VoIP stacks. By utilizing our proprietary phase-perturbation detection models, we secure real-time audio streams with mathematically verified precision, effectively protecting billions of dollars in client assets.
+                  Our LIT Healthcare platform has established itself as an enterprise-grade hospital operating system and clinical intelligence architecture. By pairing modular clinical workflows with multi-tenant governance, we provide healthcare systems with mathematically reliable, verifiable automation.
                 </p>
                 <p>
                   Moving into Q4, our primary R&D focus involves expanding our hardware-accelerated edge nodes to reduce cross-continental latency down to single digits, paving the way for autonomous AI defense systems.
@@ -99,7 +99,7 @@ export default function InvestorBriefPage() {
                 
                 <button className="w-full flex items-center justify-between p-4 rounded-xl bg-[#0a0e17] border border-slate-800 hover:border-primary/30 transition-colors group cursor-not-allowed opacity-80">
                   <div className="text-left">
-                    <div className="text-xs font-mono font-bold text-slate-200 uppercase mb-1">VoiceShield Tech Spec</div>
+                    <div className="text-xs font-mono font-bold text-slate-200 uppercase mb-1">Healthcare Platform Spec</div>
                     <div className="text-[10px] text-slate-500 font-mono">1.8 MB • Public</div>
                   </div>
                   <Download className="w-4 h-4 text-slate-500 group-hover:text-primary transition-colors" />

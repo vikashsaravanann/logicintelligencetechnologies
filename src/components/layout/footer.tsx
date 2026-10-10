@@ -130,10 +130,10 @@ export default function Footer() {
 
             <ul className="flex flex-col gap-3 mt-2">
               {[
+                "LIT HEALTHCARE PLATFORM",
                 "INTELLIGENT AI PRODUCTS",
                 "AUTOMATION SOLUTIONS",
                 "VOICE-FIRST AI & ASSISTANTS",
-                "VOICE SECURITY & RISK INTELLIGENCE",
                 "ENTERPRISE AI ARCHITECTURE"
               ].map((point, idx) => (
                 <li key={idx} className="flex items-start gap-3 text-xs xl:text-sm text-zinc-400 leading-relaxed font-medium uppercase tracking-wider">
@@ -151,8 +151,9 @@ export default function Footer() {
             </h3>
             <ul className="flex flex-col gap-2.5">
               {[
+                { label: 'LIT HEALTHCARE', href: '/healthcare' },
+                { label: 'HEALTHCARE PLANS', href: '/healthcare/plans' },
                 { label: 'LOGIC VOICE', href: '/products/logic-voice' },
-                { label: 'VOICESHIELD', href: '/voice-shield' },
                 { label: 'ALL PRODUCTS', href: '/products' },
                 { label: 'AI ASSISTANT', href: '/ai' },
                 { label: 'PRICING', href: '/pricing' },

@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 
 export default function CommunityPage() {
   const topics = [
-    { title: "Optimizing VoiceShield latency on edge networks", author: "j.smith_arch", replies: 24, icon: Terminal },
+    { title: "Optimizing Logic Voice latency on edge networks", author: "j.smith_arch", replies: 24, icon: Terminal },
     { title: "Best practices for RAG with 10M+ documents", author: "data_engineer_99", replies: 18, icon: MessageSquare },
     { title: "Handling webhook retry logic safely", author: "sysadmin_alex", replies: 8, icon: Terminal },
-    { title: "Voice spoofing dataset sharing request", author: "researcher_phd", replies: 42, icon: Heart },
+    { title: "Smart hospital clinical pipeline architecture", author: "researcher_phd", replies: 42, icon: Heart },
   ];
 
   return (
@@ -80,7 +80,7 @@ export default function CommunityPage() {
                 Join the Network
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed mb-6">
-                Create an account to post questions, share your code, and interact with the engineers building VoiceShield.
+                Create an account to post questions, share your code, and interact with the engineers building Logic Intelligence Technologies platforms.
               </p>
               <button className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary hover:bg-primary text-slate-950 font-mono font-bold text-[10px] tracking-widest uppercase transition-colors">
                 Sign Up / Login

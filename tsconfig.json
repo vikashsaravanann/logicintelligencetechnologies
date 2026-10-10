@@ -39,6 +39,7 @@
     "playwright.config.ts",
     "scripts",
     "ml-from-scratch",
+    "lit-smart-hospital-platform",
     ".next"
   ]
 }

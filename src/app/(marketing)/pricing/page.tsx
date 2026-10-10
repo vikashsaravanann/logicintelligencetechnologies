@@ -167,13 +167,9 @@ export default function PricingPage() {
                           <Link
                             href={
                               plan.ctaHref ||
-                              (plan.name === 'Enterprise'
-                                ? product.id === 'voice-shield'
-                                  ? '/voice-shield/request'
-                                  : '/contact'
-                                : plan.name === 'Free'
-                                  ? '/contact'
-                                  : '/products/' + product.id)
+                              (plan.name === 'Enterprise' || plan.name === 'Free'
+                                ? '/contact'
+                                : '/products/' + product.id)
                             }
                             className={`w-full flex items-center justify-center h-12 rounded-xl text-sm font-bold tracking-widest uppercase transition-all ${
                               isPopular
@@ -211,20 +207,20 @@ export default function PricingPage() {
                   <th className="p-5 text-white font-bold text-center">Free</th>
                   <th className="p-5 text-accent font-bold text-center bg-accent/5">Pro (Web)</th>
                   <th className="p-5 text-accent font-bold text-center bg-accent/5">Pro (Voice)</th>
-                  <th className="p-5 text-white font-bold text-center">VoiceShield</th>
+                  <th className="p-5 text-white font-bold text-center">Enterprise</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {[
-                  { label: 'Monthly Price', values: ['$0', '$39', '$149', '$349'] },
-                  { label: 'One-Time Setup', values: ['None', '$199', '$599', '$999'] },
-                  { label: 'Included usage', values: ['100 interactions', '5,000 interactions', '1,000 voice minutes', 'Usage-based'] },
-                  { label: 'Overage', values: ['—', '$0.01 / interaction', '$0.12 / minute', '$0.05 / analyzed call*'] },
-                  { label: 'Knowledge / RAG', values: ['Basic', 'Approved content RAG', 'Workflow config', 'Enterprise config'] },
-                  { label: 'CRM Integration', values: ['—', 'Where supported', 'Where supported', 'API-first'] },
+                  { label: 'Monthly Price', values: ['$0', '$39', '$149', 'Custom'] },
+                  { label: 'One-Time Setup', values: ['None', '$199', '$599', 'Custom'] },
+                  { label: 'Included usage', values: ['100 interactions', '5,000 interactions', '1,000 voice minutes', 'Custom limits'] },
+                  { label: 'Overage', values: ['—', '$0.01 / interaction', '$0.12 / minute', 'Volume-tiered'] },
+                  { label: 'Knowledge / RAG', values: ['Basic', 'Approved content RAG', 'Workflow config', 'Custom integrations'] },
+                  { label: 'CRM Integration', values: ['—', 'Where supported', 'Where supported', 'Enterprise SLA'] },
                   { label: 'Human Handoff / Escalation', values: ['—', '✓', '✓', 'Configurable'] },
-                  { label: 'Analytics', values: ['Basic', 'Usage analytics', 'Call analytics', 'Enterprise analytics'] },
-                  { label: 'Support', values: ['Email', 'Standard', 'Standard', 'Enterprise options'] },
+                  { label: 'Analytics', values: ['Basic', 'Usage analytics', 'Call analytics', 'Enterprise suite'] },
+                  { label: 'Support', values: ['Email', 'Standard', 'Standard', 'Dedicated SLA'] },
                 ].map((row, i) => (
                   <tr key={i} className="hover:bg-white/[0.02] transition-colors">
                     <td className="p-5 text-zinc-400 font-medium">{row.label}</td>
@@ -244,7 +240,7 @@ export default function PricingPage() {
             </table>
           </div>
           <p className="text-[10px] text-zinc-600 mt-4 text-center">
-            * VoiceShield usage billing unit subject to final definition. Enterprise website/voice plans are custom-quoted.
+            * Enterprise AI and healthcare deployments are quoted based on organizational scope. Healthcare plans are available at /healthcare/plans.
           </p>
         </section>
 
@@ -345,11 +341,11 @@ export default function PricingPage() {
               },
               {
                 q: 'How do usage fees work?',
-                a: 'Overage and usage fees (additional website interactions, voice minutes, or VoiceShield analyzed calls) follow the plan terms. VoiceShield usage billing unit is subject to final commercial definition.',
+                a: 'Overage and usage fees (additional website interactions or voice minutes) follow the plan terms. Healthcare plans are structured according to institutional bed count and modules.',
               },
               {
                 q: 'Do you offer a free tier?',
-                a: 'The AI Agent Free tier is available under current commercial pricing (100 interactions/month). AI Voice Agent and VoiceShield are arranged after a contact or access request.',
+                a: 'The AI Agent Free tier is available under current commercial pricing (100 interactions/month). AI Voice Agent, Enterprise, and Healthcare deployments are arranged after a contact or demo request.',
               },
               {
                 q: 'Is there a long-term contract?',

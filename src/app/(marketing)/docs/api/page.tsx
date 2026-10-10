@@ -5,26 +5,21 @@ import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
 
 export const metadata: Metadata = {
-  title: "VoiceShield API Documentation | Logic Intelligence Technologies",
-  description: "Integrate real-time synthetic voice detection into your SIP/VoIP infrastructure or web application with the VoiceShield REST API.",
+  title: "Developer API Documentation | Logic Intelligence Technologies",
+  description: "Integrate enterprise AI endpoints, real-time voice intelligence, and healthcare platform services with Logic Intelligence Technologies REST APIs.",
 };
 
 export default function ApiDocsPage() {
-  const codeSnippet = `curl -X POST https://api.logicintelligencetechnologies.in/v1/voice/analyze \\
-  -H "Authorization: Bearer vs_live_YOUR_API_KEY" \\
+  const codeSnippet = `curl -X POST https://api.logicintelligencetechnologies.in/v1/analyze \\
+  -H "Authorization: Bearer lit_live_YOUR_API_KEY" \\
   -H "Content-Type: multipart/form-data" \\
-  -F "audio=@/path/to/caller_stream.wav" \\
-  -F "webhook_url=https://your-server.com/hooks/voice-shield"`;
+  -F "audio=@/path/to/stream.wav" \\
+  -F "webhook_url=https://your-server.com/hooks/lit-ai"`;
 
   const jsonResponse = `{
   "id": "req_8f73b2a",
   "status": "completed",
-  "risk_score": 98.5,
-  "verdict": "SYNTHETIC",
-  "flags": [
-    "deepfake_model_elevenlabs",
-    "unnatural_phase_perturbation"
-  ],
+  "verdict": "VERIFIED",
   "latency_ms": 42
 }`;
 
@@ -44,11 +39,11 @@ export default function ApiDocsPage() {
             </span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold tracking-[0.12em] text-white uppercase">
-            VoiceShield API
+            Platform APIs
           </h1>
           <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-2xl">
-            Embed real-time voice anti-spoofing directly into your telephony stack. 
-            Send audio buffers via REST or gRPC and receive instant risk verdicts.
+            Embed real-time intelligence directly into your infrastructure stack. 
+            Connect via REST or WebSocket and receive instant structured responses.
           </p>
         </div>
 
@@ -130,10 +125,10 @@ export default function ApiDocsPage() {
 
             <div className="pt-6 text-right">
               <Link
-                href="/voice-shield"
-                className="inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs tracking-[0.15em] uppercase transition-all"
+                href="/contact"
+                className="inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-primary hover:bg-primary/90 text-black font-mono font-bold text-xs tracking-[0.15em] uppercase transition-all"
               >
-                Generate API Key <ArrowRight className="w-4 h-4" />
+                Request API Access <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 

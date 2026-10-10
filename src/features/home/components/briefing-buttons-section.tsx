@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight, BrainCircuit, BarChart3, Building2 } from "lucide-react";
 
 const ITEMS = [
@@ -39,7 +40,7 @@ export default function BriefingButtonsSection() {
           >
             {/* Real Image Background */}
             <div className="absolute inset-0 opacity-60 transition-opacity duration-300 group-hover:opacity-100">
-              <img src={item.image} alt="" loading="lazy" className="w-full h-full object-cover" />
+              <Image src={item.image} alt="" fill className="object-cover" sizes="(max-width: 640px) 100vw, 33vw" />
             </div>
             
             {/* Vignette Overlay to ensure text readability */}

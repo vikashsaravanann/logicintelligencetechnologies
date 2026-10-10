@@ -4,6 +4,7 @@
  *
  * Every href must resolve to a real page (enforced by tests/admin/admin-nav).
  * New destinations are added in the batch that ships their page.
+ * Note: VoiceShield admin panel removed — VoiceShield has been retired.
  */
 import { hasCapability, type Capability, type StaffRole } from "@/config/roles";
 
@@ -37,7 +38,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { label: "Leads", href: "/admin/leads", capability: "leads.read", match: startsWith("/admin/leads") },
       { label: "AI Leads", href: "/admin/ai-leads", capability: "leads.read", match: startsWith("/admin/ai-leads") },
       { label: "Bookings", href: "/admin/bookings", capability: "bookings.read", match: startsWith("/admin/bookings") },
-      { label: "VoiceShield", href: "/admin/voiceshield-requests", capability: "voiceshield.read", match: startsWith("/admin/voiceshield-requests") },
       { label: "Outreach", href: "/admin/outreach", capability: "outreach.read", match: (p) => p === "/admin/outreach" },
     ],
   },

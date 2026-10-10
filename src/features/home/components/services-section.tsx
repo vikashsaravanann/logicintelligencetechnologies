@@ -12,10 +12,33 @@ import Link from "next/link";
 
 /**
  * Homepage product band — two launched flagship products of Logic Intelligence Technologies:
- * 1. Logic Voice (AI Voice Assistant / Personal AI Assistant)
- * 2. VoiceShield (Voice Security & Risk Intelligence)
+ * 1. LIT Healthcare (Hospital Management System)
+ * 2. Logic Voice (AI Voice Assistant)
  */
 const PRODUCTS = [
+  {
+    id: "healthcare",
+    name: "LIT Healthcare",
+    badge: "Hospital Management",
+    href: "/healthcare",
+    liveHref: "https://healthcare.logicintelligencetechnologies.in/",
+    cta: "Explore LIT Healthcare",
+    liveCta: "Healthcare Platform",
+    icon: (props: any) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+    ),
+    description:
+      "LIT Healthcare is a comprehensive hospital and clinic management platform designed to connect clinical workflows, administrative operations, and facility management into a single organized workspace.",
+    capabilities: [
+      "Multi-organization and multi-facility architecture",
+      "Role-based workspaces for doctors, nurses, and billing teams",
+      "Integrated patient registration and clinical records",
+      "Healthcare intelligence with human oversight",
+    ],
+    suited: "Clinics, multispecialty clinics, hospitals, and healthcare groups",
+    accent: "text-[#1FA9A2]",
+    accentBg: "bg-[#1FA9A2]/10 border-[#1FA9A2]/25",
+  },
   {
     id: "logic-voice",
     name: "Logic Voice",
@@ -37,30 +60,7 @@ const PRODUCTS = [
     accent: "text-[#45D9D2]",
     accentBg: "bg-[#45D9D2]/10 border-[#45D9D2]/25",
   },
-  {
-    id: "voice-shield",
-    name: "VoiceShield",
-    badge: "Voice Security & Risk",
-    href: "/voice-shield",
-    liveHref: "https://voiceshield.logicintelligencetechnologies.in/",
-    cta: "Explore VoiceShield",
-    liveCta: "VoiceShield Platform",
-    icon: Shield,
-    description:
-      "A voice-security and voice-risk intelligence product developed by Logic Intelligence Technologies, designed to analyze voice interactions and produce structured intelligence around security, fraud, and compliance-related signals.",
-    capabilities: [
-      "Real-time acoustic analysis and synthetic speech anomaly indicators",
-      "Deterministic detection path without an LLM in the hot loop",
-      "Async forensic review lab for transcription and structured evidence",
-      "API-first architecture for high-volume enterprise telephony environments",
-    ],
-    suited:
-      "BPOs, contact centres, financial services, telecom, enterprise fraud teams",
-    accent: "text-[#3DB1EA]",
-    accentBg: "bg-[#0894DE]/10 border-[#0894DE]/30",
-  },
 ] as const;
-
 export default function ServicesSection() {
   return (
     <section
@@ -79,7 +79,7 @@ export default function ServicesSection() {
             <span className="text-primary">One Company.</span>
           </h2>
           <p className="text-zinc-300 text-base sm:text-lg leading-relaxed">
-            Logic Intelligence Technologies develops intelligent AI products and automation solutions.
+            Logic Intelligence Technologies develops intelligent AI products, connected digital platforms, and automation solutions.
             Our two launched products operate independently with dedicated architectures.
           </p>
         </div>

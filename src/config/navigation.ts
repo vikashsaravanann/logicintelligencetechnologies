@@ -1,7 +1,6 @@
 /**
  * Central navigation model for Logic Intelligence Technologies.
- * Products: AI Agent · AI Voice Agent · VoiceShield
- * /ai = AI Agent interactive assistant experience (not a fourth product).
+ * Products: Logic Voice · Healthcare Platform · AI Agent · AI Voice Agent
  */
 export type NavItem = {
   href: string;
@@ -20,7 +19,7 @@ export type NavGroup = {
 export const PRIMARY_NAV: NavItem[] = [
   { href: "/", label: "HOME" },
   { href: "/products/logic-voice", label: "LOGIC VOICE" },
-  { href: "/voice-shield", label: "VOICESHIELD" },
+  { href: "/healthcare", label: "HEALTHCARE", highlight: true },
   { href: "/products", label: "PRODUCTS" },
   { href: "/services", label: "SOLUTIONS" },
   { href: "/industries", label: "INDUSTRIES" },
@@ -61,11 +60,9 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
     label: "PRODUCTS",
     items: [
       { href: "/products", label: "ALL PRODUCTS", description: "PRODUCT OVERVIEW" },
+      { href: "/healthcare", label: "LIT HEALTHCARE", description: "SMART HOSPITAL MANAGEMENT PLATFORM", highlight: true },
+      { href: "/healthcare/plans", label: "HEALTHCARE PLANS", description: "SUBSCRIPTION TIERS AND PRICING" },
       { href: "/products/logic-voice", label: "LOGIC VOICE", description: "VOICE-FIRST PERSONAL AI ASSISTANT" },
-      { href: "/voice-shield", label: "VOICESHIELD", description: "AI VOICE SECURITY" },
-      { href: "/voice-shield/request", label: "VOICESHIELD ACCESS", description: "REQUEST CONSOLE ACCESS" },
-      { href: "/roi-calculator", label: "VOICESHIELD ROI", description: "ESTIMATE THE SAVINGS" },
-      { href: "/docs/api", label: "VOICESHIELD API", description: "DEVELOPER REFERENCE" },
       { href: "/products/ai-voice-agents", label: "AI VOICE AGENTS", description: "AI FRONT DESK FOR CALLS" },
       { href: "/products/ai-website-agents", label: "AI WEBSITE AGENTS", description: "TURN VISITORS INTO LEADS" },
       { href: "/ai", label: "AI WEBSITE BUILDER", description: "BUILD AND GROW YOUR SITE" },

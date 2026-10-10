@@ -1,22 +1,21 @@
 /**
  * Routes reachable without signing in. Every public marketing page MUST be
  * listed. tests/navigation/public-paths.test.ts fails if a page under
- * src/app/(marketing) is missing, which is how routes like /pricing and
- * /voice-shield/request were previously locked behind the login wall.
+ * src/app/(marketing) is missing.
  */
 export const PUBLIC_MARKETING_PREFIXES: readonly string[] = [
   // (marketing) route group
   "/about", "/accessibility", "/ai-assistant", "/ai-discovery", "/ai-ethics",
   "/architecture", "/blog", "/book-consultation", "/booking", "/careers",
   "/certifications", "/checklist", "/community", "/contact", "/cookie-policy",
-  "/discovery", "/docs", "/expertise", "/free-demo", "/help-center",
+  "/discovery", "/docs", "/expertise", "/free-demo", "/healthcare", "/help-center",
   "/industries", "/investor-brief", "/investors", "/jobs", "/knowledge-base",
   "/onboard", "/packages", "/press", "/privacy", "/privacy-policy", "/products",
   "/proposal", "/refund-policy", "/resources", "/roi-calculator", "/sales",
   "/search", "/services", "/status", "/support", "/terms",
   "/terms-of-service", "/work",
   // Public pages that live outside the (marketing) group
-  "/ai", "/company", "/pricing", "/security", "/voice-shield",
+  "/ai", "/company", "/pricing", "/security",
 ];
 
 export function isPublicPath(path: string): boolean {

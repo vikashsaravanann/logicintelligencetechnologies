@@ -27,7 +27,9 @@ const NOT_IN_MENU = [
   /^\/auth(\/|$)/,
   /^\/privacy-policy$/, // same content as /privacy
   /^\/terms-of-service$/, // same content as /terms
-  /^\/voice-shield\/demo$/, // same page as /voice-shield/request
+  /^\/voice-shield(\/.*)?$/, // retired VoiceShield routes
+  /^\/docs\/api$/,
+  /^\/roi-calculator$/,
 ];
 
 const menuHrefs = new Set([...PRIMARY_NAV, ...MORE_NAV_GROUPS.flatMap((g) => g.items)].map((i) => i.href));

@@ -36,26 +36,26 @@ export const productsData: ProductItem[] = [
     repositoryUrl: "https://github.com/vikashsaravanann/logic-voice"
   },
   {
-    slug: "voice-shield",
-    name: "VoiceShield",
-    tagline: "Voice Security & Risk Intelligence",
-    category: "Voice Security & Risk Intelligence",
-    description: "Enterprise voice-security and voice-risk intelligence product developed by Logic Intelligence Technologies, designed to analyze voice interactions and produce structured intelligence around security, fraud, and compliance signals.",
+    slug: "lit-healthcare",
+    name: "LIT Healthcare",
+    tagline: "Connected Healthcare. Intelligent Decisions.",
+    category: "Smart Hospital & Clinical Intelligence Platform",
+    description: "Enterprise smart hospital operations and clinical intelligence platform developed by Logic Intelligence Technologies, providing modular clinical workflows, multi-tenant hospital operations, and healthcare automation.",
     features: [
-      "Real-time acoustic analysis and synthetic speech anomaly indicators",
-      "Structured risk intelligence and evidence generation for enterprise workflows",
-      "Deterministic detection path without an LLM in the critical loop",
-      "Async forensic review lab for transcription and audit trails"
+      "Modular clinical workflows (IPD, OPD, ICU, Pharmacy, Diagnostics)",
+      "Unified hospital operations & FHIR-ready multi-tenant architecture",
+      "Deterministic safety gates and clinical governance workflows",
+      "Integrated patient portal & automated administrative operations"
     ],
-    techStack: ["Python", "FastAPI", "Acoustic Signal Processing", "DSP Feature Extraction", "WebRTC", "Supabase"],
-    status: "Beta",
+    techStack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "PostgreSQL", "FastAPI"],
+    status: "Enterprise Ready",
     metrics: [
-      { label: "Detection Loop", value: "Streaming DSP" },
-      { label: "Forensic Lab", value: "Async Queue" },
-      { label: "Integration", value: "API-First" }
+      { label: "Deployment", value: "Multi-Tenant" },
+      { label: "Architecture", value: "FHIR-Ready" },
+      { label: "Security", value: "Role-Based RLS" }
     ],
-    websiteUrl: "https://voiceshield.logicintelligencetechnologies.in/",
-    repositoryUrl: "https://github.com/vikashsaravanann/voice-shield"
+    websiteUrl: "https://healthcare.logicintelligencetechnologies.in/",
+    repositoryUrl: "https://github.com/vikashsaravanann/lit-smart-hospital-platform"
   },
   {
     slug: "omni-publisher",

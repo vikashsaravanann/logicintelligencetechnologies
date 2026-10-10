@@ -1,6 +1,7 @@
 /**
  * Canonical commercial pricing — source of truth.
- * Products: AI Agent · AI Voice Agent · VoiceShield
+ * Products: AI Agent · AI Voice Agent
+ * Healthcare pricing is managed separately at /healthcare/plans.
  * USD and INR are controlled display prices (not live FX).
  */
 
@@ -121,34 +122,6 @@ export const PRICING_CONFIG: ProductPricing[] = [
         ],
         ctaLabel: "Contact Sales",
         ctaHref: "/contact",
-      },
-    ],
-  },
-  {
-    id: "voice-shield",
-    name: "VoiceShield",
-    plans: [
-      {
-        name: "Enterprise",
-        monthlyPrice: { USD: 349, INR: 29000 },
-        setupFee: { USD: 999, INR: 83000 },
-        usageFee: {
-          description:
-            "per successfully analyzed call (billing unit subject to final definition)",
-          USD: 0.05,
-          INR: 4,
-        },
-        popular: true,
-        features: [
-          "Voice risk and configurable security signals",
-          "Compliance indicators and evidence extraction",
-          "Structured machine-readable output",
-          "API-first integration",
-          "Enterprise analytics",
-          "Configurable retention (standard 30-day policy)",
-        ],
-        ctaLabel: "Request Access",
-        ctaHref: "/voice-shield/request",
       },
     ],
   },

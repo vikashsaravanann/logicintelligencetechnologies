@@ -7,7 +7,7 @@ import { ArrowRight, Box, CheckCircle2, ExternalLink, ShieldCheck, Sparkles, Ter
 export const metadata: Metadata = {
   title: "Products | Logic Intelligence Technologies",
   description:
-    "Explore intelligent AI products by Logic Intelligence Technologies, including Logic Voice (personal AI assistant) and VoiceShield (voice security & risk intelligence).",
+    "Explore intelligent AI products and platforms by Logic Intelligence Technologies, including Logic Voice (personal AI assistant) and LIT Healthcare (smart hospital & clinical intelligence platform).",
   alternates: {
     canonical: "/products",
   },
@@ -15,10 +15,10 @@ export const metadata: Metadata = {
 
 export default function ProductsPage() {
   const flagshipProducts = productsData.filter(
-    (p) => p.slug === "logic-voice" || p.slug === "voice-shield"
+    (p) => p.slug === "logic-voice" || p.slug === "lit-healthcare"
   );
   const otherSystems = productsData.filter(
-    (p) => p.slug !== "logic-voice" && p.slug !== "voice-shield"
+    (p) => p.slug !== "logic-voice" && p.slug !== "lit-healthcare"
   );
 
   return (
@@ -40,7 +40,7 @@ export default function ProductsPage() {
           </h1>
           <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
             Logic Intelligence Technologies develops intelligent AI products and automation solutions.
-            Our two launched products operate independently with dedicated architectures and specialized missions.
+            Our flagship platforms operate with dedicated architectures and specialized missions.
           </p>
         </div>
 
@@ -50,10 +50,9 @@ export default function ProductsPage() {
             const isLogicVoice = prod.slug === "logic-voice";
             const liveUrl = isLogicVoice
               ? "https://logicvoice.logicintelligencetechnologies.in/"
-              : "https://voiceshield.logicintelligencetechnologies.in/";
-            // Logic Voice's repository is private, so only VoiceShield links to code.
-            const gitHubUrl = isLogicVoice ? null : "https://github.com/vikashsaravanann/voice-shield";
-            const internalPage = isLogicVoice ? "/products/logic-voice" : "/voice-shield";
+              : "https://healthcare.logicintelligencetechnologies.in/";
+            const gitHubUrl = isLogicVoice ? null : "https://github.com/vikashsaravanann/lit-smart-hospital-platform";
+            const internalPage = isLogicVoice ? "/products/logic-voice" : "/healthcare";
 
             return (
               <div

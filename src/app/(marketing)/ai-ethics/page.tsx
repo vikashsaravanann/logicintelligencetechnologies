@@ -14,7 +14,7 @@ export default function AIEthicsPage() {
     {
       title: "Data Privacy & Ephemerality",
       icon: EyeOff,
-      desc: "Our primary architecture (like VoiceShield) relies on zero-persistence RAM-only processing. We do not store, log, or train on your customer's voice data. When the connection drops, the data ceases to exist.",
+      desc: "Our primary architecture relies on zero-persistence RAM-only processing for real-time streams. We do not store, log, or train on your customer's confidential interaction data. When the connection drops, the data ceases to exist.",
     },
     {
       title: "Algorithmic Fairness",

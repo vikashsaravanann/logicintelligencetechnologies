@@ -16,8 +16,8 @@ export default function HelpCenterPage() {
       a: "Navigate to your enterprise dashboard under Settings > Security. Click 'Generate New Key' and update your `.env` securely.",
     },
     {
-      q: "What is the SLA for VoiceShield?",
-      a: "Enterprise tier includes a 99.99% uptime guarantee with sub-50ms latency. See the Status page for real-time monitoring.",
+      q: "What is the SLA for enterprise platforms?",
+      a: "Enterprise tier includes guaranteed uptime agreements and dedicated priority support. See the Status page for real-time reachability monitoring.",
     },
     {
       q: "Can I deploy the AI models on-premise?",

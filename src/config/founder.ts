@@ -11,11 +11,11 @@ export const FOUNDER = {
   executiveOverview:
     'Vikash Saravanan is an AI systems engineer, full-stack developer, and the Founder & CEO of Logic Intelligence Technologies',
   shortBio:
-    'Vikash Saravanan is an AI and Data Science engineer and the Founder & CEO of Logic Intelligence Technologies, an AI technology company developing intelligent AI products and automation solutions. Specializing in Python, FastAPI, React, Next.js, and autonomous systems, he architects scalable software and intelligent products including Logic Voice and VoiceShield. He is currently pursuing a Bachelor of Technology in Artificial Intelligence and Data Science at Rathinam Technical Campus in Coimbatore.',
+    'Vikash Saravanan is an AI and Data Science engineer and the Founder & CEO of Logic Intelligence Technologies, an AI technology company developing intelligent AI products and automation solutions. Specializing in Python, FastAPI, React, Next.js, and autonomous systems, he architects scalable software and intelligent products including Logic Voice and LIT Healthcare. He is currently pursuing a Bachelor of Technology in Artificial Intelligence and Data Science at Rathinam Technical Campus in Coimbatore.',
   longBio:
-    'Vikash Saravanan is a software engineer and technology entrepreneur working at the intersection of artificial intelligence and applied systems engineering. As the Founder & CEO of Logic Intelligence Technologies, he leads an AI technology company focused on intelligent software products, robust web platforms, intelligent API integrations, and autonomous automation tools including Logic Voice and VoiceShield.\n\nHe is pursuing a Bachelor of Technology in Artificial Intelligence and Data Science at Rathinam Technical Campus in Coimbatore from 2025 to 2029. His engineering philosophy emphasizes deterministic scaffolding, strict schema validation, state-machine-driven automation, and maintainable production architecture.\n\nA central focus of his work spans voice-first AI interfaces, acoustic verification pipelines, and headless browser orchestration using Python and modern full-stack frameworks. By integrating AI models into structured architectures, he develops systems capable of interpreting voice and dynamic interfaces, making context-aware decisions, and executing controlled workflows.',
+    'Vikash Saravanan is a software engineer and technology entrepreneur working at the intersection of artificial intelligence and applied systems engineering. As the Founder & CEO of Logic Intelligence Technologies, he leads an AI technology company focused on intelligent software products, robust web platforms, intelligent API integrations, and autonomous automation tools including Logic Voice and LIT Healthcare.\n\nHe is pursuing a Bachelor of Technology in Artificial Intelligence and Data Science at Rathinam Technical Campus in Coimbatore from 2025 to 2029. His engineering philosophy emphasizes deterministic scaffolding, strict schema validation, state-machine-driven automation, and maintainable production architecture.\n\nA central focus of his work spans voice-first AI interfaces, healthcare technology architectures, and headless browser orchestration using Python and modern full-stack frameworks. By integrating AI models into structured architectures, he develops systems capable of interpreting voice and dynamic interfaces, making context-aware decisions, and executing controlled workflows.',
   companyOverview:
-    'Logic Intelligence Technologies is an AI technology company focused on intelligent AI products and automation solutions. The company develops flagship products including Logic Voice and VoiceShield, building scalable digital infrastructure, full-stack applications, autonomous workflow systems, and intelligent backend integrations.',
+    'Logic Intelligence Technologies is an AI technology company focused on intelligent AI products and automation solutions. The company develops flagship products including Logic Voice and LIT Healthcare, building scalable digital infrastructure, full-stack applications, autonomous workflow systems, and intelligent backend integrations.',
   companyCapabilities: {
     fullStackArchitecture:
       'Developing high-performance web platforms using React, Next.js, FastAPI, Supabase, PostgreSQL, and modern cloud deployment infrastructure.',
@@ -172,17 +172,17 @@ export const FOUNDER = {
       ],
     },
     {
-      name: 'VoiceShield',
-      url: 'https://voiceshield.logicintelligencetechnologies.in/',
+      name: 'LIT Healthcare',
+      url: 'https://healthcare.logicintelligencetechnologies.in/',
       description:
-        'Voice-security and risk intelligence platform analyzing voice interactions for configurable fraud, synthetic speech, and compliance signals with structured evidence.',
+        'Enterprise smart hospital operations and clinical intelligence platform delivering modular clinical workflows, multi-tenant hospital operations, and healthcare automation.',
       technologies: [
-        'Python',
-        'FastAPI',
-        'Acoustic Signal Processing',
-        'DSP Feature Extraction',
         'Next.js',
-        'Supabase',
+        'React',
+        'TypeScript',
+        'Tailwind CSS',
+        'PostgreSQL',
+        'FastAPI',
       ],
     },
     {

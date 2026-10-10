@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Space_Grotesk, JetBrains_Mono } from 'next/font/google';
+import { Poppins, Lora, JetBrains_Mono } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 import { COMPANY } from '@/config/company';
@@ -10,25 +10,29 @@ import GlobalBackground from '@/components/ui/global-background';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { LitAnalytics } from '@/components/analytics/lit-analytics';
 
-const inter = Inter({
+const poppins = Poppins({
   subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   display: 'swap',
   preload: true,
   adjustFontFallback: true,
-  variable: '--font-inter',
+  variable: '--font-poppins-var',
 });
 
-const spaceGrotesk = Space_Grotesk({
+const lora = Lora({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
   display: 'swap',
-  variable: '--font-space-grotesk',
+  preload: false,
+  variable: '--font-lora-var',
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   display: 'swap',
   preload: false,
-  variable: '--font-jetbrains-mono',
+  variable: '--font-jetbrains-var',
 });
 
 export const viewport: Viewport = {
@@ -38,32 +42,33 @@ export const viewport: Viewport = {
   userScalable: true,
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: dark)', color: '#0D1B3E' },
-    { media: '(prefers-color-scheme: light)', color: '#F7F4EE' },
+    { media: '(prefers-color-scheme: dark)', color: '#0B1628' },
+    { media: '(prefers-color-scheme: light)', color: '#F7F9FC' },
   ],
 };
 
 export const metadata: Metadata = {
   title: {
-    default: 'Logic Intelligence Technologies | AI Products & Automation Solutions',
+    default: 'Logic Intelligence Technologies | AI Products & Healthcare Technology',
     template: '%s | Logic Intelligence Technologies',
   },
   description:
-    'Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions, including Logic Voice and VoiceShield. Based in Coimbatore, Tamil Nadu, India.',
+    'Logic Intelligence Technologies builds AI-driven products, intelligent automation, and connected digital platforms for modern organizations. Creators of LIT Healthcare and Logic Voice — based in Coimbatore, Tamil Nadu, India.',
   keywords: [
     'Logic Intelligence Technologies',
     'AI technology company',
     'AI products',
     'AI automation',
     'AI agents',
+    'LIT Healthcare',
+    'healthcare platform',
+    'hospital management system',
+    'clinic management',
+    'smart hospital',
     'Logic Voice',
     'AI voice assistant',
     'personal AI assistant',
     'voice-first AI',
-    'VoiceShield',
-    'voice security',
-    'voice risk intelligence',
-    'voice fraud intelligence',
     'AI-powered automation',
     'Vikash Saravanan',
     'Coimbatore',
@@ -79,23 +84,23 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     siteName: COMPANY.legalName,
-    title: 'Logic Intelligence Technologies | Where Logic Meets Innovation',
+    title: 'Logic Intelligence Technologies | Intelligent Technology. Connected Possibilities.',
     description:
-      'Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions, including Logic Voice and VoiceShield.',
+      'Logic Intelligence Technologies builds AI-driven products, intelligent automation and connected digital platforms — including LIT Healthcare and Logic Voice.',
     images: [
       {
         url: COMPANY.bannerPath,
         width: 1200,
         height: 630,
-        alt: 'Logic Intelligence Technologies — Where Logic Meets Innovation',
+        alt: 'Logic Intelligence Technologies — Intelligent Technology. Connected Possibilities.',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Logic Intelligence Technologies | Where Logic Meets Innovation',
+    title: 'Logic Intelligence Technologies | Intelligent Technology. Connected Possibilities.',
     description:
-      'Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions, including Logic Voice and VoiceShield.',
+      'AI technology company building intelligent products and connected platforms. LIT Healthcare · Logic Voice · AI Agents.',
     images: [COMPANY.bannerPath],
   },
   icons: {
@@ -119,7 +124,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} overflow-x-hidden w-full max-w-[100vw]`}>
+    <html lang="en" suppressHydrationWarning className={`${poppins.variable} ${lora.variable} ${jetbrainsMono.variable} overflow-x-hidden w-full max-w-[100vw]`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href="/icon-48.png" type="image/png" sizes="48x48" />
@@ -136,11 +141,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} m-0 p-0 w-full max-w-[100vw] overflow-x-hidden`}>
+      <body className={`${poppins.className} m-0 p-0 w-full max-w-[100vw] overflow-x-hidden`}>
         <a href="#main-content" className="lit-skip">Skip to main content</a>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
           <GlobalBackground />
-          <Toaster position="top-right" toastOptions={{ style: { background: '#132147', color: '#fff', border: '1px solid rgba(255,255,255,0.12)' } }} />
+          <Toaster position="top-right" toastOptions={{ style: { background: '#0D1B3E', color: '#F0F4FF', border: '1px solid rgba(255,255,255,0.12)' } }} />
           {children}
           <SpeedInsights />
           <LitAnalytics />

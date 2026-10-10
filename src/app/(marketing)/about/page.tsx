@@ -26,7 +26,7 @@ import { SafeImage } from "@/components/ui/safe-image";
 export const metadata: Metadata = {
   title: "About Us | Logic Intelligence Technologies",
   description:
-    "Logic Intelligence Technologies is an AI technology company based in Coimbatore, Tamil Nadu, India, developing intelligent AI products and automation solutions including Logic Voice and VoiceShield.",
+    "Logic Intelligence Technologies is an AI technology company based in Coimbatore, Tamil Nadu, India, developing intelligent AI products and automation solutions including Logic Voice and LIT Healthcare.",
 };
 
 const values = [
@@ -51,10 +51,14 @@ export default function AboutPage() {
       <section className="relative py-14 sm:py-20 px-6 lg:px-8 overflow-hidden">
         <PageBackdrop src="/assets/backdrops/about-hero.jpg" />
         <div className="relative z-10 max-w-7xl mx-auto text-center">
-          <span className="inline-flex items-center gap-2 text-primary font-bold tracking-widest uppercase text-xs sm:text-sm mb-5 px-3 py-1.5 rounded-full border border-primary/25 bg-primary/10">
-            <Rocket className="w-3.5 h-3.5" />
-            Coimbatore technology startup
-          </span>
+          <div className="inline-flex flex-col sm:flex-row items-center gap-2 text-primary font-bold tracking-widest uppercase text-xs sm:text-sm mb-5 px-4 py-2 rounded-full border border-primary/25 bg-primary/10">
+            <span className="flex items-center gap-2">
+              <Rocket className="w-3.5 h-3.5" />
+              Logic Intelligence Technologies
+            </span>
+            <span className="hidden sm:inline text-white/30">•</span>
+            <span className="text-zinc-300 normal-case font-medium">Where logic meets innovation.</span>
+          </div>
           <h1 className="uppercase text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
             A startup built to ship
             <br />

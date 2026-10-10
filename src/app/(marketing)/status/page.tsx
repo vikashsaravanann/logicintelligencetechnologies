@@ -13,7 +13,7 @@ import {
 export const metadata: Metadata = {
   title: "System Status | Logic Intelligence Technologies",
   description:
-    "Live reachability checks for Logic Intelligence Technologies services: the corporate website, VoiceShield and Logic Voice.",
+    "Live reachability checks for Logic Intelligence Technologies services: the corporate website, LIT Healthcare and Logic Voice.",
 };
 
 // Re-check at most once a minute; visitors never trigger extra probes.

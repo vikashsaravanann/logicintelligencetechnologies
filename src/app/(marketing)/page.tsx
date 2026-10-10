@@ -16,13 +16,13 @@ import FreeDemoCTA from '@/features/leads/components/free-demo-cta';
 import { COMPANY } from '@/config/company';
 
 export const metadata: Metadata = {
-  title: 'Logic Intelligence Technologies | AI Products & Automation Solutions',
+  title: 'Logic Intelligence Technologies | AI Products & Healthcare Technology',
   description:
-    'Logic Intelligence Technologies is an AI technology company developing intelligent AI products and automation solutions, including Logic Voice and VoiceShield.',
+    'Logic Intelligence Technologies builds AI-driven products, intelligent automation, and connected digital platforms, including LIT Healthcare and Logic Voice.',
   openGraph: {
     title: `${COMPANY.legalName} — ${COMPANY.tagline}`,
     description:
-      'AI technology company developing intelligent AI products and automation solutions. Creators of Logic Voice and VoiceShield.',
+      'AI technology company building intelligent AI products, automation solutions, and connected healthcare platforms.',
     images: [{ url: COMPANY.bannerPath, width: 1200, height: 630, alt: 'Logic Intelligence Technologies' }],
   },
 };

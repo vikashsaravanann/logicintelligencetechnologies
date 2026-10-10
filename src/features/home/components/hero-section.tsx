@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, Send, ChevronDown, Mic, Shield } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Send, ChevronDown, Mic } from "lucide-react";
 import { COMPANY } from "@/config/company";
 
 const InstagramIcon = ({ className }: { className?: string }) => (
@@ -23,7 +24,7 @@ export default function HeroSection() {
   const wa = `https://wa.me/${COMPANY.whatsappNumber.replace(/\D/g, "")}`;
 
   const facts = [
-    { kicker: "Flagship Products", stat: "2 Launched", body: "Logic Voice & VoiceShield." },
+    { kicker: "Flagship Products", stat: "2 Launched", body: "LIT Healthcare & Logic Voice." },
     { kicker: "Company", stat: COMPANY.entityType, body: "Logic Intelligence Technologies" },
     { kicker: "Headquarters", stat: "Coimbatore", body: "Tamil Nadu, India." },
     { kicker: "Leadership", stat: "Vikash Saravanan", body: "Founder & CEO." },
@@ -65,8 +66,8 @@ export default function HeroSection() {
             </p>
 
             <p className="lit-rise lit-rise-2 text-base text-zinc-300 leading-relaxed mb-9 max-w-xl">
-              Logic Intelligence Technologies develops intelligent AI products and automation solutions.
-              Creators of Logic Voice and VoiceShield.
+              Logic Intelligence Technologies develops intelligent AI products, connected digital platforms, and automation solutions.
+              Creators of LIT Healthcare and Logic Voice.
             </p>
 
             <div className="lit-rise lit-rise-3 flex w-full flex-col sm:w-auto sm:flex-row items-stretch sm:items-center gap-3 mb-9">
@@ -112,12 +113,12 @@ export default function HeroSection() {
           <div className="lg:col-span-5 lit-rise lit-rise-2">
             <figure
               className="relative mx-auto w-full max-w-md rounded-2xl border border-white/10 bg-[#0A1530]/80 p-5 sm:p-6 shadow-[0_30px_70px_-30px_rgba(2,8,24,0.9)]"
-              aria-label="Logic Intelligence Technologies and its products Logic Voice and VoiceShield"
+              aria-label="Logic Intelligence Technologies and its products LIT Healthcare and Logic Voice"
             >
               <div aria-hidden className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(69,217,210,0.10),transparent_70%)]" />
               <div className="relative flex items-center gap-3 rounded-xl border border-primary/30 bg-[#0D1B3E] p-4">
                 <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full ring-1 ring-white/15">
-                  <img src="/assets/logo-icon.jpg" alt="" width={44} height={44} className="h-full w-full object-cover" decoding="async" />
+                  <Image src="/assets/logo-icon.jpg" alt="" width={44} height={44} className="h-full w-full object-cover" />
                 </div>
                 <div className="min-w-0">
                   <p className="font-display text-sm font-bold text-white">Logic Intelligence Technologies</p>
@@ -136,9 +137,9 @@ export default function HeroSection() {
                   <p className="mt-1 text-xs leading-snug text-zinc-400">AI Voice Assistant</p>
                 </div>
                 <div className="rounded-xl border border-white/10 bg-[#0D1B3E] p-4">
-                  <Shield className="mb-3 h-5 w-5 text-[#3DB1EA]" aria-hidden />
-                  <p className="font-display text-sm font-bold text-white">VoiceShield</p>
-                  <p className="mt-1 text-xs leading-snug text-zinc-400">Voice Security &amp; Risk</p>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-3 text-[#1FA9A2]"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                  <p className="font-display text-sm font-bold text-white">LIT Healthcare</p>
+                  <p className="mt-1 text-xs leading-snug text-zinc-400">Hospital Management</p>
                 </div>
               </div>
             </figure>

@@ -125,9 +125,10 @@ export default function SalesPage() {
                     <label className={labelClass}>Primary Interest</label>
                     <select required className={inputClass}>
                       <option value="" disabled selected>Select product...</option>
-                      <option value="voiceshield">VoiceShield Anti-Spoofing</option>
-                      <option value="assistant">Enterprise AI Assistant</option>
-                      <option value="consulting">Custom AI Consulting</option>
+                      <option value="healthcare">LIT Healthcare Platform</option>
+                      <option value="logicvoice">Logic Voice AI Assistant</option>
+                      <option value="assistant">Enterprise AI Agent</option>
+                      <option value="consulting">Custom AI Solutions</option>
                     </select>
                   </div>
 

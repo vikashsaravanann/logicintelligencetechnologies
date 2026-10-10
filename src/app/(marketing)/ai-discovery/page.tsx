@@ -21,7 +21,7 @@ export default function AIDiscoveryPage() {
       step: "02",
       title: "Strategy & Modeling",
       icon: Cpu,
-      desc: "Our engineers design a custom AI solution. Whether deploying VoiceShield nodes at your network edge or fine-tuning an LLM for your internal knowledge base, we outline the exact topology and expected latencies.",
+      desc: "Our engineers design a custom AI solution. Whether deploying real-time intelligence nodes at your network edge or orchestrating specialized agent workflows for your internal systems, we outline the exact topology and expected latencies.",
     },
     {
       step: "03",

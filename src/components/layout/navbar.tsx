@@ -14,10 +14,12 @@ const NavLink = ({
   href,
   children,
   onClick,
+  highlight,
 }: {
   href: string;
   children: React.ReactNode;
   onClick?: () => void;
+  highlight?: boolean;
 }) => {
   const pathname = usePathname();
   const isActive = pathname === href || (href !== "/" && pathname.startsWith(href));
@@ -26,7 +28,13 @@ const NavLink = ({
       href={href}
       onClick={onClick}
       className={`relative inline-flex items-center h-11 px-2 text-xs font-semibold tracking-[0.06em] whitespace-nowrap transition-colors ${
-        isActive ? "text-primary" : "text-zinc-200 hover:text-primary"
+        highlight
+          ? isActive
+            ? 'text-[var(--corp-cyan)]'
+            : 'text-[var(--corp-teal)] hover:text-[var(--corp-cyan)]'
+          : isActive
+            ? 'text-primary'
+            : 'text-zinc-200 hover:text-primary'
       }`}
     >
       {children}
@@ -124,7 +132,7 @@ export default function Navbar() {
 
             <div className="hidden xl:flex items-center justify-center gap-0.5 flex-1 min-w-0">
               {PRIMARY_NAV.map((item) => (
-                <NavLink key={item.href} href={item.href}>
+                <NavLink key={item.href} href={item.href} highlight={item.highlight}>
                   {item.label.toUpperCase()}
                 </NavLink>
               ))}

@@ -33,7 +33,7 @@ export const COMPANY = {
   logoIconPath: '/assets/logo-icon.jpg',
   logoFullPath: '/assets/logo.jpg',
   bannerPath: '/assets/og-banner.png',
-  tagline: 'Where Logic Meets Innovation',
+  tagline: 'Intelligent Technology. Connected Possibilities.',
   founder: {
     name: 'Vikash Saravanan',
     title: 'Founder & CEO',
@@ -55,31 +55,29 @@ export const COMPANY = {
     vikash: 'vikash@logicintelligencetechnologies.in',
   },
   products: {
+    healthcare: {
+      name: 'LIT Healthcare',
+      tagline: 'Smart Hospital Management & Healthcare Intelligence',
+      category: 'Healthcare Technology',
+      legalLine: 'LIT Healthcare — a product of Logic Intelligence Technologies',
+      path: '/healthcare',
+      plansPath: '/healthcare/plans',
+      websiteUrl: 'https://healthcare.logicintelligencetechnologies.in',
+      loginUrl: 'https://healthcare.logicintelligencetechnologies.in/login',
+      organizationStoreUrl: 'https://healthcare.logicintelligencetechnologies.in/organization-store',
+      description:
+        'A comprehensive hospital and clinic management platform connecting clinical workflows, administrative operations, and facility management into a unified workspace with role-based access and subscription-based deployment.',
+    },
     logicVoice: {
       name: 'Logic Voice',
       tagline: 'Voice-First Personal AI Assistant',
       category: 'AI Voice Assistant',
-      legalLine:
-        'Logic Voice — an AI product by Logic Intelligence Technologies',
+      legalLine: 'Logic Voice — an AI product by Logic Intelligence Technologies',
       path: '/products/logic-voice',
       websiteUrl: 'https://logicvoice.logicintelligencetechnologies.in/',
       githubUrl: 'https://github.com/vikashsaravanann/logic-voice',
       description:
         'A voice-first personal AI assistant designed to let users interact naturally through speech, understanding, reasoning, planning, and executing approved tools.',
-    },
-    voiceShield: {
-      name: 'VoiceShield',
-      tagline: 'Voice Security & Risk Intelligence',
-      category: 'Voice Security & Risk Intelligence',
-      legalLine:
-        'VoiceShield — a product of Logic Intelligence Technologies',
-      path: '/voice-shield',
-      requestPath: '/voice-shield/request',
-      websiteUrl: 'https://voiceshield.logicintelligencetechnologies.in/',
-      consoleUrl: 'https://voiceshield.logicintelligencetechnologies.in',
-      githubUrl: 'https://github.com/vikashsaravanann/voice-shield',
-      description:
-        'A voice-security and voice-risk intelligence product designed to analyze voice interactions and produce structured intelligence around security, fraud, risk, and compliance signals.',
     },
   },
 } as const;

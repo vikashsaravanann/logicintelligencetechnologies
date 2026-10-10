@@ -39,7 +39,7 @@ test("every page in the (marketing) route group is public", () => {
 });
 
 test("public pages outside the (marketing) group stay reachable", () => {
-  for (const p of ["/", "/pricing", "/security", "/voice-shield", "/voice-shield/request", "/company/facts", "/ai"]) {
+  for (const p of ["/", "/pricing", "/security", "/company/facts", "/ai"]) {
     assert.equal(isPublicPath(p), true, `${p} should be public`);
   }
 });

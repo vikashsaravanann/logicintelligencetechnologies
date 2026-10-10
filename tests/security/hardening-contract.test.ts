@@ -38,13 +38,7 @@ test("welcome recipient is derived from the verified user", () => {
   assert.ok(!code.includes("req.json()"));
 });
 
-test("VoiceShield private API requires admin roles", () => {
-  for (const route of ["async", "realtime"]) {
-    const code = source(`src/app/api/voice-shield/${route}/route.ts`);
-    assert.ok(code.includes("await requireAdminApi(req)"));
-    assert.ok(code.includes("if (!auth.ok)"));
-  }
-});
+
 
 test("unsafe automated review execution removed; rollback reason uses env", () => {
   const grok = source(".github/workflows/grok-review.yml");
@@ -82,12 +76,4 @@ test("handoff persistence failure is checked and account email is authoritative"
   const code = source("src/app/api/ai/ticket/route.ts");
   assert.ok(code.includes("user?.email || body.email"));
   assert.ok(code.indexOf("if (saved.error)") < code.indexOf("await sendEmail("));
-});
-
-test("VoiceShield approval derives applicant fields from persisted lead", () => {
-  const code = source("src/app/api/admin/voiceshield-approve/route.ts");
-  assert.ok(code.includes('select("id, name, email, message")'));
-  assert.ok(code.includes("const email = lead.email"));
-  assert.ok(!code.includes("emailResult.message"));
-  assert.ok(code.includes("if (updateError)"));
 });
