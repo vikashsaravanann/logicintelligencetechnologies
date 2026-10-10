@@ -1,7 +1,5 @@
 import "server-only";
 import crypto from "crypto";
-import fs from "fs";
-import path from "path";
 
 const TOKEN_TTL_MS = 15 * 60 * 1000;
 
@@ -92,16 +90,4 @@ export function verifyResourceAccessToken(
   } catch {
     return { ok: false, reason: "invalid" };
   }
-}
-
-export function resolveResourcePdfPath(filename: string): string | null {
-  const candidates = [
-    path.join(process.cwd(), "private", "resources", filename),
-    path.join(process.cwd(), "public", "resources", filename),
-    path.join(process.cwd(), "public", filename),
-  ];
-  for (const p of candidates) {
-    if (fs.existsSync(p)) return p;
-  }
-  return null;
 }

@@ -52,7 +52,7 @@ jobs:
           # Pull env
           vercel env pull .env.preview --environment=preview --token=$VERCEL_TOKEN
           # Deploy to Vercel preview
-          URL=$(vercel --token=$VERCEL_TOKEN --yes)
+          URL=$(vercel --archive=tgz --token=$VERCEL_TOKEN --yes)
           echo "url=$URL" >> $GITHUB_OUTPUT
 
       - name: Smoke Tests
