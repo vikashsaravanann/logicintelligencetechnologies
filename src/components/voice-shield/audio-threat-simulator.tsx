@@ -1,7 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ShieldCheck, ShieldAlert, Cpu, Activity, Play, Pause, RefreshCw, Radio, CheckCircle2, AlertTriangle, Lock } from "lucide-react";
+import {
+  ShieldCheck,
+  ShieldAlert,
+  Cpu,
+  Activity,
+  Play,
+  Pause,
+  RefreshCw,
+  Radio,
+  CheckCircle2,
+  AlertTriangle,
+  Lock,
+} from "lucide-react";
 
 interface ThreatScenario {
   id: "deepfake" | "human" | "challenge";
@@ -39,10 +51,10 @@ const SCENARIOS: ThreatScenario[] = [
       "Vocoder spectral phase discontinuity detected at 3.42 kHz",
       "Absence of human glottal aerodynamic turbulence",
       "Zero-shot neural TTS model fingerprint matched (StyleTTS2 / ElevenLabs artifact)",
-      "Zero biometric hash retention — processed exclusively in RAM"
+      "Zero biometric hash retention — processed exclusively in RAM",
     ],
     waveColor: "#EF4444",
-    waveformPattern: [15, 85, 30, 95, 20, 100, 45, 90, 25, 98, 35, 88, 20, 95, 10, 80]
+    waveformPattern: [15, 85, 30, 95, 20, 100, 45, 90, 25, 98, 35, 88, 20, 95, 10, 80],
   },
   {
     id: "human",
@@ -61,10 +73,10 @@ const SCENARIOS: ThreatScenario[] = [
       "Natural micro-laryngeal tremor and jitter within organic human parameters",
       "Dynamic harmonic resonance matches enrolled acoustic voice print",
       "Sub-ambient background acoustic room reflection verified",
-      "Zero-latency streaming passthrough without audio stutter"
+      "Zero-latency streaming passthrough without audio stutter",
     ],
-    waveColor: "#00D2C4",
-    waveformPattern: [30, 50, 40, 65, 55, 70, 60, 75, 65, 60, 50, 45, 35, 30, 25, 20]
+    waveColor: "#10B981",
+    waveformPattern: [30, 50, 40, 65, 55, 70, 60, 75, 65, 60, 50, 45, 35, 30, 25, 20],
   },
   {
     id: "challenge",
@@ -83,11 +95,11 @@ const SCENARIOS: ThreatScenario[] = [
       "Ephemeral phonemic challenge frequency verified during conversational turn-taking",
       "Zero-replay attack verified against 10M-token neural audio memory",
       "Complies with DPDP Act 2023 & HIPAA biometric privacy standards",
-      "Zero raw voice recordings written to persistent disk"
+      "Zero raw voice recordings written to persistent disk",
     ],
     waveColor: "#38BDF8",
-    waveformPattern: [20, 40, 70, 30, 80, 50, 90, 60, 40, 70, 50, 85, 45, 60, 30, 25]
-  }
+    waveformPattern: [20, 40, 70, 30, 80, 50, 90, 60, 40, 70, 50, 85, 45, 60, 30, 25],
+  },
 ];
 
 export default function AudioThreatSimulator() {
@@ -106,27 +118,21 @@ export default function AudioThreatSimulator() {
   }, [isPlaying]);
 
   return (
-    <div className="relative rounded-2xl border border-white/10 bg-[#0B0F17]/90 p-6 md:p-8 backdrop-blur-xl shadow-2xl overflow-hidden">
-      {/* Background glow matching active state */}
-      <div
-        className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full blur-[120px] transition-all duration-700 opacity-20"
-        style={{ backgroundColor: current.waveColor }}
-      />
-
+    <div className="relative rounded-3xl border border-[#DFE7EF] bg-white p-6 sm:p-8 shadow-sm overflow-hidden">
       {/* Header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#DFE7EF] pb-5">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-            <Radio className="w-5 h-5 text-primary animate-pulse" />
+          <div className="p-2.5 rounded-xl bg-[#1FA9A2]/10 border border-[#1FA9A2]/25">
+            <Radio className="w-5 h-5 text-[#0E7A74] animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-primary">
+              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#0E7A74]">
                 Interactive Threat Console
               </span>
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
             </div>
-            <h3 className="text-lg font-bold text-white tracking-tight">
+            <h3 className="text-lg font-bold text-[var(--lit-navy,#0B2545)] tracking-tight">
               Voice Shield In-Band Telephony Firewall
             </h3>
           </div>
@@ -137,16 +143,16 @@ export default function AudioThreatSimulator() {
           <button
             type="button"
             onClick={() => setIsPlaying(!isPlaying)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-xs font-mono text-slate-300 hover:text-white hover:border-white/20 transition-all"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#DFE7EF] bg-[#F7F9FC] text-xs font-mono text-[var(--lit-navy,#0B2545)] hover:bg-[#E2E8F0] transition-all cursor-pointer"
           >
             {isPlaying ? (
               <>
-                <Pause className="w-3.5 h-3.5 text-amber-400" />
+                <Pause className="w-3.5 h-3.5 text-amber-600" />
                 <span>Pause Signal</span>
               </>
             ) : (
               <>
-                <Play className="w-3.5 h-3.5 text-emerald-400" />
+                <Play className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Stream Live</span>
               </>
             )}
@@ -154,7 +160,7 @@ export default function AudioThreatSimulator() {
           <button
             type="button"
             onClick={() => setPulseTick(0)}
-            className="p-1.5 rounded-lg border border-white/10 bg-white/5 text-slate-400 hover:text-white transition-all"
+            className="p-1.5 rounded-lg border border-[#DFE7EF] bg-[#F7F9FC] text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] hover:bg-[#E2E8F0] transition-all cursor-pointer"
             title="Reset telemetry"
           >
             <RefreshCw className="w-3.5 h-3.5" />
@@ -163,7 +169,7 @@ export default function AudioThreatSimulator() {
       </div>
 
       {/* Scenario Selector Tabs */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6">
         {SCENARIOS.map((s) => {
           const isSelected = s.id === activeId;
           return (
@@ -171,50 +177,52 @@ export default function AudioThreatSimulator() {
               key={s.id}
               type="button"
               onClick={() => setActiveId(s.id)}
-              className={`text-left p-3.5 rounded-xl border transition-all ${
+              className={`text-left p-4 rounded-2xl border transition-all cursor-pointer ${
                 isSelected
-                  ? "bg-white/[0.08] border-primary/50 shadow-lg shadow-primary/5"
-                  : "bg-white/[0.02] border-white/5 hover:bg-white/[0.04] hover:border-white/10"
+                  ? "bg-[#F0F7FF] border-[#1565C0] shadow-2xs ring-1 ring-[#1565C0]"
+                  : "bg-[#F7F9FC] border-[#DFE7EF] hover:bg-[#EDF2F7] hover:border-[#CBD5E1]"
               }`}
             >
-              <div className="flex items-center justify-between text-xs font-mono mb-1">
-                <span className={isSelected ? "text-primary font-bold" : "text-slate-400"}>
+              <div className="flex items-center justify-between text-xs font-mono mb-1.5">
+                <span className={isSelected ? "text-[#1565C0] font-bold" : "text-[var(--lit-text-muted,#52677C)]"}>
                   {s.id.toUpperCase()}
                 </span>
                 <span
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
                     s.badgeType === "danger"
-                      ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                      ? "bg-[#FDE9E7] text-[#BE123C] border-[#FECDD3]"
                       : s.badgeType === "safe"
-                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                      : "bg-sky-500/20 text-sky-300 border border-sky-500/30"
+                      ? "bg-[#ECFDF5] text-[#059669] border-[#A7F3D0]"
+                      : "bg-[#E7F3FF] text-[#1565C0] border-[#BFDBFE]"
                   }`}
                 >
                   {s.badge}
                 </span>
               </div>
-              <div className="text-sm font-semibold text-white tracking-tight">{s.name}</div>
+              <div className="text-sm font-semibold text-[var(--lit-navy,#0B2545)] tracking-tight">
+                {s.name}
+              </div>
             </button>
           );
         })}
       </div>
 
       {/* Live Waveform & Spectral Phase Analysis Visualization */}
-      <div className="mt-6 rounded-xl border border-white/10 bg-[#06080D] p-5">
+      <div className="mt-6 rounded-2xl border border-[#1565C0]/30 bg-[var(--lit-navy,#0B2545)] p-5 text-white shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-          <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-            <Activity className="w-4 h-4 text-primary" />
-            <span>SPECTRAL WAVEFORM & PHASE ANALYSIS</span>
+          <div className="flex items-center gap-2 text-xs font-mono text-slate-300">
+            <Activity className="w-4 h-4 text-[#45D9D2]" />
+            <span>SPECTRAL WAVEFORM &amp; PHASE ANALYSIS</span>
           </div>
-          <div className="text-xs font-mono text-slate-400">
-            SAMPLING: <span className="text-white">48kHz PCM</span>{" // "}BUFFER: <span className="text-primary">{current.latencyMs}ms</span>
+          <div className="text-xs font-mono text-slate-300">
+            SAMPLING: <span className="text-white font-semibold">48kHz PCM</span>{" // "}BUFFER:{" "}
+            <span className="text-[#45D9D2] font-semibold">{current.latencyMs}ms</span>
           </div>
         </div>
 
         {/* Dynamic Waveform Bars */}
-        <div className="h-24 flex items-end justify-between gap-1.5 px-2 py-2 bg-black/40 rounded-lg border border-white/5 overflow-hidden">
+        <div className="h-24 flex items-end justify-between gap-1.5 px-3 py-2 bg-black/40 rounded-xl border border-white/10 overflow-hidden">
           {current.waveformPattern.map((baseHeight, idx) => {
-            // modulate height based on pulseTick if playing
             const dynamicModifier = isPlaying
               ? Math.sin((pulseTick + idx * 8) * 0.25) * 20
               : 0;
@@ -223,12 +231,12 @@ export default function AudioThreatSimulator() {
             return (
               <div
                 key={idx}
-                className="flex-1 rounded-sm transition-all duration-150 relative group"
+                className="flex-1 rounded-xs transition-all duration-150 relative"
                 style={{
                   height: `${computedHeight}%`,
                   backgroundColor: current.waveColor,
-                  opacity: 0.35 + (computedHeight / 100) * 0.65,
-                  boxShadow: computedHeight > 70 ? `0 0 12px ${current.waveColor}` : "none"
+                  opacity: 0.4 + (computedHeight / 100) * 0.6,
+                  boxShadow: computedHeight > 70 ? `0 0 8px ${current.waveColor}` : "none",
                 }}
               />
             );
@@ -236,34 +244,34 @@ export default function AudioThreatSimulator() {
         </div>
 
         {/* Telemetry Readouts */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-white/5 text-xs font-mono">
-          <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-white/10 text-xs font-mono">
+          <div className="p-2.5 rounded-lg bg-white/5 border border-white/10">
             <div className="text-slate-400 text-[10px] uppercase">Spoof Likelihood</div>
             <div
               className="text-base font-bold mt-0.5"
-              style={{ color: current.spoofScore > 50 ? "#EF4444" : "#10B981" }}
+              style={{ color: current.spoofScore > 50 ? "#F87171" : "#34D399" }}
             >
               {current.spoofScore}%
             </div>
           </div>
 
-          <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
+          <div className="p-2.5 rounded-lg bg-white/5 border border-white/10">
             <div className="text-slate-400 text-[10px] uppercase">Confidence Score</div>
             <div className="text-base font-bold text-white mt-0.5">
               {current.confidence}%
             </div>
           </div>
 
-          <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
+          <div className="p-2.5 rounded-lg bg-white/5 border border-white/10">
             <div className="text-slate-400 text-[10px] uppercase">Inspection Latency</div>
-            <div className="text-base font-bold text-primary mt-0.5">
+            <div className="text-base font-bold text-[#45D9D2] mt-0.5">
               {current.latencyMs} ms
             </div>
           </div>
 
-          <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
+          <div className="p-2.5 rounded-lg bg-white/5 border border-white/10">
             <div className="text-slate-400 text-[10px] uppercase">Channel Protocol</div>
-            <div className="text-base font-bold text-sky-400 mt-0.5 truncate">
+            <div className="text-base font-bold text-sky-300 mt-0.5 truncate">
               {current.protocol}
             </div>
           </div>
@@ -271,35 +279,35 @@ export default function AudioThreatSimulator() {
       </div>
 
       {/* Decision Engine Breakdown */}
-      <div className="mt-6 p-5 rounded-xl border border-white/10 bg-white/[0.02] space-y-4">
+      <div className="mt-6 p-5 sm:p-6 rounded-2xl border border-[#DFE7EF] bg-[#F7F9FC] space-y-4">
         <div className="flex items-start gap-3">
           {current.badgeType === "danger" ? (
-            <ShieldAlert className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+            <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
           ) : (
-            <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+            <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
           )}
           <div>
-            <div className="text-xs font-mono uppercase tracking-wider text-slate-400">
-              Firewall Verdict & Autonomous Action
+            <div className="text-xs font-mono uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
+              Firewall Verdict &amp; Autonomous Action
             </div>
-            <div className="text-base font-bold text-white mt-0.5">
+            <div className="text-base font-bold text-[var(--lit-navy,#0B2545)] mt-0.5">
               {current.verdict}
             </div>
-            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+            <p className="text-sm text-[var(--lit-text-muted,#52677C)] mt-1 leading-relaxed">
               {current.actionTaken}
             </p>
           </div>
         </div>
 
         {/* Forensic checklist points */}
-        <div className="pt-3 border-t border-white/5">
-          <div className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-2">
+        <div className="pt-3 border-t border-[#DFE7EF]">
+          <div className="text-[11px] font-mono text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider mb-2 font-semibold">
             Acoustic Telemetry Logs (Zero Storage Memory):
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {current.telemetryNotes.map((note, i) => (
-              <div key={i} className="flex items-center gap-2 text-xs text-slate-300">
-                <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
+              <div key={i} className="flex items-center gap-2 text-xs text-[var(--lit-navy,#0B2545)]">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#1FA9A2] shrink-0" />
                 <span className="truncate">{note}</span>
               </div>
             ))}
