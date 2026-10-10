@@ -1,11 +1,7 @@
 import { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ExternalLink } from "lucide-react";
-import FloatingElements from "@/components/motion/floating-elements";
 import { getProjectBySlug, portfolioProjects } from "@/data/portfolioData";
 import { testimonials } from "@/data/testimonialsData";
-
 import CaseStudyContent from "./case-study-content";
 
 export function generateStaticParams() {
@@ -15,13 +11,16 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const project = getProjectBySlug(slug);
-  if (!project) return { title: "Project Not Found" };
+  if (!project) return { title: "Project Not Found | Logic Intelligence Technologies" };
 
   const ogUrl = `/api/og?title=${encodeURIComponent(project.title)}&type=case-study&category=${encodeURIComponent(project.category)}`;
 
   return {
-    title: `${project.title} | Case Study`,
+    title: `${project.title} | Case Study | Logic Intelligence Technologies`,
     description: project.description,
+    alternates: {
+      canonical: `/work/${slug}`,
+    },
     openGraph: {
       title: `${project.title} | Logic Intelligence Technologies`,
       description: project.description,
