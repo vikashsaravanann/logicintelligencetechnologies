@@ -1,4 +1,3 @@
-import "server-only";
 import { COMPANY } from "@/config/company";
 import { FOUNDER } from "@/config/founder";
 import { packagesData } from "@/data/packagesData";
