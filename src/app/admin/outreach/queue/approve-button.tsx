@@ -2,40 +2,136 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Check } from "lucide-react";
+import { Loader2, Check, CheckCheck, AlertCircle } from "lucide-react";
 import { approveDraft } from "../studio/actions";
 
-export function ApproveButton({ messageId, disabled }: { messageId: string; disabled?: boolean }) {
+interface ApproveButtonProps {
+  messageId: string;
+  disabled?: boolean;
+}
+
+export function ApproveButton({ messageId, disabled }: ApproveButtonProps) {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [error, setError] = useState(false);
   const router = useRouter();
 
   async function onApprove() {
     setLoading(true);
     setMsg(null);
+    setError(false);
     try {
       const r = await approveDraft(messageId);
       setMsg(r.message);
-      if (r.ok) router.refresh();
+      if (r.ok) {
+        router.refresh();
+      } else {
+        setError(true);
+      }
     } catch {
-      setMsg("Something went wrong.");
+      setError(true);
+      setMsg("Action failed. Please retry.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2.5">
       <button
         type="button"
         onClick={onApprove}
         disabled={loading || disabled}
-        className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/90 px-3 py-1 text-[11px] font-bold text-black hover:bg-emerald-400 disabled:opacity-40"
+        className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+        title={disabled ? "Resolve blocker gates in Outreach Studio first" : "Authorize dispatch"}
       >
-        {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
-        Approve
+        {loading ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        ) : (
+          <Check className="h-3.5 w-3.5" />
+        )}
+        <span>Approve Dispatch</span>
       </button>
-      {msg ? <span className="text-[10px] text-neutral-400">{msg}</span> : null}
+
+      {msg ? (
+        <span
+          className={`inline-flex items-center gap-1 text-[11px] font-medium font-mono ${
+            error ? "text-rose-600" : "text-emerald-700"
+          }`}
+        >
+          {error && <AlertCircle className="w-3 h-3" />}
+          {msg}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+interface BatchApproveButtonProps {
+  messageIds: string[];
+}
+
+export function BatchApproveButton({ messageIds }: BatchApproveButtonProps) {
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
+  const router = useRouter();
+
+  const count = messageIds.length;
+  if (count === 0) return null;
+
+  async function onBatchApprove() {
+    if (
+      !window.confirm(
+        `Authorize dispatch for all ${count} QA-verified messages? Messages will enter the scheduled dispatch sequence.`
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    setStatus(`Approving 0 of ${count}...`);
+
+    let succeeded = 0;
+    let failed = 0;
+
+    for (let i = 0; i < messageIds.length; i++) {
+      const id = messageIds[i];
+      try {
+        const res = await approveDraft(id);
+        if (res.ok) succeeded++;
+        else failed++;
+      } catch {
+        failed++;
+      }
+      setStatus(`Approving ${i + 1} of ${count}...`);
+    }
+
+    setLoading(false);
+    setStatus(`Batch complete: ${succeeded} approved${failed > 0 ? `, ${failed} failed` : ""}.`);
+    router.refresh();
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <button
+        type="button"
+        onClick={onBatchApprove}
+        disabled={loading || count === 0}
+        className="inline-flex items-center gap-2 rounded-xl bg-[var(--lit-navy,#0B2545)] px-4 py-2 text-xs font-bold text-white shadow-2xs hover:bg-[#12365e] active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+      >
+        {loading ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-[var(--lit-teal,#1FA9A2)]" />
+        ) : (
+          <CheckCheck className="h-4 w-4 text-[var(--lit-teal,#1FA9A2)]" />
+        )}
+        <span>Batch Approve ({count}) Passing</span>
+      </button>
+
+      {status ? (
+        <span className="text-xs font-mono font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-lg px-2.5 py-1">
+          {status}
+        </span>
+      ) : null}
     </div>
   );
 }
