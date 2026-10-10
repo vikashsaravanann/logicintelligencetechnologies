@@ -37,45 +37,53 @@ export default function FAQAccordion({
   };
 
   return (
-    <div className={`py-12 ${className}`}>
+    <div className={`py-8 sm:py-12 ${className}`}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {(title || subtitle) && (
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-widest uppercase mb-4">
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#1FA9A2]/25 bg-[#1FA9A2]/10 text-[#0E7A74] text-xs font-mono font-semibold tracking-wider uppercase mb-4 shadow-2xs">
             <HelpCircle className="w-3.5 h-3.5" />
             <span>Answers</span>
           </div>
-          {title && <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-3">{title}</h3>}
-          {subtitle && <p className="text-sm sm:text-base text-zinc-400">{subtitle}</p>}
+          {title && (
+            <h3 className="text-2xl sm:text-3xl font-display font-bold text-[var(--lit-navy,#0B2545)] tracking-tight mb-3">
+              {title}
+            </h3>
+          )}
+          {subtitle && (
+            <p className="text-sm sm:text-base text-[var(--lit-text-muted,#52677C)]">
+              {subtitle}
+            </p>
+          )}
         </div>
       )}
 
-      <div className="max-w-3xl mx-auto space-y-4">
+      <div className="max-w-3xl mx-auto space-y-3.5 sm:space-y-4">
         {items.map((item, idx) => {
           const isOpen = openIndex === idx;
           return (
             <div
               key={idx}
-              className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden transition-colors hover:border-white/20"
+              className="rounded-2xl border border-[#DFE7EF] bg-white overflow-hidden transition-all hover:border-[#1FA9A2]/40 shadow-xs"
             >
               <button
                 type="button"
                 onClick={() => setOpenIndex(isOpen ? null : idx)}
-                className="w-full text-left px-6 py-5 flex items-center justify-between gap-4 font-bold text-base text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="w-full text-left px-6 py-5 flex items-center justify-between gap-4 font-bold text-base text-[var(--lit-navy,#0B2545)] font-display focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1FA9A2]"
                 aria-expanded={isOpen}
               >
                 <span>{item.q}</span>
                 <ChevronDown
-                  className={`w-4 h-4 text-primary shrink-0 transition-transform duration-200 ${
+                  className={`w-4 h-4 text-[#1FA9A2] shrink-0 transition-transform duration-200 ${
                     isOpen ? "rotate-180" : ""
                   }`}
                 />
               </button>
               {isOpen && (
-                <div className="px-6 pb-6 pt-1 text-sm sm:text-base text-zinc-300 leading-relaxed border-t border-white/5">
+                <div className="px-6 pb-6 pt-2 text-sm sm:text-base text-[var(--lit-text-muted,#52677C)] leading-relaxed border-t border-[#DFE7EF]">
                   {item.a}
                 </div>
               )}
