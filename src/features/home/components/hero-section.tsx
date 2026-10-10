@@ -1,181 +1,453 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Send, ChevronDown, Mic, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  ExternalLink,
+  ShieldCheck,
+  Zap,
+  Activity,
+  Mic,
+  Sparkles,
+  ChevronRight,
+  ChevronDown,
+  Terminal,
+  Clock,
+  CheckCircle2,
+  Building2,
+  Cpu,
+  Layers,
+  MessageSquare,
+  Flame,
+} from "lucide-react";
 import { COMPANY } from "@/config/company";
 
 const InstagramIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+  </svg>
 );
 
 const LinkedinIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
-);
-
-const FacebookIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect width="4" height="12" x="2" y="9" />
+    <circle cx="4" cy="4" r="2" />
+  </svg>
 );
 
 const XIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4 4l11.733 16h4.267l-11.733 -16z"/><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"/></svg>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+    <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+  </svg>
 );
 
-/** Hero has no opacity:0 entrances, so first paint is never blank during hydration. */
+type ConsoleTab = "healthcare" | "voice" | "omni";
+
 export default function HeroSection() {
+  const [activeTab, setActiveTab] = useState<ConsoleTab>("healthcare");
   const wa = `https://wa.me/${COMPANY.whatsappNumber.replace(/\D/g, "")}`;
 
-  const facts = [
-    { kicker: "Flagship Products", stat: "Enterprise Ecosystem", body: "LIT Healthcare, Logic Voice & OmniPublisher AI." },
-    { kicker: "Enterprise Entity", stat: COMPANY.entityType, body: "Logic Intelligence Technologies" },
-    { kicker: "Headquarters", stat: "Coimbatore", body: "Tamil Nadu, India." },
-    { kicker: "Founder & Lead", stat: "Vikash Saravanan", body: "Systems & AI Engineering." },
+  const telemetryFacts = [
+    {
+      kicker: "Flagship Platforms",
+      value: "3 Autonomous Engines",
+      detail: "LIT Healthcare, Logic Voice, OmniPublisher AI",
+      icon: Layers,
+    },
+    {
+      kicker: "Execution Latency",
+      value: "< 120ms P99",
+      detail: "Sub-second event routing & voice telemetry",
+      icon: Zap,
+    },
+    {
+      kicker: "Risk-Free Model",
+      value: "Free Prototype Demo",
+      detail: "Working architecture preview before budget commitment",
+      icon: ShieldCheck,
+    },
+    {
+      kicker: "Engineering Origin",
+      value: "Coimbatore, India",
+      detail: "Direct founder & systems engineering leadership",
+      icon: Building2,
+    },
   ];
 
   return (
     <section
       id="hero"
       aria-label="Logic Intelligence Technologies - Where Logic Meets Innovation"
-      className="relative overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-14 lg:pb-20"
+      className="relative overflow-hidden pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-24 bg-[#07090D]"
     >
+      {/* Background High-Tech Ambient Grid & Deep Glow */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(69,217,210,0.12),transparent_70%)]"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-0 z-0 opacity-20 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)]"
+        aria-hidden
+      />
+
       <div className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8">
+        {/* Main Grid: Left Value Proposition, Right Interactive Console */}
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-10">
+          
+          {/* Left Column: Heading, Value Props, Actions */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
-            <div className="lit-rise flex items-center gap-3 mb-6">
-              <div className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 overflow-hidden rounded-xl ring-1 ring-white/15 bg-[#10131A] p-1.5 shadow-[0_0_20px_rgba(69,217,210,0.15)]">
-                <picture>
-                  <source srcSet="/assets/logo-icon.webp 128w, /assets/logo-icon-256.webp 256w" type="image/webp" sizes="48px" />
-                  <img
-                    src="/assets/logo-icon.jpg"
-                    alt="Logic Intelligence Technologies logo"
-                    width={48}
-                    height={48}
-                    fetchPriority="high"
-                    className="h-full w-full object-cover rounded-lg"
-                    decoding="async"
-                  />
-                </picture>
-              </div>
-              <span className="lit-eyebrow">Logic Intelligence Technologies</span>
+            
+            {/* Enterprise Status Badge */}
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-[#45D9D2]/30 bg-[#10131A] px-3.5 py-1.5 mb-6 shadow-[0_0_20px_rgba(69,217,210,0.15)]">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#45D9D2] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#45D9D2]" />
+              </span>
+              <span className="text-[11px] font-mono font-semibold uppercase tracking-[0.16em] text-white">
+                Production AI Architecture · Enterprise Systems
+              </span>
             </div>
 
-            <h1 className="lit-rise lit-rise-1 font-display text-[clamp(2.25rem,1.4rem+4.6vw,4.5rem)] font-bold leading-[1.03] tracking-[-0.025em] text-white mb-6">
-              WHERE LOGIC MEETS<br className="hidden sm:block" />{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-[#45D9D2]">
-                INNOVATION
+            {/* Main Display Headline */}
+            <h1 className="font-display text-[clamp(2.35rem,1.5rem+4.8vw,4.75rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-white mb-6">
+              WHERE LOGIC MEETS{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#E2E8F0] to-[#45D9D2]">
+                INNOVATION.
               </span>
             </h1>
 
-            <p className="lit-rise lit-rise-2 text-lg sm:text-xl text-[#F8FAFC] font-medium mb-3 max-w-xl">
-              AI Technology Company &amp; Intelligent Automation Systems
+            {/* Sub-headline */}
+            <p className="text-lg sm:text-xl text-[#F8FAFC] font-semibold mb-3 max-w-2xl leading-snug">
+              Deterministic AI Platforms, Autonomous Voice Engines &amp; Smart Hospital Infrastructure.
             </p>
 
-            <p className="lit-rise lit-rise-2 text-base text-[#B5BECC] leading-relaxed mb-8 max-w-xl">
-              Logic Intelligence Technologies develops intelligent AI products, connected digital infrastructure, and enterprise automation solutions.
-              Architects and creators of LIT Healthcare, Logic Voice, and enterprise AI platforms.
+            {/* Value Proposition Body */}
+            <p className="text-sm sm:text-base text-[#B5BECC] leading-relaxed mb-8 max-w-xl">
+              Logic Intelligence Technologies develops high-performance AI systems, connected digital backbones, and enterprise automation software. We replace brittle prompt wrappers with deterministic state machines, typed schemas, and human-in-the-loop oversight.
             </p>
 
-            <div className="lit-rise lit-rise-3 flex w-full flex-col sm:w-auto sm:flex-row items-stretch sm:items-center gap-3 mb-8">
-              <Link href="#products" className="lit-btn lit-btn-lg lit-btn-primary">
-                Explore Products
-                <ArrowRight className="h-4 w-4" aria-hidden />
+            {/* High-Impact Conversion Buttons */}
+            <div className="flex w-full flex-col sm:w-auto sm:flex-row items-stretch sm:items-center gap-3.5 mb-8">
+              <Link
+                href="#products"
+                className="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-gradient-to-r from-[#45D9D2] to-[#1FA9A2] px-6 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-[#07090D] shadow-[0_0_25px_rgba(69,217,210,0.35)] transition-all duration-200 hover:brightness-110 hover:shadow-[0_0_35px_rgba(69,217,210,0.5)] active:translate-y-0.5"
+              >
+                <span>Explore Ecosystem</span>
+                <ArrowRight className="ml-2 h-4 w-4" aria-hidden />
               </Link>
+              
+              <Link
+                href="/free-demo"
+                className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-white/15 bg-[#10131A] px-6 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-white transition-all duration-200 hover:border-[#45D9D2]/50 hover:bg-[#151922] hover:text-[#45D9D2] active:translate-y-0.5"
+              >
+                <span>Free Prototype Demo</span>
+              </Link>
+
               <a
                 href={wa}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="lit-btn lit-btn-lg lit-btn--secondary"
+                className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-950/20 px-5 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-emerald-400 transition-all duration-200 hover:bg-emerald-900/30 hover:border-emerald-400/60"
               >
-                WhatsApp Us
-                <span className="sr-only"> (opens in a new tab)</span>
+                <MessageSquare className="mr-2 h-3.5 w-3.5" />
+                <span>WhatsApp Us</span>
               </a>
             </div>
 
-            <ul className="lit-rise lit-rise-4 flex items-center gap-1.5" aria-label="Social profiles">
-              {[
-                { href: COMPANY.linkedinUrl, label: "LinkedIn", icon: LinkedinIcon },
-                { href: COMPANY.instagramUrl, label: "Instagram", icon: InstagramIcon },
-                { href: COMPANY.xUrl, label: "X / Twitter", icon: XIcon },
-                { href: COMPANY.facebookUrl, label: "Facebook", icon: FacebookIcon },
-                { href: COMPANY.telegramBotUrl, label: "Telegram", icon: Send },
-              ].map(({ href, label, icon: Icon }) => (
-                <li key={label}>
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={label}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-[#10131A] text-[#B5BECC] transition-all hover:border-[#45D9D2]/40 hover:text-[#45D9D2] hover:bg-[#151922]"
-                  >
-                    <Icon className="h-4 w-4" />
-                  </a>
-                </li>
-              ))}
-            </ul>
+            {/* Direct Engineering Assurance Note */}
+            <div className="flex items-center gap-3 pt-2 text-xs text-[#B5BECC]/80 font-mono">
+              <ShieldCheck className="h-4 w-4 text-[#45D9D2] shrink-0" />
+              <span>Direct access to AI systems engineering · No sales intermediaries</span>
+            </div>
           </div>
 
-          {/* Parent-first product architecture: Logic Intelligence Technologies governs all flagship products */}
-          <div className="lg:col-span-5 lit-rise lit-rise-2">
-            <figure
-              className="relative mx-auto w-full max-w-md rounded-2xl border border-white/10 bg-[#10131A]/90 p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl"
-              aria-label="Logic Intelligence Technologies and its products LIT Healthcare, Logic Voice, and OmniPublisher AI"
-            >
-              <div aria-hidden className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(69,217,210,0.12),transparent_70%)]" />
+          {/* Right Column: Interactive Enterprise Architecture Console */}
+          <div className="lg:col-span-5">
+            <div className="relative mx-auto w-full max-w-lg rounded-2xl border border-white/10 bg-[#0E121B] p-5 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.7)] backdrop-blur-xl">
               
-              <div className="relative flex items-center gap-3 rounded-xl border border-[#45D9D2]/30 bg-[#151922] p-4 shadow-[0_0_20px_rgba(69,217,210,0.08)]">
-                <div className="h-11 w-11 shrink-0 overflow-hidden rounded-xl ring-1 ring-[#45D9D2]/30 bg-[#07090D] p-1">
-                  <Image src="/assets/logo-icon.jpg" alt="" width={44} height={44} className="h-full w-full object-cover rounded-lg" />
+              {/* Window Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
+                  <span className="text-[11px] font-mono text-[#B5BECC] ml-2 flex items-center gap-1.5">
+                    <Terminal className="w-3.5 h-3.5 text-[#45D9D2]" /> lit-telemetry.mesh
+                  </span>
                 </div>
-                <div className="min-w-0">
-                  <p className="font-display text-sm font-bold text-white tracking-wide">Logic Intelligence Technologies</p>
-                  <p className="text-xs text-[#45D9D2] font-mono">Core Enterprise Architecture</p>
-                </div>
-              </div>
-
-              <svg aria-hidden viewBox="0 0 240 36" className="relative mx-auto block h-9 w-full max-w-[240px] text-[#45D9D2]/60" fill="none" stroke="currentColor" strokeWidth="1.25">
-                <path d="M120 0 V12 M120 12 H30 V36 M120 12 H120 V36 M120 12 H210 V36" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-
-              <div className="relative grid grid-cols-3 gap-2.5">
-                <div className="rounded-xl border border-white/10 bg-[#151922] p-3 text-center transition-colors hover:border-[#45D9D2]/40">
-                  <div className="mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-[#45D9D2]/10 text-[#45D9D2]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                  </div>
-                  <p className="font-display text-xs font-bold text-white">Healthcare</p>
-                  <p className="mt-0.5 text-[10px] text-[#B5BECC] leading-tight">Smart Hospital</p>
-                </div>
-
-                <div className="rounded-xl border border-white/10 bg-[#151922] p-3 text-center transition-colors hover:border-[#45D9D2]/40">
-                  <div className="mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-[#45D9D2]/10 text-[#45D9D2]">
-                    <Mic className="h-4 w-4" aria-hidden />
-                  </div>
-                  <p className="font-display text-xs font-bold text-white">Logic Voice</p>
-                  <p className="mt-0.5 text-[10px] text-[#B5BECC] leading-tight">AI Assistant</p>
-                </div>
-
-                <div className="rounded-xl border border-white/10 bg-[#151922] p-3 text-center transition-colors hover:border-[#45D9D2]/40">
-                  <div className="mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-[#45D9D2]/10 text-[#45D9D2]">
-                    <Sparkles className="h-4 w-4" aria-hidden />
-                  </div>
-                  <p className="font-display text-xs font-bold text-white">OmniPublisher</p>
-                  <p className="mt-0.5 text-[10px] text-[#B5BECC] leading-tight">Content AI</p>
+                <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-[#45D9D2] bg-[#45D9D2]/10 px-2 py-0.5 rounded-full border border-[#45D9D2]/25">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#45D9D2] animate-pulse inline-block" />
+                  <span>Online</span>
                 </div>
               </div>
-            </figure>
+
+              {/* Console Tabs */}
+              <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-[#141923] border border-white/5 mb-5">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("healthcare")}
+                  className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-[11px] font-mono font-semibold transition-all ${
+                    activeTab === "healthcare"
+                      ? "bg-[#1FA9A2] text-[#07090D] shadow-sm font-bold"
+                      : "text-[#B5BECC] hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  <Activity className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Healthcare</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("voice")}
+                  className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-[11px] font-mono font-semibold transition-all ${
+                    activeTab === "voice"
+                      ? "bg-[#45D9D2] text-[#07090D] shadow-sm font-bold"
+                      : "text-[#B5BECC] hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  <Mic className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Logic Voice</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("omni")}
+                  className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-[11px] font-mono font-semibold transition-all ${
+                    activeTab === "omni"
+                      ? "bg-[#60A5FA] text-[#07090D] shadow-sm font-bold"
+                      : "text-[#B5BECC] hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">Omni AI</span>
+                </button>
+              </div>
+
+              {/* Dynamic Console Content */}
+              <div className="min-h-[290px] flex flex-col justify-between">
+                {activeTab === "healthcare" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-[#1FA9A2]" />
+                        LIT Healthcare Clinical OS
+                      </span>
+                      <span className="text-[10px] font-mono text-[#1FA9A2] bg-[#1FA9A2]/10 border border-[#1FA9A2]/25 px-2 py-0.5 rounded">
+                        HIPAA/ABDM Ready
+                      </span>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-[#141923] border border-white/5 space-y-2.5">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-[#B5BECC]">Live Clinical Telemetry</span>
+                        <span className="font-mono text-[#1FA9A2] font-semibold">14 Active Facilities</span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-[#B5BECC]">HL7 / FHIR Ingestion Sync</span>
+                        <span className="font-mono text-white">42ms Realtime</span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-[#B5BECC]">Clinical Triage Queue</span>
+                        <span className="font-mono text-emerald-400">Zero Backlog</span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-lg bg-[#07090D] border border-white/5 text-[11px] font-mono text-zinc-400 space-y-1">
+                      <p className="text-[#1FA9A2]">{`> doctor.session.auth: DR_SARAVANAN_V`}</p>
+                      <p>{`> ehr.patient_id: #LIT-8921 [VITALS: STABLE]`}</p>
+                      <p className="text-emerald-400">{`> automated_discharge_summary.generate(): OK`}</p>
+                    </div>
+
+                    <div className="pt-2">
+                      <Link
+                        href="/healthcare"
+                        className="flex items-center justify-between w-full p-2.5 rounded-xl bg-[#151922] border border-white/10 hover:border-[#1FA9A2]/40 text-xs font-mono text-white transition-all group"
+                      >
+                        <span>Inspect Healthcare Architecture</span>
+                        <ChevronRight className="w-4 h-4 text-[#1FA9A2] group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "voice" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-[#45D9D2]" />
+                        Logic Voice Audio Engine
+                      </span>
+                      <span className="text-[10px] font-mono text-[#45D9D2] bg-[#45D9D2]/10 border border-[#45D9D2]/25 px-2 py-0.5 rounded">
+                        Sub-90ms Telephony
+                      </span>
+                    </div>
+
+                    {/* Simulated Voice Waveform */}
+                    <div className="p-3.5 rounded-xl bg-[#141923] border border-white/5 space-y-3">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-[#B5BECC]">Audio Input Stream</span>
+                        <span className="font-mono text-[#45D9D2] font-semibold">48kHz WebRTC</span>
+                      </div>
+                      <div className="h-8 flex items-center justify-center gap-1 px-2">
+                        {[40, 65, 80, 45, 90, 70, 30, 85, 100, 60, 40, 75, 95, 50, 65, 85, 45, 70, 30, 60].map(
+                          (h, idx) => (
+                            <span
+                              key={idx}
+                              style={{ height: `${h}%` }}
+                              className="w-1 rounded-full bg-[#45D9D2] opacity-80 animate-pulse"
+                            />
+                          )
+                        )}
+                      </div>
+                      <div className="flex justify-between items-center text-[11px] font-mono text-[#B5BECC]">
+                        <span>P99 E2E Latency: 88ms</span>
+                        <span className="text-emerald-400">Deterministic Tool Call: OK</span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-lg bg-[#07090D] border border-white/5 text-[11px] font-mono text-zinc-400 space-y-1">
+                      <p className="text-[#45D9D2]">{`> speech.transcript: "Book consultation slot for 4 PM"`}</p>
+                      <p>{`> tool_call: calendar.schedule(slot="16:00:00+05:30")`}</p>
+                      <p className="text-emerald-400">{`> confirmation_speech.synthesize(): 200 OK`}</p>
+                    </div>
+
+                    <div className="pt-2">
+                      <Link
+                        href="/products/logic-voice"
+                        className="flex items-center justify-between w-full p-2.5 rounded-xl bg-[#151922] border border-white/10 hover:border-[#45D9D2]/40 text-xs font-mono text-white transition-all group"
+                      >
+                        <span>Inspect Logic Voice Specs</span>
+                        <ChevronRight className="w-4 h-4 text-[#45D9D2] group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "omni" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-[#60A5FA]" />
+                        OmniPublisher Content Mesh
+                      </span>
+                      <span className="text-[10px] font-mono text-[#60A5FA] bg-[#60A5FA]/10 border border-[#60A5FA]/25 px-2 py-0.5 rounded">
+                        Multi-Channel Sync
+                      </span>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl bg-[#141923] border border-white/5 space-y-2.5">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-[#B5BECC]">Syndication Nodes</span>
+                        <span className="font-mono text-[#60A5FA] font-semibold">LinkedIn · X · DevBlogs</span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-[#B5BECC]">Brand Safety Audit</span>
+                        <span className="font-mono text-emerald-400 font-semibold">100% Policy Adherent</span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-[#B5BECC]">Queue Throughput</span>
+                        <span className="font-mono text-white">24 Active Broadcasts</span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-lg bg-[#07090D] border border-white/5 text-[11px] font-mono text-zinc-400 space-y-1">
+                      <p className="text-[#60A5FA]">{`> copy.adapt(target="technical_executives")`}</p>
+                      <p>{`> multi_touch_attribution.embed_utm(): COMPLETE`}</p>
+                      <p className="text-emerald-400">{`> broadcast.scheduled(channels=["linkedin", "x"])`}</p>
+                    </div>
+
+                    <div className="pt-2">
+                      <Link
+                        href="/products"
+                        className="flex items-center justify-between w-full p-2.5 rounded-xl bg-[#151922] border border-white/10 hover:border-[#60A5FA]/40 text-xs font-mono text-white transition-all group"
+                      >
+                        <span>Inspect OmniPublisher Suite</span>
+                        <ChevronRight className="w-4 h-4 text-[#60A5FA] group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        <dl className="lit-rise lit-rise-4 mt-14 lg:mt-20 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 lg:grid-cols-4 shadow-[0_15px_40px_rgba(0,0,0,0.4)]">
-          {facts.map((item) => (
-            <div key={item.kicker} className="bg-[#10131A] px-4 py-5 sm:px-6 sm:py-6 transition-colors hover:bg-[#151922]">
-              <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#45D9D2] mb-1.5">{item.kicker}</dt>
-              <dd className="font-display text-lg sm:text-xl font-bold tracking-tight text-white mb-1 break-words">{item.stat}</dd>
-              <p className="text-xs sm:text-[13px] text-[#B5BECC] leading-snug">{item.body}</p>
-            </div>
-          ))}
-        </dl>
+        {/* 4-Column Executive Fact & Telemetry Strip */}
+        <div className="mt-14 lg:mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {telemetryFacts.map((fact) => {
+            const Icon = fact.icon;
+            return (
+              <div
+                key={fact.kicker}
+                className="relative rounded-2xl border border-white/10 bg-[#0E121B] p-5 transition-all duration-300 hover:border-[#45D9D2]/30 hover:bg-[#141923] shadow-[0_10px_30px_rgba(0,0,0,0.4)]"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-[0.18em] text-[#45D9D2]">
+                    {fact.kicker}
+                  </span>
+                  <div className="h-7 w-7 rounded-lg bg-[#45D9D2]/10 border border-[#45D9D2]/20 flex items-center justify-center text-[#45D9D2]">
+                    <Icon className="h-3.5 w-3.5" />
+                  </div>
+                </div>
+                <p className="font-display text-lg sm:text-xl font-bold text-white mb-1 tracking-tight">
+                  {fact.value}
+                </p>
+                <p className="text-xs text-[#B5BECC] leading-relaxed">
+                  {fact.detail}
+                </p>
+              </div>
+            );
+          })}
+        </div>
 
-        <div className="mt-8 flex justify-center">
-          <a href="#products" className="inline-flex min-h-[44px] flex-col items-center justify-center gap-1 text-[#B5BECC] hover:text-white transition-colors">
-            <span className="text-[10px] font-semibold tracking-[0.2em] uppercase">Scroll to Ecosystem</span>
+        {/* Scroll Indicator */}
+        <div className="mt-10 flex justify-center">
+          <a
+            href="#products"
+            className="inline-flex min-h-[44px] flex-col items-center justify-center gap-1 text-[#B5BECC] hover:text-white transition-colors"
+          >
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] font-semibold">
+              Scroll to Product Ecosystem
+            </span>
             <ChevronDown className="h-4 w-4 animate-bounce text-[#45D9D2]" aria-hidden />
           </a>
         </div>
