@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Send, Loader2, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Send, Loader2, CheckCircle2, ExternalLink, FileEdit } from "lucide-react";
 import { toast } from "sonner";
 
 interface ProposalActionsProps {
@@ -16,7 +16,7 @@ export function ProposalActions({ proposalId, secureToken }: ProposalActionsProp
 
   const handleSendEmail = async () => {
     if (sending) return;
-    
+
     setSending(true);
     try {
       const res = await fetch("/api/proposals/send", {
@@ -26,15 +26,16 @@ export function ProposalActions({ proposalId, secureToken }: ProposalActionsProp
       });
 
       const data = await res.json();
-      
+
       if (!res.ok) {
         throw new Error(data.error || "Failed to send email");
       }
 
-      toast.success("Email sent successfully to the client.");
+      toast.success("Proposal email sent successfully to the client.");
       setSent(true);
-    } catch (err: any) {
-      toast.error(err.message || "Failed to send email.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to send proposal email";
+      toast.error(msg);
       console.error(err);
     } finally {
       setSending(false);
@@ -42,33 +43,44 @@ export function ProposalActions({ proposalId, secureToken }: ProposalActionsProp
   };
 
   return (
-    <div className="flex items-center justify-end gap-3">
+    <div className="flex items-center justify-end gap-2.5">
+      <Link
+        href={`/admin/proposals/${proposalId}`}
+        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] hover:border-[var(--lit-teal,#1FA9A2)] text-[11px] font-bold uppercase tracking-wider transition-all shadow-2xs"
+        title="Edit Proposal Details"
+      >
+        <FileEdit className="w-3 h-3 text-[var(--lit-teal,#1FA9A2)]" />
+        <span>Inspect</span>
+      </Link>
+
       <button
+        type="button"
         onClick={handleSendEmail}
         disabled={sending || sent}
-        className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+        className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all shadow-2xs ${
           sent
-            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-            : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
+            ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
+            : "border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] hover:border-[var(--lit-teal,#1FA9A2)] disabled:opacity-50"
         }`}
       >
         {sending ? (
-          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          <Loader2 className="w-3 h-3 animate-spin" />
         ) : sent ? (
-          <CheckCircle2 className="w-3.5 h-3.5" />
+          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
         ) : (
-          <Send className="w-3.5 h-3.5" />
+          <Send className="w-3 h-3 text-[var(--lit-blue,#1565C0)]" />
         )}
-        <span>{sending ? "Sending..." : sent ? "Sent" : "Send Email"}</span>
+        <span>{sending ? "Sending…" : sent ? "Dispatched" : "Dispatch"}</span>
       </button>
 
       <Link
         href={`/proposal/${secureToken}`}
         target="_blank"
-        className="text-xs text-primary font-bold hover:underline inline-flex items-center gap-1"
+        className="inline-flex items-center gap-1 text-xs font-bold text-[var(--lit-teal,#1FA9A2)] hover:text-[var(--lit-navy,#0B2545)] transition-colors ml-1"
+        title="Open Public Client View"
       >
-        <span>View Client Link</span>
-        <ArrowRight className="w-3.5 h-3.5" />
+        <span>Portal</span>
+        <ExternalLink className="w-3 h-3" />
       </Link>
     </div>
   );
