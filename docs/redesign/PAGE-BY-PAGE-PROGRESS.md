@@ -89,7 +89,7 @@ Strict Execution Rule: Work sequentially through every page template and dynamic
 | **082** | `/admin/analytics` | Enterprise Traffic Analytics | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **083** | `/admin/ai-leads` | AI Intent Lead Scoring Console | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **084** | `/admin/leads` | Inbound Lead Queue & Table | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
-| **085** | `/admin/leads/[id]` | Detailed Lead Dossier | NOT STARTED | - | - | - | - | - | - |
+| **085** | `/admin/leads/[id]` | Detailed Lead Dossier | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **086** | `/admin/clients` | Client Organization Directory | NOT STARTED | - | - | - | - | - | - |
 | **087** | `/admin/clients/[id]` | Client Organization Dossier | NOT STARTED | - | - | - | - | - | - |
 | **088** | `/admin/onboarding` | Client Activation Pipeline | NOT STARTED | - | - | - | - | - | - |
