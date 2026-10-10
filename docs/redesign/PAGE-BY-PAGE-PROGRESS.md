@@ -6,8 +6,8 @@ Strict Execution Rule: Work sequentially through every page template and dynamic
 | Page # | Route | Template Name | Status | Desktop QA | Tablet QA | Mobile QA | Accessibility | Functional Integrity | Commit SHA |
 |---|---|---|---|---|---|---|---|---|---|
 | **001** | `/` | Homepage | COMPLETE | Verified | Verified | Verified | Pass | Pass | 2a596e9 |
-| **002** | `/about` | About LIT | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
-| **003** | `/about/founder` | Founder Profile | NOT STARTED | - | - | - | - | - | - |
+| **002** | `/about` | About LIT | COMPLETE | Verified | Verified | Verified | Pass | Pass | c715b07 |
+| **003** | `/about/founder` | Founder Profile | COMPLETE | Verified | Verified | Verified | Pass | Pass | pending |
 | **004** | `/company/facts` | Company Facts Sheet | NOT STARTED | - | - | - | - | - | - |
 | **005** | `/expertise` | Technical Capabilities | NOT STARTED | - | - | - | - | - | - |
 | **006** | `/services` | Services Catalog | NOT STARTED | - | - | - | - | - | - |
