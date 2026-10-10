@@ -4,11 +4,13 @@ import { useState, type ReactNode } from "react";
 import {
   Send,
   FileText,
-  CheckCircle,
+  CheckCircle2,
   Rocket,
   FileCheck,
   CheckSquare,
   Loader2,
+  Zap,
+  AlertCircle,
 } from "lucide-react";
 
 type TriggerType =
@@ -18,12 +20,44 @@ type TriggerType =
   | "delivered"
   | "proposal";
 
-const TABS: { id: TriggerType; label: string; icon: ReactNode }[] = [
-  { id: "invoice", label: "Send Invoice", icon: <FileText size={16} /> },
-  { id: "payment", label: "Payment Received", icon: <CheckCircle size={16} /> },
-  { id: "kickoff", label: "Project Kickoff", icon: <Rocket size={16} /> },
-  { id: "delivered", label: "Project Delivered", icon: <CheckSquare size={16} /> },
-  { id: "proposal", label: "Send Proposal", icon: <FileCheck size={16} /> },
+interface TriggerTab {
+  id: TriggerType;
+  label: string;
+  icon: ReactNode;
+  description: string;
+}
+
+const TABS: TriggerTab[] = [
+  {
+    id: "invoice",
+    label: "Send Invoice",
+    icon: <FileText className="w-4 h-4" />,
+    description: "Issue a new billing statement notice with payment link.",
+  },
+  {
+    id: "payment",
+    label: "Payment Received",
+    icon: <CheckCircle2 className="w-4 h-4" />,
+    description: "Confirm receipt of client milestone or retainer payment.",
+  },
+  {
+    id: "kickoff",
+    label: "Project Kickoff",
+    icon: <Rocket className="w-4 h-4" />,
+    description: "Welcome client and initiate project sprint onboarding.",
+  },
+  {
+    id: "delivered",
+    label: "Project Delivered",
+    icon: <CheckSquare className="w-4 h-4" />,
+    description: "Notify client of milestone completion and live deployment handover.",
+  },
+  {
+    id: "proposal",
+    label: "Send Proposal",
+    icon: <FileCheck className="w-4 h-4" />,
+    description: "Transmit formal commercial proposal link to prospective client.",
+  },
 ];
 
 export function AdminTriggers() {
@@ -45,7 +79,7 @@ export function AdminTriggers() {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSend = async (e: React.FormEvent) => {
@@ -58,11 +92,11 @@ export function AdminTriggers() {
       const res = await fetch("/api/admin/send-trigger", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        credentials: "same-origin",
         body: JSON.stringify({
           type: activeTab,
-          email: formData.email,
-          fullName: formData.fullName,
+          email: formData.email.trim(),
+          fullName: formData.fullName.trim(),
           data: formData,
         }),
       });
@@ -70,13 +104,13 @@ export function AdminTriggers() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         throw new Error(
-          typeof data.error === "string" ? data.error : "Failed to queue email"
+          typeof data.error === "string" ? data.error : "Failed to queue trigger email"
         );
       }
 
       const status = String(data.status || data.message || "queued");
       const verb = status.toLowerCase().includes("sent") ? "sent" : "queued";
-      setSuccessMsg(`Email ${verb} (${activeTab}) → ${formData.email}`);
+      setSuccessMsg(`Trigger email ${verb} (${activeTab}) → ${formData.email.trim()}`);
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : "Request failed");
     } finally {
@@ -84,45 +118,75 @@ export function AdminTriggers() {
     }
   };
 
+  const currentTabInfo = TABS.find((t) => t.id === activeTab);
+
   return (
-    <div className="mt-12 rounded-xl border border-neutral-800 bg-neutral-900/50 p-6 shadow-sm backdrop-blur-sm">
-      <div className="mb-6">
-        <h2 className="mb-2 text-xl font-bold text-white">Manual Email Triggers</h2>
-        <p className="text-sm text-neutral-400">
-          Dispatch transactional emails. Authorized via admin session — no machine
-          secrets in the browser.
-        </p>
+    <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 sm:p-8 shadow-xs space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--lit-border-light,#DFE7EF)]">
+        <div>
+          <h2 className="text-base sm:text-lg font-bold text-[var(--lit-navy,#0B2545)] flex items-center gap-2">
+            <Zap className="w-4 h-4 text-amber-500" />
+            Manual Operational Triggers
+          </h2>
+          <p className="text-xs sm:text-sm text-[var(--lit-text-muted,#52677C)] mt-0.5">
+            Dispatch lifecycle transactional emails directly. Authenticated via active admin session.
+          </p>
+        </div>
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-[var(--lit-text-muted,#52677C)] text-xs font-mono font-medium self-start sm:self-auto">
+          Role-Gated Trigger Action
+        </span>
       </div>
 
+      {/* Trigger Tabs */}
       <div
-        className="mb-8 flex flex-wrap gap-2"
+        className="flex flex-wrap gap-2"
         role="tablist"
         aria-label="Email trigger type"
       >
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            role="tab"
-            aria-selected={activeTab === tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ${
-              activeTab === tab.id
-                ? "border-indigo-500/30 bg-indigo-500/20 text-indigo-300"
-                : "border-transparent bg-neutral-800/50 text-neutral-400 hover:text-white"
-            }`}
-          >
-            {tab.icon}
-            {tab.label}
-          </button>
-        ))}
+        {TABS.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => {
+                setActiveTab(tab.id);
+                setSuccessMsg("");
+                setErrorMsg("");
+              }}
+              className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                isActive
+                  ? "bg-[var(--lit-navy,#0B2545)] text-white shadow-2xs"
+                  : "bg-slate-100 text-[var(--lit-text-muted,#52677C)] hover:bg-slate-200 hover:text-[var(--lit-navy,#0B2545)]"
+              }`}
+            >
+              {tab.icon}
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
-      <form onSubmit={handleSend} className="max-w-2xl space-y-4">
+      {currentTabInfo && (
+        <div className="p-3 rounded-xl bg-slate-50 border border-[var(--lit-border-light,#DFE7EF)] text-xs text-[var(--lit-text-muted,#52677C)]">
+          <strong className="text-[var(--lit-navy,#0B2545)] mr-1">Action:</strong>
+          {currentTabInfo.description}
+        </div>
+      )}
+
+      {/* Form */}
+      <form onSubmit={handleSend} className="space-y-4">
+        {/* Recipient Coordinates */}
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-400" htmlFor="trigger-email">
-              Recipient email *
+            <label
+              htmlFor="trigger-email"
+              className="block text-xs font-semibold text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider mb-1.5"
+            >
+              Recipient Email <span className="text-rose-500">*</span>
             </label>
             <input
               id="trigger-email"
@@ -131,12 +195,16 @@ export function AdminTriggers() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-white focus:border-indigo-500 focus:outline-none"
+              placeholder="e.g. client@company.com"
+              className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] placeholder:text-slate-400 focus:outline-none focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm transition-colors"
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-400" htmlFor="trigger-name">
-              Full name
+            <label
+              htmlFor="trigger-name"
+              className="block text-xs font-semibold text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider mb-1.5"
+            >
+              Full Name <span className="text-slate-400 font-normal">(Optional)</span>
             </label>
             <input
               id="trigger-name"
@@ -144,81 +212,189 @@ export function AdminTriggers() {
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-white focus:border-indigo-500 focus:outline-none"
+              placeholder="e.g. Sarah Jenkins"
+              className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] placeholder:text-slate-400 focus:outline-none focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm transition-colors"
             />
           </div>
         </div>
 
+        {/* Tab-Specific Fields */}
         {activeTab === "invoice" && (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 pt-2 border-t border-[var(--lit-border-light,#DFE7EF)]">
             <div>
-              <label className="mb-1 block text-xs font-medium text-neutral-400">Invoice number</label>
-              <input type="text" name="invoiceNumber" value={formData.invoiceNumber} onChange={handleChange} className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-white focus:border-indigo-500 focus:outline-none" />
+              <label className="block text-xs font-semibold text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider mb-1.5">
+                Invoice Number
+              </label>
+              <input
+                type="text"
+                name="invoiceNumber"
+                value={formData.invoiceNumber}
+                onChange={handleChange}
+                placeholder="e.g. INV-1002"
+                className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] placeholder:text-slate-400 focus:outline-none focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm transition-colors"
+              />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-neutral-400">Amount</label>
-              <input type="text" name="amount" value={formData.amount} onChange={handleChange} className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-white focus:border-indigo-500 focus:outline-none" />
+              <label className="block text-xs font-semibold text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider mb-1.5">
+                Invoice Amount
+              </label>
+              <input
+                type="text"
+                name="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                placeholder="e.g. 50,000"
+                className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] placeholder:text-slate-400 focus:outline-none focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm transition-colors"
+              />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-neutral-400">Due date</label>
-              <input type="text" name="dueDate" value={formData.dueDate} onChange={handleChange} className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-white focus:border-indigo-500 focus:outline-none" />
+              <label className="block text-xs font-semibold text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider mb-1.5">
+                Due Date
+              </label>
+              <input
+                type="text"
+                name="dueDate"
+                value={formData.dueDate}
+                onChange={handleChange}
+                placeholder="e.g. Due on Receipt, or Net 15"
+                className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] placeholder:text-slate-400 focus:outline-none focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm transition-colors"
+              />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-neutral-400">Invoice / pay URL</label>
-              <input type="url" name="invoiceUrl" value={formData.invoiceUrl} onChange={handleChange} className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-white focus:border-indigo-500 focus:outline-none" />
+              <label className="block text-xs font-semibold text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider mb-1.5">
+                Invoice / Payment Link
+              </label>
+              <input
+                type="url"
+                name="invoiceUrl"
+                value={formData.invoiceUrl}
+                onChange={handleChange}
+                placeholder="https://logicintelligencetechnologies.com/invoices/..."
+                className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] placeholder:text-slate-400 focus:outline-none focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm transition-colors"
+              />
             </div>
           </div>
         )}
 
         {activeTab === "payment" && (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 pt-2 border-t border-[var(--lit-border-light,#DFE7EF)]">
             <div>
-              <label className="mb-1 block text-xs font-medium text-neutral-400">Amount</label>
-              <input type="text" name="amount" value={formData.amount} onChange={handleChange} className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-white focus:border-indigo-500 focus:outline-none" />
+              <label className="block text-xs font-semibold text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider mb-1.5">
+                Amount Received
+              </label>
+              <input
+                type="text"
+                name="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                placeholder="e.g. 50,000"
+                className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] placeholder:text-slate-400 focus:outline-none focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm transition-colors"
+              />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-neutral-400">Invoice number</label>
-              <input type="text" name="invoiceNumber" value={formData.invoiceNumber} onChange={handleChange} className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-white focus:border-indigo-500 focus:outline-none" />
+              <label className="block text-xs font-semibold text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider mb-1.5">
+                Invoice Reference Number
+              </label>
+              <input
+                type="text"
+                name="invoiceNumber"
+                value={formData.invoiceNumber}
+                onChange={handleChange}
+                placeholder="e.g. INV-1002"
+                className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] placeholder:text-slate-400 focus:outline-none focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm transition-colors"
+              />
             </div>
           </div>
         )}
 
         {(activeTab === "kickoff" || activeTab === "delivered") && (
-          <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-400">Project name</label>
-            <input type="text" name="projectName" value={formData.projectName} onChange={handleChange} className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-white focus:border-indigo-500 focus:outline-none" />
+          <div className="pt-2 border-t border-[var(--lit-border-light,#DFE7EF)]">
+            <label className="block text-xs font-semibold text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider mb-1.5">
+              Project Name
+            </label>
+            <input
+              type="text"
+              name="projectName"
+              value={formData.projectName}
+              onChange={handleChange}
+              placeholder="e.g. Enterprise Application Redesign"
+              className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] placeholder:text-slate-400 focus:outline-none focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm transition-colors"
+            />
           </div>
         )}
 
         {activeTab === "delivered" && (
           <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-400">Live URL</label>
-            <input type="url" name="liveUrl" value={formData.liveUrl} onChange={handleChange} className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-white focus:border-indigo-500 focus:outline-none" />
+            <label className="block text-xs font-semibold text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider mb-1.5">
+              Live Application URL
+            </label>
+            <input
+              type="url"
+              name="liveUrl"
+              value={formData.liveUrl}
+              onChange={handleChange}
+              placeholder="https://client-production-domain.com"
+              className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] placeholder:text-slate-400 focus:outline-none focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm transition-colors"
+            />
           </div>
         )}
 
         {activeTab === "proposal" && (
-          <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-400">Proposal URL</label>
-            <input type="url" name="proposalUrl" value={formData.proposalUrl} onChange={handleChange} className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-4 py-2 text-white focus:border-indigo-500 focus:outline-none" />
+          <div className="pt-2 border-t border-[var(--lit-border-light,#DFE7EF)]">
+            <label className="block text-xs font-semibold text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider mb-1.5">
+              Proposal URL
+            </label>
+            <input
+              type="url"
+              name="proposalUrl"
+              value={formData.proposalUrl}
+              onChange={handleChange}
+              placeholder="https://logicintelligencetechnologies.com/proposal/..."
+              className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] placeholder:text-slate-400 focus:outline-none focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm transition-colors"
+            />
           </div>
         )}
 
-        <div className="flex flex-wrap items-center gap-4 border-t border-neutral-800 pt-4">
+        {/* Feedback banners */}
+        {errorMsg && (
+          <div
+            className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 shadow-2xs flex items-center gap-2"
+            role="alert"
+          >
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <span>{errorMsg}</span>
+          </div>
+        )}
+
+        {successMsg && (
+          <div
+            className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800 shadow-2xs flex items-center gap-2"
+            role="status"
+          >
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{successMsg}</span>
+          </div>
+        )}
+
+        {/* Submit */}
+        <div className="flex flex-wrap items-center justify-end gap-3 pt-3 border-t border-[var(--lit-border-light,#DFE7EF)]">
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-2.5 font-semibold text-black transition-colors hover:bg-neutral-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--lit-navy,#0B2545)] px-6 py-2.5 text-sm font-semibold text-white shadow-2xs hover:bg-[var(--lit-navy,#0B2545)]/90 transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:opacity-50 cursor-pointer"
           >
-            {loading ? <Loader2 size={16} className="animate-spin" aria-hidden /> : <Send size={16} aria-hidden />}
-            {loading ? "Queueing…" : "Dispatch email"}
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-white" />
+                <span>Queueing Trigger…</span>
+              </>
+            ) : (
+              <>
+                <Send className="w-4 h-4 text-white" />
+                <span>Dispatch Trigger</span>
+              </>
+            )}
           </button>
-          {successMsg ? (
-            <span className="text-sm text-emerald-400" role="status">{successMsg}</span>
-          ) : null}
-          {errorMsg ? (
-            <span className="text-sm text-rose-400" role="alert">{errorMsg}</span>
-          ) : null}
         </div>
       </form>
     </div>
