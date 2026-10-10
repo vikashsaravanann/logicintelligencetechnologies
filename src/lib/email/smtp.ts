@@ -14,14 +14,26 @@ interface SmtpConfig {
   from: string;
 }
 
+/**
+ * Production policy (LIT):
+ * - Only two Zoho app passwords are maintained: NOREPLY and HELLO.
+ * - Welcome / system / transactional notifications → noReply identity + SMTP_NOREPLY_PASS
+ * - Support / contact / admin / founder-facing / general business → hello identity auth via SMTP_HELLO_PASS
+ *   (From: address still reflects the logical sender; auth user is the mailbox that holds the password)
+ */
 const senderEnvMap: Record<SenderKey, string> = {
   noReply: "NOREPLY",
-  vikash: "VIKASH",
+  vikash: "HELLO",
   hello: "HELLO",
-  admin: "ADMIN",
-  support: "SUPPORT",
-  contact: "CONTACT",
+  admin: "HELLO",
+  support: "HELLO",
+  contact: "HELLO",
 };
+
+/** Logical From: address still uses COMPANY.emails[sender]; auth uses credential pool. */
+function credentialPool(sender: SenderKey): "NOREPLY" | "HELLO" {
+  return sender === "noReply" ? "NOREPLY" : "HELLO";
+}
 
 /**
  * Zoho Mail (India): smtp.zoho.in
@@ -29,6 +41,7 @@ const senderEnvMap: Record<SenderKey, string> = {
  * - Port 587 → STARTTLS (secure: false, requireTLS: true)
  */
 function getSmtpConfig(sender: SenderKey): SmtpConfig {
+  const pool = credentialPool(sender);
   const prefix = senderEnvMap[sender];
 
   const host =
@@ -49,18 +62,28 @@ function getSmtpConfig(sender: SenderKey): SmtpConfig {
         ? false
         : port === 465;
 
+  // Auth user: the mailbox that owns the app password for this pool.
+  // Prefer explicit per-pool user, then shared SMTP_USER, then company default for the pool.
+  const poolUserDefault =
+    pool === "NOREPLY"
+      ? COMPANY.emails.noReply
+      : COMPANY.emails.hello;
+
   const user =
+    process.env[`SMTP_${pool}_USER`] ||
     process.env[`SMTP_${prefix}_USER`] ||
     process.env.SMTP_USER ||
-    COMPANY.emails[sender] ||
-    COMPANY.emails.noReply;
+    poolUserDefault;
 
+  // Password: only the two maintained secrets.
   const pass =
-    process.env[`SMTP_${prefix}_PASS`] ||
+    (pool === "NOREPLY"
+      ? process.env.SMTP_NOREPLY_PASS
+      : process.env.SMTP_HELLO_PASS) ||
     process.env.SMTP_PASS ||
-    process.env.SMTP_NOREPLY_PASS ||
     "";
 
+  // From: always the logical sender identity (branded display name).
   const from =
     process.env[`SMTP_${prefix}_FROM`] ||
     process.env.SMTP_FROM ||
@@ -68,7 +91,8 @@ function getSmtpConfig(sender: SenderKey): SmtpConfig {
 
   if (!host || !user || !pass) {
     throw new Error(
-      `SMTP config missing for sender: ${sender} (prefix: ${prefix})`
+      `SMTP config missing for sender: ${sender} (pool: ${pool}). ` +
+        `Set SMTP_${pool}_PASS (or SMTP_PASS) and ensure SMTP_HOST / SMTP_USER are configured.`
     );
   }
 
@@ -107,6 +131,7 @@ export function getSmtpTransporter(
   sender: SenderKey = "noReply"
 ): nodemailer.Transporter {
   const config = getSmtpConfig(sender);
+  // Cache by auth identity (not From:), so hello-pool senders share one transport.
   const cacheKey = `${config.host}:${config.port}:${config.user}:${config.secure}`;
   const cached = transporterCache.get(cacheKey);
   if (cached) return cached;
@@ -134,8 +159,9 @@ export function hasSenderCredentials(sender: SenderKey): boolean {
 
 export function isSmtpConfigured(sender: SenderKey = "noReply"): boolean {
   if (hasSenderCredentials(sender)) return true;
+  // Either pool being present is enough for system health checks.
   if (sender !== "noReply") return hasSenderCredentials("noReply");
-  return false;
+  return hasSenderCredentials("hello");
 }
 
 export function resolveSender(sender: SenderKey): SenderKey {
@@ -143,6 +169,9 @@ export function resolveSender(sender: SenderKey): SenderKey {
     getSmtpConfig(sender);
     return sender;
   } catch {
+    // Prefer noReply for transactional fallback; then hello.
+    if (hasSenderCredentials("noReply")) return "noReply";
+    if (hasSenderCredentials("hello")) return "hello";
     return "noReply";
   }
 }
