@@ -2,80 +2,80 @@ import { Metadata } from "next";
 import { requireCapabilityPage } from "@/lib/auth/session";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { AdminBackLink } from "../components/AdminBackLink";
+import { SupportQueueTable, type TicketRow } from "./support-queue-table";
+import { LifeBuoy, ShieldAlert, ExternalLink } from "lucide-react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Support Desk | Admin Command Center",
+  title: "Support Desk Queue | Admin Command Center | Logic Intelligence Technologies",
+  description: "Enterprise ticket triage, client inquiries, priority escalation, and SLA tracking.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export const revalidate = 0;
 
 export default async function AdminSupportPage() {
   await requireCapabilityPage("support.read", "/admin/support");
-  const { data: tickets } = await supabaseAdmin
+
+  const { data: rawTickets, error } = await supabaseAdmin
     .from("support_tickets")
     .select("*")
     .order("created_at", { ascending: false });
 
-  return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <div>
-        <AdminBackLink />
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">
-          Support Desk Queue
-        </h1>
-        <p className="text-sm text-zinc-400">
-          Triage client issues, bug alerts, and feature requests. Ticket content stays inside the
-          admin console — not on public routes.
-        </p>
-      </div>
+  const tickets = (rawTickets ?? []) as TicketRow[];
 
-      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-zinc-300">
-            <thead className="border-b border-neutral-800 bg-neutral-950/50 text-[10px] uppercase tracking-wider text-zinc-400">
-              <tr>
-                <th className="p-4">Ticket</th>
-                <th className="p-4">Status</th>
-                <th className="p-4">Created</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-800">
-              {tickets && tickets.length > 0 ? (
-                tickets.map((t) => (
-                  <tr key={t.id} className="transition-colors hover:bg-white/[0.02]">
-                    <td className="p-4">
-                      <div className="text-sm font-bold text-white">{t.subject}</div>
-                      <div className="mt-1 max-w-xl text-xs text-zinc-400 whitespace-pre-wrap">
-                        {t.message}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <span
-                        className={`rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
-                          t.status === "Open"
-                            ? "border-rose-500/20 bg-rose-500/10 text-rose-400"
-                            : "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
-                        }`}
-                      >
-                        {t.status}
-                      </span>
-                    </td>
-                    <td className="p-4 text-xs text-zinc-400">
-                      {new Date(t.created_at).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={3} className="p-10 text-center text-xs text-zinc-500">
-                    Support queue is clear. No unresolved issues found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+  return (
+    <div className="mx-auto max-w-6xl space-y-8">
+      {/* Navigation & Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--lit-border-light,#DFE7EF)]">
+        <div>
+          <AdminBackLink href="/admin/command-center" label="Command Center" />
+          <div className="mt-3 flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-teal-200 bg-teal-50 text-[var(--lit-teal,#1FA9A2)] text-[10px] font-bold uppercase tracking-wider font-mono">
+              <LifeBuoy className="w-3 h-3" />
+              Support Desk
+            </span>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-slate-200 bg-slate-50 text-[var(--lit-text-muted,#52677C)] text-[10px] font-mono font-medium">
+              SLA Managed Queue
+            </span>
+          </div>
+          <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--lit-navy,#0B2545)]">
+            Support Desk Queue
+          </h1>
+          <p className="text-sm text-[var(--lit-text-muted,#52677C)] mt-1">
+            Triage client issues, bug alerts, and feature requests. Ticket content stays inside the admin console — not on public routes.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/support"
+            target="_blank"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] font-bold text-xs uppercase tracking-wider hover:bg-[var(--lit-cloud,#F7F9FC)] hover:border-slate-300 transition-all shadow-2xs"
+          >
+            <span>Public Support Hub</span>
+            <ExternalLink className="w-3.5 h-3.5 text-[var(--lit-teal,#1FA9A2)]" />
+          </Link>
         </div>
       </div>
+
+      {error ? (
+        <div
+          className="rounded-2xl border border-rose-200 bg-rose-50/70 p-6 text-sm text-rose-800 shadow-2xs"
+          role="alert"
+        >
+          <div className="flex items-center gap-2 font-bold text-rose-900 mb-1">
+            <ShieldAlert className="w-4 h-4 text-rose-600" />
+            Database Error
+          </div>
+          Could not load support tickets from the database.
+        </div>
+      ) : (
+        <SupportQueueTable tickets={tickets} />
+      )}
     </div>
   );
 }
