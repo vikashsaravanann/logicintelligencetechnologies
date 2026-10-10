@@ -84,10 +84,10 @@ export default function HeroSection() {
       />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8">
-        {/* Main Centered Hero Block */}
-        <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
-          {/* Logo & Company Name Centered */}
-          <div className="flex items-center justify-center gap-3 mb-5 px-4 py-1.5 rounded-full border border-[#E2E8F0] bg-white/90 backdrop-blur-md shadow-sm">
+        {/* Main Left-Aligned Hero Block */}
+        <div className="flex flex-col items-start text-left max-w-4xl">
+          {/* Logo & Company Name */}
+          <div className="flex items-center justify-start gap-3 mb-4 px-4 py-1.5 rounded-full border border-[#E2E8F0] bg-white/90 backdrop-blur-md shadow-xs">
             <div className="w-7 h-7 rounded-full overflow-hidden bg-white ring-2 ring-[var(--lit-teal)]/30 p-0.5 shrink-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -102,7 +102,7 @@ export default function HeroSection() {
           </div>
 
           {/* Enterprise Status Badge */}
-          <div className="inline-flex items-center gap-2.5 rounded-full border border-[var(--lit-soft-lilac)] bg-[var(--lit-light-purple)] px-3.5 py-1.5 mb-6 shadow-sm">
+          <div className="inline-flex items-center gap-2.5 rounded-full border border-[var(--lit-soft-lilac)] bg-[var(--lit-light-purple)] px-3.5 py-1.5 mb-6 shadow-xs">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7C3AED] opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#7C3AED]" />
@@ -113,7 +113,7 @@ export default function HeroSection() {
           </div>
 
           {/* Slogan: Where Logic Meets Innovation */}
-          <h1 className="font-display text-[clamp(2.1rem,1.4rem+4vw,4.5rem)] font-extrabold leading-[1.08] tracking-[-0.035em] text-[var(--lit-ink)] mb-6 text-center">
+          <h1 className="font-display text-[clamp(2.2rem,1.5rem+4.5vw,4.75rem)] font-extrabold leading-[1.06] tracking-[-0.035em] text-[var(--lit-ink)] mb-6 text-left">
             WHERE LOGIC MEETS{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--lit-blue)] via-[var(--lit-teal)] to-[#7C3AED]">
               INNOVATION.
@@ -121,20 +121,20 @@ export default function HeroSection() {
           </h1>
 
           {/* Sub-headline & Tagline */}
-          <p className="text-lg sm:text-2xl text-[var(--lit-navy)] font-semibold mb-3 max-w-3xl mx-auto leading-snug">
+          <p className="text-lg sm:text-2xl text-[var(--lit-navy)] font-semibold mb-3 max-w-3xl leading-snug text-left">
             Deterministic AI Platforms, Autonomous Voice Engines &amp; Smart Hospital Infrastructure.
           </p>
 
-          <p className="text-base font-serif italic text-[var(--lit-blue)] mb-4 font-normal">
+          <p className="text-base sm:text-lg font-serif italic text-[var(--lit-blue)] mb-4 font-normal text-left">
             &ldquo;Connect the data. Understand the workflow. Improve the decision.&rdquo;
           </p>
 
-          <p className="text-sm sm:text-base text-[var(--lit-text-muted)] leading-relaxed mb-8 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-[var(--lit-text-muted)] leading-relaxed mb-8 max-w-3xl text-left">
             Logic Intelligence Technologies develops high-performance AI systems, connected digital backbones, and enterprise automation software. We replace brittle prompt wrappers with deterministic state machines, typed schemas, and human-in-the-loop oversight.
           </p>
 
-          {/* High-Impact Conversion Buttons Centered */}
-          <div className="flex flex-wrap items-center justify-center gap-3.5 mb-6 w-full">
+          {/* High-Impact Conversion Buttons Left-Aligned */}
+          <div className="flex flex-wrap items-center justify-start gap-3.5 mb-5 w-full">
             <Link
               href="#products"
               className="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-gradient-to-r from-[var(--lit-blue)] to-[var(--lit-teal)] px-6 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-white shadow-md hover:shadow-lg hover:brightness-105 active:translate-y-0.5 transition-all"
@@ -162,14 +162,14 @@ export default function HeroSection() {
             </a>
           </div>
 
-          {/* Direct Engineering Assurance Note Centered */}
-          <div className="flex items-center justify-center gap-2 mb-10 text-xs text-[var(--lit-text-muted)] font-mono text-center">
+          {/* Direct Engineering Assurance Note Left-Aligned */}
+          <div className="flex items-center justify-start gap-2 mb-10 text-xs text-[var(--lit-text-muted)] font-mono text-left">
             <ShieldCheck className="h-4 w-4 text-[var(--lit-teal)] shrink-0" aria-hidden="true" />
             <span>Direct access to AI systems engineering · No sales intermediaries</span>
           </div>
 
-          {/* Interactive Animation & Architecture Console Centered */}
-          <div className="w-full max-w-3xl mx-auto text-left mb-6">
+          {/* Interactive Animation & Architecture Console Left-Aligned */}
+          <div className="w-full max-w-4xl text-left mb-6">
             <div className="relative w-full rounded-2xl border border-[#E2E8F0] bg-white p-5 sm:p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)] ring-1 ring-slate-100">
               {/* Window Header */}
               <div className="flex items-center justify-between pb-4 border-b border-[#E2E8F0] mb-5">
