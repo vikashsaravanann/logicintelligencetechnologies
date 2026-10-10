@@ -3,7 +3,11 @@
  * Tests HTTP status and key response headers for public and protected routes.
  */
 
-const BASE_URL = process.env.SMOKE_TEST_BASE_URL || 'https://www.logicintelligencetechnologies.in';
+let rawBase = process.env.SMOKE_TEST_BASE_URL || process.env.VERCEL_URL || 'https://www.logicintelligencetechnologies.in';
+if (rawBase && !rawBase.startsWith('http://') && !rawBase.startsWith('https://')) {
+  rawBase = `https://${rawBase}`;
+}
+const BASE_URL = rawBase.replace(/\/$/, '');
 
 const SMOKE_ROUTES = [
   { path: '/', expectedStatus: 200, name: 'Homepage' },
@@ -27,7 +31,8 @@ const SMOKE_ROUTES = [
   { path: '/robots.txt', expectedStatus: 200, name: 'Robots.txt' },
   { path: '/sitemap.xml', expectedStatus: 200, name: 'Sitemap.xml' },
   { path: '/api/health', expectedStatus: 200, name: 'Health Check' },
-  { path: '/resources/company-profile.pdf', expectedStatus: 200, name: 'PDF Asset Check' },
+  { path: '/resources/company-profile.pdf', expectedStatus: 404, name: 'Gated PDF Protection Check' },
+  { path: '/docs/jobs-leadership.pdf', expectedStatus: 200, name: 'Public Corporate PDF Check' },
 ];
 
 async function runSmokeTests() {
@@ -37,17 +42,34 @@ async function runSmokeTests() {
 
   for (const route of SMOKE_ROUTES) {
     const url = `${BASE_URL}${route.path}`;
-    try {
-      const res = await fetch(url, { method: 'GET', redirect: 'follow' });
-      if (res.status === route.expectedStatus) {
-        console.log(`[PASS] ${route.name} (${route.path}) -> HTTP ${res.status}`);
-        passed++;
-      } else {
-        console.error(`[FAIL] ${route.name} (${route.path}) -> Expected HTTP ${route.expectedStatus}, received ${res.status}`);
-        failed++;
+    let attempts = 0;
+    let res = null;
+    let lastError = null;
+
+    while (attempts < 3) {
+      try {
+        attempts++;
+        res = await fetch(url, { method: 'GET', redirect: 'follow' });
+        break;
+      } catch (err) {
+        lastError = err;
+        if (attempts < 3) {
+          await new Promise((r) => setTimeout(r, 1000));
+        }
       }
-    } catch (err) {
-      console.error(`[ERROR] ${route.name} (${url}): ${err.message}`);
+    }
+
+    if (!res) {
+      console.error(`[ERROR] ${route.name} (${url}): ${lastError?.message || 'fetch failed'}`);
+      failed++;
+      continue;
+    }
+
+    if (res.status === route.expectedStatus) {
+      console.log(`[PASS] ${route.name} (${route.path}) -> HTTP ${res.status}`);
+      passed++;
+    } else {
+      console.error(`[FAIL] ${route.name} (${route.path}) -> Expected HTTP ${route.expectedStatus}, received ${res.status}`);
       failed++;
     }
   }

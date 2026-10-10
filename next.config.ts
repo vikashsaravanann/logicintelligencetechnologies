@@ -65,9 +65,6 @@ const nextConfig: NextConfig = {
   },
 
   serverExternalPackages: ['pdf-parse'],
-  turbopack: {
-    root: path.resolve(__dirname),
-  },
 
   // Enable the Next.js Image Optimization API (was fully disabled).
   images: {

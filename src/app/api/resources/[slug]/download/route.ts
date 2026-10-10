@@ -2,10 +2,8 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import { getPdfResourceBySlug } from "@/config/pdfs";
 import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
-import {
-  resolveResourcePdfPath,
-  verifyResourceAccessToken,
-} from "@/lib/resources/access-token";
+import { resolveResourcePdfPath } from "@/lib/resources/pdf-resolver";
+import { verifyResourceAccessToken } from "@/lib/resources/access-token";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

@@ -207,7 +207,7 @@ export default function AudioThreatSimulator() {
             <span>SPECTRAL WAVEFORM & PHASE ANALYSIS</span>
           </div>
           <div className="text-xs font-mono text-slate-400">
-            SAMPLING: <span className="text-white">48kHz PCM</span> // BUFFER: <span className="text-primary">{current.latencyMs}ms</span>
+            SAMPLING: <span className="text-white">48kHz PCM</span>{" // "}BUFFER: <span className="text-primary">{current.latencyMs}ms</span>
           </div>
         </div>
 

@@ -69,7 +69,7 @@ export async function POST(request: Request) {
   let success = false;
   let reply = "";
   let toolCalls = 0;
-  let steps = 1;
+  const steps = 1;
 
   try {
     const auth = await guardAiRequest();
