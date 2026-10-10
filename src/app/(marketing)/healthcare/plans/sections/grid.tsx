@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { ExternalLink, Check } from 'lucide-react';
+import { ExternalLink, Check, Sparkles } from 'lucide-react';
 import { formatPrice } from '@/config/pricing';
 
 const plans = [
@@ -18,7 +18,8 @@ const plans = [
       'Email Support',
     ],
     popular: false,
-    color: '#1FA9A2',
+    badgeBg: 'bg-[#E7F3FF]',
+    badgeText: 'text-[#1565C0]',
   },
   {
     name: 'Clinic Professional',
@@ -33,7 +34,8 @@ const plans = [
       'Priority Support',
     ],
     popular: true,
-    color: '#1565C0',
+    badgeBg: 'bg-[#1FA9A2]/10',
+    badgeText: 'text-[#0E7A74]',
   },
   {
     name: 'Hospital Standard',
@@ -48,7 +50,8 @@ const plans = [
       '24/7 Phone Support',
     ],
     popular: false,
-    color: '#45D9D2',
+    badgeBg: 'bg-[#F1ECFF]',
+    badgeText: 'text-[#7C3AED]',
   },
   {
     name: 'Hospital Advanced',
@@ -63,79 +66,92 @@ const plans = [
       'Dedicated Account Manager',
     ],
     popular: false,
-    color: '#1FA9A2',
+    badgeBg: 'bg-[#FFF4D9]',
+    badgeText: 'text-[#B45309]',
   },
 ];
 
 export default function PlansGrid() {
   return (
-    <section className="py-12 md:py-20 relative bg-[#10131A]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 -mt-20 md:-mt-28">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <section aria-label="Healthcare subscription tiers" className="py-8 sm:py-12 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
           {plans.map((plan, i) => (
             <motion.div
               key={plan.name}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className={`relative p-7 rounded-2xl flex flex-col overflow-hidden transition-all duration-300 ${
+              transition={{ duration: 0.45, delay: i * 0.08 }}
+              className={`relative p-6 sm:p-7 rounded-2xl flex flex-col justify-between transition-all duration-300 ${
                 plan.popular
-                  ? 'bg-[#181D28] border-2 border-[#1565C0]/60 shadow-[0_12px_40px_rgba(21,101,192,0.2)]'
-                  : 'bg-[#151922] border border-white/5 hover:border-white/15'
+                  ? 'bg-white border-2 border-[#1565C0] shadow-xl ring-4 ring-[#1565C0]/5'
+                  : 'bg-white border border-[var(--lit-border-light,#DFE7EF)] shadow-xs hover:shadow-md hover:border-slate-300'
               }`}
             >
               {plan.popular && (
-                <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#1565C0] to-[#45D9D2]" />
-              )}
-              {plan.popular && (
-                <div className="absolute top-4 right-4 px-3 py-1 text-[10px] font-bold tracking-wider uppercase rounded-full text-white bg-gradient-to-r from-[#1565C0] to-[#1FA9A2]">
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 text-[10px] font-bold tracking-wider uppercase rounded-full text-white bg-gradient-to-r from-[#1565C0] to-[#1FA9A2] shadow-sm flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" aria-hidden />
                   Most Popular
                 </div>
               )}
 
-              <h3 className="text-xl font-bold text-white mb-2 tracking-tight">{plan.name}</h3>
-              <p className="text-xs text-slate-400 mb-6 min-h-[40px] leading-relaxed">{plan.description}</p>
+              <div>
+                <div className="mb-4">
+                  <h3 className="text-xl font-bold text-[var(--lit-navy,#0B2545)] mb-2 tracking-tight">
+                    {plan.name}
+                  </h3>
+                  <p className="text-xs text-[var(--lit-text-muted,#52677C)] min-h-[40px] leading-relaxed">
+                    {plan.description}
+                  </p>
+                </div>
 
-              <div className="mb-6 pb-6 border-b border-white/5">
-                <span className="text-3xl font-extrabold text-white font-mono">{formatPrice(plan.price, 'INR')}</span>
-                <span className="text-xs text-slate-400"> / month</span>
-              </div>
+                <div className="mb-6 pb-6 border-b border-[var(--lit-border-light,#DFE7EF)]">
+                  <span className="text-3xl font-extrabold text-[var(--lit-navy,#0B2545)] font-mono">
+                    {formatPrice(plan.price, 'INR')}
+                  </span>
+                  <span className="text-xs text-[var(--lit-text-muted,#52677C)]"> / month</span>
+                </div>
 
-              <a
-                href="https://healthcare.logicintelligencetechnologies.in/organization-store"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-sm transition-all duration-300 mb-8 min-h-[46px] ${
-                  plan.popular
-                    ? 'bg-gradient-to-r from-[#1565C0] to-[#1FA9A2] text-white shadow-lg shadow-[#1565C0]/20 hover:brightness-110'
-                    : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
-                }`}
-              >
-                Select Plan
-                <ExternalLink className="w-4 h-4 opacity-70" aria-hidden />
-              </a>
+                <a
+                  href="https://healthcare.logicintelligencetechnologies.in/organization-store"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm transition-all duration-200 mb-8 min-h-[46px] ${
+                    plan.popular
+                      ? 'bg-gradient-to-r from-[#1565C0] to-[#1FA9A2] text-white shadow-md hover:brightness-105'
+                      : 'bg-[var(--lit-navy,#0B2545)] hover:bg-[#1565C0] text-white shadow-xs'
+                  }`}
+                >
+                  Select Plan
+                  <ExternalLink className="w-4 h-4 opacity-80" aria-hidden />
+                </a>
 
-              <div className="flex-1">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-4">Included Features</p>
-                <ul className="flex flex-col gap-3">
-                  {plan.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5">
-                      <div className="mt-0.5 rounded-full p-0.5 bg-[#1FA9A2]/15 border border-[#1FA9A2]/30 shrink-0">
-                        <Check className="w-3 h-3 text-[#45D9D2]" />
-                      </div>
-                      <span className="text-xs text-slate-300 leading-snug">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)] mb-4">
+                    Included Features
+                  </p>
+                  <ul className="flex flex-col gap-3">
+                    {plan.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5">
+                        <div className="mt-0.5 rounded-full p-0.5 bg-[#ECFDF5] border border-[#059669]/30 shrink-0 text-[#059669]">
+                          <Check className="w-3 h-3" />
+                        </div>
+                        <span className="text-xs text-[var(--lit-ink,#121826)] font-medium leading-snug">
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
-        
-        <p className="text-center text-xs text-slate-500 mt-12">
-          All plans are billed monthly. Prices shown are in INR and may be subject to applicable taxes.
-          Setup and integration fees may apply based on data migration requirements.
+
+        <p className="text-center text-xs text-[var(--lit-text-muted,#52677C)] mt-12 max-w-2xl mx-auto leading-relaxed">
+          All plans are billed monthly. Prices shown are in INR and exclude applicable GST.
+          Setup assistance and data migration services are available for all tiers.
         </p>
       </div>
     </section>

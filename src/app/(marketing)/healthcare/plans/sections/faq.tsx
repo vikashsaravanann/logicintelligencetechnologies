@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, HelpCircle } from 'lucide-react';
 
 const faqs = [
   {
@@ -31,31 +31,46 @@ export default function PlansFAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="py-20 md:py-32 relative bg-[#10131A] overflow-hidden">
+    <section aria-label="Healthcare plans frequently asked questions" className="py-16 sm:py-24 bg-[var(--lit-cloud,#F7F9FC)] border-t border-[var(--lit-border-light,#DFE7EF)] overflow-hidden">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight">Frequently Asked Questions</h2>
-          <p className="text-sm text-slate-400">Everything you need to know about licensing, setup, and scaling.</p>
+        <div className="text-center mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#1565C0]/20 bg-[#E7F3FF] text-[#1565C0] text-xs font-semibold uppercase tracking-wider mb-4">
+            <HelpCircle className="w-3.5 h-3.5" aria-hidden />
+            Answers &amp; Clarity
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[var(--lit-navy,#0B2545)] tracking-tight mb-4">
+            Frequently Asked{' '}
+            <span className="font-serif italic font-normal text-[var(--lit-blue,#1565C0)]">
+              Questions
+            </span>
+          </h2>
+          <p className="text-base text-[var(--lit-text-muted,#52677C)]">
+            Everything you need to know about licensing, setup, and scaling your hospital operations.
+          </p>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3.5">
           {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
               <div
                 key={idx}
-                className={`rounded-2xl overflow-hidden transition-all duration-300 border ${
+                className={`rounded-2xl overflow-hidden transition-all duration-200 border ${
                   isOpen
-                    ? 'bg-[#151922] border-[#1FA9A2]/40 shadow-lg shadow-black/30'
-                    : 'bg-[#151922]/60 border-white/5 hover:border-white/15'
+                    ? 'bg-white border-[#1565C0] shadow-md ring-2 ring-[#1565C0]/5'
+                    : 'bg-white border-[var(--lit-border-light,#DFE7EF)] hover:border-slate-300'
                 }`}
               >
                 <button
+                  type="button"
+                  aria-expanded={isOpen}
                   onClick={() => setOpenIndex(isOpen ? null : idx)}
-                  className="w-full flex items-center justify-between p-6 text-left cursor-pointer transition-colors"
+                  className="w-full flex items-center justify-between p-5 sm:p-6 text-left cursor-pointer transition-colors"
                 >
-                  <span className="text-base font-semibold text-white pr-8">{faq.q}</span>
-                  <span className="shrink-0 text-[#45D9D2]">
+                  <span className="text-base font-semibold text-[var(--lit-navy,#0B2545)] pr-6">
+                    {faq.q}
+                  </span>
+                  <span className={`shrink-0 transition-transform ${isOpen ? 'text-[#1565C0]' : 'text-slate-400'}`}>
                     {isOpen ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
                   </span>
                 </button>
@@ -65,9 +80,9 @@ export default function PlansFAQ() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.25 }}
                     >
-                      <div className="px-6 pb-6 text-sm text-slate-300 leading-relaxed border-t border-white/5 pt-4">
+                      <div className="px-5 sm:px-6 pb-6 text-sm text-[var(--lit-text-muted,#52677C)] leading-relaxed border-t border-[var(--lit-border-light,#DFE7EF)] pt-4">
                         {faq.a}
                       </div>
                     </motion.div>
