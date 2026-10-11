@@ -9,6 +9,7 @@ export function redisCredentials(): { url: string; token: string } | null {
   const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || process.env.KA_KV_REST_API_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || process.env.KA_KV_REST_API_TOKEN;
   if (!url || !token) return null;
+  if (url.includes("[SENSITIVE]") || token.includes("[SENSITIVE]")) return null;
 
   const trimmedUrl = url.trim();
   // Upstash REST client requires an https:// endpoint

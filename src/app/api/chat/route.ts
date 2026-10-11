@@ -7,6 +7,7 @@ import { z } from "zod";
 import { guardAiRequest, readBoundedAiJson, InvalidAiRequest } from "@/lib/ai/request-guard";
 import { completeGroqChat, streamGroqChat, isGroqConfigured, type GroqChatMessage } from "@/lib/ai/groq-chatbot";
 import { rateLimit } from "@/lib/ai/rate-limit";
+import { redis } from "@/lib/ai/redis";
 import { MASTER_COMPANY_KNOWLEDGE, generateAuthoritativeReply } from "@/lib/ai/company-knowledge";
 
 export const dynamic = "force-dynamic";
@@ -108,7 +109,7 @@ export async function POST(req: Request) {
     }
 
     // IP rate-limit check for public/guest chatbot visitors
-    if (!auth.ok) {
+    if (!auth.ok && redis) {
       const ip =
         req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
         req.headers.get("x-real-ip") ||
