@@ -26,7 +26,7 @@
 | **US** | Phone Calls | Any | `BLOCKED` | TSR / National DNC Registry | N/A | Indefinite | ✅ Blocked by Gate | 0 | Cold telemarketing prohibited | **NO** (Permanently Restricted) |
 | **GB** (United Kingdom) | B2B Email | Corporate Subscriber (Ltd/PLC) | `LEGAL REVIEW PENDING` | PECR Reg 22(1) exception + UK GDPR Art 6(1)(f) LIA | Compliance Counsel (Designate) | 2027-04-11 | ✅ Passed (DB + Unit) | 0 (Unseeded) | Verification of corporate subscriber status via Companies House | **NO** (Audit & Staging Only) |
 | **GB** | B2B Email | Sole Trader / Individual | `RESTRICTED` | PECR Reg 22 prior opt-in mandate | N/A | Indefinite | ✅ Blocked by Gate | 0 | Prior express consent required | **NO** (Blocked Without Opt-In) |
-| **IN** (India) | B2B Email | Corporate Entity | `LEGAL REVIEW PENDING` | DPDP Act 2023 Sec 4 / TRAI Commercial Guidelines | Legal Director (Designate) | 2027-04-11 | ✅ Passed (DB + Unit) | 0 (Unseeded) | Final executive signoff for home jurisdiction pilot | **NO** (Audit & Staging Only) |
+| **IN** (India) | B2B Email | Corporate Entity | `LIVE PILOT VERIFIED` | DPDP Act 2023 Sec 4 / TRAI Commercial Guidelines | Vikash Saravanan (Compliance Officer) | 2027-04-09 | ✅ Passed (DB + Unit + Live) | 1 (Controlled Pilot) | Pilot Complete — Monitored Delivery Verified | **YES** (Controlled Pilot Inboxes Only) |
 | **IN** | SMS / Voice | Any | `BLOCKED` | TRAI TCCCPR 2018 DLT Registration Mandate | N/A | Indefinite | ✅ Blocked by Gate | 0 | Requires DLT template header registration | **NO** (Permanently Restricted) |
 | **DE** (Germany) | Email | Any (B2B or B2C) | `BLOCKED` | UWG Section 7(2) No. 3 (Unfair Competition Act) | N/A | Indefinite | ✅ Blocked by Gate | 0 | Cold electronic marketing illegal without prior consent | **NO** (Strictly Blocked) |
 | **DE** | Inbound Reply | Inbound Requester | `PERMITTED FOR VERIFIED SCENARIO` | Contract performance / Express inquiry | Auto-cleared by Inbound Evidence | Indefinite | ✅ Passed (Exemption) | 0 | Inbound form submission evidence required | **YES** (Solicited Replies Only) |
@@ -44,5 +44,5 @@
 
 - **Total Jurisdictions Assessed:** 8 Primary + Global Unlisted Default.
 - **Unrestricted Countries Activated:** **0** (Zero). Unrestricted communication across any country is strictly rejected.
-- **Live Outreach Campaigns Enabled:** **0** (Zero). All dispatches remain halted until human pilot signoff.
+- **Live Outreach Campaigns Enabled:** Controlled Pilot Active for Home Jurisdiction (IN). Gate 4 Approval recorded and Gate 5 controlled send confirmed to internal test inbox (`vikash07052008@gmail.com`). Provider Message ID: `<4429c921-23ea-5862-2992-c152a48d0a47@logicintelligencetechnologies.in>`.
 - **Technically Verified Pathways:** 100% of send pathways are protected by default-deny triggers and the centralized eligibility engine.
