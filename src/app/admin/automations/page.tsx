@@ -5,6 +5,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { formatIST } from "@/lib/format/datetime";
 import { AdminBackLink } from "../components/AdminBackLink";
 import ImportButton from "./import-button";
+import ConfigureN8nDialog from "./configure-dialog";
 import {
   retryProvisioningStep,
   retryAutomationEvent,
@@ -261,7 +262,8 @@ export default async function AutomationsPage() {
         </div>
 
         {session.role === "super_admin" && (
-          <div className="sm:self-end">
+          <div className="sm:self-end flex items-center gap-2">
+            <ConfigureN8nDialog />
             <ImportButton />
           </div>
         )}
@@ -407,10 +409,23 @@ export default async function AutomationsPage() {
         </div>
 
         {snap.state !== "CONNECTED" && (
-          <div className="p-3 rounded-xl border border-amber-200 bg-amber-50/70 text-xs text-amber-900 max-w-sm">
-            <p className="font-semibold">Setup Required</p>
-            <p className="text-[11px] text-amber-800 mt-0.5">
-              Set <code className="font-mono bg-white px-1 py-0.5 rounded border border-amber-300">N8N_BASE_URL</code> and <code className="font-mono bg-white px-1 py-0.5 rounded border border-amber-300">N8N_API_KEY</code> on your deployment environment to link this engine.
+          <div className="p-3.5 rounded-xl border border-amber-200 bg-amber-50/80 text-xs text-amber-950 max-w-md shadow-2xs">
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-semibold text-amber-950 flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                {snap.state === "ERROR" ? "Authentication Required" : "Setup Required"}
+              </span>
+              {session.role === "super_admin" && (
+                <ConfigureN8nDialog
+                  triggerButtonText="Connect Key"
+                  triggerButtonClass="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold rounded-lg bg-amber-700 hover:bg-amber-800 text-white shadow-2xs transition-colors"
+                />
+              )}
+            </div>
+            <p className="text-[11px] text-amber-900 mt-1">
+              {snap.state === "ERROR"
+                ? "The n8n instance is reachable but the API key responded 401. Click 'Connect Key' to link your Public API Key."
+                : "Set N8N_BASE_URL and N8N_API_KEY or click Connect Key to configure this engine."}
             </p>
           </div>
         )}

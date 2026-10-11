@@ -4,6 +4,7 @@ import path from "path";
 import { requireCapabilityApi } from "@/lib/auth/session";
 import { recordAdminAction } from "@/lib/admin/audit";
 import { normalizeN8nBase } from "@/lib/automations/n8n-core";
+import { resolveN8nCreds, buildN8nHeaders } from "@/lib/automations/n8n-client";
 import { WORKFLOWS } from "@/config/automation";
 
 export const runtime = "nodejs";
@@ -25,11 +26,7 @@ interface N8nWorkflowItem {
 async function n8nFetch(url: string, apiKey: string, init?: RequestInit): Promise<Response> {
   return fetch(url, {
     ...init,
-    headers: {
-      "X-N8N-API-KEY": apiKey,
-      accept: "application/json",
-      ...(init?.headers ?? {}),
-    },
+    headers: buildN8nHeaders(apiKey, init?.headers),
     cache: "no-store",
     signal: AbortSignal.timeout(TIMEOUT_MS),
   });
@@ -50,14 +47,14 @@ export async function POST(req: Request) {
 
   const actor = { userId: session.userId, email: session.email, role: session.role };
 
-  const base = process.env.N8N_BASE_URL;
-  const apiKey = process.env.N8N_API_KEY;
-  if (!base || !apiKey) {
+  const creds = await resolveN8nCreds();
+  if (!creds?.base || !creds?.apiKey) {
     return NextResponse.json(
-      { state: "not_configured", detail: "N8N_BASE_URL and N8N_API_KEY are not both set." },
+      { state: "not_configured", detail: "N8N_BASE_URL and N8N_API_KEY are not both set. Use 'Configure Engine' to connect." },
       { status: 200, headers: { "cache-control": "no-store" } },
     );
   }
+  const { base, apiKey } = creds;
 
   let apiRoot: string;
   try {

@@ -95,8 +95,8 @@ export async function completeGroqChat(
   if (!isGroqConfigured()) return null;
 
   const key = process.env.GROQ_API_KEY!.trim();
-  const temperature = options?.temperature ?? 0.4;
-  const max_tokens = Math.min(1200, Math.max(64, options?.max_tokens ?? 900));
+  const temperature = options?.temperature ?? 0.3;
+  const max_tokens = Math.min(1200, Math.max(64, options?.max_tokens ?? 240));
 
   const candidateModels = await getAvailableChatModels(key);
 
@@ -160,8 +160,8 @@ export async function streamGroqChat(
   if (!isGroqConfigured()) return null;
 
   const key = process.env.GROQ_API_KEY!.trim();
-  const temperature = options?.temperature ?? 0.4;
-  const max_tokens = Math.min(1200, Math.max(64, options?.max_tokens ?? 900));
+  const temperature = options?.temperature ?? 0.3;
+  const max_tokens = Math.min(1200, Math.max(64, options?.max_tokens ?? 240));
   const candidateModels = await getAvailableChatModels(key);
 
   for (const model of candidateModels) {

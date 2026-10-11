@@ -7,6 +7,8 @@ import { recordAdminAction } from "@/lib/admin/audit";
 import { rotateForContract } from "@/lib/onboarding/sessions";
 import { dispatchAutomationEvent } from "@/lib/automation/dispatch";
 import { calculateLeadScore } from "@/lib/crm/scoring";
+import { normalizeN8nBase } from "@/lib/automations/n8n-core";
+import { cleanKey, cleanUrl, buildN8nHeaders, resolveN8nCreds } from "@/lib/automations/n8n-client";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -228,4 +230,217 @@ export async function triggerOutreachFollowups(): Promise<void> {
   });
 
   revalidatePath("/admin/automations");
+}
+
+export interface TestN8nResult {
+  ok: boolean;
+  status: number;
+  message: string;
+  workflowCount?: number;
+}
+
+/**
+ * Live test an n8n connection using provided or stored credentials.
+ * super_admin only (capability automations.sync).
+ */
+export async function testN8nConnectionAction(input?: { base?: string; apiKey?: string }): Promise<TestN8nResult> {
+  const session = await requireCapabilityAction("automations.sync", "automation.test_connection");
+  const actor = { userId: session.userId, email: session.email, role: session.role };
+
+  let base = cleanUrl(input?.base);
+  let apiKey = cleanKey(input?.apiKey);
+
+  if (!base || !apiKey) {
+    const creds = await resolveN8nCreds();
+    if (!base && creds?.base) base = creds.base;
+    if (!apiKey && creds?.apiKey) apiKey = creds.apiKey;
+  }
+
+  if (!base || !apiKey) {
+    await recordAdminAction({
+      actor,
+      action: "automation.test_connection",
+      capability: "automations.sync",
+      outcome: "failed",
+      metadata: { reason: "missing_credentials" },
+      errorCode: "missing_credentials",
+    });
+    return { ok: false, status: 400, message: "Both n8n Base URL and API Key are required to test the connection." };
+  }
+
+  let endpoints;
+  try {
+    endpoints = normalizeN8nBase(base, process.env.NODE_ENV === "production");
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Invalid base URL";
+    await recordAdminAction({
+      actor,
+      action: "automation.test_connection",
+      capability: "automations.sync",
+      outcome: "failed",
+      metadata: { reason: msg },
+      errorCode: "invalid_url",
+    });
+    return { ok: false, status: 400, message: msg };
+  }
+
+  // 1. Probe healthz
+  try {
+    const healthRes = await fetch(endpoints.healthUrl, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!healthRes.ok) {
+      await recordAdminAction({
+        actor,
+        action: "automation.test_connection",
+        capability: "automations.sync",
+        outcome: "failed",
+        errorCode: `health_${healthRes.status}`,
+      });
+      return { ok: false, status: healthRes.status, message: `n8n server health probe returned HTTP ${healthRes.status}.` };
+    }
+  } catch (err) {
+    const msg = err instanceof Error && err.name === "TimeoutError" ? "Health check timed out" : "Could not reach n8n server";
+    await recordAdminAction({
+      actor,
+      action: "automation.test_connection",
+      capability: "automations.sync",
+      outcome: "failed",
+      errorCode: "health_unreachable",
+    });
+    return { ok: false, status: 504, message: `${msg} at ${endpoints.healthUrl}. Check URL or network connectivity.` };
+  }
+
+  // 2. Probe API with credentials
+  try {
+    const apiRes = await fetch(`${endpoints.apiRoot}/workflows?limit=10`, {
+      headers: buildN8nHeaders(apiKey),
+      cache: "no-store",
+      signal: AbortSignal.timeout(6000),
+    });
+
+    if (apiRes.status === 401) {
+      await recordAdminAction({
+        actor,
+        action: "automation.test_connection",
+        capability: "automations.sync",
+        outcome: "failed",
+        errorCode: "api_401",
+      });
+      return {
+        ok: false,
+        status: 401,
+        message: "HTTP 401 Unauthorized: The n8n API rejected this key. Ensure you created a Public API Key in n8n (Settings > Public API > API keys).",
+      };
+    }
+
+    if (!apiRes.ok) {
+      await recordAdminAction({
+        actor,
+        action: "automation.test_connection",
+        capability: "automations.sync",
+        outcome: "failed",
+        errorCode: `api_${apiRes.status}`,
+      });
+      return { ok: false, status: apiRes.status, message: `n8n API returned HTTP ${apiRes.status}.` };
+    }
+
+    const data = (await apiRes.json()) as { data?: unknown[] };
+    const count = Array.isArray(data?.data) ? data.data.length : 0;
+
+    await recordAdminAction({
+      actor,
+      action: "automation.test_connection",
+      capability: "automations.sync",
+      outcome: "succeeded",
+      metadata: { workflowCount: count },
+    });
+
+    return {
+      ok: true,
+      status: 200,
+      message: `Connection successful! Engine active and verified (${count} workflow(s) listed).`,
+      workflowCount: count,
+    };
+  } catch (err) {
+    const msg = err instanceof Error && err.name === "TimeoutError" ? "API request timed out" : "Could not reach n8n API endpoint";
+    await recordAdminAction({
+      actor,
+      action: "automation.test_connection",
+      capability: "automations.sync",
+      outcome: "failed",
+      errorCode: "api_unreachable",
+    });
+    return { ok: false, status: 504, message: `${msg}. Check SSL certificates and firewall settings.` };
+  }
+}
+
+/**
+ * Save and verify n8n connection credentials.
+ * super_admin only (capability automations.sync).
+ */
+export async function saveN8nConfigAction(input: {
+  base: string;
+  apiKey: string;
+  webhookSecret?: string;
+}): Promise<{ ok: boolean; message: string }> {
+  const session = await requireCapabilityAction("automations.sync", "automation.save_config");
+  const actor = { userId: session.userId, email: session.email, role: session.role };
+
+  if (session.role !== "super_admin") {
+    await recordAdminAction({
+      actor,
+      action: "automation.save_config",
+      capability: "automations.sync",
+      outcome: "denied",
+      errorCode: "42501",
+    });
+    return { ok: false, message: "Only super administrators can modify automation engine credentials." };
+  }
+
+  const base = cleanUrl(input.base);
+  const apiKey = cleanKey(input.apiKey);
+  const webhookSecret = input.webhookSecret?.trim();
+
+  if (!base || !apiKey) {
+    return { ok: false, message: "Both n8n Base URL and API Key are required." };
+  }
+
+  const rows = [
+    { key: "n8n_base_url", value: base, updated_at: new Date().toISOString(), updated_by: session.userId },
+    { key: "n8n_api_key", value: apiKey, updated_at: new Date().toISOString(), updated_by: session.userId },
+  ];
+  if (webhookSecret) {
+    rows.push({
+      key: "n8n_webhook_secret",
+      value: webhookSecret,
+      updated_at: new Date().toISOString(),
+      updated_by: session.userId,
+    });
+  }
+
+  const { error } = await supabaseAdmin.from("platform_settings").upsert(rows, { onConflict: "key" });
+
+  if (error) {
+    await recordAdminAction({
+      actor,
+      action: "automation.save_config",
+      capability: "automations.sync",
+      outcome: "failed",
+      errorCode: error.code,
+    });
+    return { ok: false, message: `Failed to persist configuration: ${error.message}` };
+  }
+
+  await recordAdminAction({
+    actor,
+    action: "automation.save_config",
+    capability: "automations.sync",
+    outcome: "succeeded",
+    metadata: { base, hasWebhookSecret: Boolean(webhookSecret) },
+  });
+
+  revalidatePath("/admin/automations");
+  return { ok: true, message: "n8n automation engine configuration saved and active." };
 }

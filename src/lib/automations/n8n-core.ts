@@ -19,7 +19,11 @@ export interface N8nEndpoints {
  * production (n8n carries an API key that must never travel in clear text).
  */
 export function normalizeN8nBase(base: string, isProduction: boolean): N8nEndpoints {
-  const trimmed = (base ?? "").trim().replace(/\/+$/, "");
+  const trimmed = (base ?? "")
+    .trim()
+    .replace(/^["']|["']$/g, "")
+    .trim()
+    .replace(/\/+$/, "");
   if (!trimmed) throw new Error("n8n base URL is empty");
 
   let url: URL;

@@ -58,14 +58,9 @@ const INITIAL_GREETING: ChatMessage = {
   role: "assistant",
   content: `Welcome to **${COMPANY.displayName}**. I am **LOGIC AI**, your executive systems advisor.
 
-We engineer high-performance software and autonomous intelligence platforms:
-• **LIT Healthcare** — Enterprise Smart Hospital OS active across 14 clinical sites.
-• **Logic Voice & Voice Shield** — Sub-120ms conversational telephony paired with real-time biometric deepfake defense (99.4% detection gate).
-• **Custom Enterprise Systems** — Scalable cloud backends, intelligent workflow automation, and multi-agent AI swarms.
-
-**Commercial Advantage:** Fixed-price packages starting from **₹8,999**, backed by our risk-free **Pre-Payment Working Prototype Demo**—we build and demonstrate your system architecture before any financial commitment.
-
-Would you like to request a **free prototype demo**, review our packages, or **book an architecture review**? What system can we build for you today?`,
+We engineer **LIT Healthcare** (hospital OS in 14 sites), **Logic Voice** (sub-120ms telephony AI), and **Voice Shield** (biometric deepfake defense).
+Commercial packages start from **₹8,999**, backed by our risk-free **Pre-Payment Working Prototype Demo**.
+Would you like to request a **free prototype demo** or discuss your system architecture today?`,
   timestamp: "Just now",
 };
 
@@ -207,42 +202,33 @@ export default function SupportChatWidget() {
 
   return (
     <>
-      {/* Floating Launcher Button */}
+      {/* Floating Launcher Button - Exact size of WhatsApp Button */}
       <motion.button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         aria-label={open ? "Close LOGIC AI Assistant" : "Open LOGIC AI Assistant"}
-        whileHover={{ scale: 1.04 }}
-        whileTap={{ scale: 0.96 }}
-        className={`fixed bottom-5 right-5 sm:bottom-7 sm:right-7 z-50 transition-all duration-300 shadow-xl ${
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] w-11 h-11 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105 cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
           open
-            ? "w-10 h-10 rounded-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white flex items-center justify-center border border-cyan-400/50 shadow-cyan-500/40"
-            : "h-10 px-3 rounded-full bg-gradient-to-r from-[#071328]/95 via-[#0B1C3D]/95 to-[#08152E]/95 border border-cyan-500/40 backdrop-blur-xl shadow-[0_6px_20px_rgba(14,165,233,0.3)] hover:border-cyan-400 flex items-center gap-2 text-white group"
+            ? "bg-gradient-to-r from-cyan-600 to-blue-600 text-white border border-cyan-400/50 shadow-cyan-500/40 p-0"
+            : "bg-[#081328] border-2 border-cyan-400/80 shadow-cyan-500/30 overflow-hidden p-1 sm:p-1.5 group"
         }`}
       >
         {open ? (
-          <X className="w-4 h-4 text-white transition-transform" />
+          <X className="w-5 h-5 sm:w-8 sm:h-8 text-white transition-transform" />
         ) : (
-          <>
-            <div className="relative w-6 h-6 rounded-full p-0.5 bg-gradient-to-tr from-cyan-400 via-teal-400 to-blue-500 flex items-center justify-center shrink-0">
-              <div className="w-full h-full bg-[#081328] rounded-full overflow-hidden p-0.5 flex items-center justify-center">
-                <Image
-                  src={COMPANY.logoIconPath}
-                  alt="Logic Intelligence Technologies Logo"
-                  width={24}
-                  height={24}
-                  className="w-full h-full object-contain rounded-full"
-                />
-              </div>
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#081328] animate-pulse" />
-            </div>
-            <span className="text-xs font-bold tracking-wide text-white group-hover:text-cyan-300 transition-colors font-mono">
-              LOGIC AI
-            </span>
-            <span className="text-[8px] font-mono font-semibold px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              ONLINE
-            </span>
-          </>
+          <div className="relative w-full h-full flex items-center justify-center">
+            <Image
+              src="/assets/logo-icon-256.webp"
+              alt="LOGIC AI Assistant"
+              width={56}
+              height={56}
+              className="w-full h-full object-contain rounded-full"
+              priority
+            />
+            <span className="absolute -top-0.5 -right-0.5 sm:top-0 sm:right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-400 ring-2 ring-[#081328] animate-pulse" />
+          </div>
         )}
       </motion.button>
 
@@ -254,7 +240,7 @@ export default function SupportChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.94 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed bottom-20 sm:bottom-24 right-4 sm:right-7 z-50 w-[min(94vw,430px)] h-[min(78dvh,640px)] rounded-3xl border border-cyan-500/25 bg-[#070F1E]/95 backdrop-blur-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_35px_rgba(14,165,233,0.18)] flex flex-col overflow-hidden font-sans"
+            className="fixed bottom-18 sm:bottom-24 right-4 sm:right-6 z-[60] w-[min(94vw,430px)] h-[min(78dvh,640px)] rounded-3xl border border-cyan-500/25 bg-[#070F1E]/95 backdrop-blur-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_35px_rgba(14,165,233,0.18)] flex flex-col overflow-hidden font-sans"
           >
             {/* Professional Executive Header */}
             <div className="relative px-3.5 sm:px-4 py-3 bg-gradient-to-r from-[#08162E] via-[#0B1F42] to-[#0A1835] border-b border-cyan-500/20 flex items-center justify-between gap-2">
