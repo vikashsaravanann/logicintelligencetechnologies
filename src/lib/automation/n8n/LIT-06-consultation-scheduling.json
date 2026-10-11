@@ -1,0 +1,90 @@
+{
+  "name": "LIT — Consultation Scheduling",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-consultation-scheduling",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1060001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "lit-consultation-scheduling"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1060002-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\n\nconst requestedSlot = payload.requestedSlot || payload.slot || payload.datetime;\nconst clientTz = payload.timezone || 'Asia/Kolkata';\nconst service = payload.service || 'Executive Architecture Consultation';\nconst existingBookings = Array.isArray(payload.existingBookings) ? payload.existingBookings : [];\n\nif (!requestedSlot) {\n  return [{\n    json: {\n      eventId: item.eventId,\n      status: 'failed',\n      scheduling: {\n        available: false,\n        error: 'Missing requestedSlot timestamp in payload',\n        conflictDetected: false\n      }\n    }\n  }];\n}\n\nconst reqDate = new Date(requestedSlot);\nconst isValidDate = !isNaN(reqDate.getTime());\n\nif (!isValidDate) {\n  return [{\n    json: {\n      eventId: item.eventId,\n      status: 'failed',\n      scheduling: {\n        available: false,\n        error: 'Invalid date format for requestedSlot',\n        conflictDetected: false\n      }\n    }\n  }];\n}\n\nconst reqTime = reqDate.getTime();\nconst BUFFER_MS = 45 * 60 * 1000;\nlet conflict = false;\nlet conflictingWith = null;\n\nfor (const b of existingBookings) {\n  const bTime = new Date(b.slot || b.datetime || b.startTime).getTime();\n  if (!isNaN(bTime) && Math.abs(reqTime - bTime) < BUFFER_MS) {\n    conflict = true;\n    conflictingWith = b;\n    break;\n  }\n}\n\nconst dayOfWeek = reqDate.getUTCDay();\nconst isWeekend = dayOfWeek === 0 || dayOfWeek === 6;\nconst hours = reqDate.getUTCHours();\nconst isOutOfHours = hours < 3 || hours > 14;\n\nconst isAvailable = !conflict && !isWeekend && !isOutOfHours;\n\nconst alternativeSlots = [];\nif (!isAvailable) {\n  for (let i = 1; alternativeSlots.length < 3 && i <= 7; i++) {\n    const nextDay = new Date(reqTime + i * 24 * 60 * 60 * 1000);\n    const nextDow = nextDay.getUTCDay();\n    if (nextDow !== 0 && nextDow !== 6) {\n      nextDay.setUTCHours(9, 0, 0, 0);\n      alternativeSlots.push(nextDay.toISOString());\n    }\n  }\n}\n\nconst schedulingResult = {\n  available: isAvailable,\n  conflictDetected: conflict,\n  requestedSlot: reqDate.toISOString(),\n  timezone: clientTz,\n  service,\n  confirmedSlot: isAvailable ? reqDate.toISOString() : null,\n  alternativeSlots,\n  bookingReference: isAvailable ? ('LIT-SCHED-' + Math.random().toString(36).substring(2, 9).toUpperCase()) : null,\n  checkedAt: new Date().toISOString()\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'processed',\n    scheduling: schedulingResult\n  }\n}];"
+      },
+      "id": "c1060003-0003-4003-8003-000000000003",
+      "name": "Slot availability & conflict avoidance",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'processed',\n  detail: { scheduling: item.json.scheduling }\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1060004-0004-4004-8004-000000000004",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "content-type", "value": "application/json" },
+            { "name": "x-lit-timestamp", "value": "={{ $json.timestamp }}" },
+            { "name": "x-lit-event-id", "value": "={{ $json.eventId }}" },
+            { "name": "x-lit-signature", "value": "={{ $json.signature }}" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1060005-0005-4005-8005-000000000005",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1200, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Verify signature", "type": "main", "index": 0 }]]
+    },
+    "Verify signature": {
+      "main": [[{ "node": "Slot availability & conflict avoidance", "type": "main", "index": 0 }]]
+    },
+    "Slot availability & conflict avoidance": {
+      "main": [[{ "node": "Sign callback", "type": "main", "index": 0 }]]
+    },
+    "Sign callback": {
+      "main": [[{ "node": "Callback", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "active": false
+}

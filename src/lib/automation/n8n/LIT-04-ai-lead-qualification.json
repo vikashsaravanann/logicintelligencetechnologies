@@ -1,0 +1,90 @@
+{
+  "name": "LIT — AI Lead Qualification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-ai-lead-qualification",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1040001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "lit-ai-lead-qualification"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1040002-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst text = [\n  payload.projectDescription || '',\n  payload.requirements || '',\n  payload.techStack || '',\n  payload.problemStatement || '',\n  payload.notes || ''\n].join(' ').toLowerCase();\n\nconst textLength = text.trim().length;\nif (textLength < 25) {\n  return [{\n    json: {\n      eventId: item.eventId,\n      status: 'processed',\n      qualification: {\n        score: 0,\n        priority: 'INSUFFICIENT_EVIDENCE',\n        reason: 'Lead description lacks sufficient technical requirements or project context for scoring.',\n        signals: { textLength, matchedKeywords: [] },\n        scoredAt: new Date().toISOString()\n      }\n    }\n  }];\n}\n\nconst signals = [];\nlet techScore = 0;\nconst techPatterns = [\n  { pattern: /typescript|javascript|node(\\.js)?/g, name: 'modern_ts_node', weight: 10 },\n  { pattern: /next(\\.js)?|react|tailwind/g, name: 'react_nextjs_ecosystem', weight: 10 },\n  { pattern: /python|fastapi|django|flask/g, name: 'python_backend', weight: 8 },\n  { pattern: /ai|machine learning|llm|rag|agent|vector|embedding|openai|claude|gemini/g, name: 'ai_llm_readiness', weight: 15 },\n  { pattern: /docker|kubernetes|aws|gcp|azure|cloud|ci\\/cd/g, name: 'cloud_infra_architecture', weight: 10 },\n  { pattern: /postgres(ql)?|supabase|redis|mongodb|sql/g, name: 'scalable_database', weight: 8 },\n  { pattern: /mobile|react native|flutter|ios|android/g, name: 'cross_platform_mobile', weight: 8 },\n  { pattern: /security|soc2|hipaa|encryption|compliance/g, name: 'enterprise_security', weight: 10 }\n];\n\nfor (const tp of techPatterns) {\n  if (tp.pattern.test(text)) {\n    signals.push(tp.name);\n    techScore += tp.weight;\n  }\n}\ntechScore = Math.min(techScore, 35);\n\nlet scopeScore = 0;\nconst budget = String(payload.budget || '').toLowerCase();\nif (/100k|\\$100,000|\\$50,000|enterprise|large scale|50k\\+/.test(budget + ' ' + text)) {\n  scopeScore = 30;\n  signals.push('high_budget_scope');\n} else if (/25k|25,000|moderate|medium|10k-50k/.test(budget + ' ' + text)) {\n  scopeScore = 20;\n  signals.push('mid_budget_scope');\n} else if (/pilot|poc|mvp|prototype/.test(budget + ' ' + text)) {\n  scopeScore = 15;\n  signals.push('mvp_scope');\n} else {\n  scopeScore = 10;\n}\n\nlet readinessScore = 0;\nconst timeline = String(payload.timeline || '').toLowerCase();\nif (/immediate|asap|this month|q1|q2|q3|q4|weeks/.test(timeline + ' ' + text)) {\n  readinessScore = 18;\n  signals.push('actionable_timeline');\n} else {\n  readinessScore = 10;\n}\n\nlet domainScore = 0;\nconst email = String(payload.email || '').toLowerCase();\nconst domain = email.includes('@') ? email.split('@')[1] : '';\nconst freeDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com'];\nif (domain && !freeDomains.includes(domain)) {\n  domainScore = 17;\n  signals.push('corporate_domain');\n} else {\n  domainScore = 7;\n}\n\nconst totalScore = Math.min(100, techScore + scopeScore + readinessScore + domainScore);\n\nlet priority = 'p4';\nif (totalScore >= 85) {\n  priority = 'p1';\n} else if (totalScore >= 70) {\n  priority = 'p2';\n} else if (totalScore >= 50) {\n  priority = 'p3';\n} else {\n  priority = 'p4';\n}\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'processed',\n    qualification: {\n      score: totalScore,\n      priority,\n      subScores: {\n        technology: techScore,\n        scope: scopeScore,\n        readiness: readinessScore,\n        domainAuthority: domainScore\n      },\n      signals,\n      scoredAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c1040003-0003-4003-8003-000000000003",
+      "name": "Extract technical signals & score",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'processed',\n  detail: { qualification: item.json.qualification }\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1040004-0004-4004-8004-000000000004",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "content-type", "value": "application/json" },
+            { "name": "x-lit-timestamp", "value": "={{ $json.timestamp }}" },
+            { "name": "x-lit-event-id", "value": "={{ $json.eventId }}" },
+            { "name": "x-lit-signature", "value": "={{ $json.signature }}" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1040005-0005-4005-8005-000000000005",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1200, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Verify signature", "type": "main", "index": 0 }]]
+    },
+    "Verify signature": {
+      "main": [[{ "node": "Extract technical signals & score", "type": "main", "index": 0 }]]
+    },
+    "Extract technical signals & score": {
+      "main": [[{ "node": "Sign callback", "type": "main", "index": 0 }]]
+    },
+    "Sign callback": {
+      "main": [[{ "node": "Callback", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "active": false
+}

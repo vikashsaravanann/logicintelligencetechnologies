@@ -1,0 +1,103 @@
+{
+  "name": "OPS — Automation Reliability Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ops-automation-reliability-monitor",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c3040001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "ops-automation-reliability-monitor"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c3040001-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst deadLetterCount = Number(payload.deadLetterCount || payload.failedEvents || 0);\nconst pendingRetries = Number(payload.pendingRetries || 0);\nconst avgLatencyMs = Number(payload.avgLatencyMs || 150);\nconst activeWorkflowsCount = Number(payload.activeWorkflows || 10);\nconst checkedAt = new Date().toISOString();\n\nlet systemHealth = 'HEALTHY';\nlet requiresAlert = false;\n\nif (deadLetterCount > 5 || avgLatencyMs > 5000) {\n  systemHealth = 'CRITICAL';\n  requiresAlert = true;\n} else if (deadLetterCount > 0 || pendingRetries > 10) {\n  systemHealth = 'DEGRADED';\n  requiresAlert = true;\n}\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    telemetry: {\n      systemHealth,\n      requiresAlert,\n      deadLetterCount,\n      pendingRetries,\n      avgLatencyMs,\n      activeWorkflowsCount,\n      checkedAt,\n      evaluatedBy: 'OPS-04 Automated Reliability Sentinel'\n    }\n  }\n}];"
+      },
+      "id": "c3040001-0003-4003-8003-000000000003",
+      "name": "Analyze queue health & dead-letters",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst t = item.telemetry;\n\nconst report = {\n  status: t.systemHealth,\n  headline: `Automation Platform Status: ${t.systemHealth}`,\n  metrics: {\n    deadLetterQueueSize: t.deadLetterCount,\n    pendingRetries: t.pendingRetries,\n    averageWebhookLatencyMs: t.avgLatencyMs\n  },\n  recommendedAction: t.systemHealth === 'CRITICAL'\n    ? 'Drain dead-letter queue, inspect n8n container logs, restart lit_n8n'\n    : (t.systemHealth === 'DEGRADED' ? 'Trigger automated retry runner /api/cron/automation-retry' : 'System operating within nominal thresholds'),\n  timestamp: t.checkedAt\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'monitored',\n    telemetry: t,\n    report\n  }\n}];"
+      },
+      "id": "c3040001-0004-4004-8004-000000000004",
+      "name": "Generate reliability report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'monitored',\n  detail: { telemetry: item.json.telemetry, report: item.json.report }\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c3040001-0005-4005-8005-000000000005",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "content-type", "value": "application/json" },
+            { "name": "x-lit-timestamp", "value": "={{ $json.timestamp }}" },
+            { "name": "x-lit-event-id", "value": "={{ $json.eventId }}" },
+            { "name": "x-lit-signature", "value": "={{ $json.signature }}" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c3040001-0006-4006-8006-000000000006",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1440, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Verify signature", "type": "main", "index": 0 }]]
+    },
+    "Verify signature": {
+      "main": [[{ "node": "Analyze queue health & dead-letters", "type": "main", "index": 0 }]]
+    },
+    "Analyze queue health & dead-letters": {
+      "main": [[{ "node": "Generate reliability report", "type": "main", "index": 0 }]]
+    },
+    "Generate reliability report": {
+      "main": [[{ "node": "Sign callback", "type": "main", "index": 0 }]]
+    },
+    "Sign callback": {
+      "main": [[{ "node": "Callback", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "active": false
+}

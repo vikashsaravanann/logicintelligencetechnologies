@@ -1,0 +1,162 @@
+{
+  "name": "HLT — Healthcare Demo Inquiry",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hlt-healthcare-demo-inquiry",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c2010001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "hlt-healthcare-demo-inquiry"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c2010001-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst text = JSON.stringify(payload).toLowerCase();\n\n// Zero-Trust Non-PHI Check: Reject immediately if clinical PHI terms are present\nconst phiKeywords = ['prescription', 'diagnosis', 'symptom', 'treatment plan', 'blood test', 'biopsy', 'radiology', 'mri scan', 'ehr record', 'patient record', 'hiv', 'oncology patient'];\nconst containsPhi = phiKeywords.some(keyword => text.includes(keyword));\n\nconst hospitalName = String(payload.hospitalName || payload.facilityName || payload.organization || '').trim();\nconst contactName = String(payload.contactName || payload.fullName || payload.name || '').trim();\nconst contactEmail = String(payload.email || payload.contactEmail || '').trim().toLowerCase();\nconst contactPhone = String(payload.phone || payload.contactPhone || '').trim();\nconst bedCount = Number(payload.bedCount || payload.beds || 0);\nconst facilityType = String(payload.facilityType || 'Multi-Specialty Hospital').trim();\nconst modulesRequested = Array.isArray(payload.modules) ? payload.modules : ['OPD', 'IPD', 'Billing', 'Pharmacy'];\n\nconst isValidLead = Boolean(hospitalName && contactEmail.includes('@') && !containsPhi);\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    containsPhi,\n    isValidLead,\n    inquiry: {\n      hospitalName,\n      contactName,\n      contactEmail,\n      contactPhone,\n      bedCount,\n      facilityType,\n      modulesRequested,\n      source: 'LIT Smart Hospital Platform Demo Portal',\n      submittedAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c2010001-0003-4003-8003-000000000003",
+      "name": "PHI boundary check & inquiry validator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond-phi-0001",
+              "leftValue": "={{ $json.containsPhi }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "cond-valid-0001",
+              "leftValue": "={{ $json.isValidLead }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c2010001-0004-4004-8004-000000000004",
+      "name": "IF non-PHI & valid",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [960, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst inq = item.inquiry;\n\nlet priority = 'p2';\nif (inq.bedCount >= 200) {\n  priority = 'p1';\n} else if (inq.bedCount < 50) {\n  priority = 'p3';\n}\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'demo_inquiry_approved',\n    demoLead: {\n      ...inq,\n      priority,\n      demoAssignedTo: 'Vikash Saravanan (Lead System Engineer)',\n      scheduledFollowUpWindow: '24 hours',\n      complianceBoundary: 'Zero-Trust Non-PHI Commercial Pipeline'\n    }\n  }\n}];"
+      },
+      "id": "c2010001-0005-4005-8005-000000000005",
+      "name": "Route to healthcare demo queue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'demo_inquiry_rejected',\n    error: item.containsPhi ? 'Prohibited PHI detected in payload' : 'Invalid contact or hospital details'\n  }\n}];"
+      },
+      "id": "c2010001-0006-4006-8006-000000000006",
+      "name": "Reject invalid or PHI breach",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'processed',\n  detail: item.json.demoLead ? { demoLead: item.json.demoLead } : { error: item.json.error }\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c2010001-0007-4007-8007-000000000007",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "content-type", "value": "application/json" },
+            { "name": "x-lit-timestamp", "value": "={{ $json.timestamp }}" },
+            { "name": "x-lit-event-id", "value": "={{ $json.eventId }}" },
+            { "name": "x-lit-signature", "value": "={{ $json.signature }}" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c2010001-0008-4008-8008-000000000008",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1680, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Verify signature", "type": "main", "index": 0 }]]
+    },
+    "Verify signature": {
+      "main": [[{ "node": "PHI boundary check & inquiry validator", "type": "main", "index": 0 }]]
+    },
+    "PHI boundary check & inquiry validator": {
+      "main": [[{ "node": "IF non-PHI & valid", "type": "main", "index": 0 }]]
+    },
+    "IF non-PHI & valid": {
+      "main": [
+        [{ "node": "Route to healthcare demo queue", "type": "main", "index": 0 }],
+        [{ "node": "Reject invalid or PHI breach", "type": "main", "index": 0 }]
+      ]
+    },
+    "Route to healthcare demo queue": {
+      "main": [[{ "node": "Sign callback", "type": "main", "index": 0 }]]
+    },
+    "Reject invalid or PHI breach": {
+      "main": [[{ "node": "Sign callback", "type": "main", "index": 0 }]]
+    },
+    "Sign callback": {
+      "main": [[{ "node": "Callback", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "active": false
+}

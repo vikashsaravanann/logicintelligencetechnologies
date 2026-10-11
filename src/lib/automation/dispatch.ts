@@ -1,13 +1,35 @@
 import "server-only";
 import { normalizeN8nBase } from "@/lib/automations/n8n-core";
+import { resolveN8nCreds, cleanKey, cleanUrl } from "@/lib/automations/n8n-client";
 import { signV1 } from "./webhook-signing";
 import { workflowForEvent } from "@/config/automation";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export type DispatchState = "dispatched" | "not_configured" | "no_workflow" | "error";
 
 export interface DispatchResult {
   state: DispatchState;
   detail?: string;
+}
+
+async function resolveWebhookSecret(): Promise<string> {
+  const envSecret = cleanKey(process.env.N8N_WEBHOOK_SECRET);
+  if (envSecret) return envSecret;
+
+  try {
+    const { data } = await supabaseAdmin
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "n8n_webhook_secret")
+      .maybeSingle();
+
+    if (data?.value) {
+      return cleanKey(data.value);
+    }
+  } catch {
+    // Non-fatal DB lookup failure
+  }
+  return "";
 }
 
 /**
@@ -22,12 +44,23 @@ export async function dispatchAutomationEvent(
   payload: Record<string, unknown>,
   fetchImpl: typeof fetch = fetch,
 ): Promise<DispatchResult> {
-  const base = process.env.N8N_BASE_URL;
-  const secret = process.env.N8N_WEBHOOK_SECRET;
-  if (!base || !secret) return { state: "not_configured", detail: "N8N_BASE_URL or N8N_WEBHOOK_SECRET unset" };
+  let base = cleanUrl(process.env.N8N_BASE_URL);
+  if (!base) {
+    const creds = await resolveN8nCreds();
+    if (creds?.base) {
+      base = creds.base;
+    }
+  }
+
+  const secret = await resolveWebhookSecret();
+  if (!base || !secret) {
+    return { state: "not_configured", detail: "N8N_BASE_URL or N8N_WEBHOOK_SECRET unset" };
+  }
 
   const wf = workflowForEvent(eventType);
-  if (!wf) return { state: "no_workflow", detail: `no workflow for ${eventType}` };
+  if (!wf) {
+    return { state: "no_workflow", detail: `no workflow for ${eventType}` };
+  }
 
   let origin: string;
   try {
@@ -53,7 +86,9 @@ export async function dispatchAutomationEvent(
       cache: "no-store",
       signal: AbortSignal.timeout(8000),
     });
-    if (res.status >= 200 && res.status < 300) return { state: "dispatched" };
+    if (res.status >= 200 && res.status < 300) {
+      return { state: "dispatched" };
+    }
     return { state: "error", detail: `n8n responded ${res.status}` };
   } catch (err) {
     const detail = err instanceof Error && err.name === "TimeoutError" ? "dispatch timed out" : "could not reach n8n";
