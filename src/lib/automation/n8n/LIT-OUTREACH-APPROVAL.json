@@ -1,0 +1,149 @@
+{
+  "name": "LIT — Outreach Human Approval Intake",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-outreach-approval",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "node-wh-lit-outreach-approval",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "lit-outreach-approval"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require(\"crypto\");\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error(\"N8N_WEBHOOK_SECRET is not set\"); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers[\"x-lit-timestamp\"];\nconst eventId = headers[\"x-lit-event-id\"];\nconst signature = headers[\"x-lit-signature\"];\nif (!ts || !eventId || !signature) { throw new Error(\"Missing signing headers\"); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === \"string\" ? body : JSON.stringify(body);\nconst mac = crypto.createHmac(\"sha256\", secret).update(ts + \".\" + eventId + \".\" + rawBody).digest(\"hex\");\nconst expected = \"v1=\" + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error(\"Signature verification failed\"); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error(\"Signature timestamp outside tolerance\"); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "node-vf-lit-outreach-approval",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: \"compliance_event_processed\",\n    detail: {\n      task: \"Verify human operator approval\",\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "node-proc-lit-outreach-approval",
+      "name": "Verify human operator approval",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require(\"crypto\");\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error(\"N8N_WEBHOOK_SECRET is not set\"); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || \"processed\",\n  detail: item.json.detail || {}\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac(\"sha256\", secret).update(ts + \".\" + eventId + \".\" + rawBody).digest(\"hex\");\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: \"v1=\" + mac } }];"
+      },
+      "id": "node-sign-lit-outreach-approval",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-lit-timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "x-lit-event-id",
+              "value": "={{ $json.eventId }}"
+            },
+            {
+              "name": "x-lit-signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "node-cb-lit-outreach-approval",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1200,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Verify human operator approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify human operator approval": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign callback": {
+      "main": [
+        [
+          {
+            "node": "Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false
+}

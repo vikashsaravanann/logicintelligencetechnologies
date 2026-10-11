@@ -2,13 +2,14 @@ import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { isSupabaseLive } from "@/lib/email/config";
 import { normalizeEmail, isValidEmail } from "@/lib/email/validation";
-import { isSuppressed } from "@/lib/email/suppression";
+import { evaluateOutreachEligibility } from "./eligibility";
 import { recordLeadActivity } from "./activity";
 import type { CampaignStatus } from "./types";
 
 export type AudiencePreview = {
   eligible: number;
   suppressed: number;
+  restricted: number;
   invalid: number;
   total: number;
   sampleEmails: string[];
@@ -22,6 +23,7 @@ export async function previewAudience(filter?: {
   const empty: AudiencePreview = {
     eligible: 0,
     suppressed: 0,
+    restricted: 0,
     invalid: 0,
     total: 0,
     sampleEmails: [],
@@ -30,7 +32,7 @@ export async function previewAudience(filter?: {
 
   let q = supabaseAdmin
     .from("contact_leads")
-    .select("id, email, lifecycle_stage, source, name")
+    .select("id, email, lifecycle_stage, source, name, country")
     .order("created_at", { ascending: false })
     .limit(filter?.limit ?? 500);
 
@@ -46,6 +48,7 @@ export async function previewAudience(filter?: {
 
   let eligible = 0;
   let suppressed = 0;
+  let restricted = 0;
   let invalid = 0;
   const sampleEmails: string[] = [];
 
@@ -55,10 +58,23 @@ export async function previewAudience(filter?: {
       invalid += 1;
       continue;
     }
-    if (await isSuppressed(email, "marketing")) {
-      suppressed += 1;
+    const check = await evaluateOutreachEligibility({
+      email,
+      contactId: lead.id,
+      countryCode: (lead as { country?: string }).country || null,
+      channel: "email",
+      category: "marketing",
+    });
+
+    if (!check.eligible) {
+      if (check.state === "suppressed") {
+        suppressed += 1;
+      } else {
+        restricted += 1;
+      }
       continue;
     }
+
     eligible += 1;
     if (sampleEmails.length < 10) sampleEmails.push(email);
   }
@@ -66,6 +82,7 @@ export async function previewAudience(filter?: {
   return {
     eligible,
     suppressed,
+    restricted,
     invalid,
     total: leads.length,
     sampleEmails,
@@ -189,7 +206,7 @@ export async function enrollEligibleLeads(params: {
 
   const { data: leads } = await supabaseAdmin
     .from("contact_leads")
-    .select("id, email")
+    .select("id, email, country")
     .order("created_at", { ascending: false })
     .limit(params.limit ?? 200);
 
@@ -198,15 +215,32 @@ export async function enrollEligibleLeads(params: {
 
   for (const lead of leads || []) {
     const email = normalizeEmail(String(lead.email || ""));
-    if (!isValidEmail(email) || (await isSuppressed(email, "marketing"))) {
+    if (!isValidEmail(email)) {
       skipped += 1;
       continue;
     }
+
+    // Universal policy clearance before enrollment
+    const check = await evaluateOutreachEligibility({
+      email,
+      contactId: lead.id,
+      countryCode: (lead as { country?: string }).country || null,
+      campaignId: params.campaignId,
+      channel: "email",
+      category: "marketing",
+    });
+
+    if (!check.eligible) {
+      skipped += 1;
+      continue;
+    }
+
     const { error } = await supabaseAdmin.from("outreach_enrollments").upsert(
       {
         campaign_id: params.campaignId,
         lead_id: lead.id,
         email,
+        country: check.country_code || null,
         status: "ACTIVE",
         current_step: 0,
         next_send_at: nextSend,

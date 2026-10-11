@@ -49,6 +49,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { label: "Suppression", href: "/admin/outreach/suppression", capability: "outreach.manage", match: startsWith("/admin/outreach/suppression") },
       { label: "Outreach Analytics", href: "/admin/outreach/analytics", capability: "outreach.read", match: startsWith("/admin/outreach/analytics") },
       { label: "Message Playbook", href: "/admin/outreach/playbook", capability: "outreach.read", match: startsWith("/admin/outreach/playbook") },
+      { label: "Compliance & Jurisdictions", href: "/admin/outreach/compliance", capability: "outreach.read", match: startsWith("/admin/outreach/compliance") },
     ],
   },
   {

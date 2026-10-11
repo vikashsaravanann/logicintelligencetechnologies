@@ -11,6 +11,7 @@ export const EmailFooter = ({ unsubscribeUrl }: EmailFooterProps) => {
     <Section style={footer}>
       <Hr style={divider} />
       <Text style={company}>{EMAIL.company}</Text>
+      <Text style={addressText}>Coimbatore, Tamil Nadu, India</Text>
       <Text style={site}>
         <Link href={EMAIL.siteUrl} style={siteLink}>
           logicintelligencetechnologies.in
@@ -63,6 +64,7 @@ const company = {
   fontFamily: EMAIL.font,
 };
 
+const addressText = { color: EMAIL.colors.muted, fontSize: "11px", margin: "0 0 6px 0", fontFamily: EMAIL.font };
 const site = { margin: "0 0 12px 0" };
 const siteLink = { color: EMAIL.colors.link, fontSize: "13px", textDecoration: "none" };
 const links = { color: EMAIL.colors.muted, fontSize: "12px", margin: "0 0 8px 0", fontFamily: EMAIL.font };

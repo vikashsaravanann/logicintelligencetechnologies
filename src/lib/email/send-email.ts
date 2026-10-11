@@ -57,6 +57,8 @@ interface SendEmailOptions {
   correlationId?: string;
   allowFallbackSender?: boolean;
   listUnsubscribeEmail?: string;
+  countryCode?: string;
+  campaignId?: string;
 }
 
 function getSenderKeyFromEmail(email: string): SenderKey {
@@ -141,6 +143,8 @@ export async function sendEmail({
   correlationId,
   allowFallbackSender = true,
   listUnsubscribeEmail,
+  countryCode,
+  campaignId,
 }: SendEmailOptions): Promise<EmailResponse> {
   const recipients = parseRecipientList(to);
   if (!recipients.length) {
@@ -179,11 +183,30 @@ export async function sendEmail({
 
   if (category === "marketing") {
     const kept: string[] = [];
+    const { evaluateOutreachEligibility } = await import("@/lib/outreach/eligibility");
     for (const recipient of recipients) {
       if (await isSuppressed(recipient, "marketing")) {
         emailLog("info", "suppressed", {
           recipient: maskEmail(recipient),
           subject: safeSubject,
+        });
+        continue;
+      }
+
+      const check = await evaluateOutreachEligibility({
+        email: recipient,
+        category: "marketing",
+        countryCode: countryCode || null,
+        campaignId: campaignId || null,
+        channel: "email",
+      });
+
+      if (!check.eligible) {
+        emailLog("warn", "outreach_compliance_gate_blocked", {
+          recipient: maskEmail(recipient),
+          subject: safeSubject,
+          state: check.state,
+          reasons: check.reason_codes,
         });
       } else {
         kept.push(recipient);
@@ -192,7 +215,7 @@ export async function sendEmail({
     if (!kept.length) {
       return {
         success: true,
-        message: "Recipient suppressed",
+        message: "Recipient blocked by compliance policy or suppression",
         status: "suppressed",
         skipped: true,
       };

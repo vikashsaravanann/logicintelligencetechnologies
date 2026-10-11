@@ -104,3 +104,35 @@ CREATE TABLE IF NOT EXISTS public.proposals (
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- Minimal pre-existing tables for outreach & suppression testing
+CREATE TABLE IF NOT EXISTS public.contact_leads (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text,
+  email text,
+  country text,
+  lifecycle_stage text DEFAULT 'NEW',
+  communication_status text DEFAULT 'NEVER_CONTACTED',
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS public.outreach_enrollments (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  campaign_id uuid,
+  lead_id uuid REFERENCES public.contact_leads(id) ON DELETE SET NULL,
+  email text NOT NULL,
+  country text,
+  status text NOT NULL DEFAULT 'ACTIVE',
+  current_step integer NOT NULL DEFAULT 0,
+  next_send_at timestamptz,
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS public.email_suppressions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  email text NOT NULL UNIQUE,
+  reason text NOT NULL,
+  source text,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);

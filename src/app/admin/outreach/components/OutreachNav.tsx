@@ -6,6 +6,7 @@ import {
   BookOpen,
   ShieldAlert,
   BarChart3,
+  ShieldCheck,
 } from "lucide-react";
 
 export type OutreachNavTab =
@@ -14,7 +15,8 @@ export type OutreachNavTab =
   | "queue"
   | "playbook"
   | "suppression"
-  | "analytics";
+  | "analytics"
+  | "compliance";
 
 interface OutreachNavProps {
   active: OutreachNavTab;
@@ -27,6 +29,7 @@ const TABS = [
   { key: "playbook" as const, label: "Playbook", href: "/admin/outreach/playbook", icon: BookOpen },
   { key: "suppression" as const, label: "Suppression", href: "/admin/outreach/suppression", icon: ShieldAlert },
   { key: "analytics" as const, label: "Analytics", href: "/admin/outreach/analytics", icon: BarChart3 },
+  { key: "compliance" as const, label: "Compliance & Jurisdictions", href: "/admin/outreach/compliance", icon: ShieldCheck },
 ];
 
 export function OutreachNav({ active }: OutreachNavProps) {
@@ -39,7 +42,7 @@ export function OutreachNav({ active }: OutreachNavProps) {
           <Link
             key={tab.key}
             href={tab.href}
-            className={`inline-flex items-center gap-2 whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-bold transition-all ${
+            className={`inline-flex items-center gap-2 whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-bold transition-all min-h-[44px] ${
               isActive
                 ? "bg-[var(--lit-navy,#0B2545)] text-white shadow-2xs"
                 : "text-[var(--lit-text-muted,#52677C)] hover:bg-white hover:text-[var(--lit-navy,#0B2545)] border border-transparent hover:border-[var(--lit-border-light,#DFE7EF)] shadow-2xs"

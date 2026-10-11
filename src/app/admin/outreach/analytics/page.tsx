@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { requireCapabilityPage } from "@/lib/auth/session";
 import { outreachStats } from "@/lib/outreach/intelligence/queues";
@@ -30,9 +31,9 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const JUR_TONE: Record<string, { label: string; tone: string }> = {
-  allowed: { label: "Allowed", tone: "border-emerald-200 bg-emerald-50 text-emerald-800" },
-  review_required: { label: "Review Required", tone: "border-amber-200 bg-amber-50 text-amber-800" },
-  blocked: { label: "Blocked by Law", tone: "border-rose-200 bg-rose-50 text-rose-800" },
+  allowed: { label: "Permitted for verified scenario", tone: "border-emerald-200 bg-emerald-50 text-emerald-800" },
+  review_required: { label: "Legal review required", tone: "border-amber-200 bg-amber-50 text-amber-800" },
+  blocked: { label: "Restricted — evidence required", tone: "border-rose-200 bg-rose-50 text-rose-800" },
 };
 
 export default async function OutreachAnalyticsPage() {
@@ -134,6 +135,19 @@ export default async function OutreachAnalyticsPage() {
 
         {/* Global Outreach Navigation */}
         <OutreachNav active="analytics" />
+
+      {s.error && (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 flex items-start gap-3 text-rose-900">
+          <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+          <div className="space-y-1 text-xs">
+            <h3 className="font-bold">Telemetry Data Temporarily Unavailable</h3>
+            <p>
+              Supabase database query execution failed or timed out. Metric figures may be incomplete.
+              Automated compliance triggers remain enforced in fail-closed mode.
+            </p>
+          </div>
+        </div>
+      )}
       </div>
 
       {s.error ? (
@@ -295,7 +309,7 @@ export default async function OutreachAnalyticsPage() {
 
           {Object.keys(m).length === 0 ? (
             <p className="py-8 text-center text-xs text-[var(--lit-text-muted,#52677C)]">
-              No message versions generated yet.
+              Database unseeded: No message versions generated yet. Generate drafts in the Message Studio after lead indexing.
             </p>
           ) : (
             <div className="space-y-3">
@@ -350,7 +364,7 @@ export default async function OutreachAnalyticsPage() {
 
           {Object.keys(s.leadsByStatus).length === 0 ? (
             <p className="py-8 text-center text-xs text-[var(--lit-text-muted,#52677C)]">
-              No businesses currently indexed.
+              Database unseeded: 0 target businesses indexed in this environment. Run a crawler or discovery batch import to populate.
             </p>
           ) : (
             <div className="space-y-3">
@@ -395,11 +409,18 @@ export default async function OutreachAnalyticsPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-rose-200 bg-rose-50 text-rose-800 text-xs font-mono font-bold">
               <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
               {s.suppressions} Active Global Suppressions
             </span>
+            <Link
+              href="/admin/outreach/compliance"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] text-xs font-semibold hover:bg-slate-50 transition-colors min-h-[32px]"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-[var(--lit-teal,#1FA9A2)]" />
+              Review Policy &amp; Rules
+            </Link>
           </div>
         </div>
 
