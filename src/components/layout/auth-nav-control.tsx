@@ -43,6 +43,15 @@ function initialsFrom(name: string): string {
   return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
 }
 
+function isStaffUser(email: string | null | undefined): boolean {
+  if (!email) return false;
+  const lower = email.toLowerCase().trim();
+  return (
+    lower.endsWith("@logicintelligencetechnologies.in") ||
+    lower === "createwithvikash@gmail.com"
+  );
+}
+
 /**
  * Global header auth control.
  * Logged out → LOGIN. Logged in → avatar + name + menu (Profile, AI, Sign out).
@@ -233,7 +242,7 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
           >
             <Sparkles className="w-4 h-4 text-[var(--lit-teal)]" /> AI Assistant
           </Link>
-          {user.email?.toLowerCase().endsWith('@logicintelligencetechnologies.in') && (
+          {isStaffUser(user.email) && (
             <Link
               href="/admin/command-center"
               className="flex items-center gap-2 py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-[var(--lit-blue)] hover:bg-white min-h-[44px]"
@@ -308,7 +317,7 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
           >
             <Sparkles className="w-3.5 h-3.5 text-[var(--lit-teal)]" /> AI Assistant
           </Link>
-          {user.email?.toLowerCase().endsWith('@logicintelligencetechnologies.in') && (
+          {isStaffUser(user.email) && (
             <Link
               role="menuitem"
               href="/admin/command-center"

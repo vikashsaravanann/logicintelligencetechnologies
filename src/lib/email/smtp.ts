@@ -63,7 +63,6 @@ function getSmtpConfig(sender: SenderKey): SmtpConfig {
         : port === 465;
 
   // Auth user: the mailbox that owns the app password for this pool.
-  // Prefer explicit per-pool user, then shared SMTP_USER, then company default for the pool.
   const poolUserDefault =
     pool === "NOREPLY"
       ? COMPANY.emails.noReply
@@ -71,7 +70,6 @@ function getSmtpConfig(sender: SenderKey): SmtpConfig {
 
   const user =
     process.env[`SMTP_${pool}_USER`] ||
-    process.env[`SMTP_${prefix}_USER`] ||
     process.env.SMTP_USER ||
     poolUserDefault;
 
@@ -83,11 +81,13 @@ function getSmtpConfig(sender: SenderKey): SmtpConfig {
     process.env.SMTP_PASS ||
     "";
 
-  // From: always the logical sender identity (branded display name).
+  // From: ALWAYS matches the pool user to comply strictly with Zoho Mail SMTP policies!
+  // Zoho strictly forbids sending from an address other than the authenticated mailbox.
   const from =
-    process.env[`SMTP_${prefix}_FROM`] ||
-    process.env.SMTP_FROM ||
-    `"${COMPANY.displayName}" <${COMPANY.emails[sender]}>`;
+    process.env[`SMTP_${pool}_FROM`] ||
+    (pool === "NOREPLY"
+      ? `"${COMPANY.displayName}" <${COMPANY.emails.noReply}>`
+      : `"${COMPANY.displayName}" <${COMPANY.emails.hello}>`);
 
   if (!host || !user || !pass) {
     throw new Error(
@@ -142,10 +142,17 @@ export function getSmtpTransporter(
 }
 
 export function getSmtpFromAddress(sender: SenderKey = "noReply"): string {
-  const prefix = senderEnvMap[sender];
-  const envFrom = process.env[`SMTP_${prefix}_FROM`] || process.env.SMTP_FROM;
-  if (envFrom) return envFrom;
-  return `"${COMPANY.displayName}" <${COMPANY.emails[sender]}>`;
+  const pool = credentialPool(sender);
+  if (pool === "NOREPLY") {
+    return (
+      process.env.SMTP_NOREPLY_FROM ||
+      `"${COMPANY.displayName}" <${COMPANY.emails.noReply}>`
+    );
+  }
+  return (
+    process.env.SMTP_HELLO_FROM ||
+    `"${COMPANY.displayName}" <${COMPANY.emails.hello}>`
+  );
 }
 
 export function hasSenderCredentials(sender: SenderKey): boolean {
@@ -183,11 +190,14 @@ export async function verifySmtpConnection(
   host: string;
   port: number;
   secure: boolean;
+  user: string;
   error?: string;
 }> {
+  let user = "unknown";
   try {
     const resolved = resolveSender(sender);
     const config = getSmtpConfig(resolved);
+    user = config.user;
     const transporter = getSmtpTransporter(resolved);
     await transporter.verify();
     return {
@@ -195,6 +205,7 @@ export async function verifySmtpConnection(
       host: config.host,
       port: config.port,
       secure: config.secure,
+      user: config.user,
     };
   } catch (e) {
     let host = "unknown";
@@ -205,6 +216,7 @@ export async function verifySmtpConnection(
       host = c.host;
       port = c.port;
       secure = c.secure;
+      user = c.user;
     } catch {
       /* ignore */
     }
@@ -213,6 +225,7 @@ export async function verifySmtpConnection(
       host,
       port,
       secure,
+      user,
       error: e instanceof Error ? e.message : String(e),
     };
   }

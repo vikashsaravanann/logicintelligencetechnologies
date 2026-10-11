@@ -46,7 +46,8 @@ export async function POST(req: NextRequest) {
 
     const result = await sendEmail({
       to: proposal.client_email,
-      from: "admin",
+      from: "hello",
+      replyTo: COMPANY.emails.hello,
       subject: `Project Proposal: ${proposal.title} - ${COMPANY.displayName}`,
       react: ProposalSentEmail({ fullName: proposal.client_name, proposalUrl }),
       category: "transactional",

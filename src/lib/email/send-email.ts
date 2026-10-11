@@ -65,12 +65,10 @@ function getSenderKeyFromEmail(email: string): SenderKey {
     .replace(/.*</, "")
     .replace(/>.*/, "")
     .trim();
-  for (const [key, value] of Object.entries(COMPANY.emails)) {
-    if (value.toLowerCase() === normalized) {
-      return key as SenderKey;
-    }
+  if (normalized.includes("no-reply") || normalized.includes("noreply")) {
+    return "noReply";
   }
-  return "noReply";
+  return "hello";
 }
 
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
@@ -351,15 +349,15 @@ export async function sendEmail({
         recipients: recipients.map(maskEmail),
       });
 
+      const fallbackSender: SenderKey = primary === "noReply" ? "hello" : "noReply";
       const canFallback =
         allowFallbackSender &&
         classified.retryable &&
-        primary !== "noReply" &&
-        isSmtpConfigured("noReply");
+        isSmtpConfigured(fallbackSender);
 
       if (canFallback) {
         try {
-          const result = await attempt("noReply");
+          const result = await attempt(fallbackSender);
           await recordAttempt({
             outboxId: outbox?.id,
             attempt: 2,

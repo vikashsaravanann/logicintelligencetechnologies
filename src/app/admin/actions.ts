@@ -7,6 +7,7 @@ import AdminGenericEmail from "@/emails/admin-generic-email";
 import { requireCapabilityAction } from "@/lib/auth/session";
 import { recordAdminAction, type StaffActor } from "@/lib/admin/audit";
 import { isValidEmail } from "@/lib/email/validation";
+import { COMPANY } from "@/config/company";
 import { z } from "zod";
 
 const actorOf = (s: { userId: string; email: string | null; role: string }): StaffActor => ({
@@ -168,7 +169,8 @@ export async function sendAdminEmail(to: string, subject: string, message: strin
   const { success, skipped } = await sendEmail({
     to,
     subject,
-    from: "admin",
+    from: "hello",
+    replyTo: COMPANY.emails.hello,
     category: "transactional",
     react: AdminGenericEmail({ message }),
   });
@@ -216,8 +218,14 @@ export async function replyToSupportTicket(ticketId: string, message: string) {
     throw new Error("Could not record the reply");
   }
 
-  const result = await sendEmail({ to: recipient, subject: `Re: Support Ticket #${ticketId}`,
-    from: "support", category: "transactional", react: AdminGenericEmail({ message }) });
+  const result = await sendEmail({
+    to: recipient,
+    subject: `Re: Support Ticket #${ticketId}`,
+    from: "hello",
+    replyTo: COMPANY.emails.support,
+    category: "transactional",
+    react: AdminGenericEmail({ message }),
+  });
   await recordAdminAction({
     actor, action: "support.reply", capability: "support.reply",
     target: { type: "support_ticket", id: ticketId },

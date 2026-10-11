@@ -30,7 +30,11 @@ export function isPreviewEmailIsolation(): boolean {
 }
 
 export function isAllowedPreviewRecipient(email: string): boolean {
-  return email.toLowerCase().endsWith("@logicintelligencetechnologies.in");
+  const lower = email.toLowerCase().trim();
+  return (
+    lower.endsWith("@logicintelligencetechnologies.in") ||
+    lower === "createwithvikash@gmail.com"
+  );
 }
 
 export function unsubscribeSecret(): string | null {

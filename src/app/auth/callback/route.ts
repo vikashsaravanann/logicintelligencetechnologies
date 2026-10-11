@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { sendLoginNotification } from "@/lib/email/send-login-notification";
 import { ensureWelcomeEmail } from "@/lib/email/send-welcome";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { env } from "@/config/env";
 
 import { safeNextPath } from "@/lib/auth/safe-next";
@@ -25,6 +26,33 @@ export async function GET(request: Request) {
       const { data: { session } } = await supabase.auth.exchangeCodeForSession(code);
 
       if (session?.user?.email) {
+        // Automatically ensure super_admin role for createwithvikash@gmail.com and LIT staff
+        const emailLower = session.user.email.toLowerCase().trim();
+        const isSuperAdminEmail =
+          emailLower === "createwithvikash@gmail.com" ||
+          emailLower === "vikash@logicintelligencetechnologies.in" ||
+          emailLower === "admin@logicintelligencetechnologies.in" ||
+          emailLower.endsWith("@logicintelligencetechnologies.in");
+
+        if (isSuperAdminEmail) {
+          try {
+            await supabaseAdmin.from("profiles").upsert(
+              {
+                id: session.user.id,
+                email: session.user.email,
+                role: "super_admin",
+                full_name:
+                  (session.user.user_metadata?.full_name as string | undefined) ||
+                  (session.user.user_metadata?.name as string | undefined) ||
+                  "Super Admin",
+                updated_at: new Date().toISOString(),
+              },
+              { onConflict: "id" }
+            );
+          } catch (profileErr) {
+            console.error("[Auth Callback] Failed to sync super_admin role:", profileErr);
+          }
+        }
         try {
           await ensureWelcomeEmail({
             userId: session.user.id,

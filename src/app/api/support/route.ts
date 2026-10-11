@@ -8,6 +8,7 @@ import LeadConfirmationEmail from "@/emails/lead-confirmation-email";
 import { getLeadNotificationRecipients } from "@/lib/email/recipients";
 import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
 import { sanitizeMultilineText, sanitizePersonName } from "@/lib/email/validation";
+import { COMPANY } from "@/config/company";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -71,7 +72,7 @@ export async function POST(req: NextRequest) {
     try {
       await sendEmail({
         to: getLeadNotificationRecipients(),
-        from: "support",
+        from: "noReply",
         replyTo: email,
         subject: `Support ticket: ${subject}`,
         category: "transactional",
@@ -90,7 +91,8 @@ export async function POST(req: NextRequest) {
       });
       await sendEmail({
         to: email,
-        from: "support",
+        from: "hello",
+        replyTo: COMPANY.emails.support,
         subject: "We received your support request — Logic Intelligence Technologies",
         category: "transactional",
         eventType: "support-confirmation",

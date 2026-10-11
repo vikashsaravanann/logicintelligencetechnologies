@@ -84,7 +84,8 @@ export async function POST(req: NextRequest) {
     const emailResult = await sendEmail({
       to: clientEmail,
       subject: `Invoice ${invoice.invoice_code} from Logic Intelligence Technologies`,
-      from: "vikash",
+      from: "hello",
+      replyTo: COMPANY.emails.hello,
       category: "transactional",
       eventType: "invoice",
       templateKey: "invoice-email",

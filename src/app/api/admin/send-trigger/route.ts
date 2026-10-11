@@ -100,7 +100,7 @@ export async function POST(req: Request) {
         });
         break;
       case "invoice":
-        fromAddress = "admin";
+        fromAddress = "hello";
         subject = `Invoice: ${sanitizePersonName(String(data.invoiceNumber || "INV-000"), 40)}`;
         reactComponent = React.createElement(InvoiceEmail, {
           fullName: fullName || "Client",
@@ -117,7 +117,7 @@ export async function POST(req: Request) {
         });
         break;
       case "payment":
-        fromAddress = "admin";
+        fromAddress = "hello";
         subject = "Payment received — thank you";
         reactComponent = React.createElement(PaymentReceivedEmail, {
           fullName: fullName || "Client",
@@ -129,7 +129,7 @@ export async function POST(req: Request) {
         });
         break;
       case "kickoff":
-        fromAddress = "vikash";
+        fromAddress = "hello";
         subject = `Project kickoff: ${sanitizePersonName(String(data.projectName || "Your Project"), 80)}`;
         reactComponent = React.createElement(ProjectKickoffEmail, {
           fullName: fullName || "Client",
@@ -140,7 +140,8 @@ export async function POST(req: Request) {
         });
         break;
       case "delivered":
-        fromAddress = "support";
+        fromAddress = "hello";
+        replyToAddress = COMPANY.emails.support;
         subject = `Project delivered: ${sanitizePersonName(String(data.projectName || "Your Project"), 80)}`;
         reactComponent = React.createElement(ProjectDeliveredEmail, {
           fullName: fullName || "Client",
@@ -152,7 +153,7 @@ export async function POST(req: Request) {
         });
         break;
       case "proposal":
-        fromAddress = "vikash";
+        fromAddress = "hello";
         subject = "Project proposal from Logic Intelligence Technologies";
         reactComponent = React.createElement(ProposalSentEmail, {
           fullName: fullName || "Client",
@@ -160,7 +161,7 @@ export async function POST(req: Request) {
         });
         break;
       case "demo-ready":
-        fromAddress = "vikash";
+        fromAddress = "hello";
         subject = "Your custom demo is ready";
         reactComponent = React.createElement(DemoReadyEmail, {
           fullName: fullName || "Client",
@@ -176,7 +177,7 @@ export async function POST(req: Request) {
         });
         break;
       case "maintenance-renewal":
-        fromAddress = "admin";
+        fromAddress = "hello";
         replyToAddress = COMPANY.emails.support;
         subject = "Maintenance and support plan renewal";
         reactComponent = React.createElement(MaintenanceRenewalEmail, {
