@@ -56,7 +56,16 @@ const STARTER_PROMPTS = [
 
 const INITIAL_GREETING: ChatMessage = {
   role: "assistant",
-  content: `Hello! I am **LOGIC AI**, the intelligence assistant for **${COMPANY.displayName}**.\n\nI can assist you with our clinical hospital operating systems (**LIT Healthcare**), autonomous conversational voice agents (**Logic Voice**), biometric deepfake audio firewalls (**Voice Shield**), engineering packages, or scheduling an architecture review. What are you building?`,
+  content: `Welcome to **${COMPANY.displayName}**. I am **LOGIC AI**, your executive systems advisor.
+
+We engineer high-performance software and autonomous intelligence platforms:
+• **LIT Healthcare** — Enterprise Smart Hospital OS active across 14 clinical sites.
+• **Logic Voice & Voice Shield** — Sub-120ms conversational telephony paired with real-time biometric deepfake defense (99.4% detection gate).
+• **Custom Enterprise Systems** — Scalable cloud backends, intelligent workflow automation, and multi-agent AI swarms.
+
+**Commercial Advantage:** Fixed-price packages starting from **₹8,999**, backed by our risk-free **Pre-Payment Working Prototype Demo**—we build and demonstrate your system architecture before any financial commitment.
+
+Would you like to request a **free prototype demo**, review our packages, or **book an architecture review**? What system can we build for you today?`,
   timestamp: "Just now",
 };
 
@@ -128,7 +137,7 @@ export default function SupportChatWidget() {
 
     try {
       const historyPayload = newMessages
-        .filter((m) => m !== INITIAL_GREETING && m.content)
+        .filter((m) => m !== INITIAL_GREETING && m.content !== INITIAL_GREETING.content && m.content)
         .slice(-12)
         .map((m) => ({
           role: m.role,
@@ -207,12 +216,12 @@ export default function SupportChatWidget() {
         whileTap={{ scale: 0.96 }}
         className={`fixed bottom-5 right-5 sm:bottom-7 sm:right-7 z-50 transition-all duration-300 shadow-xl ${
           open
-            ? "w-10 h-10 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center border border-cyan-300 shadow-cyan-500/40"
+            ? "w-10 h-10 rounded-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white flex items-center justify-center border border-cyan-400/50 shadow-cyan-500/40"
             : "h-10 px-3 rounded-full bg-gradient-to-r from-[#071328]/95 via-[#0B1C3D]/95 to-[#08152E]/95 border border-cyan-500/40 backdrop-blur-xl shadow-[0_6px_20px_rgba(14,165,233,0.3)] hover:border-cyan-400 flex items-center gap-2 text-white group"
         }`}
       >
         {open ? (
-          <X className="w-4 h-4 transition-transform" />
+          <X className="w-4 h-4 text-white transition-transform" />
         ) : (
           <>
             <div className="relative w-6 h-6 rounded-full p-0.5 bg-gradient-to-tr from-cyan-400 via-teal-400 to-blue-500 flex items-center justify-center shrink-0">
@@ -248,8 +257,8 @@ export default function SupportChatWidget() {
             className="fixed bottom-20 sm:bottom-24 right-4 sm:right-7 z-50 w-[min(94vw,430px)] h-[min(78dvh,640px)] rounded-3xl border border-cyan-500/25 bg-[#070F1E]/95 backdrop-blur-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_35px_rgba(14,165,233,0.18)] flex flex-col overflow-hidden font-sans"
           >
             {/* Professional Executive Header */}
-            <div className="relative px-4 py-3.5 bg-gradient-to-r from-[#08162E] via-[#0B1F42] to-[#0A1835] border-b border-cyan-500/20 flex items-center justify-between">
-              <div className="flex items-center gap-3">
+            <div className="relative px-3.5 sm:px-4 py-3 bg-gradient-to-r from-[#08162E] via-[#0B1F42] to-[#0A1835] border-b border-cyan-500/20 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                 <div className="relative w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 via-teal-400 to-blue-500 p-0.5 shrink-0 shadow-md">
                   <div className="w-full h-full bg-[#070F1E] rounded-full overflow-hidden flex items-center justify-center p-0.5">
                     <Image
@@ -262,27 +271,27 @@ export default function SupportChatWidget() {
                   </div>
                   <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#070F1E]" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-bold text-white tracking-tight font-mono">LOGIC AI</p>
-                    <span className="inline-flex items-center gap-1 text-[9px] font-mono font-semibold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
+                    <p className="text-sm font-bold text-white tracking-tight font-mono shrink-0">LOGIC AI</p>
+                    <span className="inline-flex items-center gap-1 text-[9px] font-mono font-semibold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 uppercase tracking-wider shrink-0">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       Autonomous Engine
                     </span>
                   </div>
-                  <p className="text-[11px] text-zinc-400 truncate">
+                  <p className="text-[11px] text-zinc-300 truncate">
                     Logic Intelligence Technologies · Systems Assistant
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 shrink-0">
                 <button
                   type="button"
                   onClick={handleResetChat}
                   title="Reset conversation"
                   aria-label="Reset conversation"
-                  className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                  className="p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-white/10 transition-colors"
                 >
                   <RotateCcw className="w-4 h-4" />
                 </button>
@@ -291,7 +300,7 @@ export default function SupportChatWidget() {
                   onClick={() => setOpen(false)}
                   title="Close chat"
                   aria-label="Close chat"
-                  className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                  className="p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-white/10 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -317,19 +326,19 @@ export default function SupportChatWidget() {
                     <div
                       className={`relative rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-md ${
                         m.role === "user"
-                          ? "bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-300 text-slate-950 font-medium rounded-br-sm shadow-cyan-500/20"
-                          : "bg-[#0B1A36]/90 border border-cyan-500/20 text-zinc-100 rounded-bl-sm backdrop-blur-md"
+                          ? "bg-gradient-to-r from-cyan-600 to-blue-600 border border-cyan-400/40 text-white font-medium rounded-br-sm shadow-cyan-500/20"
+                          : "bg-[#0B1A36]/95 border border-cyan-500/30 text-white rounded-bl-sm backdrop-blur-md shadow-md [&_p]:text-white [&_strong]:text-white [&_li]:text-white [&_span]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_h4]:text-white [&_a]:text-cyan-300 [&_code]:text-cyan-200"
                       }`}
                     >
                       {m.role === "assistant" ? (
                         <>
                           <MarkdownMessage content={m.content} />
                           {m.citations && m.citations.length > 0 && (
-                            <div className="mt-2.5 pt-2 border-t border-white/10 flex flex-wrap gap-1">
+                            <div className="mt-2.5 pt-2 border-t border-cyan-500/20 flex flex-wrap gap-1">
                               {m.citations.map((c) => (
                                 <span
                                   key={c}
-                                  className="text-[10px] rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 text-cyan-300 font-mono"
+                                  className="text-[10px] rounded-full border border-cyan-500/40 bg-cyan-500/15 px-2 py-0.5 text-cyan-300 font-mono font-medium"
                                 >
                                   Verified: {c}
                                 </span>
@@ -338,21 +347,21 @@ export default function SupportChatWidget() {
                           )}
                         </>
                       ) : (
-                        <p className="whitespace-pre-wrap">{m.content}</p>
+                        <p className="whitespace-pre-wrap text-white font-medium">{m.content}</p>
                       )}
                     </div>
                   </div>
 
                   {/* Message Meta: Timestamp & Copy */}
-                  <div className="flex items-center gap-2 mt-1 px-1 text-[10px] text-zinc-500">
-                    <span>{m.timestamp}</span>
+                  <div className="flex items-center gap-2 mt-1 px-1 text-[10px] text-zinc-400 font-mono">
+                    <span className="text-zinc-400">{m.timestamp}</span>
                     {m.role === "assistant" && (
                       <>
-                        <span>•</span>
+                        <span className="text-zinc-600">•</span>
                         <button
                           type="button"
                           onClick={() => handleCopy(m.content, idx)}
-                          className="hover:text-zinc-300 flex items-center gap-1 transition-colors"
+                          className="hover:text-cyan-300 text-zinc-400 flex items-center gap-1 transition-colors"
                         >
                           {copiedIndex === idx ? (
                             <>
@@ -378,13 +387,13 @@ export default function SupportChatWidget() {
                   <div className="w-6 h-6 rounded-lg bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center shrink-0">
                     <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
                   </div>
-                  <div className="bg-[#0B1A36]/90 border border-cyan-500/20 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-2 text-xs text-cyan-300">
+                  <div className="bg-[#0B1A36]/95 border border-cyan-500/30 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-2 text-xs text-white">
                     <div className="flex gap-1 items-center">
                       <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce [animation-delay:-0.3s]" />
                       <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce [animation-delay:-0.15s]" />
                       <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-bounce" />
                     </div>
-                    <span>LOGIC AI is processing…</span>
+                    <span className="text-cyan-300 font-medium">LOGIC AI is processing…</span>
                   </div>
                 </div>
               )}
@@ -392,7 +401,7 @@ export default function SupportChatWidget() {
               {/* Starter Suggestion Chips (show on initial message) */}
               {messages.length === 1 && !loading && (
                 <div className="pt-2">
-                  <p className="text-[11px] font-semibold text-zinc-400 mb-2 uppercase tracking-wider flex items-center gap-1.5 font-mono">
+                  <p className="text-[11px] font-semibold text-cyan-300 mb-2 uppercase tracking-wider flex items-center gap-1.5 font-mono">
                     <Sparkles className="w-3 h-3 text-cyan-400" />
                     Recommended queries
                   </p>
@@ -404,13 +413,13 @@ export default function SupportChatWidget() {
                           key={i}
                           type="button"
                           onClick={() => handleSend(item.prompt)}
-                          className="w-full text-left p-2.5 rounded-xl bg-[#0C1B38] border border-cyan-500/20 hover:border-cyan-400/50 hover:bg-[#0E2248] text-zinc-200 transition-all flex items-center justify-between group"
+                          className="w-full text-left p-2.5 rounded-xl bg-[#0C1B38] border border-cyan-500/30 hover:border-cyan-400/70 hover:bg-[#0E2248] text-white transition-all flex items-center justify-between group shadow-sm"
                         >
                           <div className="flex items-center gap-2 min-w-0">
                             <Icon className="w-4 h-4 text-cyan-400 shrink-0 group-hover:scale-110 transition-transform" />
-                            <span className="text-xs font-medium truncate">{item.label}</span>
+                            <span className="text-xs font-medium text-white group-hover:text-cyan-200 truncate">{item.label}</span>
                           </div>
-                          <ChevronRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-cyan-300 transition-colors" />
+                          <ChevronRight className="w-3.5 h-3.5 text-cyan-400/70 group-hover:text-cyan-300 transition-colors" />
                         </button>
                       );
                     })}
@@ -426,7 +435,7 @@ export default function SupportChatWidget() {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 15 }}
-                  className="mx-3 mb-2 p-3.5 rounded-2xl bg-[#091733] border border-cyan-500/30 shadow-lg text-xs"
+                  className="mx-3 mb-2 p-3.5 rounded-2xl bg-[#091733] border border-cyan-500/40 shadow-lg text-xs"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-bold text-white flex items-center gap-1.5">
@@ -436,7 +445,7 @@ export default function SupportChatWidget() {
                     <button
                       type="button"
                       onClick={() => setShowHandoffModal(false)}
-                      className="text-zinc-400 hover:text-white"
+                      className="text-zinc-300 hover:text-white"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -444,7 +453,7 @@ export default function SupportChatWidget() {
                   {handoffSubmitted ? (
                     <div className="p-2.5 text-emerald-300 flex items-center gap-2 bg-emerald-950/40 rounded-xl border border-emerald-500/30">
                       <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
-                      <span>Request recorded! Our systems engineering team will review and connect with you within 2 business hours.</span>
+                      <span className="text-white">Request recorded! Our systems engineering team will review and connect with you within 2 business hours.</span>
                     </div>
                   ) : (
                     <form
@@ -486,7 +495,7 @@ export default function SupportChatWidget() {
                         placeholder="Your Full Name"
                         value={handoffName}
                         onChange={(e) => setHandoffName(e.target.value)}
-                        className="w-full bg-[#050C1B] border border-white/10 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-500 focus:outline-none focus:border-cyan-400 text-xs"
+                        className="w-full bg-[#050C1B] border border-cyan-500/30 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-400 focus:outline-none focus:border-cyan-400 text-xs"
                       />
                       <input
                         type="text"
@@ -494,20 +503,20 @@ export default function SupportChatWidget() {
                         required
                         value={handoffContact}
                         onChange={(e) => setHandoffContact(e.target.value)}
-                        className="w-full bg-[#050C1B] border border-white/10 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-500 focus:outline-none focus:border-cyan-400 text-xs"
+                        className="w-full bg-[#050C1B] border border-cyan-500/30 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-400 focus:outline-none focus:border-cyan-400 text-xs"
                       />
                       <input
                         type="text"
                         placeholder="Brief requirement (e.g. Hospital OS, Voice Agent)"
                         value={handoffNotes}
                         onChange={(e) => setHandoffNotes(e.target.value)}
-                        className="w-full bg-[#050C1B] border border-white/10 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-500 focus:outline-none focus:border-cyan-400 text-xs"
+                        className="w-full bg-[#050C1B] border border-cyan-500/30 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-400 focus:outline-none focus:border-cyan-400 text-xs"
                       />
                       <div className="flex gap-2 pt-1">
                         <button
                           type="submit"
                           disabled={handoffSubmitting}
-                          className="w-full py-2 rounded-lg bg-gradient-to-r from-cyan-400 to-teal-300 text-slate-950 font-bold hover:brightness-105 active:scale-[0.99] transition-all text-xs font-mono uppercase tracking-wider disabled:opacity-50"
+                          className="w-full py-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 border border-cyan-400/40 text-white font-bold hover:brightness-110 active:scale-[0.99] transition-all text-xs font-mono uppercase tracking-wider disabled:opacity-50 shadow-md shadow-cyan-500/20"
                         >
                           {handoffSubmitting ? "Submitting..." : "Submit Callback Request"}
                         </button>
@@ -520,7 +529,7 @@ export default function SupportChatWidget() {
 
             {/* Input & Professional Footer Controls */}
             <div className="p-3 bg-gradient-to-t from-[#050C1A] to-[#08152E] border-t border-cyan-500/20">
-              <div className="relative flex items-end gap-2 bg-[#061022] border border-cyan-500/25 rounded-2xl p-1.5 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-500/20 transition-all">
+              <div className="relative flex items-end gap-2 bg-[#061022] border border-cyan-500/30 rounded-2xl p-1.5 focus-within:border-cyan-400 focus-within:ring-2 focus-within:ring-cyan-500/20 transition-all">
                 <textarea
                   ref={textareaRef}
                   value={input}
@@ -528,46 +537,46 @@ export default function SupportChatWidget() {
                   onKeyDown={handleKeyDown}
                   placeholder="Ask LOGIC AI about platforms, architecture, pricing..."
                   rows={1}
-                  className="flex-1 max-h-[90px] min-h-[38px] resize-none bg-transparent px-3 py-2 text-xs sm:text-sm text-white placeholder:text-zinc-500 focus:outline-none"
+                  className="flex-1 max-h-[90px] min-h-[38px] resize-none bg-transparent px-3 py-2 text-xs sm:text-sm text-white placeholder:text-zinc-400 focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => handleSend()}
                   disabled={loading || !input.trim()}
                   aria-label="Send message"
-                  className="w-9 h-9 shrink-0 rounded-xl bg-gradient-to-tr from-cyan-400 to-teal-300 text-slate-950 flex items-center justify-center disabled:opacity-40 disabled:hover:scale-100 hover:scale-105 active:scale-95 transition-all shadow-md shadow-cyan-500/20"
+                  className="w-9 h-9 shrink-0 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 border border-cyan-400/40 text-white flex items-center justify-center disabled:opacity-40 disabled:hover:scale-100 hover:scale-105 active:scale-95 transition-all shadow-md shadow-cyan-500/25"
                 >
-                  <Send className="w-4 h-4 ml-0.5" />
+                  <Send className="w-4 h-4 ml-0.5 text-white" />
                 </button>
               </div>
 
               {/* Professional Corporate Utility Strip */}
-              <div className="mt-2.5 flex items-center justify-between text-[11px] text-zinc-400 px-1 font-mono">
+              <div className="mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] text-zinc-300 px-1 font-mono gap-1.5">
                 <button
                   type="button"
                   onClick={() => setShowHandoffModal((prev) => !prev)}
-                  className="hover:text-cyan-300 transition-colors flex items-center gap-1.5 text-cyan-300 font-semibold"
+                  className="hover:text-cyan-200 transition-colors flex items-center gap-1.5 text-cyan-300 font-semibold shrink-0"
                 >
-                  <Headphones className="w-3 h-3 text-cyan-400" />
+                  <Headphones className="w-3 h-3 text-cyan-400 shrink-0" />
                   <span>Talk to Engineering</span>
                 </button>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                   <Link
                     href="/book-consultation"
                     onClick={() => setOpen(false)}
-                    className="hover:text-white transition-colors text-zinc-300 flex items-center gap-1"
+                    className="hover:text-white transition-colors text-zinc-200 flex items-center gap-1"
                   >
-                    <Calendar className="w-3 h-3 text-zinc-400" />
+                    <Calendar className="w-3 h-3 text-cyan-400 shrink-0" />
                     <span>Consultation</span>
                   </Link>
-                  <span className="text-zinc-600">·</span>
+                  <span className="text-zinc-500">·</span>
                   <Link
                     href="/free-demo"
                     onClick={() => setOpen(false)}
-                    className="hover:text-cyan-300 transition-colors text-zinc-300 font-semibold flex items-center gap-1"
+                    className="hover:text-cyan-200 transition-colors text-cyan-300 font-semibold flex items-center gap-1"
                   >
-                    <Sparkles className="w-3 h-3 text-cyan-400" />
+                    <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" />
                     <span>Free Demo</span>
                   </Link>
                 </div>

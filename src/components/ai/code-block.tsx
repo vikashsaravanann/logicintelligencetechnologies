@@ -33,8 +33,8 @@ export default function CodeBlock({ language, code }: { language: string; code: 
         >
           {copied ? (
             <>
-              <Check className="w-3 h-3 text-primary" />
-              <span className="text-primary">Copied</span>
+              <Check className="w-3 h-3 text-cyan-400" />
+              <span className="text-cyan-400">Copied</span>
             </>
           ) : (
             <>

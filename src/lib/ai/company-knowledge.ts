@@ -136,6 +136,7 @@ YOUR ROLE & CONDUCT:
 - Highlight our flagship platforms: LIT Healthcare (Hospital OS), Logic Voice (Conversational AI), and Voice Shield (Anti-deepfake voice firewall).
 - If the visitor asks about pricing, packages, or services, outline the exact numbers (₹8,999 Launch Pack, ₹18,999 Business Pro Pack, ₹38,999+ Enterprise) and mention our Free Architecture Demo.
 - Always provide helpful next steps: encourage scheduling a consultation (${COMPANY.websiteUrl}/book-consultation), exploring the free demo (${COMPANY.websiteUrl}/free-demo), or messaging our engineering desk on WhatsApp at ${COMPANY.phone}.
+GREETING INSTRUCTION: When the user says 'hello', 'hi', or offers a simple greeting, keep your response CONCISE, FORMAL, and HIGHLY PERSUASIVE. Introduce Logic Intelligence Technologies with executive prestige, highlight our flagship platforms (LIT Healthcare, Logic Voice, Voice Shield), state our Free Architecture Demo & fixed-price packages (from ₹8,999), and invite them to explore a working prototype demo or book a consultation.
 
 ${MASTER_COMPANY_KNOWLEDGE}
 `;
@@ -147,6 +148,48 @@ ${MASTER_COMPANY_KNOWLEDGE}
  */
 export function generateAuthoritativeReply(userQuery: string): string {
   const query = (userQuery || "").toLowerCase();
+  const rawTrimmed = (userQuery || "").trim().toLowerCase();
+  const stripped = rawTrimmed.replace(/^[^a-z0-9]+|[^a-z0-9]+$/gi, "");
+
+  // 0. Specialized Executive Greeting Handling
+  // When a user message is a greeting (e.g. /^(hello|hi|hey|greetings|good (morning|afternoon|evening))\b/i or matches "hello", "hi")
+  const greetingRegex = /^(hello|hi|hey|greetings|good\s+(morning|afternoon|evening))\b/i;
+  const isGreeting =
+    greetingRegex.test(rawTrimmed) ||
+    greetingRegex.test(stripped) ||
+    stripped === "hello" ||
+    stripped === "hi" ||
+    rawTrimmed === "hello" ||
+    rawTrimmed === "hi";
+
+  const hasSpecificPlatformDeepTopic =
+    query.includes("voice shield") ||
+    query.includes("deepfake") ||
+    query.includes("biometric") ||
+    query.includes("audio firewall") ||
+    query.includes("logic voice") ||
+    query.includes("hospital") ||
+    query.includes("healthcare") ||
+    query.includes("lit healthcare") ||
+    query.includes("emr") ||
+    query.includes("ehr") ||
+    query.includes("founder") ||
+    query.includes("ceo") ||
+    query.includes("vikash");
+
+  if (isGreeting && !hasSpecificPlatformDeepTopic) {
+    return (
+      `Hello and welcome to **Logic Intelligence Technologies** — premier AI systems engineering, intelligent automation, and clinical healthcare software studio based in ${COMPANY.address}.\n\n` +
+      `We engineer enterprise-grade deterministic intelligence architectures, including:\n` +
+      `• **LIT Healthcare:** Smart Hospital Management OS active across 14 hospital sites (Bed telemetry, OPD/IPD workflows, EMR/EHR, pharmacy, and billing) — [Explore Healthcare](${COMPANY.websiteUrl}/healthcare)\n` +
+      `• **Logic Voice:** Sub-120ms P99 conversational AI voice intelligence and autonomous telephony — [Explore Logic Voice](${COMPANY.products.logicVoice.websiteUrl})\n` +
+      `• **Voice Shield:** Zero-trust anti-deepfake voice biometric firewall with 99.4% defense gate — [Explore Voice Shield](${COMPANY.websiteUrl}/voice-shield)\n\n` +
+      `**Commercial Packages & Free Demo:**\n` +
+      `• Transparent fixed-price engineering packages starting from **₹8,999** (Digital Launch Pack at ₹8,999, Business Pro Pack at ₹18,999, and Enterprise AI Architecture).\n` +
+      `• **Free Architecture Demo Policy:** We build a customized, working interactive prototype demo for your review *before* any advance payment is made.\n\n` +
+      `How may we assist your organization today? You can [Book a Free Architecture Demo](${COMPANY.websiteUrl}/free-demo), [Schedule an Executive Consultation](${COMPANY.websiteUrl}/book-consultation), explore our [Packages](${COMPANY.websiteUrl}/packages), or message our engineering desk directly on WhatsApp at **${COMPANY.phone}**.`
+    );
+  }
 
   // 1. Voice Shield / Deepfake / Biometrics
   if (query.includes("voice shield") || query.includes("deepfake") || query.includes("biometric") || query.includes("audio firewall") || query.includes("clone") || query.includes("cloning") || query.includes("voice security")) {
@@ -239,13 +282,13 @@ export function generateAuthoritativeReply(userQuery: string): string {
 
   // 7. General Executive Welcome & Comprehensive Overview
   return (
-    `Welcome to **Logic Intelligence Technologies**. We are an AI engineering, intelligent automation, and clinical systems studio based in Coimbatore, Tamil Nadu.\n\n` +
-    `Here is how I can assist you today:\n` +
-    `• **LIT Healthcare:** Smart Hospital Management OS active in 14 hospital sites (Bed telemetry, OPD/IPD, Pharmacy, Billing).\n` +
-    `• **Logic Voice:** Sub-120ms conversational AI voice engine and autonomous telephony.\n` +
-    `• **Voice Shield:** Zero-trust anti-deepfake voice biometric firewall with 99.4% defense gate.\n` +
-    `• **Engineering Packages:** Digital Launch Pack (₹8,999), Business Pro Pack (₹18,999), and Enterprise AI Architecture.\n` +
-    `• **Free Architecture Demo:** We provide a functional architecture demo before payment.\n\n` +
-    `What system or platform can we explore for your organization? You can also message our engineering desk directly on WhatsApp at **${COMPANY.phone}**.`
+    `Welcome to **${COMPANY.displayName}**. I am **LOGIC AI**, your executive systems advisor.\n\n` +
+    `We engineer high-performance software and autonomous intelligence platforms:\n` +
+    `• **LIT Healthcare:** Smart Hospital Management OS active across 14 clinical sites.\n` +
+    `• **Logic Voice & Voice Shield:** Sub-120ms conversational AI voice telephony and real-time deepfake biometric firewall (99.4% defense gate).\n` +
+    `• **Custom Enterprise Systems:** Mission-critical cloud backends, multi-agent AI workflows, and bespoke software.\n` +
+    `• **Commercial Advantage:** Fixed-price packages from **₹8,999** with our risk-free **Pre-Payment Working Prototype Demo**—we build and demonstrate the system architecture before you commit.\n\n` +
+    `Would you like to request a **free prototype demo** (${COMPANY.websiteUrl}/free-demo), review our packages, or **book an architecture review** (${COMPANY.websiteUrl}/book-consultation)? What system can we build for you today?\n\n` +
+    `*Direct Engineering Desk: WhatsApp **${COMPANY.phone}** | Email **${COMPANY.email}**.*`
   );
 }

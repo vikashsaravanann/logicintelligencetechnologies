@@ -1,40 +1,27 @@
 /**
- * Routes reachable without signing in. Every public marketing page MUST be
- * listed. tests/navigation/public-paths.test.ts fails if a page under
- * src/app/(marketing) is missing.
+ * Routes reachable without signing in.
+ * Only the homepage and essential auth / static asset routes are public.
  */
-export const PUBLIC_MARKETING_PREFIXES: readonly string[] = [
-  // (marketing) route group
-  "/about", "/accessibility", "/ai-assistant", "/ai-discovery", "/ai-ethics",
-  "/architecture", "/blog", "/book-consultation", "/booking", "/careers",
-  "/certifications", "/checklist", "/community", "/contact", "/cookie-policy",
-  "/discovery", "/docs", "/expertise", "/free-demo", "/healthcare", "/help-center",
-  "/industries", "/investor-brief", "/investors", "/jobs", "/knowledge-base",
-  "/onboard", "/packages", "/press", "/privacy", "/privacy-policy", "/products",
-  "/proposal", "/refund-policy", "/resources", "/roi-calculator", "/sales",
-  "/search", "/services", "/status", "/support", "/terms",
-  "/terms-of-service", "/voice-shield", "/work",
-  // Public pages that live outside the (marketing) group
-  "/ai", "/company", "/pricing", "/security",
-];
+export const PUBLIC_MARKETING_PREFIXES: readonly string[] = [];
 
 export function isPublicPath(path: string): boolean {
-  if (path === "/") return true;
-  if (path.startsWith("/login")) return true;
-  if (path.startsWith("/reset-password")) return true;
-  if (path.startsWith("/auth/")) return true;
-  if (path.startsWith("/api/")) return true;
-  if (path.startsWith("/unsubscribe")) return true;
-  if (path.startsWith("/_next/")) return true;
-  if (path.startsWith("/assets/")) return true;
-  if (path.startsWith("/images/")) return true;
-  if (path.startsWith("/favicon")) return true;
-  if (path.startsWith("/icon")) return true;
-  if (path.startsWith("/apple-")) return true;
-  if (path.startsWith("/sitemap")) return true;
-  if (path.startsWith("/robots")) return true;
-  if (path.startsWith("/manifest")) return true;
-  return PUBLIC_MARKETING_PREFIXES.some((p) => path === p || path.startsWith(p + "/"));
+  const p = path.split("?")[0];
+  if (p === "/") return true;
+  if (p === "/login" || p.startsWith("/login/")) return true;
+  if (p === "/reset-password" || p.startsWith("/reset-password/")) return true;
+  if (p.startsWith("/auth/")) return true;
+  if (p.startsWith("/api/")) return true;
+  if (p === "/unsubscribe" || p.startsWith("/unsubscribe/")) return true;
+  if (p.startsWith("/_next/")) return true;
+  if (p.startsWith("/assets/")) return true;
+  if (p.startsWith("/images/")) return true;
+  if (p.startsWith("/favicon")) return true;
+  if (p.startsWith("/icon")) return true;
+  if (p.startsWith("/apple-")) return true;
+  if (p.startsWith("/sitemap")) return true;
+  if (p.startsWith("/robots")) return true;
+  if (p.startsWith("/manifest")) return true;
+  return false;
 }
 
 /**
@@ -46,7 +33,62 @@ export function isPublicPath(path: string): boolean {
  * unprotected.
  */
 export const PROTECTED_PREFIXES: readonly string[] = [
-  "/admin", "/client", "/dashboard", "/profile",
+  // Administrative and internal areas
+  "/admin",
+  "/client",
+  "/dashboard",
+  "/profile",
+
+  // Pages requiring sign-in
+  "/about",
+  "/accessibility",
+  "/ai",
+  "/ai-assistant",
+  "/ai-discovery",
+  "/ai-ethics",
+  "/architecture",
+  "/blog",
+  "/book-consultation",
+  "/booking",
+  "/careers",
+  "/certifications",
+  "/checklist",
+  "/community",
+  "/company",
+  "/contact",
+  "/cookie-policy",
+  "/discovery",
+  "/docs",
+  "/expertise",
+  "/free-demo",
+  "/healthcare",
+  "/help-center",
+  "/industries",
+  "/investor-brief",
+  "/investors",
+  "/jobs",
+  "/knowledge-base",
+  "/onboard",
+  "/packages",
+  "/press",
+  "/pricing",
+  "/privacy",
+  "/privacy-policy",
+  "/products",
+  "/proposal",
+  "/refund-policy",
+  "/resources",
+  "/roi-calculator",
+  "/sales",
+  "/search",
+  "/security",
+  "/services",
+  "/status",
+  "/support",
+  "/terms",
+  "/terms-of-service",
+  "/voice-shield",
+  "/work",
 ];
 
 /** Decoded, slash-collapsed, lower-cased path; null when the encoding is malformed. */

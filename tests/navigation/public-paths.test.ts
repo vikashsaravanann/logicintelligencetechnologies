@@ -26,7 +26,52 @@ function hasPage(dir: string): boolean {
     .some((e) => e.isDirectory() && hasPage(path.join(dir, e.name)));
 }
 
-test("every page in the (marketing) route group is public", () => {
+test("homepage / is public", () => {
+  assert.equal(isPublicPath("/"), true, "/ must be public");
+  assert.equal(isProtectedPath("/"), false, "/ must not be protected");
+  assert.equal(isCompanyOnlyPath("/"), false, "/ must not be company-only");
+});
+
+test("essential system and auth entrypoints remain public", () => {
+  for (const p of [
+    "/login",
+    "/reset-password",
+    "/auth/callback",
+    "/api/chat",
+    "/unsubscribe",
+    "/_next/static/chunks/main.js",
+    "/assets/logo.png",
+    "/images/hero.webp",
+    "/favicon.ico",
+    "/icon.png",
+    "/apple-touch-icon.png",
+    "/sitemap.xml",
+    "/robots.txt",
+    "/manifest.webmanifest",
+  ]) {
+    assert.equal(isPublicPath(p), true, `${p} should be public`);
+    assert.equal(isProtectedPath(p), false, `${p} must not be protected`);
+  }
+});
+
+test("marketing and product routes are not public and are protected", () => {
+  const targetRoutes = [
+    "/about",
+    "/services",
+    "/products",
+    "/packages",
+    "/pricing",
+    "/healthcare",
+    "/voice-shield",
+  ];
+
+  for (const r of targetRoutes) {
+    assert.equal(isPublicPath(r), false, `${r} must not be public`);
+    assert.equal(isProtectedPath(r), true, `${r} must be protected`);
+  }
+});
+
+test("every page in the (marketing) route group requires login", () => {
   const routes = fs
     .readdirSync(MARKETING_DIR, { withFileTypes: true })
     .filter((e) => e.isDirectory() && !/^[[(_]/.test(e.name))
@@ -34,38 +79,90 @@ test("every page in the (marketing) route group is public", () => {
     .map((e) => `/${e.name}`);
 
   assert.ok(routes.length > 20, `expected many marketing routes, found ${routes.length}`);
-  const locked = routes.filter((r) => !isPublicPath(r));
-  assert.deepEqual(locked, [], `marketing routes redirected to /login: ${locked.join(", ")}`);
+  const accidentallyPublic = routes.filter((r) => isPublicPath(r));
+  assert.deepEqual(accidentallyPublic, [], `marketing routes must not be public: ${accidentallyPublic.join(", ")}`);
+
+  const unprotected = routes.filter((r) => !isProtectedPath(r));
+  assert.deepEqual(unprotected, [], `marketing routes must be protected: ${unprotected.join(", ")}`);
 });
 
-test("public pages outside the (marketing) group stay reachable", () => {
-  for (const p of ["/", "/pricing", "/security", "/company/facts", "/ai"]) {
-    assert.equal(isPublicPath(p), true, `${p} should be public`);
+test("pages outside the (marketing) group are protected behind login", () => {
+  for (const p of ["/pricing", "/security", "/company/facts", "/ai"]) {
+    assert.equal(isPublicPath(p), false, `${p} must not be public`);
+    assert.equal(isProtectedPath(p), true, `${p} must be protected`);
   }
 });
 
 test("authenticated areas stay behind login", () => {
   for (const p of ["/admin", "/admin/leads", "/dashboard", "/client/dashboard", "/profile"]) {
     assert.equal(isPublicPath(p), false, `${p} must not be public`);
+    assert.equal(isProtectedPath(p), true, `${p} must be protected`);
+  }
+});
+
+test("/admin and /dashboard are company-only", () => {
+  assert.equal(isCompanyOnlyPath("/admin"), true, "/admin must be company-only");
+  assert.equal(isCompanyOnlyPath("/admin/leads"), true, "/admin/leads must be company-only");
+  assert.equal(isCompanyOnlyPath("/dashboard"), true, "/dashboard must be company-only");
+  assert.equal(isCompanyOnlyPath("/dashboard/analytics"), true, "/dashboard/analytics must be company-only");
+
+  for (const p of ["/", "/profile", "/client/dashboard", "/about", "/services", "/pricing", "/administrator"]) {
+    assert.equal(isCompanyOnlyPath(p), false, `${p} is not company-only`);
+  }
+});
+
+test("every page in pageUrls() is classified properly: / is public, all other pages are protected", () => {
+  const urls = pageUrls();
+  assert.ok(urls.length > 60, `expected many pages, found ${urls.length}`);
+
+  // No unclassified pages
+  const unclassified = urls.filter((u) => !isPublicPath(u) && !isProtectedPath(u));
+  assert.deepEqual(unclassified, [], `add to PROTECTED_PREFIXES: ${unclassified.join(", ")}`);
+
+  // No pages listed as both public and protected
+  const both = urls.filter((u) => isPublicPath(u) && isProtectedPath(u));
+  assert.deepEqual(both, [], `listed as both public and protected: ${both.join(", ")}`);
+
+  // / is public and not protected
+  assert.equal(isPublicPath("/"), true, "/ must be public");
+  assert.equal(isProtectedPath("/"), false, "/ must not be protected");
+
+  // Every other page in pageUrls() is protected behind login (excluding auth/system entrypoints)
+  const AUTH_SYSTEM_ENTRYPOINTS = new Set(["/login", "/reset-password", "/unsubscribe"]);
+  const protectedPages = urls.filter((u) => u !== "/" && !AUTH_SYSTEM_ENTRYPOINTS.has(u));
+  for (const u of protectedPages) {
+    assert.equal(isPublicPath(u), false, `${u} must not be public`);
+    assert.equal(isProtectedPath(u), true, `${u} must be protected`);
   }
 });
 
 test("prefix matching does not leak lookalike paths", () => {
-  assert.equal(isPublicPath("/aboutx"), false);
-  assert.equal(isPublicPath("/pricing-admin"), false);
+  const lookalikes = [
+    "/aboutx",
+    "/pricing-admin",
+    "/services-fake",
+    "/adminx",
+    "/dashboardx",
+    "/profile-test",
+  ];
+  for (const p of lookalikes) {
+    assert.equal(isPublicPath(p), false, `${p} must not be public`);
+    assert.equal(isProtectedPath(p), false, `${p} must not be protected`);
+  }
 });
 
-test("every page is classified public or protected (no unlisted private page)", () => {
-  const urls = pageUrls();
-  assert.ok(urls.length > 60, `expected many pages, found ${urls.length}`);
-  const unclassified = urls.filter((u) => !isPublicPath(u) && !isProtectedPath(u));
-  assert.deepEqual(unclassified, [], `add to PUBLIC_MARKETING_PREFIXES or PROTECTED_PREFIXES: ${unclassified.join(", ")}`);
-  const both = urls.filter((u) => isPublicPath(u) && isProtectedPath(u));
-  assert.deepEqual(both, [], `listed as both public and protected: ${both.join(", ")}`);
-});
-
-test("protected matching survives encoding, case and slash tricks", () => {
-  for (const p of ["/%61dmin", "/ADMIN/leads", "//admin", "/dashboard%2Fleads", "/%E0%A4%A"]) {
+test("protected matching survives encoding, case, slash tricks, and malformed encoding", () => {
+  for (const p of [
+    "/%61dmin",
+    "/ADMIN/leads",
+    "//admin",
+    "/dashboard%2Fleads",
+    "/%61bout",
+    "/ABOUT",
+    "//pricing",
+    "/SERVICES",
+    "/%E0%A4%A", // malformed URI encoding: fails closed
+  ]) {
     assert.equal(isProtectedPath(p), true, `${p} must be protected`);
   }
   for (const p of ["/does-not-exist", "/adminx", "/reply-drafter.html"]) {
@@ -73,11 +170,11 @@ test("protected matching survives encoding, case and slash tricks", () => {
   }
 });
 
-test("company-only check survives encoding and case tricks", () => {
+test("company-only check survives encoding, case tricks, and malformed encoding", () => {
   for (const p of ["/admin", "/%61dmin/leads", "/Dashboard", "//admin", "/%E0%A4%A"]) {
     assert.equal(isCompanyOnlyPath(p), true, `${p} must be company-only`);
   }
-  for (const p of ["/profile", "/client/dashboard", "/administrator"]) {
+  for (const p of ["/profile", "/client/dashboard", "/about", "/services", "/pricing", "/administrator"]) {
     assert.equal(isCompanyOnlyPath(p), false, `${p} is not company-only`);
   }
 });
