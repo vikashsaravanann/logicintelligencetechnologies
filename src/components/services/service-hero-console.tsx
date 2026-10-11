@@ -90,7 +90,7 @@ export default function ServiceHeroConsole({
         <div className="flex items-center justify-between text-[11px] text-slate-400 border-b border-slate-800 pb-2">
           <div className="flex items-center gap-2 text-sky-400">
             <Layers className="w-3.5 h-3.5" />
-            <span>architecture: {title.toUpperCase()} // enterprise-grade</span>
+            <span>architecture: {title.toUpperCase()} {'//'} enterprise-grade</span>
           </div>
           <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
             <Activity className="w-3 h-3 animate-pulse" />
