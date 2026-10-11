@@ -23,6 +23,20 @@ export type ProviderResult = {
 function buildProviders(): ProviderConfig[] {
   const list: ProviderConfig[] = [];
 
+  // GROQ — Primary Enterprise LLM Router (llama-3.3-70b-versatile) per LIT Standard
+  const groqKey = process.env.GROQ_API_KEY;
+  if (groqKey) {
+    list.push({
+      id: "groq",
+      apiKey: groqKey.trim(),
+      apiUrl: "https://api.groq.com/openai/v1/chat/completions",
+      models: [
+        process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+        "llama-3.1-8b-instant",
+      ].filter(Boolean),
+    });
+  }
+
   // THROUGHPUTS - Primary AI for VoiceShield & Forensic
   if (process.env.THROUGHPUTS_API_KEY) {
     list.push({
@@ -37,7 +51,7 @@ function buildProviders(): ProviderConfig[] {
     });
   }
 
-  // xAI (Grok) — sole cloud LLM fallback after THROUGHPUTS
+  // xAI (Grok) — cloud LLM fallback after GROQ & THROUGHPUTS
   const xaiKey = process.env.XAI_API_KEY || process.env.GROK_API_KEY;
   if (xaiKey) {
     list.push({
@@ -53,8 +67,10 @@ function buildProviders(): ProviderConfig[] {
     });
   }
 
-  // Preference: throughputs -> xai
+  // Preference: groq -> throughputs -> xai
   list.sort((a, b) => {
+    if (a.id === "groq") return -1;
+    if (b.id === "groq") return 1;
     if (a.id === "throughputs") return -1;
     if (b.id === "throughputs") return 1;
     if (a.id === "xai") return -1;

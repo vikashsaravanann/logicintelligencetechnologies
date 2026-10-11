@@ -216,7 +216,7 @@ export function StudioPanel({
             </h3>
           </div>
           <span className="text-[11px] font-mono text-[var(--lit-text-muted,#52677C)]">
-            AI Engine: Claude 3.5 Sonnet / OpenAI GPT-4o
+            AI Engine: LIT Intelligence (Groq / LLaMA-3.3-70b)
           </span>
         </div>
 
