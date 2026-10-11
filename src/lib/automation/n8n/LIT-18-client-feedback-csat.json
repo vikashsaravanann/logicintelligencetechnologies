@@ -1,0 +1,248 @@
+{
+  "name": "LIT — Client Feedback & CSAT",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-client-feedback-csat",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1180001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "lit-client-feedback-csat"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1180001-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\n\nconst clientId = String(payload.clientId || payload.client_id || 'anonymous').trim();\nconst clientName = String(payload.clientName || payload.name || 'Valued Client').trim();\nconst clientEmail = String(payload.email || payload.clientEmail || '').trim().toLowerCase();\nconst projectId = String(payload.projectId || payload.project_id || '').trim();\nconst ticketId = String(payload.ticketId || payload.ticket_id || '').trim();\nconst rawRating = Number(payload.rating || payload.score || 10);\nconst rating = Math.max(1, Math.min(10, rawRating));\nconst feedbackText = String(payload.feedback || payload.comments || '').trim();\nconst category = String(payload.category || 'project_delivery').trim();\n\nconst lowerText = feedbackText.toLowerCase();\nconst positiveWords = ['great', 'excellent', 'fast', 'smooth', 'loved', 'perfect', 'awesome', 'recommend', 'clean', 'high quality', 'exceptional'];\nconst negativeWords = ['slow', 'buggy', 'disappointed', 'delay', 'issue', 'frustrated', 'poor', 'unhappy', 'bad', 'broken', 'error'];\n\nlet posCount = 0;\nfor (const w of positiveWords) {\n  if (lowerText.includes(w)) posCount++;\n}\nlet negCount = 0;\nfor (const w of negativeWords) {\n  if (lowerText.includes(w)) negCount++;\n}\n\nlet sentiment = 'neutral';\nif (rating >= 8 || posCount > negCount) {\n  sentiment = 'positive';\n} else if (rating <= 5 || negCount > posCount) {\n  sentiment = 'negative';\n}\n\nconst isPromoter = rating >= 9;\nconst isDetractor = rating <= 6;\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    clientId,\n    clientName,\n    clientEmail,\n    projectId,\n    ticketId,\n    rating,\n    feedbackText,\n    category,\n    sentiment,\n    isPromoter,\n    isDetractor,\n    processedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "c1180001-0003-4003-8003-000000000003",
+      "name": "Process feedback & analyze sentiment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond-csat-0001",
+              "leftValue": "={{ $json.isPromoter }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c1180001-0004-4004-8004-000000000004",
+      "name": "IF promoter rating",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst testimonialInvitation = {\n  recipientName: item.clientName,\n  recipientEmail: item.clientEmail,\n  rating: item.rating,\n  sentiment: item.sentiment,\n  invitationSubject: `Thank you for your ${item.rating}/10 review of Logic Intelligence Technologies`,\n  testimonialPortalPath: `/client/testimonials?client_id=${item.clientId}&project_id=${item.projectId}`,\n  advocateTier: item.rating === 10 ? 'VIP_ADVOCATE' : 'STANDARD_ADVOCATE',\n  referralIncentiveEligible: true\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'promoter_testimonial_dispatched',\n    detail: {\n      clientId: item.clientId,\n      projectId: item.projectId,\n      rating: item.rating,\n      testimonialInvitation,\n      recordedAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c1180001-0005-4005-8005-000000000005",
+      "name": "Generate testimonial request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst isDetractor = item.isDetractor;\n\nconst recoveryCard = {\n  severity: isDetractor ? 'P1_ELEVATED' : 'P3_ROUTINE',\n  clientName: item.clientName,\n  clientEmail: item.clientEmail,\n  rating: item.rating,\n  feedback: item.feedbackText || 'No comments provided',\n  actionRequired: isDetractor\n    ? 'Lead Engineer direct outreach within 24 hours to resolve friction points'\n    : 'Log neutral feedback in CRM for retrospective review',\n  escalatedTo: isDetractor ? 'Vikash Saravanan (Lead System Engineer)' : 'Operations Support'\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: isDetractor ? 'service_recovery_escalated' : 'feedback_logged',\n    detail: {\n      clientId: item.clientId,\n      projectId: item.projectId,\n      rating: item.rating,\n      recoveryCard,\n      recordedAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c1180001-0006-4006-8006-000000000006",
+      "name": "Route service recovery alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'processed',\n  detail: item.json.detail || {}\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1180001-0007-4007-8007-000000000007",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-lit-timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "x-lit-event-id",
+              "value": "={{ $json.eventId }}"
+            },
+            {
+              "name": "x-lit-signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1180001-0008-4008-8008-000000000008",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1680,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Process feedback & analyze sentiment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process feedback & analyze sentiment": {
+      "main": [
+        [
+          {
+            "node": "IF promoter rating",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF promoter rating": {
+      "main": [
+        [
+          {
+            "node": "Generate testimonial request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route service recovery alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate testimonial request": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route service recovery alert": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign callback": {
+      "main": [
+        [
+          {
+            "node": "Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false
+}

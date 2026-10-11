@@ -1,0 +1,173 @@
+{
+  "name": "LIT — Milestone Invoice Generation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-milestone-invoice-generation",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1220001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "lit-milestone-invoice-generation"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1220001-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\n\nconst projectId = String(payload.projectId || payload.project_id || 'PROJ-DEFAULT').trim();\nconst milestoneNumber = Number(payload.milestoneNumber || payload.milestone || 1);\nconst milestoneTitle = String(payload.milestoneTitle || `Milestone ${milestoneNumber}`).trim();\nconst clientLegalName = String(payload.clientLegalName || payload.clientName || 'Valued Client').trim();\nconst clientEmail = String(payload.clientEmail || payload.email || '').trim().toLowerCase();\nconst clientGstin = String(payload.clientGstin || payload.gstin || '').trim().toUpperCase();\nconst currency = String(payload.currency || 'INR').trim().toUpperCase();\nconst baseAmount = Number(payload.baseAmount || payload.amount || 0);\nconst country = String(payload.country || 'IN').trim().toUpperCase();\n\nconst isDomestic = country === 'IN' || currency === 'INR';\nlet taxRate = 0;\nlet taxType = 'EXPORT_ZERO_RATED';\nlet taxAmount = 0;\nlet cgst = 0;\nlet sgst = 0;\nlet igst = 0;\n\nif (isDomestic) {\n  taxRate = 0.18;\n  taxAmount = Math.round(baseAmount * taxRate * 100) / 100;\n  const isInterstate = clientGstin && !clientGstin.startsWith('33'); // 33 is Tamil Nadu State Code for LIT\n  if (isInterstate) {\n    taxType = 'IGST_18';\n    igst = taxAmount;\n  } else {\n    taxType = 'CGST_SGST_18';\n    cgst = Math.round((taxAmount / 2) * 100) / 100;\n    sgst = Math.round((taxAmount / 2) * 100) / 100;\n  }\n}\n\nconst totalAmount = Math.round((baseAmount + taxAmount) * 100) / 100;\nconst year = new Date().getFullYear();\nconst seq = Math.floor(1000 + Math.random() * 9000);\nconst invoiceNumber = `LIT-INV-${year}-${seq}`;\nconst issueDate = new Date().toISOString();\nconst dueDate = new Date(Date.now() + 15 * 86400 * 1000).toISOString();\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    invoice: {\n      invoiceNumber,\n      projectId,\n      milestoneNumber,\n      milestoneTitle,\n      clientLegalName,\n      clientEmail,\n      clientGstin: clientGstin || 'UNREGISTERED',\n      currency,\n      baseAmount,\n      taxRate,\n      taxType,\n      cgst,\n      sgst,\n      igst,\n      taxAmount,\n      totalAmount,\n      issueDate,\n      dueDate,\n      paymentTerms: 'Net 15 Days',\n      beneficiaryName: 'Logic Intelligence Technologies',\n      lutReference: isDomestic ? null : 'LUT-ARN-AD330224001928K'\n    }\n  }\n}];"
+      },
+      "id": "c1220001-0003-4003-8003-000000000003",
+      "name": "Calculate invoice amounts & taxes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst inv = item.invoice;\n\nconst notificationPayload = {\n  recipientEmail: inv.clientEmail,\n  recipientName: inv.clientLegalName,\n  subject: `Invoice ${inv.invoiceNumber} for ${inv.milestoneTitle} — Logic Intelligence Technologies`,\n  invoiceNumber: inv.invoiceNumber,\n  totalAmountFormatted: `${inv.currency} ${inv.totalAmount.toLocaleString('en-IN')}`,\n  dueDate: inv.dueDate,\n  paymentPortalPath: `/portal/billing/invoices/${inv.invoiceNumber}`,\n  paymentGateway: inv.currency === 'INR' ? 'Razorpay' : 'Stripe',\n  wireTransferEligible: inv.totalAmount >= 50000\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'milestone_invoice_created',\n    detail: {\n      invoice: inv,\n      notification: notificationPayload,\n      generatedAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c1220001-0004-4004-8004-000000000004",
+      "name": "Format invoice notification & payment link",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'processed',\n  detail: item.json.detail || {}\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1220001-0005-4005-8005-000000000005",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-lit-timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "x-lit-event-id",
+              "value": "={{ $json.eventId }}"
+            },
+            {
+              "name": "x-lit-signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1220001-0006-4006-8006-000000000006",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1440,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Calculate invoice amounts & taxes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate invoice amounts & taxes": {
+      "main": [
+        [
+          {
+            "node": "Format invoice notification & payment link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format invoice notification & payment link": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign callback": {
+      "main": [
+        [
+          {
+            "node": "Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false
+}

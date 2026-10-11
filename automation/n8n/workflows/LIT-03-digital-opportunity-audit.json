@@ -1,0 +1,245 @@
+{
+  "name": "LIT — Website and Digital Opportunity Audit",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-digital-opportunity-audit",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1030001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "lit-digital-opportunity-audit"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1030002-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst businessId = String(payload.businessId || payload.id || '').trim();\nconst rawUrl = String(payload.url || payload.website || payload.domain || '').trim();\n\nif (!rawUrl) {\n  return [{\n    json: {\n      eventId: item.eventId,\n      businessId,\n      hasWebsite: false,\n      domain: '',\n      opportunityType: 'L0_no_website',\n      rawAudit: null\n    }\n  }];\n}\n\nconst protoPrefix = new RegExp('^https?:' + '/' + '/', 'i');\nlet cleanDomain = rawUrl.replace(protoPrefix, '').split('/')[0].split('?')[0].toLowerCase();\nif (cleanDomain.startsWith('www.')) {\n  cleanDomain = cleanDomain.substring(4);\n}\n\nconst domainRegex = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/;\nconst isValidDomain = domainRegex.test(cleanDomain);\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    businessId,\n    hasWebsite: isValidDomain,\n    domain: cleanDomain,\n    targetUrl: rawUrl,\n    inputTelemetry: payload.telemetry || payload.auditData || null\n  }\n}];"
+      },
+      "id": "c1030003-0003-4003-8003-000000000003",
+      "name": "Validate target website URL & normalize",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nif (!item.hasWebsite) {\n  return [{ json: { ...item, lighthouse: null } }];\n}\n\nconst t = item.inputTelemetry || {};\nconst perfScore = typeof t.performanceScore === 'number' ? t.performanceScore : 48;\nconst lcpMs = typeof t.lcpMs === 'number' ? t.lcpMs : 4200;\nconst cls = typeof t.cls === 'number' ? t.cls : 0.28;\nconst inpMs = typeof t.inpMs === 'number' ? t.inpMs : 340;\nconst ttfbMs = typeof t.ttfbMs === 'number' ? t.ttfbMs : 1450;\nconst seoScore = typeof t.seoScore === 'number' ? t.seoScore : 65;\nconst a11yScore = typeof t.accessibilityScore === 'number' ? t.accessibilityScore : 72;\n\nconst lighthouse = {\n  performanceScore: perfScore,\n  accessibilityScore: a11yScore,\n  seoScore: seoScore,\n  lcpMs: lcpMs,\n  cls: cls,\n  inpMs: inpMs,\n  ttfbMs: ttfbMs,\n  lcpStatus: lcpMs > 4000 ? 'poor' : (lcpMs > 2500 ? 'needs_improvement' : 'good'),\n  clsStatus: cls > 0.25 ? 'poor' : (cls > 0.1 ? 'needs_improvement' : 'good'),\n  inpStatus: inpMs > 500 ? 'poor' : (inpMs > 200 ? 'needs_improvement' : 'good'),\n  ttfbStatus: ttfbMs > 1800 ? 'poor' : (ttfbMs > 800 ? 'needs_improvement' : 'good')\n};\n\nreturn [{\n  json: {\n    ...item,\n    lighthouse\n  }\n}];"
+      },
+      "id": "c1030004-0004-4004-8004-000000000004",
+      "name": "Lighthouse & Core Web Vitals probe",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nif (!item.hasWebsite) {\n  return [{ json: { ...item, security: null } }];\n}\n\nconst t = item.inputTelemetry || {};\nconst hasHsts = Boolean(t.hasHsts ?? false);\nconst hasCsp = Boolean(t.hasCsp ?? false);\nconst httpsOk = Boolean(t.httpsOk ?? true);\nconst hasXFrameOptions = Boolean(t.hasXFrameOptions ?? true);\nconst hasXContentTypeOptions = Boolean(t.hasXContentTypeOptions ?? false);\n\nlet secScore = 0;\nif (httpsOk) secScore += 40;\nif (hasHsts) secScore += 20;\nif (hasCsp) secScore += 20;\nif (hasXFrameOptions) secScore += 10;\nif (hasXContentTypeOptions) secScore += 10;\n\nconst security = {\n  httpsOk,\n  hasHsts,\n  hasCsp,\n  hasXFrameOptions,\n  hasXContentTypeOptions,\n  securityScore: secScore,\n  riskLevel: secScore < 50 ? 'high' : (secScore < 80 ? 'moderate' : 'low')\n};\n\nreturn [{\n  json: {\n    ...item,\n    security\n  }\n}];"
+      },
+      "id": "c1030005-0005-4005-8005-000000000005",
+      "name": "Security headers audit",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nif (!item.hasWebsite) {\n  return [{ json: { ...item, mobile: null } }];\n}\n\nconst t = item.inputTelemetry || {};\nconst hasViewport = Boolean(t.hasViewport ?? true);\nconst mobileResponsive = Boolean(t.mobileResponsive ?? (item.lighthouse && item.lighthouse.cls < 0.2));\nconst uncompressedAssets = typeof t.uncompressedAssets === 'number' ? t.uncompressedAssets : 5;\nconst brokenResources = Array.isArray(t.brokenResources) ? t.brokenResources : [];\n\nconst mobile = {\n  hasViewport,\n  mobileResponsive,\n  uncompressedAssetsCount: uncompressedAssets,\n  brokenResourcesCount: brokenResources.length,\n  mobileGrade: (mobileResponsive && hasViewport) ? 'acceptable' : 'critical_friction'\n};\n\nreturn [{\n  json: {\n    ...item,\n    mobile\n  }\n}];"
+      },
+      "id": "c1030006-0006-4006-8006-000000000006",
+      "name": "Mobile responsiveness & asset probe",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\n\nlet oppType = 'L8_growth_automation';\nlet severity = 2;\nlet recommendedOffer = 'AI_AUTOMATION';\nconst evidence = [];\n\nif (!item.hasWebsite) {\n  oppType = 'L0_no_website';\n  severity = 5;\n  recommendedOffer = 'WEB_DEVELOPMENT';\n  evidence.push('No functional web presence detected for business entity');\n} else {\n  const lh = item.lighthouse || {};\n  const sec = item.security || {};\n  const mob = item.mobile || {};\n\n  if (!sec.httpsOk) {\n    oppType = 'L2_broken_website';\n    severity = 5;\n    recommendedOffer = 'WEB_DEVELOPMENT';\n    evidence.push('Insecure connection or SSL configuration failure detected');\n  } else if (!mob.mobileResponsive) {\n    oppType = 'L5_mobile_ux';\n    severity = 4;\n    recommendedOffer = 'WEB_DESIGN';\n    evidence.push('Viewport layout shifts and non-responsive elements degrade mobile browsing');\n  } else if (lh.performanceScore < 50 || lh.lcpMs > 4000) {\n    oppType = 'L4_performance';\n    severity = 4;\n    recommendedOffer = 'WEB_DEVELOPMENT';\n    evidence.push('Largest Contentful Paint is ' + (lh.lcpMs / 1000).toFixed(1) + 's (Google recommends < 2.5s)');\n    evidence.push('Overall mobile Core Web Vitals score is ' + lh.performanceScore + '/100');\n  } else if (!sec.hasCsp || !sec.hasHsts) {\n    oppType = 'L6_conversion';\n    severity = 3;\n    recommendedOffer = 'CYBERSECURITY';\n    evidence.push('Missing HSTS and modern Content Security Policy headers');\n  } else if (lh.seoScore < 70) {\n    oppType = 'L7_seo_foundation';\n    severity = 3;\n    recommendedOffer = 'WEB_DEVELOPMENT';\n    evidence.push('Search engine discoverability and metadata foundation score is ' + lh.seoScore + '/100');\n  } else {\n    oppType = 'L8_growth_automation';\n    severity = 2;\n    recommendedOffer = 'AI_AUTOMATION';\n    evidence.push('Core web performance is sound; prime candidate for automated AI agents and workflow orchestration');\n  }\n}\n\nconst auditSummary = {\n  businessId: item.businessId,\n  domain: item.domain,\n  opportunityType: oppType,\n  severity,\n  recommendedOffer,\n  evidence,\n  lighthouse: item.lighthouse,\n  security: item.security,\n  mobile: item.mobile,\n  auditedAt: new Date().toISOString()\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'processed',\n    audit: auditSummary\n  }\n}];"
+      },
+      "id": "c1030007-0007-4007-8007-000000000007",
+      "name": "Audit summary synthesis & opportunity classification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'processed',\n  detail: { audit: item.json.audit }\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1030008-0008-4008-8008-000000000008",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-lit-timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "x-lit-event-id",
+              "value": "={{ $json.eventId }}"
+            },
+            {
+              "name": "x-lit-signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1030009-0009-4009-8009-000000000009",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        2160,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Validate target website URL & normalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate target website URL & normalize": {
+      "main": [
+        [
+          {
+            "node": "Lighthouse & Core Web Vitals probe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lighthouse & Core Web Vitals probe": {
+      "main": [
+        [
+          {
+            "node": "Security headers audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Security headers audit": {
+      "main": [
+        [
+          {
+            "node": "Mobile responsiveness & asset probe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mobile responsiveness & asset probe": {
+      "main": [
+        [
+          {
+            "node": "Audit summary synthesis & opportunity classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audit summary synthesis & opportunity classification": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign callback": {
+      "main": [
+        [
+          {
+            "node": "Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false
+}

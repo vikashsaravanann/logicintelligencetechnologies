@@ -1,0 +1,173 @@
+{
+  "name": "LIT — Engineering Onboarding",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-engineering-onboarding",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1260001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "lit-engineering-onboarding"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1260001-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\n\nconst engineerId = String(payload.engineerId || payload.id || `ENG-${Math.floor(1000 + Math.random() * 9000)}`).trim();\nconst fullName = String(payload.fullName || payload.name || 'New Engineer').trim();\nconst personalEmail = String(payload.email || payload.personalEmail || '').trim().toLowerCase();\nconst role = String(payload.role || 'Full-Stack Software Engineer').trim();\nconst department = String(payload.department || 'Platform Engineering').trim();\nconst startDate = String(payload.startDate || new Date().toISOString().split('T')[0]).trim();\nconst managerName = String(payload.managerName || 'Vikash Saravanan (Lead System Engineer)').trim();\nconst githubUsername = String(payload.githubUsername || payload.github || '').trim();\n\nconst cleanName = fullName.toLowerCase().replace(/[^a-z0-9]/g, '.');\nconst corporateEmail = `${cleanName}@logicintelligence.com`;\n\nconst accessChecklist = [\n  { item: 'GitHub Organization Invite (logic-intelligence-technologies)', status: 'PROVISIONED', team: 'core-platform' },\n  { item: 'Supabase Development Workspace Role', status: 'PROVISIONED', role: 'developer' },\n  { item: '1Password Team Vault Access', status: 'INVITED', vault: 'Engineering-Shared' },\n  { item: 'Zero-Trust Cloudflare Gateway Access', status: 'PENDING_ENROLLMENT' },\n  { item: 'Sentry / Datadog Telemetry Read Access', status: 'PROVISIONED' }\n];\n\nconst complianceChecklist = [\n  { requirement: 'GPG & SSH commit signing key configured', completed: false, mandatory: true },\n  { requirement: 'Hardware 2FA / WebAuthn token enrolled', completed: false, mandatory: true },\n  { requirement: 'Zero-Trust Non-PHI security policy signed', completed: false, mandatory: true },\n  { requirement: 'LIT strict code review and CI verification training', completed: false, mandatory: true }\n];\n\nconst devEnvironmentSpec = {\n  nodeVersion: '>=20.0.0',\n  pythonVersion: '>=3.12.0',\n  dockerRequired: true,\n  recommendedIDE: 'VS Code with Antigravity Customizations',\n  repoCloneCommand: 'git clone git@github.com:logic-intelligence-technologies/platform.git'\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    engineer: {\n      engineerId,\n      fullName,\n      personalEmail,\n      corporateEmail,\n      role,\n      department,\n      startDate,\n      managerName,\n      githubUsername,\n      accessChecklist,\n      complianceChecklist,\n      devEnvironmentSpec\n    }\n  }\n}];"
+      },
+      "id": "c1260001-0003-4003-8003-000000000003",
+      "name": "Process engineer profile & role requirements",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst eng = item.engineer;\n\nconst welcomePackage = {\n  recipientName: eng.fullName,\n  corporateEmail: eng.corporateEmail,\n  personalEmail: eng.personalEmail,\n  role: eng.role,\n  manager: eng.managerName,\n  startDate: eng.startDate,\n  portalPath: `/internal/onboarding/welcome/${eng.engineerId}`,\n  firstDaySchedule: [\n    { time: '10:00 AM IST', title: 'Welcome & Workspace Setup with Vikash Saravanan' },\n    { time: '11:30 AM IST', title: 'Security Credentials, GPG Keys & 1Password Vault Walkthrough' },\n    { time: '02:00 PM IST', title: 'System Architecture & Multi-Agent Orchestration Deep Dive' },\n    { time: '04:00 PM IST', title: 'First PR Submission & CI/CD Pipeline Verification' }\n  ],\n  accessChecklist: eng.accessChecklist,\n  complianceChecklist: eng.complianceChecklist,\n  devSpec: eng.devEnvironmentSpec,\n  supportChannel: '#engineering-onboarding'\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'ops.engineer_onboarded',\n    detail: {\n      engineerId: eng.engineerId,\n      fullName: eng.fullName,\n      corporateEmail: eng.corporateEmail,\n      welcomePackage,\n      provisionedAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c1260001-0004-4004-8004-000000000004",
+      "name": "Synthesize onboarding package & checklist",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'ops.engineer_onboarded',\n  detail: item.json.detail || {}\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1260001-0005-4005-8005-000000000005",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-lit-timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "x-lit-event-id",
+              "value": "={{ $json.eventId }}"
+            },
+            {
+              "name": "x-lit-signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1260001-0006-4006-8006-000000000006",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1440,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Process engineer profile & role requirements",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process engineer profile & role requirements": {
+      "main": [
+        [
+          {
+            "node": "Synthesize onboarding package & checklist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Synthesize onboarding package & checklist": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign callback": {
+      "main": [
+        [
+          {
+            "node": "Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false
+}

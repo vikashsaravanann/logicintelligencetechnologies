@@ -1,0 +1,248 @@
+{
+  "name": "HLT — Bed Capacity Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hlt-bed-capacity-alert",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c2040001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "hlt-bed-capacity-alert"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c2040001-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst text = JSON.stringify(payload).toLowerCase();\n\n// Zero-Trust Non-PHI Check: Reject immediately if clinical PHI terms or patient demographics are present\nconst phiKeywords = ['prescription', 'diagnosis', 'symptom', 'treatment plan', 'blood test', 'biopsy', 'radiology', 'mri scan', 'ehr record', 'patient record', 'hiv', 'oncology', 'doctor notes', 'vitals', 'clinical_notes', 'patient_name', 'patientid', 'mrn', 'dob', 'birth_date', 'aadhaar', 'ssn', 'icd10', 'rx', 'lab_result'];\nconst containsPhi = phiKeywords.some(keyword => text.includes(keyword));\n\nconst facilityId = String(payload.facilityId || payload.facility_id || '').trim();\nconst facilityName = String(payload.facilityName || payload.hospitalName || 'Hospital Facility').trim();\nconst department = String(payload.department || payload.unit || 'Emergency / ICU').trim();\nconst totalBeds = Number(payload.totalBeds || payload.bedCapacity || 0);\nconst occupiedBeds = Number(payload.occupiedBeds || payload.currentOccupancy || 0);\nconst availableBeds = Number(payload.availableBeds !== undefined ? payload.availableBeds : Math.max(0, totalBeds - occupiedBeds));\nconst occupancyRate = totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : Number(payload.occupancyRate || 0);\nconst threshold = Number(payload.threshold || 90);\n\nlet surgeLevel = 'NORMAL';\nif (occupancyRate >= 95) {\n  surgeLevel = 'CRITICAL_SURGE';\n} else if (occupancyRate >= 90) {\n  surgeLevel = 'HIGH_SURGE';\n} else if (occupancyRate >= 80) {\n  surgeLevel = 'ELEVATED';\n}\n\nconst isValidCapacity = Boolean(facilityId && totalBeds > 0 && !containsPhi);\nconst isSurgeAlert = Boolean(isValidCapacity && occupancyRate >= threshold);\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    containsPhi,\n    isValidCapacity,\n    isSurgeAlert,\n    capacity: {\n      facilityId,\n      facilityName,\n      department,\n      totalBeds,\n      occupiedBeds,\n      availableBeds,\n      occupancyRate,\n      threshold,\n      surgeLevel,\n      timestamp: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c2040001-0003-4003-8003-000000000003",
+      "name": "Sanitize bed telemetry & PHI boundary check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond-cap-0001",
+              "leftValue": "={{ $json.isValidCapacity }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c2040001-0004-4004-8004-000000000004",
+      "name": "IF valid non-PHI capacity alert",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst cap = item.capacity;\n\nconst diversionAction = cap.occupancyRate >= 95\n  ? 'EMERGENCY_DIVERSION_ACTIVATED: Inbound ambulances rerouted to secondary network facility; on-call triage staff dispatched.'\n  : 'CAPACITY_SURGE_WARNING: Standby bed turnover team mobilized; elective admissions paused.';\n\nconst alertNotification = {\n  title: `🚨 [${cap.surgeLevel}] Bed Capacity Alert — ${cap.facilityName} (${cap.department})`,\n  facilityId: cap.facilityId,\n  department: cap.department,\n  occupancyRate: `${cap.occupancyRate}%`,\n  bedTelemetry: {\n    totalBeds: cap.totalBeds,\n    occupiedBeds: cap.occupiedBeds,\n    availableBeds: cap.availableBeds\n  },\n  protocolExecuted: diversionAction,\n  recipientGroup: 'Hospital Duty Operations Coordinator & Inpatient Bed Manager',\n  complianceBoundary: 'Zero-Trust Non-PHI Aggregate Capacity Perimeter'\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'capacity_alert_dispatched',\n    detail: {\n      facilityId: cap.facilityId,\n      department: cap.department,\n      occupancyRate: cap.occupancyRate,\n      surgeLevel: cap.surgeLevel,\n      alertNotification,\n      alertedAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c2040001-0005-4005-8005-000000000005",
+      "name": "Process aggregate capacity alert & dispatch diversion sentinel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'capacity_alert_rejected',\n    detail: {\n      error: item.containsPhi\n        ? 'CRITICAL_SECURITY_BREACH: Prohibited PHI clinical data detected in capacity telemetry'\n        : 'Invalid capacity telemetry: missing facilityId or totalBeds must be greater than zero'\n    }\n  }\n}];"
+      },
+      "id": "c2040001-0006-4006-8006-000000000006",
+      "name": "Reject invalid or PHI breach",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'processed',\n  detail: item.json.detail || {}\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c2040001-0007-4007-8007-000000000007",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-lit-timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "x-lit-event-id",
+              "value": "={{ $json.eventId }}"
+            },
+            {
+              "name": "x-lit-signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c2040001-0008-4008-8008-000000000008",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1680,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Sanitize bed telemetry & PHI boundary check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sanitize bed telemetry & PHI boundary check": {
+      "main": [
+        [
+          {
+            "node": "IF valid non-PHI capacity alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF valid non-PHI capacity alert": {
+      "main": [
+        [
+          {
+            "node": "Process aggregate capacity alert & dispatch diversion sentinel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject invalid or PHI breach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process aggregate capacity alert & dispatch diversion sentinel": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reject invalid or PHI breach": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign callback": {
+      "main": [
+        [
+          {
+            "node": "Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false
+}

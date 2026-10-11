@@ -1,0 +1,221 @@
+{
+  "name": "LIT — Proposal Preparation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-proposal-preparation",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1070001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "lit-proposal-preparation"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1070002-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\n\nconst clientName = String(payload.clientName || payload.contactName || 'Valued Client').trim();\nconst companyName = String(payload.companyName || payload.company || 'Enterprise Partner').trim();\nconst contactEmail = String(payload.email || payload.contactEmail || '').trim();\nconst rawNotes = String(payload.consultationNotes || payload.notes || payload.requirements || '').trim();\nconst requestedCategory = String(payload.serviceCategory || payload.service || 'WEB_DEVELOPMENT').toUpperCase();\n\nconst validCategories = [\n  'WEB_DEVELOPMENT', 'WEB_DESIGN', 'APP_DEVELOPMENT', 'MOBILE_DEVELOPMENT',\n  'GAME_DEVELOPMENT', 'CUSTOM_SOFTWARE', 'SAAS_DEVELOPMENT', 'AI_AUTOMATION',\n  'AI_AGENTS', 'DATABASE_ENGINEERING', 'API_INTEGRATION', 'ENTERPRISE_PLATFORM',\n  'HEALTHCARE_TECH', 'CYBERSECURITY', 'TECHNICAL_CONSULTING'\n];\n\nconst category = validCategories.includes(requestedCategory) ? requestedCategory : 'WEB_DEVELOPMENT';\nconst budgetIndication = String(payload.budget || '').toLowerCase();\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    clientName,\n    companyName,\n    contactEmail,\n    consultationNotes: rawNotes,\n    serviceCategory: category,\n    budgetIndication,\n    targetDeadlineDays: Number(payload.deadlineDays || 21)\n  }\n}];"
+      },
+      "id": "c1070003-0003-4003-8003-000000000003",
+      "name": "Extract consultation notes & service requirements",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst cat = item.serviceCategory;\nconst budget = item.budgetIndication;\n\nlet selectedPackage = null;\nlet priceInINR = 8999;\nlet priceDisplay = '₹8,999';\nlet pricingModel = 'fixed';\nlet deliverables = [];\n\nif (cat === 'WEB_DEVELOPMENT' || cat === 'WEB_DESIGN') {\n  if (/enterprise|custom|50k|large/.test(budget)) {\n    selectedPackage = 'Enterprise Web Platform';\n    priceInINR = 50000;\n    priceDisplay = '₹50,000+';\n    pricingModel = 'milestone_based';\n    deliverables = [\n      'Custom Next.js App Router full-stack web application',\n      'Supabase PostgreSQL schema with Row-Level Security',\n      'Multi-region Vercel Edge deployment & automated CI/CD',\n      'Payment gateway & administrative dashboard integration',\n      '6-month comprehensive SLA & performance warranty'\n    ];\n  } else if (/pro|business|18k|19k|mid/.test(budget)) {\n    selectedPackage = 'Business Pro Pack';\n    priceInINR = 18999;\n    priceDisplay = '₹18,999';\n    pricingModel = 'milestone_based';\n    deliverables = [\n      'Up to 10 high-conversion responsive Next.js pages',\n      'Razorpay payment gateway integration',\n      'Admin content & quotation engine portal',\n      'Automated email notification & webhook dispatchers',\n      '3-month bug fix warranty and SLA'\n    ];\n  } else {\n    selectedPackage = 'Digital Launch Pack';\n    priceInINR = 8999;\n    priceDisplay = '₹8,999';\n    pricingModel = 'fixed';\n    deliverables = [\n      '5 core conversion-optimized responsive pages',\n      'Modern Tailwind CSS design system',\n      'Direct WhatsApp click-to-chat CTA & contact forms',\n      'Search engine meta & schema.org structured data',\n      '30-day post-launch warranty and bug fix guarantee'\n    ];\n  }\n} else if (cat === 'APP_DEVELOPMENT' || cat === 'MOBILE_DEVELOPMENT') {\n  selectedPackage = 'Cross-Platform Mobile App Sprint';\n  priceInINR = 29999;\n  priceDisplay = '₹29,999';\n  pricingModel = 'milestone_based';\n  deliverables = [\n    'Flutter / React Native cross-platform mobile app',\n    'Supabase Authentication & secure persistent storage',\n    'Offline-first synchronization & responsive native UI',\n    'App Store & Google Play Store release bundles',\n    '60-day post-launch bug warranty'\n  ];\n} else if (cat === 'AI_AUTOMATION' || cat === 'AI_AGENTS') {\n  selectedPackage = 'AI Workflow Orchestration Engine';\n  priceInINR = 24999;\n  priceDisplay = '₹24,999';\n  pricingModel = 'milestone_based';\n  deliverables = [\n    'Groq LLaMA-3.3 70B inference pipeline integration',\n    'RAG knowledge base embeddings with pgvector store',\n    'Sub-120ms latency optimized FastAPI microservices',\n    'Guardrails & automated anti-hallucination verification gates',\n    'End-to-end telemetry and monitoring dashboard'\n  ];\n} else {\n  selectedPackage = 'Custom Technical Engineering Package';\n  priceInINR = 35000;\n  priceDisplay = '₹35,000+';\n  pricingModel = 'milestone_based';\n  deliverables = [\n    'Comprehensive technical architecture specification',\n    'Production backend API endpoints & secure database modeling',\n    'Integration test suite and security audit review',\n    'Automated CI/CD deployment pipeline configuration',\n    'System administrator handover runbook'\n  ];\n}\n\nconst advanceAmount = Math.round(priceInINR * 0.40);\nconst midAmount = Math.round(priceInINR * 0.40);\nconst finalAmount = priceInINR - advanceAmount - midAmount;\n\nconst paymentSchedule = [\n  { milestone: 'M1 - Project Initiation & Advance', percentage: 40, amountINR: advanceAmount, due: 'Upon contract execution' },\n  { milestone: 'M2 - Staging Prototype Verification', percentage: 40, amountINR: midAmount, due: 'Upon staging feature completion' },\n  { milestone: 'M3 - Final Cutover & Handover', percentage: 20, amountINR: finalAmount, due: 'Upon production deployment sign-off' }\n];\n\nreturn [{\n  json: {\n    ...item,\n    pricing: {\n      packageId: selectedPackage.toLowerCase().replace(/[^a-z0-9]+/g, '-'),\n      packageName: selectedPackage,\n      totalINR: priceInINR,\n      totalDisplay: priceDisplay,\n      pricingModel,\n      paymentSchedule,\n      deliverables\n    }\n  }\n}];"
+      },
+      "id": "c1070004-0004-4004-8004-000000000004",
+      "name": "Package & pricing mapper",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst totalDays = Math.max(14, item.targetDeadlineDays || 21);\n\nconst m1Days = Math.max(3, Math.round(totalDays * 0.20));\nconst m2Days = Math.max(5, Math.round(totalDays * 0.45));\nconst m3Days = Math.max(3, Math.round(totalDays * 0.20));\nconst m4Days = totalDays - m1Days - m2Days - m3Days;\n\nconst now = new Date();\nconst addDays = (d, count) => new Date(d.getTime() + count * 24 * 60 * 60 * 1000);\n\nconst m1Date = addDays(now, m1Days);\nconst m2Date = addDays(m1Date, m2Days);\nconst m3Date = addDays(m2Date, m3Days);\nconst m4Date = addDays(m3Date, m4Days);\n\nconst timelineMilestones = [\n  {\n    phase: 'Phase 1',\n    title: 'Architecture Blueprint & UI/UX Design System',\n    durationDays: m1Days,\n    targetDate: m1Date.toISOString().split('T')[0],\n    deliverables: ['System Architecture RFC', 'Figma Wireframe Prototype', 'API Contract Specification']\n  },\n  {\n    phase: 'Phase 2',\n    title: 'Core Feature Engineering & Database Modeling',\n    durationDays: m2Days,\n    targetDate: m2Date.toISOString().split('T')[0],\n    deliverables: ['Production Backend Services', 'Frontend Component Suite', 'Staging Environment Preview']\n  },\n  {\n    phase: 'Phase 3',\n    title: 'Integration Testing, Security Audit & User Acceptance',\n    durationDays: m3Days,\n    targetDate: m3Date.toISOString().split('T')[0],\n    deliverables: ['Core Web Vitals Verification', 'Security Headers Hardening', 'Client Acceptance Sign-Off']\n  },\n  {\n    phase: 'Phase 4',\n    title: 'Production Cutover & Warranty Period Initiation',\n    durationDays: m4Days,\n    targetDate: m4Date.toISOString().split('T')[0],\n    deliverables: ['Production DNS Deployment', 'Credentials Handover Package', '30-Day Active Warranty Window']\n  }\n];\n\nreturn [{\n  json: {\n    ...item,\n    schedule: {\n      estimatedTotalDays: totalDays,\n      startDate: now.toISOString().split('T')[0],\n      projectedCompletionDate: m4Date.toISOString().split('T')[0],\n      warrantyDurationDays: 30,\n      milestones: timelineMilestones\n    }\n  }\n}];"
+      },
+      "id": "c1070005-0005-4005-8005-000000000005",
+      "name": "Milestone & timeline calculator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst crypto = require('crypto');\nconst proposalRef = 'LIT-PROP-' + crypto.randomBytes(4).toString('hex').toUpperCase();\n\nconst proposal = {\n  reference: proposalRef,\n  client: {\n    name: item.clientName,\n    company: item.companyName,\n    email: item.contactEmail\n  },\n  serviceCategory: item.serviceCategory,\n  executiveSummary: 'Logic Intelligence Technologies (LIT) proposal for ' + item.companyName + ' covering ' + item.pricing.packageName + ' with high-availability engineering, rigorous code quality, and predictable milestone delivery.',\n  commercials: item.pricing,\n  schedule: item.schedule,\n  engineeringStandards: {\n    targetCoreWebVitals: '99+ Performance score target',\n    runtime: 'Modern Edge & Serverless Microservices',\n    warranty: '30-day bug fix guarantee included in base contract',\n    ipOwnership: 'Full client ownership of code and assets upon final payment'\n  },\n  signatory: {\n    name: 'Vikash Saravanan',\n    role: 'Lead System Engineer & Founder',\n    organization: 'Logic Intelligence Technologies'\n  },\n  preparedAt: new Date().toISOString(),\n  validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'processed',\n    proposal\n  }\n}];"
+      },
+      "id": "c1070006-0006-4006-8006-000000000006",
+      "name": "Proposal document synthesis & render",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'processed',\n  detail: { proposal: item.json.proposal }\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1070007-0007-4007-8007-000000000007",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-lit-timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "x-lit-event-id",
+              "value": "={{ $json.eventId }}"
+            },
+            {
+              "name": "x-lit-signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1070008-0008-4008-8008-000000000008",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1920,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Extract consultation notes & service requirements",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract consultation notes & service requirements": {
+      "main": [
+        [
+          {
+            "node": "Package & pricing mapper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Package & pricing mapper": {
+      "main": [
+        [
+          {
+            "node": "Milestone & timeline calculator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Milestone & timeline calculator": {
+      "main": [
+        [
+          {
+            "node": "Proposal document synthesis & render",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Proposal document synthesis & render": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign callback": {
+      "main": [
+        [
+          {
+            "node": "Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false
+}

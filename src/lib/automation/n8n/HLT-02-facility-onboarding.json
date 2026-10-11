@@ -1,0 +1,248 @@
+{
+  "name": "HLT — Hospital Facility Onboarding",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hlt-facility-onboarding",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c2020001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "hlt-facility-onboarding"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c2020001-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst text = JSON.stringify(payload).toLowerCase();\n\n// Zero-Trust Non-PHI Check: Reject immediately if clinical PHI terms are present\nconst phiKeywords = ['prescription', 'diagnosis', 'symptom', 'treatment plan', 'blood test', 'biopsy', 'radiology', 'mri scan', 'ehr record', 'patient record', 'hiv', 'oncology patient'];\nconst containsPhi = phiKeywords.some(keyword => text.includes(keyword));\n\nconst facilityId = String(payload.facilityId || payload.facility_id || '').trim();\nconst facilityName = String(payload.facilityName || payload.hospitalName || '').trim();\nconst registrationNumber = String(payload.registrationNumber || payload.licenseNumber || '').trim();\nconst facilityType = String(payload.facilityType || 'Multi-Specialty Hospital').trim();\nconst bedCapacity = Number(payload.bedCapacity || payload.bedCount || 0);\nconst adminEmail = String(payload.adminEmail || payload.email || '').trim().toLowerCase();\nconst state = String(payload.state || 'Tamil Nadu').trim();\nconst nabhAccredited = Boolean(payload.nabhAccredited || payload.nabh);\n\nconst isValidFacility = Boolean(facilityId && facilityName && adminEmail.includes('@') && !containsPhi);\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    containsPhi,\n    isValidFacility,\n    facility: {\n      facilityId,\n      facilityName,\n      registrationNumber,\n      facilityType,\n      bedCapacity,\n      adminEmail,\n      state,\n      nabhAccredited,\n      onboardedAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c2020001-0003-4003-8003-000000000003",
+      "name": "Validate facility credentials & PHI perimeter check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond-fac-0001",
+              "leftValue": "={{ $json.isValidFacility }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c2020001-0004-4004-8004-000000000004",
+      "name": "IF valid non-PHI facility",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst fac = item.facility;\nconst cleanId = fac.facilityId.replace(/[^a-zA-Z0-9]/g, '').substring(0, 12).toLowerCase();\nconst tenantSchema = `tenant_hospital_${cleanId}`;\n\nconst integrationSpecs = {\n  tenantSchema,\n  databaseIsolationMode: 'Row-Level Security with Dedicated Schema Partition',\n  abdmGatewayReady: true,\n  fhirVersion: 'HL7 FHIR Release 4 (R4)',\n  modulesProvisioned: ['OPD', 'IPD', 'Billing', 'Pharmacy', 'Inventory', 'Lab-LIS', 'Radiology-RIS'],\n  initialAdminAccount: fac.adminEmail,\n  complianceStandard: 'HIPAA Security Rule & DPDP Act 2023',\n  leadEngineerSignoff: 'Vikash Saravanan (Lead System Engineer)'\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'facility_tenant_provisioned',\n    detail: {\n      facilityId: fac.facilityId,\n      facilityName: fac.facilityName,\n      integrationSpecs,\n      provisionedAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c2020001-0005-4005-8005-000000000005",
+      "name": "Provision tenant schema & integration specification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'facility_onboarding_rejected',\n    error: item.containsPhi\n      ? 'CRITICAL_SECURITY_BREACH: Prohibited PHI clinical data detected in facility onboarding payload'\n      : 'Invalid facility parameters: missing facilityId, facilityName, or valid adminEmail'\n  }\n}];"
+      },
+      "id": "c2020001-0006-4006-8006-000000000006",
+      "name": "Reject invalid or PHI breach",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'processed',\n  detail: item.json.detail || {}\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c2020001-0007-4007-8007-000000000007",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-lit-timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "x-lit-event-id",
+              "value": "={{ $json.eventId }}"
+            },
+            {
+              "name": "x-lit-signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c2020001-0008-4008-8008-000000000008",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1680,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Validate facility credentials & PHI perimeter check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate facility credentials & PHI perimeter check": {
+      "main": [
+        [
+          {
+            "node": "IF valid non-PHI facility",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF valid non-PHI facility": {
+      "main": [
+        [
+          {
+            "node": "Provision tenant schema & integration specification",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject invalid or PHI breach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Provision tenant schema & integration specification": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reject invalid or PHI breach": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign callback": {
+      "main": [
+        [
+          {
+            "node": "Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false
+}

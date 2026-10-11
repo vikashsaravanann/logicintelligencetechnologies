@@ -1,0 +1,221 @@
+{
+  "name": "LIT — Sales Pipeline Follow-Up",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-sales-pipeline-followup",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1080001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "lit-sales-pipeline-followup"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1080002-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\n\nconst proposalId = String(payload.proposalId || payload.id || '').trim();\nconst recipientEmail = String(payload.email || payload.recipientEmail || '').trim().toLowerCase();\nconst companyName = String(payload.companyName || payload.company || 'your team').trim();\nconst recipientName = String(payload.recipientName || payload.contactName || '').trim();\nconst proposalStatus = String(payload.proposalStatus || payload.status || 'sent').toLowerCase();\n\nconst isSuppressed = Boolean(payload.suppressed || payload.optedOut || payload.unsubscribed);\nconst isTerminalStatus = ['won', 'lost', 'cancelled', 'signed'].includes(proposalStatus);\n\nif (isSuppressed || isTerminalStatus) {\n  return [{\n    json: {\n      eventId: item.eventId,\n      status: 'processed',\n      followup: {\n        proposalId,\n        action: 'halted',\n        reason: isSuppressed ? 'Contact is opted out or suppressed' : ('Proposal is already in terminal status: ' + proposalStatus),\n        eligible: false\n      }\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    proposalId,\n    recipientEmail,\n    companyName,\n    recipientName,\n    proposalStatus,\n    attempts: Number(payload.attempts || payload.touchCount || 0),\n    lastContactedAt: payload.lastContactedAt || null,\n    packageName: String(payload.packageName || 'Technical Proposal').trim()\n  }\n}];"
+      },
+      "id": "c1080003-0003-4003-8003-000000000003",
+      "name": "Suppression & opt-out detector",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nif (item.followup && !item.followup.eligible) {\n  return [{ json: item }];\n}\n\nconst attempts = item.attempts;\nconst MAX_TOUCHES = 3;\n\nif (attempts >= MAX_TOUCHES) {\n  return [{\n    json: {\n      eventId: item.eventId,\n      status: 'processed',\n      followup: {\n        proposalId: item.proposalId,\n        action: 'sequence_completed',\n        reason: 'Maximum follow-up touches (' + MAX_TOUCHES + ') reached. File moved to passive nurture.',\n        eligible: false\n      }\n    }\n  }];\n}\n\nif (item.lastContactedAt) {\n  const lastTime = new Date(item.lastContactedAt).getTime();\n  const elapsedHours = (Date.now() - lastTime) / (1000 * 60 * 60);\n  if (elapsedHours < 48) {\n    return [{\n      json: {\n        eventId: item.eventId,\n        status: 'processed',\n        followup: {\n          proposalId: item.proposalId,\n          action: 'interval_waiting',\n          reason: 'Minimum 48 hours required between touches (elapsed: ' + Math.round(elapsedHours) + 'h).',\n          eligible: false\n        }\n      }\n    }];\n  }\n}\n\nconst nextTouchNumber = attempts + 1;\n\nreturn [{\n  json: {\n    ...item,\n    nextTouchNumber\n  }\n}];"
+      },
+      "id": "c1080004-0004-4004-8004-000000000004",
+      "name": "Follow-up sequence counter & interval gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nif (item.followup) {\n  return [{ json: item }];\n}\n\nconst touch = item.nextTouchNumber;\nconst recipient = item.recipientName ? item.recipientName.split(' ')[0] : 'there';\nconst company = item.companyName;\nconst pkg = item.packageName;\n\nlet subject = '';\nlet body = '';\n\nif (touch === 1) {\n  subject = 'Following up on ' + company + ' technical proposal';\n  body = [\n    'Hi ' + recipient + ',',\n    '',\n    'Checking in to ensure you received the ' + pkg + ' proposal we prepared for ' + company + '.',\n    '',\n    'If you or your technical team have any questions on the architecture blueprint or milestone milestones, I would be glad to address them.',\n    '',\n    'Best regards,',\n    'Vikash Saravanan',\n    'Lead System Engineer | Logic Intelligence Technologies'\n  ].join('\\n');\n} else if (touch === 2) {\n  subject = 'Architecture walkthrough & preview for ' + company;\n  body = [\n    'Hi ' + recipient + ',',\n    '',\n    'Following up on our earlier note regarding ' + company + \"'s project proposal.\",\n    '',\n    'We frequently build interactive component previews during Phase 1 to de-risk delivery. If helpful, I can walk you through a brief 15-minute live preview of the proposed system architecture.',\n    '',\n    'Let me know if you would like me to set that up.',\n    '',\n    'Best regards,',\n    'Vikash Saravanan',\n    'Lead System Engineer | Logic Intelligence Technologies'\n  ].join('\\n');\n} else {\n  subject = 'Permission to close file / next steps for ' + company;\n  body = [\n    'Hi ' + recipient + ',',\n    '',\n    'I know priorities shift rapidly, so I will pause our active follow-ups regarding the ' + pkg + ' proposal to keep your inbox clear.',\n    '',\n    'We keep your architecture notes on file, so whenever you are ready to revisit or take on new development, feel free to reach out.',\n    '',\n    'Wishing you and the ' + company + ' team continued success.',\n    '',\n    'Warm regards,',\n    'Vikash Saravanan',\n    'Lead System Engineer | Logic Intelligence Technologies'\n  ].join('\\n');\n}\n\nreturn [{\n  json: {\n    ...item,\n    draftMessage: {\n      touchNumber: touch,\n      subject,\n      body,\n      generatedAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c1080005-0005-4005-8005-000000000005",
+      "name": "Contextual follow-up message generator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nif (item.followup) {\n  return [{\n    json: {\n      eventId: item.eventId,\n      status: 'processed',\n      followup: item.followup\n    }\n  }];\n}\n\nconst crypto = require('crypto');\nconst queueId = crypto.randomUUID();\n\nconst queuedItem = {\n  queueId,\n  proposalId: item.proposalId,\n  recipientEmail: item.recipientEmail,\n  companyName: item.companyName,\n  touchNumber: item.nextTouchNumber,\n  subject: item.draftMessage.subject,\n  body: item.draftMessage.body,\n  status: 'queued_for_approval',\n  action: 'touch_queued',\n  createdAt: new Date().toISOString()\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'processed',\n    followup: queuedItem\n  }\n}];"
+      },
+      "id": "c1080006-0006-4006-8006-000000000006",
+      "name": "Queue dispatcher & audit log",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'processed',\n  detail: { followup: item.json.followup }\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1080007-0007-4007-8007-000000000007",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-lit-timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "x-lit-event-id",
+              "value": "={{ $json.eventId }}"
+            },
+            {
+              "name": "x-lit-signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1080008-0008-4008-8008-000000000008",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1920,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Suppression & opt-out detector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Suppression & opt-out detector": {
+      "main": [
+        [
+          {
+            "node": "Follow-up sequence counter & interval gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Follow-up sequence counter & interval gate": {
+      "main": [
+        [
+          {
+            "node": "Contextual follow-up message generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contextual follow-up message generator": {
+      "main": [
+        [
+          {
+            "node": "Queue dispatcher & audit log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Queue dispatcher & audit log": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign callback": {
+      "main": [
+        [
+          {
+            "node": "Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false
+}

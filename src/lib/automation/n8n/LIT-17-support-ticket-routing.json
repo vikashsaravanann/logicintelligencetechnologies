@@ -1,0 +1,248 @@
+{
+  "name": "LIT — Support Ticket Routing",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-support-ticket-routing",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1170001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "lit-support-ticket-routing"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1170001-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\n\nconst ticketId = String(payload.ticketId || payload.id || `TICK-${Math.floor(100000 + Math.random() * 900000)}`).trim();\nconst clientId = String(payload.clientId || payload.client_id || 'unassigned-client').trim();\nconst clientName = String(payload.clientName || payload.name || 'Valued Client').trim();\nconst clientEmail = String(payload.clientEmail || payload.email || '').trim().toLowerCase();\nconst subject = String(payload.subject || 'Support Request').trim();\nconst description = String(payload.description || payload.message || '').trim();\nconst category = String(payload.category || 'general').trim().toLowerCase();\nconst environment = String(payload.environment || 'production').trim().toLowerCase();\nconst reportedImpact = String(payload.reportedImpact || payload.impact || 'medium').trim().toLowerCase();\n\nconst textCorpus = `${subject} ${description}`.toLowerCase();\nconst criticalRegex = /\\b(outage|downtime|down|crashed|breach|exploit|data loss|payment failure|cannot login|offline|sev1|p0|blocker)\\b/;\nconst isCriticalMatch = criticalRegex.test(textCorpus);\n\nlet priority = 'P3_MEDIUM';\nlet slaMinutes = 720;\nlet assignee = 'Operations Support Lead';\nlet escalationChannel = '#support-queue';\n\nif ((environment === 'production' && isCriticalMatch) || reportedImpact === 'critical' || category === 'outage' || category === 'security') {\n  priority = 'P1_CRITICAL';\n  slaMinutes = 60;\n  assignee = 'Vikash Saravanan (Lead System Engineer) & Core SRE On-Call';\n  escalationChannel = '#sre-critical-incidents';\n} else if (environment === 'production' || reportedImpact === 'high' || category === 'api_failure' || isCriticalMatch) {\n  priority = 'P2_HIGH';\n  slaMinutes = 240;\n  assignee = 'Senior Platform Engineer';\n  escalationChannel = '#engineering-escalations';\n} else if (category === 'billing' || reportedImpact === 'medium') {\n  priority = 'P3_MEDIUM';\n  slaMinutes = 720;\n  assignee = 'Operations Support Lead';\n  escalationChannel = '#support-queue';\n} else {\n  priority = 'P4_LOW';\n  slaMinutes = 1440;\n  assignee = 'Product Experience Team';\n  escalationChannel = '#customer-feedback';\n}\n\nconst now = Date.now();\nconst slaTargetTimestamp = new Date(now + slaMinutes * 60 * 1000).toISOString();\nconst isEmergency = priority === 'P1_CRITICAL';\n\nconst ticket = {\n  ticketId,\n  clientId,\n  clientName,\n  clientEmail,\n  subject,\n  description,\n  category,\n  environment,\n  priority,\n  slaMinutes,\n  slaTargetTimestamp,\n  assignee,\n  escalationChannel,\n  isEmergency,\n  routedAt: new Date().toISOString()\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    ticket,\n    isEmergency\n  }\n}];"
+      },
+      "id": "c1170001-0003-4003-8003-000000000003",
+      "name": "Process ticket & evaluate priority",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond-emergency-0001",
+              "leftValue": "={{ $json.isEmergency }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c1170001-0004-4004-8004-000000000004",
+      "name": "IF emergency ticket",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst t = item.ticket;\n\nconst emergencyDispatch = {\n  incidentRoomPath: `/ops/incidents/${t.ticketId}`,\n  pagerDutyAlertTriggered: true,\n  severity: 'CRITICAL_P1',\n  alertMessage: `🚨 EMERGENCY P1 INCIDENT [${t.ticketId}]: ${t.subject} for ${t.clientName}. SLA Target: 60 minutes.`,\n  onCallLead: t.assignee,\n  broadcastChannel: t.escalationChannel,\n  immediateClientNotification: {\n    recipientEmail: t.clientEmail,\n    subject: `[EMERGENCY P1 ACKNOWLEDGED] ${t.subject} (${t.ticketId})`,\n    messageBody: `Your critical incident has engaged our Lead System Engineering team. Target resolution triage window is within 60 minutes. War room: /ops/incidents/${t.ticketId}`\n  }\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'ticket_escalated_critical',\n    detail: {\n      ticket: t,\n      emergencyDispatch,\n      timestamp: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c1170001-0005-4005-8005-000000000005",
+      "name": "Dispatch critical emergency alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst t = item.ticket;\n\nconst routingDispatch = {\n  portalPath: `/client/support/tickets/${t.ticketId}`,\n  severity: t.priority,\n  assignedTeam: t.assignee,\n  slaTarget: `${t.slaMinutes} minutes (${t.slaTargetTimestamp})`,\n  queueChannel: t.escalationChannel,\n  clientConfirmation: {\n    recipientEmail: t.clientEmail,\n    subject: `[Ticket ${t.ticketId}] Received: ${t.subject}`,\n    statusUrl: `/client/support/tickets/${t.ticketId}`,\n    expectedResponseHours: Math.round(t.slaMinutes / 60)\n  }\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'ticket_routed',\n    detail: {\n      ticket: t,\n      routingDispatch,\n      timestamp: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c1170001-0006-4006-8006-000000000006",
+      "name": "Route standard support queue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'processed',\n  detail: item.json.detail || {}\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1170001-0007-4007-8007-000000000007",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-lit-timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "x-lit-event-id",
+              "value": "={{ $json.eventId }}"
+            },
+            {
+              "name": "x-lit-signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1170001-0008-4008-8008-000000000008",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1680,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Process ticket & evaluate priority",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process ticket & evaluate priority": {
+      "main": [
+        [
+          {
+            "node": "IF emergency ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF emergency ticket": {
+      "main": [
+        [
+          {
+            "node": "Dispatch critical emergency alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route standard support queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dispatch critical emergency alert": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route standard support queue": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign callback": {
+      "main": [
+        [
+          {
+            "node": "Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false
+}

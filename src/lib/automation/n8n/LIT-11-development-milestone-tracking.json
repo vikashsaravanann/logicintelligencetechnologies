@@ -1,0 +1,116 @@
+{
+  "name": "LIT — Development Milestone Tracking",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-development-milestone-tracking",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1110001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "lit-development-milestone-tracking"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1110002-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst projectId = String(payload.projectId || payload.id || '').trim();\nconst milestoneCode = String(payload.milestoneCode || payload.milestone || 'M1').toUpperCase();\nconst prNumber = payload.prNumber ? Number(payload.prNumber) : null;\nconst commitSha = String(payload.commitSha || payload.sha || 'staging-head').substring(0, 7);\nconst notes = String(payload.notes || payload.description || `Milestone ${milestoneCode} deliverable released`).trim();\n\nconst allPhases = ['M1', 'M2', 'M3', 'M4'];\nconst phaseWeights = { M1: 25, M2: 50, M3: 75, M4: 100 };\nconst currentWeight = phaseWeights[milestoneCode] || 25;\nconst completedIndex = allPhases.indexOf(milestoneCode);\nconst nextPhase = completedIndex >= 0 && completedIndex < allPhases.length - 1 ? allPhases[completedIndex + 1] : 'COMPLETED_DELIVERY';\n\nconst milestoneRecord = {\n  milestoneCode,\n  status: 'COMPLETED',\n  progressPercent: currentWeight,\n  nextPhase,\n  completedAt: new Date().toISOString(),\n  verificationSource: prNumber ? `GitHub PR #${prNumber} (${commitSha})` : 'Admin Sign-off',\n  notes\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    projectId,\n    milestoneRecord\n  }\n}];"
+      },
+      "id": "c1110003-0003-4003-8003-000000000003",
+      "name": "Recalculate milestone progress",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst m = item.milestoneRecord;\nconst projectId = item.projectId;\n\nconst dashboardState = {\n  projectId,\n  overallProgress: m.progressPercent,\n  currentPhase: m.nextPhase === 'COMPLETED_DELIVERY' ? 'Final Acceptance' : m.nextPhase,\n  lastCompletedPhase: m.milestoneCode,\n  statusBadge: m.nextPhase === 'COMPLETED_DELIVERY' ? 'READY_FOR_HANDOVER' : 'IN_PROGRESS',\n  deliverablesReadyForClientReview: true,\n  actionRequiredFromClient: m.nextPhase === 'COMPLETED_DELIVERY' ? 'Submit Final Acceptance Sign-off' : 'Review Staging Build & Provide Feedback',\n  lastUpdated: new Date().toISOString()\n};\n\nreturn [{\n  json: {\n    ...item,\n    dashboardState\n  }\n}];"
+      },
+      "id": "c1110004-0004-4004-8004-000000000004",
+      "name": "Update client dashboard state",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst m = item.milestoneRecord;\nconst d = item.dashboardState;\n\nconst releaseCard = {\n  title: `Deliverable Milestone ${m.milestoneCode} Released for ${item.projectId}`,\n  summary: `Milestone ${m.milestoneCode} has been verified on staging. Project is now at ${m.progressPercent}% completion.`,\n  stagingPreviewHost: `staging-${item.projectId.toLowerCase().replace(/[^a-z0-9]/g, '-')}.litops.app`,\n  nextMilestoneTarget: m.nextPhase,\n  acceptanceWindowDays: 5,\n  escalationChannel: 'Vikash Saravanan (Lead System Engineer)',\n  dispatchedChannels: ['Client Portal Notification', 'Email Digest Queue']\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'milestone_tracked',\n    milestone: m,\n    dashboardState: d,\n    releaseNotification: releaseCard\n  }\n}];"
+      },
+      "id": "c1110005-0005-4005-8005-000000000005",
+      "name": "Format deliverable release notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'milestone_tracked',\n  detail: {\n    milestone: item.json.milestone,\n    dashboardState: item.json.dashboardState,\n    releaseNotification: item.json.releaseNotification\n  }\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1110006-0006-4006-8006-000000000006",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "content-type", "value": "application/json" },
+            { "name": "x-lit-timestamp", "value": "={{ $json.timestamp }}" },
+            { "name": "x-lit-event-id", "value": "={{ $json.eventId }}" },
+            { "name": "x-lit-signature", "value": "={{ $json.signature }}" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1110007-0007-4007-8007-000000000007",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1680, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Verify signature", "type": "main", "index": 0 }]]
+    },
+    "Verify signature": {
+      "main": [[{ "node": "Recalculate milestone progress", "type": "main", "index": 0 }]]
+    },
+    "Recalculate milestone progress": {
+      "main": [[{ "node": "Update client dashboard state", "type": "main", "index": 0 }]]
+    },
+    "Update client dashboard state": {
+      "main": [[{ "node": "Format deliverable release notification", "type": "main", "index": 0 }]]
+    },
+    "Format deliverable release notification": {
+      "main": [[{ "node": "Sign callback", "type": "main", "index": 0 }]]
+    },
+    "Sign callback": {
+      "main": [[{ "node": "Callback", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "active": false
+}

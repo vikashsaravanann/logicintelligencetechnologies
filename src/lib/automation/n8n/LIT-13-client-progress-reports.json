@@ -1,0 +1,116 @@
+{
+  "name": "LIT — Client Progress Reports",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-client-progress-reports",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1130001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "lit-client-progress-reports"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1130002-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst projectId = String(payload.projectId || payload.id || 'prj-active').trim();\nconst clientName = String(payload.clientName || payload.client || 'Client Executive').trim();\nconst clientEmail = String(payload.clientEmail || payload.email || '').trim().toLowerCase();\nconst projectName = String(payload.projectName || payload.title || 'Enterprise Platform Engineering').trim();\nconst currentMilestone = String(payload.currentMilestone || 'M2').toUpperCase();\nconst progressPercent = Number(payload.progressPercent || 50);\n\nconst completedTasks = Array.isArray(payload.completedTasks) ? payload.completedTasks : [\n  'Implemented responsive frontend dashboard layout',\n  'Integrated secure Supabase authentication & session handlers',\n  'Provisioned automated CI/CD pipeline with Playwright test coverage'\n];\n\nconst upcomingTasks = Array.isArray(payload.upcomingTasks) ? payload.upcomingTasks : [\n  'Connect real-time websocket data streams for analytics charts',\n  'Execute load testing and sub-120ms latency optimization',\n  'Deploy staging release candidate for stakeholder acceptance review'\n];\n\nconst blockers = Array.isArray(payload.blockers) ? payload.blockers : [];\nconst projectHealth = blockers.length === 0 ? 'ON_TRACK' : (blockers.length === 1 ? 'MONITORED_RISK' : 'NEEDS_ATTENTION');\n\nconst projectSnapshot = {\n  projectId,\n  clientName,\n  clientEmail,\n  projectName,\n  currentMilestone,\n  progressPercent,\n  projectHealth,\n  completedTasks,\n  upcomingTasks,\n  blockers,\n  reportingPeriod: 'Weekly Digest (Monday 09:00 IST)',\n  generatedAt: new Date().toISOString()\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    projectSnapshot\n  }\n}];"
+      },
+      "id": "c1130003-0003-4003-8003-000000000003",
+      "name": "Query active projects & metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst p = item.projectSnapshot;\n\nconst executiveSummary = `During this reporting cycle, the team advanced ${p.projectName} to ${p.progressPercent}% completion within milestone ${p.currentMilestone}. Overall health status is evaluated as ${p.projectHealth}. ${p.completedTasks.length} core deliverables were verified and staged for review.`;\n\nconst digest = {\n  greeting: `Dear ${p.clientName},`,\n  headline: `Weekly Project Progress Update: ${p.projectName}`,\n  executiveSummary,\n  milestoneStatus: `Milestone ${p.currentMilestone} in progress (${p.progressPercent}% overall complete)`,\n  achievementsThisWeek: p.completedTasks,\n  targetDeliverablesNextWeek: p.upcomingTasks,\n  blockersResolved: p.blockers.length > 0 ? p.blockers : ['No operational blockers identified'],\n  nextSyncSchedule: 'Weekly Standup Demo - Wednesdays 14:00 IST',\n  meetingPrompt: 'Schedule or adjust standup via calendar.google.com'\n};\n\nreturn [{\n  json: {\n    ...item,\n    digest\n  }\n}];"
+      },
+      "id": "c1130004-0004-4004-8004-000000000004",
+      "name": "Summarize accomplishments & milestones",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst p = item.projectSnapshot;\nconst d = item.digest;\n\nconst emailSubject = `[LIT Progress Report] ${p.projectName} — Week Status: ${p.projectHealth}`;\nconst textBody = `${d.greeting}\\n\\n${d.executiveSummary}\\n\\nKey Deliverables Staged:\\n${d.achievementsThisWeek.map(t => '• ' + t).join('\\n')}\\n\\nUpcoming Objectives:\\n${d.targetDeliverablesNextWeek.map(t => '• ' + t).join('\\n')}\\n\\nHealth: ${p.projectHealth}\\nLead Engineer: Vikash Saravanan\\nLogic Intelligence Technologies`;\n\nconst emailPayload = {\n  recipient: p.clientEmail || 'delivery@logicintelligencetechnologies.com',\n  subject: emailSubject,\n  previewText: `${p.projectName} is at ${p.progressPercent}% completion (${p.projectHealth}).`,\n  textBody,\n  dispatchStatus: 'QUEUED_FOR_OUTBOUND_SMTP',\n  dispatchedAt: new Date().toISOString()\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'report_dispatched',\n    projectId: p.projectId,\n    projectSnapshot: p,\n    emailPayload\n  }\n}];"
+      },
+      "id": "c1130005-0005-4005-8005-000000000005",
+      "name": "Format client report email dispatch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'report_dispatched',\n  detail: {\n    projectId: item.json.projectId,\n    projectSnapshot: item.json.projectSnapshot,\n    emailPayload: item.json.emailPayload\n  }\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1130006-0006-4006-8006-000000000006",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "content-type", "value": "application/json" },
+            { "name": "x-lit-timestamp", "value": "={{ $json.timestamp }}" },
+            { "name": "x-lit-event-id", "value": "={{ $json.eventId }}" },
+            { "name": "x-lit-signature", "value": "={{ $json.signature }}" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1130007-0007-4007-8007-000000000007",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1680, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Verify signature", "type": "main", "index": 0 }]]
+    },
+    "Verify signature": {
+      "main": [[{ "node": "Query active projects & metrics", "type": "main", "index": 0 }]]
+    },
+    "Query active projects & metrics": {
+      "main": [[{ "node": "Summarize accomplishments & milestones", "type": "main", "index": 0 }]]
+    },
+    "Summarize accomplishments & milestones": {
+      "main": [[{ "node": "Format client report email dispatch", "type": "main", "index": 0 }]]
+    },
+    "Format client report email dispatch": {
+      "main": [[{ "node": "Sign callback", "type": "main", "index": 0 }]]
+    },
+    "Sign callback": {
+      "main": [[{ "node": "Callback", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "active": false
+}

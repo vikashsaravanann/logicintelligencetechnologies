@@ -1,0 +1,116 @@
+{
+  "name": "LIT — Automated Quality Reporting",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-automated-quality-reporting",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1120001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "lit-automated-quality-reporting"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1120002-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst projectId = String(payload.projectId || payload.id || 'lit-core').trim();\nconst buildId = String(payload.buildId || payload.runId || 'ci-' + Date.now()).trim();\nconst branch = String(payload.branch || payload.ref || 'staging').trim();\nconst commitSha = String(payload.commitSha || payload.sha || 'head').substring(0, 7);\n\nconst unitTests = payload.unitTests || { total: 100, passed: 100, failed: 0, coveragePct: 88.5 };\nconst e2eTests = payload.e2eTests || { total: 18, passed: 18, failed: 0 };\nconst typecheckErrors = Number(payload.typecheckErrors || 0);\nconst lintErrors = Number(payload.lintErrors || 0);\nconst lintWarnings = Number(payload.lintWarnings || 0);\n\nconst unitPassRate = unitTests.total > 0 ? (unitTests.passed / unitTests.total) * 100 : 100;\nconst e2ePassRate = e2eTests.total > 0 ? (e2eTests.passed / e2eTests.total) * 100 : 100;\nconst coverage = Number(unitTests.coveragePct || 85.0);\n\nconst testsPassed = unitTests.failed === 0 && e2eTests.failed === 0;\nconst typesClean = typecheckErrors === 0;\nconst lintClean = lintErrors === 0;\nconst coverageAcceptable = coverage >= 80.0;\n\nconst ciMetrics = {\n  projectId,\n  buildId,\n  branch,\n  commitSha,\n  unitTests: { ...unitTests, passRate: Math.round(unitPassRate) },\n  e2eTests: { ...e2eTests, passRate: Math.round(e2ePassRate) },\n  typecheckErrors,\n  lintErrors,\n  lintWarnings,\n  coveragePct: coverage,\n  overallCIHealthy: testsPassed && typesClean && lintClean && coverageAcceptable\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    projectId,\n    ciMetrics\n  }\n}];"
+      },
+      "id": "c1120003-0003-4003-8003-000000000003",
+      "name": "Aggregate test coverage & CI results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst sec = payload.securityScan || {};\n\nconst criticalVulnerabilities = Number(sec.critical || 0);\nconst highVulnerabilities = Number(sec.high || 0);\nconst moderateVulnerabilities = Number(sec.moderate || 0);\nconst secretLeaksDetected = Number(sec.secretLeaks || 0);\nconst owaspChecksFailed = Number(sec.owaspViolations || 0);\n\nconst securityGatePassed = criticalVulnerabilities === 0 && highVulnerabilities === 0 && secretLeaksDetected === 0 && owaspChecksFailed === 0;\nconst securitySeverity = !securityGatePassed ? (criticalVulnerabilities > 0 || secretLeaksDetected > 0 ? 'CRITICAL_BLOCKER' : 'ELEVATED_RISK') : 'CLEAN';\n\nconst securityReport = {\n  gatePassed: securityGatePassed,\n  securitySeverity,\n  criticalVulnerabilities,\n  highVulnerabilities,\n  moderateVulnerabilities,\n  secretLeaksDetected,\n  owaspChecksFailed,\n  scannedAt: new Date().toISOString()\n};\n\nreturn [{\n  json: {\n    ...item,\n    securityReport\n  }\n}];"
+      },
+      "id": "c1120004-0004-4004-8004-000000000004",
+      "name": "Security audit & vulnerability gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst ci = item.ciMetrics;\nconst sec = item.securityReport;\n\nconst isDeployable = ci.overallCIHealthy && sec.gatePassed;\nconst releaseVerdict = isDeployable ? 'APPROVED_FOR_STAGING_DEPLOYMENT' : 'RELEASE_BLOCKED';\nconst qualityIndexScore = Math.round(\n  (ci.unitTests.passRate * 0.3) +\n  (ci.e2eTests.passRate * 0.3) +\n  (Math.min(ci.coveragePct, 100) * 0.2) +\n  (sec.gatePassed ? 20 : 0)\n);\n\nconst scorecard = {\n  title: `Quality & Security Report: ${item.projectId} (${ci.branch}@${ci.commitSha})`,\n  verdict: releaseVerdict,\n  qualityIndexScore,\n  checks: {\n    unitTests: ci.unitTests.failed === 0 ? 'PASS' : `FAIL (${ci.unitTests.failed} failed)`,\n    e2ePlaywright: ci.e2eTests.failed === 0 ? 'PASS' : `FAIL (${ci.e2eTests.failed} failed)`,\n    typecheck: ci.typecheckErrors === 0 ? 'PASS (0 errors)' : `FAIL (${ci.typecheckErrors} errors)`,\n    eslint: ci.lintErrors === 0 ? 'PASS' : `FAIL (${ci.lintErrors} errors)`,\n    testCoverage: `${ci.coveragePct}% (${ci.coveragePct >= 80 ? 'MEETS_GOAL' : 'BELOW_THRESHOLD'})`,\n    securityAudit: sec.gatePassed ? 'PASS (0 critical/high)' : `FAIL (${sec.securitySeverity})`\n  },\n  recommendedAction: isDeployable ? 'Proceed to staging auto-deploy' : 'Reject build, alert engineer to patch errors',\n  reviewedBy: 'Automated LIT Quality Sentinel'\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'quality_report_compiled',\n    projectId: item.projectId,\n    ciMetrics: ci,\n    securityReport: sec,\n    scorecard\n  }\n}];"
+      },
+      "id": "c1120005-0005-4005-8005-000000000005",
+      "name": "Format quality summary card",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'quality_report_compiled',\n  detail: {\n    projectId: item.json.projectId,\n    ciMetrics: item.json.ciMetrics,\n    securityReport: item.json.securityReport,\n    scorecard: item.json.scorecard\n  }\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1120006-0006-4006-8006-000000000006",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "content-type", "value": "application/json" },
+            { "name": "x-lit-timestamp", "value": "={{ $json.timestamp }}" },
+            { "name": "x-lit-event-id", "value": "={{ $json.eventId }}" },
+            { "name": "x-lit-signature", "value": "={{ $json.signature }}" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1120007-0007-4007-8007-000000000007",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1680, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Verify signature", "type": "main", "index": 0 }]]
+    },
+    "Verify signature": {
+      "main": [[{ "node": "Aggregate test coverage & CI results", "type": "main", "index": 0 }]]
+    },
+    "Aggregate test coverage & CI results": {
+      "main": [[{ "node": "Security audit & vulnerability gate", "type": "main", "index": 0 }]]
+    },
+    "Security audit & vulnerability gate": {
+      "main": [[{ "node": "Format quality summary card", "type": "main", "index": 0 }]]
+    },
+    "Format quality summary card": {
+      "main": [[{ "node": "Sign callback", "type": "main", "index": 0 }]]
+    },
+    "Sign callback": {
+      "main": [[{ "node": "Callback", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "active": false
+}

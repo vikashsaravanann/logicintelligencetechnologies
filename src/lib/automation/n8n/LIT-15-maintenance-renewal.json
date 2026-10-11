@@ -1,0 +1,116 @@
+{
+  "name": "LIT — Maintenance & Renewal",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-maintenance-renewal",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1150001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "lit-maintenance-renewal"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1150002-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst projectId = String(payload.projectId || payload.id || 'prj-client').trim();\nconst contractId = String(payload.contractId || `LIT-SLA-${projectId.toUpperCase()}`).trim();\nconst clientName = String(payload.clientName || payload.client || 'Client Partner').trim();\nconst clientEmail = String(payload.clientEmail || payload.email || '').trim().toLowerCase();\nconst slaTier = String(payload.slaTier || payload.tier || 'PREMIUM_ENTERPRISE').toUpperCase();\nconst contractEndDate = String(payload.contractEndDate || payload.expiryDate || new Date(Date.now() + 15 * 86400000).toISOString());\n\nconst now = Date.now();\nconst expiryTime = new Date(contractEndDate).getTime();\nconst daysRemaining = Math.max(0, Math.ceil((expiryTime - now) / (1000 * 60 * 60 * 24)));\n\nlet urgencyLevel = 'STANDARD_NOTICE';\nif (daysRemaining <= 5) {\n  urgencyLevel = 'CRITICAL_IMMINENT_EXPIRATION';\n} else if (daysRemaining <= 15) {\n  urgencyLevel = 'RENEWAL_WINDOW_OPEN';\n}\n\nconst slaMetrics = {\n  contractId,\n  projectId,\n  clientName,\n  clientEmail,\n  slaTier,\n  contractEndDate,\n  daysRemaining,\n  urgencyLevel,\n  uptimeAchievedPastYear: '99.98%',\n  totalIncidentsResolved: 4,\n  averageResolutionHours: 2.1\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    slaMetrics\n  }\n}];"
+      },
+      "id": "c1150003-0003-4003-8003-000000000003",
+      "name": "Check SLA & expiration status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst m = item.slaMetrics;\n\nlet monthlyBaseFee = 1500;\nif (m.slaTier === 'MISSION_CRITICAL_24_7') monthlyBaseFee = 3500;\nelse if (m.slaTier === 'STANDARD_BUSINESS') monthlyBaseFee = 750;\n\nconst annualBaseFee = monthlyBaseFee * 12;\nconst annualDiscountPct = 15;\nconst annualDiscountAmount = Math.round(annualBaseFee * (annualDiscountPct / 100));\nconst annualFinalPrice = annualBaseFee - annualDiscountAmount;\n\nconst invoiceEstimate = {\n  invoiceNumber: `INV-RENEW-${m.projectId.toUpperCase()}-${new Date().getFullYear()}`,\n  tier: m.slaTier,\n  options: {\n    annualPlan: {\n      billingCadence: 'ANNUAL_UPFRONT',\n      baseFeeUSD: annualBaseFee,\n      discountPercent: annualDiscountPct,\n      discountSavingsUSD: annualDiscountAmount,\n      totalUSD: annualFinalPrice,\n      benefits: [\n        'Guaranteed SLA response times (2h critical, 8h standard)',\n        'Monthly security patches & dependency upgrades',\n        '24/7 synthetic health monitoring & automatic rollbacks',\n        'Dedicated Slack/Teams channel with Vikash Saravanan',\n        '15% annual commitment discount applied'\n      ]\n    },\n    monthlyPlan: {\n      billingCadence: 'MONTHLY_RETAINER',\n      monthlyFeeUSD: monthlyBaseFee,\n      totalAnnualizedUSD: annualBaseFee,\n      benefits: [\n        'Standard SLA response times (6h critical, 24h standard)',\n        'Quarterly maintenance and patching review',\n        'Business hours support coverage'\n      ]\n    }\n  },\n  paymentDueBefore: m.contractEndDate\n};\n\nreturn [{\n  json: {\n    ...item,\n    invoiceEstimate\n  }\n}];"
+      },
+      "id": "c1150004-0004-4004-8004-000000000004",
+      "name": "Generate maintenance renewal invoice",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst m = item.slaMetrics;\nconst inv = item.invoiceEstimate;\n\nconst reminderCard = {\n  title: `Maintenance & SLA Renewal Notice: ${m.projectId} (${m.daysRemaining} days remaining)`,\n  recipient: m.clientEmail || 'finance@logicintelligencetechnologies.com',\n  subject: `[LIT Action Required] Maintenance Agreement Renewal for ${m.projectId} - Expires in ${m.daysRemaining} Days`,\n  urgency: m.urgencyLevel,\n  highlights: [\n    `Current SLA Tier: ${m.slaTier}`,\n    `Contract End Date: ${m.contractEndDate.split('T')[0]}`,\n    `Past Period Uptime: ${m.uptimeAchievedPastYear}`,\n    `Annual Renewal Option: $${inv.options.annualPlan.totalUSD}/year (includes $${inv.options.annualPlan.discountSavingsUSD} discount)`\n  ],\n  renewalPortalReference: `portal.logicintelligencetechnologies.com/billing/renew?contract=${m.contractId}`,\n  accountExecutive: 'Vikash Saravanan (Lead System Engineer)',\n  dispatchedAt: new Date().toISOString()\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'renewal_notice_generated',\n    slaMetrics: m,\n    invoiceEstimate: inv,\n    reminderCard\n  }\n}];"
+      },
+      "id": "c1150005-0005-4005-8005-000000000005",
+      "name": "Format renewal reminder notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'renewal_notice_generated',\n  detail: {\n    slaMetrics: item.json.slaMetrics,\n    invoiceEstimate: item.json.invoiceEstimate,\n    reminderCard: item.json.reminderCard\n  }\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1150006-0006-4006-8006-000000000006",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1440, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "content-type", "value": "application/json" },
+            { "name": "x-lit-timestamp", "value": "={{ $json.timestamp }}" },
+            { "name": "x-lit-event-id", "value": "={{ $json.eventId }}" },
+            { "name": "x-lit-signature", "value": "={{ $json.signature }}" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1150007-0007-4007-8007-000000000007",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1680, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Verify signature", "type": "main", "index": 0 }]]
+    },
+    "Verify signature": {
+      "main": [[{ "node": "Check SLA & expiration status", "type": "main", "index": 0 }]]
+    },
+    "Check SLA & expiration status": {
+      "main": [[{ "node": "Generate maintenance renewal invoice", "type": "main", "index": 0 }]]
+    },
+    "Generate maintenance renewal invoice": {
+      "main": [[{ "node": "Format renewal reminder notification", "type": "main", "index": 0 }]]
+    },
+    "Format renewal reminder notification": {
+      "main": [[{ "node": "Sign callback", "type": "main", "index": 0 }]]
+    },
+    "Sign callback": {
+      "main": [[{ "node": "Callback", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "active": false
+}

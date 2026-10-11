@@ -1,0 +1,248 @@
+{
+  "name": "LIT — Account Retention Sentinel",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-account-retention-sentinel",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1200001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "lit-account-retention-sentinel"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1200001-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\n\nconst clientId = String(payload.clientId || payload.client_id || 'unknown').trim();\nconst clientName = String(payload.clientName || payload.name || 'Account Client').trim();\nconst clientEmail = String(payload.email || payload.clientEmail || '').trim().toLowerCase();\nconst daysSinceLastLogin = Number(payload.daysSinceLastLogin || payload.inactivityDays || 0);\nconst unpaidInvoiceCount = Number(payload.unpaidInvoiceCount || payload.unpaidCount || 0);\nconst ticketSentimentScore = Number(payload.ticketSentimentScore || payload.sentimentScore || 7);\nconst contractDaysRemaining = Number(payload.contractDaysRemaining || 180);\nconst healthScoreDropPct = Number(payload.healthScoreDropPct || 0);\n\nlet riskScore = 0;\nconst riskFactors = [];\n\nif (daysSinceLastLogin >= 30) {\n  riskScore += 35;\n  riskFactors.push('CRITICAL_PORTAL_INACTIVITY_30D');\n} else if (daysSinceLastLogin >= 14) {\n  riskScore += 20;\n  riskFactors.push('ELEVATED_PORTAL_INACTIVITY_14D');\n}\n\nif (unpaidInvoiceCount >= 2) {\n  riskScore += 30;\n  riskFactors.push('MULTIPLE_UNPAID_INVOICES');\n} else if (unpaidInvoiceCount === 1) {\n  riskScore += 15;\n  riskFactors.push('SINGLE_OVERDUE_INVOICE');\n}\n\nif (ticketSentimentScore <= 4) {\n  riskScore += 25;\n  riskFactors.push('NEGATIVE_SUPPORT_SENTIMENT');\n} else if (ticketSentimentScore <= 6) {\n  riskScore += 10;\n  riskFactors.push('NEUTRAL_LOW_SUPPORT_SENTIMENT');\n}\n\nif (contractDaysRemaining <= 30) {\n  riskScore += 15;\n  riskFactors.push('UPCOMING_CONTRACT_EXPIRATION');\n}\n\nif (healthScoreDropPct >= 25) {\n  riskScore += 20;\n  riskFactors.push('SHARP_HEALTH_SCORE_DROP');\n}\n\nriskScore = Math.min(100, riskScore);\n\nlet riskTier = 'LOW';\nif (riskScore >= 70) {\n  riskTier = 'CRITICAL';\n} else if (riskScore >= 45) {\n  riskTier = 'ELEVATED';\n} else if (riskScore >= 20) {\n  riskTier = 'MODERATE';\n}\n\nconst isHighRisk = riskScore >= 45;\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    clientId,\n    clientName,\n    clientEmail,\n    riskScore,\n    riskTier,\n    riskFactors,\n    isHighRisk,\n    evaluatedAt: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "c1200001-0003-4003-8003-000000000003",
+      "name": "Calculate churn risk score",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond-churn-0001",
+              "leftValue": "={{ $json.isHighRisk }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c1200001-0004-4004-8004-000000000004",
+      "name": "IF elevated churn risk",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst alertCard = {\n  title: `🚨 [RETENTION ALERT] ${item.riskTier} Churn Risk: ${item.clientName}`,\n  clientId: item.clientId,\n  riskScore: item.riskScore,\n  riskTier: item.riskTier,\n  riskFactors: item.riskFactors,\n  recommendedPlaybook: item.riskTier === 'CRITICAL'\n    ? 'Executive emergency sponsor call, milestone review, commercial audit'\n    : 'Account manager sync, customer success health check, backlog review',\n  escalatedTo: 'Vikash Saravanan (Founder & Lead System Engineer)',\n  dispatchedChannels: ['Ops Sentinel Feed', 'VIP Retention Queue']\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'churn_retention_alert_triggered',\n    detail: {\n      clientId: item.clientId,\n      clientName: item.clientName,\n      riskTier: item.riskTier,\n      riskScore: item.riskScore,\n      alertCard,\n      triggeredAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c1200001-0005-4005-8005-000000000005",
+      "name": "Trigger retention playbook & VIP alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'account_health_stable_logged',\n    detail: {\n      clientId: item.clientId,\n      clientName: item.clientName,\n      riskTier: item.riskTier,\n      riskScore: item.riskScore,\n      riskFactors: item.riskFactors,\n      nextPulseScheduled: new Date(Date.now() + 7 * 86400 * 1000).toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c1200001-0006-4006-8006-000000000006",
+      "name": "Log account health observation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'processed',\n  detail: item.json.detail || {}\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1200001-0007-4007-8007-000000000007",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-lit-timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "x-lit-event-id",
+              "value": "={{ $json.eventId }}"
+            },
+            {
+              "name": "x-lit-signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1200001-0008-4008-8008-000000000008",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1680,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Calculate churn risk score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate churn risk score": {
+      "main": [
+        [
+          {
+            "node": "IF elevated churn risk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF elevated churn risk": {
+      "main": [
+        [
+          {
+            "node": "Trigger retention playbook & VIP alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log account health observation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger retention playbook & VIP alert": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log account health observation": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign callback": {
+      "main": [
+        [
+          {
+            "node": "Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false
+}

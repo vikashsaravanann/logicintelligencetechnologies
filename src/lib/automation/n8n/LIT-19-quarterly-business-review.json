@@ -1,0 +1,248 @@
+{
+  "name": "LIT — Quarterly Business Review",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lit-quarterly-business-review",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c1190001-0001-4001-8001-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "lit-quarterly-business-review"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst headers = (item.json && item.json.headers) || {};\nconst ts = headers['x-lit-timestamp'];\nconst eventId = headers['x-lit-event-id'];\nconst signature = headers['x-lit-signature'];\nif (!ts || !eventId || !signature) { throw new Error('Missing signing headers'); }\nconst body = (item.json && item.json.body) !== undefined ? item.json.body : {};\nconst rawBody = typeof body === 'string' ? body : JSON.stringify(body);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nconst expected = 'v1=' + mac;\nconst a = Buffer.from(expected);\nconst b = Buffer.from(String(signature));\nconst matches = a.length === b.length && crypto.timingSafeEqual(a, b);\nif (!matches) { throw new Error('Signature verification failed'); }\nconst nowSec = Math.floor(Date.now() / 1000);\nif (Math.abs(nowSec - Number(ts)) > 300) { throw new Error('Signature timestamp outside tolerance'); }\nreturn [{ json: { verified: true, eventId, timestamp: ts, body } }];"
+      },
+      "id": "c1190001-0002-4002-8002-000000000002",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\n\nconst clientId = String(payload.clientId || payload.client_id || 'CLIENT-CORP').trim();\nconst clientName = String(payload.clientName || payload.name || 'Enterprise Client').trim();\nconst clientEmail = String(payload.clientEmail || payload.email || '').trim().toLowerCase();\nconst quarter = String(payload.quarter || 'Q4 2026').trim();\nconst tier = String(payload.tier || 'Enterprise SLA').trim();\nconst annualContractValue = Number(payload.annualContractValue || payload.acv || 250000);\nconst projectsActive = Number(payload.projectsActive || 3);\n\nconst uptimePercentage = Number(payload.uptimePercentage || 99.98);\nconst totalApiRequests = Number(payload.totalApiRequests || 1420000);\nconst slaComplianceRate = Number(payload.slaComplianceRate || 100);\nconst hoursSavedAutomation = Number(payload.hoursSavedAutomation || 360);\nconst estimatedCostSavingsINR = Number(payload.estimatedCostSavingsINR || 1800000);\nconst csatAverage = Number(payload.csatAverage || 9.8);\nconst milestonesDelivered = Number(payload.milestonesDelivered || 8);\n\nconst strategicRoadmapRecommendations = [\n  'Scale production workloads to multi-region active-active cluster',\n  'Deploy zero-trust automated agent pipelines for continuous validation',\n  'Integrate automated telemetry alerting with instant failover recovery'\n];\n\nconst isEnterprise = tier.toLowerCase().includes('enterprise') || annualContractValue >= 200000;\n\nconst analytics = {\n  clientId,\n  clientName,\n  clientEmail,\n  quarter,\n  tier,\n  annualContractValue,\n  projectsActive,\n  performance: {\n    uptimePercentage,\n    totalApiRequests,\n    slaComplianceRate,\n    hoursSavedAutomation,\n    estimatedCostSavingsINR,\n    csatAverage,\n    milestonesDelivered\n  },\n  strategicRoadmapRecommendations,\n  isEnterprise,\n  computedAt: new Date().toISOString()\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    verified: item.verified,\n    analytics,\n    isEnterprise\n  }\n}];"
+      },
+      "id": "c1190001-0003-4003-8003-000000000003",
+      "name": "Aggregate account analytics & metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond-enterprise-0001",
+              "leftValue": "={{ $json.isEnterprise }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c1190001-0004-4004-8004-000000000004",
+      "name": "IF enterprise executive tier",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst a = item.analytics;\n\nconst qbrPackage = {\n  meetingType: 'Executive Strategy Session (60 mins)',\n  leadExecutive: 'Vikash Saravanan (Lead System Engineer)',\n  deckPath: `/portal/qbr/executive/${a.clientId}`,\n  calendarInvite: {\n    recipientEmail: a.clientEmail,\n    subject: `[Executive QBR] ${a.clientName} & Logic Intelligence Technologies — ${a.quarter}`,\n    durationMinutes: 60,\n    agenda: [\n      'Executive Welcome & Vision Alignment',\n      `Quarterly SLA & System Reliability Review (${a.performance.uptimePercentage}% Uptime)`,\n      `ROI & Efficiency Analytics (Saved ~${a.performance.hoursSavedAutomation} Engineering Hours)`,\n      'Strategic Architecture Roadmap for Upcoming Quarter',\n      'Executive Discussion & Collaborative Planning'\n    ]\n  },\n  keyMetricsSummary: a.performance,\n  recommendations: a.strategicRoadmapRecommendations\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'client.qbr_scheduled',\n    detail: {\n      tier: 'ENTERPRISE',\n      clientId: a.clientId,\n      clientName: a.clientName,\n      qbrPackage,\n      scheduledAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c1190001-0005-4005-8005-000000000005",
+      "name": "Prepare executive QBR briefing & deck",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst a = item.analytics;\n\nconst qbrPackage = {\n  meetingType: 'Standard Account Review (30 mins)',\n  leadExecutive: 'Operations Account Lead',\n  deckPath: `/portal/qbr/summary/${a.clientId}`,\n  calendarInvite: {\n    recipientEmail: a.clientEmail,\n    subject: `Quarterly Review: ${a.clientName} & Logic Intelligence Technologies — ${a.quarter}`,\n    durationMinutes: 30,\n    agenda: [\n      'Operations & SLA Health Check',\n      'Delivery Milestones Completed',\n      'Next Quarter Objectives & Priorities'\n    ]\n  },\n  keyMetricsSummary: a.performance,\n  recommendations: a.strategicRoadmapRecommendations\n};\n\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: 'client.qbr_scheduled',\n    detail: {\n      tier: 'STANDARD',\n      clientId: a.clientId,\n      clientName: a.clientName,\n      qbrPackage,\n      scheduledAt: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "c1190001-0006-4006-8006-000000000006",
+      "name": "Prepare standard account review",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst secret = $env.N8N_WEBHOOK_SECRET;\nif (!secret) { throw new Error('N8N_WEBHOOK_SECRET is not set'); }\nconst item = $input.first();\nconst eventId = item.json.eventId;\nconst ts = String(Math.floor(Date.now() / 1000));\nconst payload = {\n  eventId,\n  status: item.json.status || 'client.qbr_scheduled',\n  detail: item.json.detail || {}\n};\nconst rawBody = JSON.stringify(payload);\nconst mac = crypto.createHmac('sha256', secret).update(ts + '.' + eventId + '.' + rawBody).digest('hex');\nreturn [{ json: { eventId, status: payload.status, rawBody, timestamp: ts, signature: 'v1=' + mac } }];"
+      },
+      "id": "c1190001-0007-4007-8007-000000000007",
+      "name": "Sign callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.LIT_CALLBACK_URL }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-lit-timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "x-lit-event-id",
+              "value": "={{ $json.eventId }}"
+            },
+            {
+              "name": "x-lit-signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {}
+      },
+      "id": "c1190001-0008-4008-8008-000000000008",
+      "name": "Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1680,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Aggregate account analytics & metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate account analytics & metrics": {
+      "main": [
+        [
+          {
+            "node": "IF enterprise executive tier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF enterprise executive tier": {
+      "main": [
+        [
+          {
+            "node": "Prepare executive QBR briefing & deck",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare standard account review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare executive QBR briefing & deck": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare standard account review": {
+      "main": [
+        [
+          {
+            "node": "Sign callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign callback": {
+      "main": [
+        [
+          {
+            "node": "Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "active": false
+}
