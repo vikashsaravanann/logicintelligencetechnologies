@@ -8,7 +8,7 @@ export const EMAIL_CONFIG = {
   adminRecipient: COMPANY.emails.admin,
   founderRecipient: COMPANY.emails.vikash,
   smtp: {
-    host: "smtppro.zoho.in",
+    host: "smtp.zoho.in",
     port: 465,
     secure: true,
   },

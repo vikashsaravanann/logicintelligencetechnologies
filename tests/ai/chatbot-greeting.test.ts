@@ -1,9 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { generateAuthoritativeReply, buildComprehensiveSystemPrompt } from "@/lib/ai/company-knowledge";
+import { generateAuthoritativeReply, buildComprehensiveSystemPrompt, isGreetingOnly } from "@/lib/ai/company-knowledge";
 import { COMPANY } from "@/config/company";
 
-test("chatbot authoritative reply: greeting messages return executive greeting", () => {
+test("chatbot authoritative reply: greeting messages return single professional greeting only", () => {
   const greetingQueries = [
     "hello",
     "hi",
@@ -19,59 +19,80 @@ test("chatbot authoritative reply: greeting messages return executive greeting",
   ];
 
   for (const query of greetingQueries) {
+    assert.ok(isGreetingOnly(query), `Expected isGreetingOnly to be true for '${query}'`);
     const reply = generateAuthoritativeReply(query);
-    assert.ok(reply.includes("Logic Intelligence Technologies"), `Expected company name in reply for '${query}'`);
-    assert.ok(reply.includes("LIT Healthcare"), `Expected LIT Healthcare in reply for '${query}'`);
-    assert.ok(reply.includes("Logic Voice"), `Expected Logic Voice in reply for '${query}'`);
-    assert.ok(reply.includes("Voice Shield"), `Expected Voice Shield in reply for '${query}'`);
-    assert.ok(reply.includes("₹8,999"), `Expected ₹8,999 pricing in reply for '${query}'`);
-    assert.ok(reply.includes("Free Architecture Demo"), `Expected Free Architecture Demo in reply for '${query}'`);
-    assert.ok(reply.includes(COMPANY.phone), `Expected phone in reply for '${query}'`);
+    assert.equal(
+      reply,
+      "Hello! How may I assist you today?",
+      `Expected single professional greeting for query '${query}', got: '${reply}'`
+    );
   }
 });
 
-test("chatbot authoritative reply: specific topics bypass pure greeting", () => {
-  const vsReply = generateAuthoritativeReply("Hello, tell me about voice shield");
-  assert.ok(vsReply.includes("Sub-15ms Inline Latency"), "Should return Voice Shield specs");
-  assert.ok(vsReply.includes("99.4% Deepfake Detection"), "Should return deepfake accuracy");
+test("chatbot authoritative reply: substantive queries with greeting bypass pure greeting", () => {
+  const vsQuery = "Hello, tell me about voice shield";
+  assert.equal(isGreetingOnly(vsQuery), false, "Should not treat question as pure greeting");
+  const vsReply = generateAuthoritativeReply(vsQuery);
+  assert.ok(vsReply.includes("Voice Shield"), "Should return Voice Shield details");
+  assert.ok(vsReply.includes("biometric firewall"), "Should return firewall scope");
 
-  const healthReply = generateAuthoritativeReply("Hi, what is LIT healthcare?");
-  assert.ok(healthReply.includes("14 active hospital sites"), "Should return LIT Healthcare specs");
+  const healthQuery = "Hi, what is LIT healthcare?";
+  assert.equal(isGreetingOnly(healthQuery), false, "Should not treat question as pure greeting");
+  const healthReply = generateAuthoritativeReply(healthQuery);
+  assert.ok(healthReply.includes("LIT Healthcare"), "Should return LIT Healthcare details");
+  assert.ok(!healthReply.includes("14 active hospital sites"), "Must not include unverified installation numbers");
 });
 
-test("chatbot authoritative reply: responses are strictly 4 to 5 lines of words", () => {
-  const testQueries = [
-    "hello",
+test("chatbot authoritative reply: short information queries are strictly 3 to 4 content lines", () => {
+  const shortQueries = [
     "tell me about voice shield",
     "what is logic voice",
     "explain LIT healthcare",
     "what are the prices and packages",
     "who is the founder",
     "what services do you offer",
-    "random overview query",
   ];
 
-  for (const q of testQueries) {
+  for (const q of shortQueries) {
     const reply = generateAuthoritativeReply(q);
-    const nonBlankLines = reply.trim().split("\n").map(l => l.trim()).filter(Boolean);
+    const nonBlankLines = reply.trim().split("\n").map((l) => l.trim()).filter(Boolean);
     assert.ok(
-      nonBlankLines.length >= 4 && nonBlankLines.length <= 5,
-      `Expected 4 to 5 lines for query '${q}', got ${nonBlankLines.length} lines: \n${reply}`
+      nonBlankLines.length >= 3 && nonBlankLines.length <= 4,
+      `Expected 3 to 4 lines for short query '${q}', got ${nonBlankLines.length} lines: \n${reply}`
     );
     const wordCount = reply.trim().split(/\s+/).length;
     assert.ok(
-      wordCount <= 90,
-      `Expected concise word count (<= 90) for query '${q}', got ${wordCount} words`
+      wordCount <= 95,
+      `Expected concise word count (<= 95) for short query '${q}', got ${wordCount} words`
     );
   }
 });
 
-test("buildComprehensiveSystemPrompt contains explicit GREETING INSTRUCTION and 4 to 5 lines brevity requirement", () => {
+test("chatbot authoritative reply: detailed requests return 10 to 15 content lines", () => {
+  const detailedQueries = [
+    "explain logic voice features in detail",
+    "explain LIT healthcare in detail",
+    "what are the prices and packages in detail",
+    "compare your products in detail",
+  ];
+
+  for (const q of detailedQueries) {
+    const reply = generateAuthoritativeReply(q);
+    const nonBlankLines = reply.trim().split("\n").map((l) => l.trim()).filter(Boolean);
+    assert.ok(
+      nonBlankLines.length >= 10 && nonBlankLines.length <= 15,
+      `Expected 10 to 15 lines for detailed query '${q}', got ${nonBlankLines.length} lines: \n${reply}`
+    );
+  }
+});
+
+test("buildComprehensiveSystemPrompt adheres to intent modes and formatting policies", () => {
   const prompt = buildComprehensiveSystemPrompt();
-  const expectedInstruction =
-    "GREETING INSTRUCTION: When the user says 'hello', 'hi', or offers a simple greeting, keep your response CONCISE, FORMAL, and HIGHLY PERSUASIVE. Introduce Logic Intelligence Technologies with executive prestige, highlight our flagship platforms (LIT Healthcare, Logic Voice, Voice Shield), state our Free Architecture Demo & fixed-price packages (from ₹8,999), and invite them to explore a working prototype demo or book a consultation.";
-  assert.ok(prompt.includes(expectedInstruction), "System prompt must include explicit GREETING INSTRUCTION");
-  assert.ok(prompt.includes("4 to 5 lines of words"), "System prompt must specify 4 to 5 lines of words requirement");
+  assert.ok(prompt.includes("GREETING_ONLY"), "Prompt must include GREETING_ONLY intent");
+  assert.ok(prompt.includes("SHORT_INFORMATION"), "Prompt must include SHORT_INFORMATION intent");
+  assert.ok(prompt.includes("DETAILED_INFORMATION"), "Prompt must include DETAILED_INFORMATION intent");
+  assert.ok(prompt.includes("Markdown presentation"), "Prompt must specify Markdown presentation rules");
+  assert.ok(!prompt.includes("14 active hospital sites"), "Must not include unverified hospital counts");
 });
 
 test("chatbot launcher button matches exact dimensions of whatsapp button", async () => {
@@ -81,10 +102,7 @@ test("chatbot launcher button matches exact dimensions of whatsapp button", asyn
   const waContent = fs.readFileSync(path.join(process.cwd(), "src/components/shared/floating-whatsapp.tsx"), "utf-8");
   const chatContent = fs.readFileSync(path.join(process.cwd(), "src/components/shared/support-chat-widget.tsx"), "utf-8");
 
-  // WhatsApp dimensions: w-11 h-11 sm:w-14 sm:h-14 rounded-full
   assert.ok(waContent.includes("w-11 h-11 sm:w-14 sm:h-14 rounded-full"), "WhatsApp button must use standard size");
   assert.ok(chatContent.includes("w-11 h-11 sm:w-14 sm:h-14 rounded-full"), "Chatbot button must match exact size of WhatsApp button");
   assert.ok(chatContent.includes("/assets/logo-icon-256.webp"), "Chatbot button must use circle company logo icon");
 });
-
-

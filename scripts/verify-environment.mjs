@@ -13,7 +13,7 @@ const CORE_VARS = [
 
 const SERVER_VARS = [
   { name: 'SUPABASE_SERVICE_ROLE_KEY', required: MODE === 'production', hint: 'Required on server for admin and backend tasks' },
-  { name: 'SMTP_HOST', required: false, default: 'smtppro.zoho.in' },
+  { name: 'SMTP_HOST', required: false, default: 'smtp.zoho.in' },
   { name: 'SMTP_PORT', required: false, default: '465' },
   { name: 'SMTP_USER', required: false, hint: 'Zoho Mail user (e.g. no-reply@logicintelligencetechnologies.in)' },
   { name: 'SMTP_PASSWORD', required: false, hint: 'Zoho Mail application-specific password' },

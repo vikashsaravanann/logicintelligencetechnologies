@@ -56,11 +56,7 @@ const STARTER_PROMPTS = [
 
 const INITIAL_GREETING: ChatMessage = {
   role: "assistant",
-  content: `Welcome to **${COMPANY.displayName}**. I am **LOGIC AI**, your executive systems advisor.
-
-We engineer **LIT Healthcare** (hospital OS in 14 sites), **Logic Voice** (sub-120ms telephony AI), and **Voice Shield** (biometric deepfake defense).
-Commercial packages start from **₹8,999**, backed by our risk-free **Pre-Payment Working Prototype Demo**.
-Would you like to request a **free prototype demo** or discuss your system architecture today?`,
+  content: "Hello! How may I assist you today?",
   timestamp: "Just now",
 };
 
