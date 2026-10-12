@@ -33,7 +33,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: \"compliance_event_processed\",\n    detail: {\n      task: \"Run dry-run eligibility simulation\",\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst eventId = item.eventId;\n\n// Dry-run eligibility simulation: purely advisory, zero dispatch capability\nconst countryCode = payload.countryCode || 'IN';\nconst recipientClass = payload.recipientClass || 'corporate_subscriber';\n\nreturn [{\n  json: {\n    eventId,\n    status: \"simulation_dry_run_evaluated\",\n    detail: {\n      task: \"Run dry-run eligibility simulation\",\n      countryCode,\n      recipientClass,\n      isSimulation: true,\n      notice: \"Dry-run simulation only. No live dispatch or legal approval created.\",\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
       },
       "id": "node-proc-lit-outreach-preview",
       "name": "Run dry-run eligibility simulation",

@@ -58,17 +58,28 @@ export async function listMessagesByStatus(statuses: string[], limit = 100): Pro
 export interface OutreachStats {
   messagesByStatus: Record<string, number>;
   leadsByStatus: Record<string, number>;
+  totalScoredLeads: number;
+  totalBusinesses: number;
+  totalDecisions: number;
+  totalPolicyRules: number;
+  activeLegalApprovals: number;
+  pendingLegalReviews: number;
   jurisdictions: Array<{ country_code: string; outreach_status: string; businesses: number }>;
   suppressions: number;
+  isUnseeded: boolean;
   error: boolean;
 }
 
 export async function outreachStats(): Promise<OutreachStats> {
-  const [msgs, leads, jur, supp] = await Promise.all([
+  const [msgs, leads, scored, jur, supp, decs, rules, approvals] = await Promise.all([
     supabaseAdmin.from("lead_outreach_messages").select("status"),
     supabaseAdmin.from("lead_businesses").select("status, country_code"),
+    supabaseAdmin.from("lead_scores").select("id", { count: "exact", head: true }).eq("is_current", true),
     supabaseAdmin.from("lead_jurisdictions").select("country_code, outreach_status"),
     supabaseAdmin.from("lead_suppressions").select("id", { count: "exact", head: true }).eq("active", true),
+    supabaseAdmin.from("outreach_eligibility_decisions").select("id", { count: "exact", head: true }),
+    supabaseAdmin.from("outreach_policy_rules").select("policy_status"),
+    supabaseAdmin.from("outreach_policy_approvals").select("id", { count: "exact", head: true }).eq("status", "active"),
   ]);
 
   const error = Boolean(msgs.error || leads.error || jur.error);
@@ -78,7 +89,8 @@ export async function outreachStats(): Promise<OutreachStats> {
   }
   const leadsByStatus: Record<string, number> = {};
   const perCountry: Record<string, number> = {};
-  for (const r of (leads.data as Array<{ status: string; country_code: string | null }> | null) ?? []) {
+  const leadsList = (leads.data as Array<{ status: string; country_code: string | null }> | null) ?? [];
+  for (const r of leadsList) {
     leadsByStatus[r.status] = (leadsByStatus[r.status] ?? 0) + 1;
     if (r.country_code) perCountry[r.country_code] = (perCountry[r.country_code] ?? 0) + 1;
   }
@@ -88,7 +100,29 @@ export async function outreachStats(): Promise<OutreachStats> {
     businesses: perCountry[j.country_code] ?? 0,
   }));
 
-  return { messagesByStatus, leadsByStatus, jurisdictions, suppressions: supp.count ?? 0, error };
+  const totalBusinesses = leadsList.length;
+  const totalScoredLeads = scored.count ?? 0;
+  const totalDecisions = decs.count ?? 0;
+  const rulesList = (rules.data as Array<{ policy_status: string }> | null) ?? [];
+  const totalPolicyRules = rulesList.length;
+  const activeLegalApprovals = approvals.count ?? 0;
+  const pendingLegalReviews = rulesList.filter((r) => r.policy_status === "review_required").length;
+  const isUnseeded = totalBusinesses === 0 && Object.keys(messagesByStatus).length === 0;
+
+  return {
+    messagesByStatus,
+    leadsByStatus,
+    totalScoredLeads,
+    totalBusinesses,
+    totalDecisions,
+    totalPolicyRules,
+    activeLegalApprovals,
+    pendingLegalReviews,
+    jurisdictions,
+    suppressions: supp.count ?? 0,
+    isUnseeded,
+    error,
+  };
 }
 
 export interface SuppressionRow {

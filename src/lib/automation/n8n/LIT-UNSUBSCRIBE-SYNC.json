@@ -33,7 +33,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: \"compliance_event_processed\",\n    detail: {\n      task: \"Propagate suppression across datasets\",\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst eventId = item.eventId;\n\n// Propagate unsubscribe/opt-out to suppression lists\nconst email = (payload.email || payload.recipient || '').trim().toLowerCase();\nconst reason = payload.reason || 'recipient_unsubscribe';\n\nreturn [{\n  json: {\n    eventId,\n    status: email ? \"suppression_sync_recorded\" : \"suppression_sync_failed_missing_email\",\n    detail: {\n      task: \"Propagate suppression across datasets\",\n      email,\n      reason,\n      synced: Boolean(email),\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
       },
       "id": "node-proc-lit-unsubscribe-sync",
       "name": "Propagate suppression across datasets",

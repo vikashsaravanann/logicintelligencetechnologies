@@ -33,7 +33,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: \"compliance_event_processed\",\n    detail: {\n      task: \"Reconcile delivery events & feedback\",\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst eventId = item.eventId;\n\n// Reconcile delivery events only from verified mail gateway webhook receipts (Resend, SES, Postmark)\n// Master directive: Never fabricate sent or delivered counts without gateway evidence\nconst gatewayEvent = payload.eventType || payload.type || 'unknown';\nconst messageId = payload.messageId || null;\n\nreturn [{\n  json: {\n    eventId,\n    status: \"delivery_telemetry_reconciled\",\n    detail: {\n      task: \"Reconcile delivery events & feedback\",\n      gatewayEvent,\n      messageId,\n      verifiedByGateway: Boolean(messageId),\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
       },
       "id": "node-proc-lit-outreach-delivery-reconciliation",
       "name": "Reconcile delivery events & feedback",

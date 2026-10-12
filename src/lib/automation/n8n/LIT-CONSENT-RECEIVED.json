@@ -33,7 +33,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: \"compliance_event_processed\",\n    detail: {\n      task: \"Validate consent proof & register\",\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst eventId = item.eventId;\n\n// Consent evidence intake: validates presence of proof before registration\nconst proofUrl = payload.proofUrl || payload.evidenceUrl || '';\nconst leadEmail = payload.email || payload.leadEmail || '';\nconst valid = Boolean(leadEmail && proofUrl);\n\nreturn [{\n  json: {\n    eventId,\n    status: valid ? \"consent_evidence_forwarded\" : \"consent_evidence_rejected_missing_proof\",\n    detail: {\n      task: \"Validate consent proof & register\",\n      leadEmail,\n      proofProvided: Boolean(proofUrl),\n      valid,\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
       },
       "id": "node-proc-lit-consent-received",
       "name": "Validate consent proof & register",

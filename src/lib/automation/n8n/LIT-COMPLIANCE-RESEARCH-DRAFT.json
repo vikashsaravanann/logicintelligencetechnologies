@@ -33,7 +33,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: \"compliance_event_processed\",\n    detail: {\n      task: \"Draft compliance legal research summary\",\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst eventId = item.eventId;\n\n// Compliance legal research draft generator\nconst jurisdiction = payload.jurisdiction || payload.countryCode || 'IN';\n\nreturn [{\n  json: {\n    eventId,\n    status: \"compliance_research_drafted\",\n    detail: {\n      task: \"Draft compliance legal research summary\",\n      jurisdiction,\n      isAdvisoryDraft: true,\n      notice: \"Draft research summary only. Does not confer legal authorization.\",\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
       },
       "id": "node-proc-lit-compliance-research-draft",
       "name": "Draft compliance legal research summary",

@@ -12,7 +12,7 @@ export interface DispatchResult {
   detail?: string;
 }
 
-async function resolveWebhookSecret(): Promise<string> {
+export async function resolveWebhookSecret(): Promise<string> {
   const envSecret = cleanKey(process.env.N8N_WEBHOOK_SECRET);
   if (envSecret) return envSecret;
 
