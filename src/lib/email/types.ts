@@ -13,7 +13,8 @@ export type EmailDeliveryStatus =
   | "suppressed"
   | "cancelled"
   | "dead_letter"
-  | "skipped";
+  | "skipped"
+  | "simulated";
 
 export type EmailErrorCategory =
   | "temporary"

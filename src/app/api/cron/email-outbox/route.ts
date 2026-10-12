@@ -154,6 +154,19 @@ export async function GET(request: Request) {
       continue;
     }
 
+    if (isEmailDryRun()) {
+      const { markOutboxSimulated } = await import("@/lib/email/outbox");
+      await recordAttempt({
+        outboxId: row.id,
+        attempt: row.attempt_count + 1,
+        status: "simulated",
+        providerMessageId: "simulated-dry-run",
+      });
+      await markOutboxSimulated(row.id, "simulated-dry-run");
+      processed.push({ id: row.id, status: "simulated" });
+      continue;
+    }
+
     const sender = resolveSender(senderFromAddress(row.sender));
     if (!isSmtpConfigured(sender) && !isSmtpConfigured("noReply")) {
       await markOutboxFailure(row.id, row.attempt_count + 1, {

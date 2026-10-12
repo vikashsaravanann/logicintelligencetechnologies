@@ -305,11 +305,12 @@ export async function sendEmail({
       recipients: recipients.map(maskEmail),
       from: primary,
     });
-    if (outbox?.id) await markOutboxSent(outbox.id, "dry-run");
+    const { markOutboxSimulated } = await import("./outbox");
+    if (outbox?.id) await markOutboxSimulated(outbox.id, "dry-run");
     return {
       success: true,
-      message: "Dry run: email not sent",
-      status: "sent",
+      message: "Dry run: email simulated (not sent)",
+      status: "simulated",
       outboxId: outbox?.id,
       skipped: true,
     };

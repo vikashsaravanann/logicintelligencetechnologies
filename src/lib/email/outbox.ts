@@ -155,6 +155,23 @@ export async function markOutboxSent(
     .eq("id", id);
 }
 
+export async function markOutboxSimulated(
+  id: string,
+  providerMessageId?: string
+): Promise<void> {
+  if (!isSupabaseLive() || !id) return;
+  await supabaseAdmin
+    .from("email_outbox")
+    .update({
+      status: "simulated",
+      provider_message_id: providerMessageId || "simulated-dry-run",
+      sent_at: null,
+      last_error: "Dry run simulated — no external transmission",
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+}
+
 export async function markOutboxFailure(
   id: string,
   attempt: number,
