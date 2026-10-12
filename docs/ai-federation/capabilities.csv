@@ -1,0 +1,25 @@
+site_id,capability_id,name,status,readiness,tools_required,auth_scope,verification_status
+corporate,corp.chat.overview,LOGIC AI 3-4 Line Overview,LIVE_VERIFIED,READY,company_knowledge.ts,public,PASSED
+corporate,corp.chat.deepdive,LOGIC AI 10-15 Line Structured Deep Dive,LIVE_VERIFIED,READY,company_knowledge.ts,public,PASSED
+corporate,corp.chat.greeting,LOGIC AI 1-Line Strict Greeting,LIVE_VERIFIED,READY,chatbot-greeting.test.ts,public,PASSED
+corporate,corp.consultation.booking,Architecture Consultation Booking,LIVE_VERIFIED,READY,cal_com_adapter,public,PASSED
+corporate,corp.admin.telemetry,Central Admin Release Telemetry,LIVE_VERIFIED,READY,admin_release_telemetry,admin_role,PASSED
+healthcare,hlth.portal.chat,Logic Care Companion Text Assistant,LIVE_VERIFIED,READY,groq_ai.py,patient_session,PASSED
+healthcare,hlth.portal.voice,Logic Care Companion Voice Recognition,LIVE_VERIFIED,READY,WebSpeech_groq,patient_session,PASSED
+healthcare,hlth.portal.reports,Patient Released Lab Reports Access,LIVE_VERIFIED,READY,portal.py::own_records,patient_session,PASSED
+healthcare,hlth.portal.diet_draft,Diet Plan Draft Generation & Clinician Review,LIVE_VERIFIED,READY,portal.py::save_diet_plan,patient_session,PASSED
+healthcare,hlth.portal.reminders,Prescription Reminders Schedule (No Defaults),LIVE_VERIFIED,READY,groq_ai.py::extract_patient_reminders,patient_session,PASSED
+healthcare,hlth.portal.appointment,Appointment Booking Request & Real Slots,LIVE_VERIFIED,READY,portal.py::request_appointment,patient_session,PASSED
+logic_voice,lv.time.now,Live Clock & Timezone Auto-Resolution,LIVE_VERIFIED,READY,current.py::time_now,public_read,PASSED
+logic_voice,lv.weather.now,Current Conditions Geolocation Weather,LIVE_VERIFIED,READY,current.py::weather_now,public_read,PASSED
+logic_voice,lv.fx.rate,Live Foreign Exchange Rates (open.er-api.com),LIVE_VERIFIED,READY,current.py::fx_rate,public_read,PASSED
+logic_voice,lv.crypto.price,CoinGecko Spot Crypto Prices (BTC/ETH),LIVE_VERIFIED,READY,current.py::crypto_price,public_read,PASSED
+logic_voice,lv.gold.price,Precious Metals / Gold Quote (24K/22K/18K),LIVE_VERIFIED,READY,current.py::gold_quote,public_read,PASSED
+logic_voice,lv.politics.officeholder,"Current Officeholders (PM, President, TN CM)",LIVE_VERIFIED,READY,current.py::politics_officeholder,public_read,PASSED
+logic_voice,lv.knowledge.federated,Four-Site Public Knowledge Retrieval,LIVE_VERIFIED,READY,knowledge/retriever.py,public_read,PASSED
+logic_voice,lv.voice.full_duplex,Two-Way Web Speech & Audio Pipeline,LIVE_VERIFIED,READY,audioDownsampler.ts,user_session,PASSED
+logic_voice,lv.tools.toolbus,Verifiable ToolBus & Confirmation Policy,LIVE_VERIFIED,READY,policy/engine.py,user_session,PASSED
+voiceshield,vs.assistant.chat,VoiceShield Enterprise Security Copilot,LIVE_VERIFIED,READY,app/api/chat/route.ts,public,PASSED
+voiceshield,vs.threat_intel.glossary,Synthetic Speech Threat Intelligence,LIVE_VERIFIED,READY,app/threat-intel/page.tsx,public,PASSED
+voiceshield,vs.forensics.scoring,TorchScript AASIST Acoustic Scoring,CODE_PRESENT_UNVERIFIED,READY_EPHEMERAL,backend/engine.py,soc_operator,PARTIAL
+voiceshield,vs.telephony.stream,Real-Time Streaming WebSocket Audio Window,LIVE_VERIFIED,READY,websocket/audio_endpoint.py,telephony_session,PASSED
