@@ -15,6 +15,8 @@ import {
   Inbox,
 } from "lucide-react";
 
+import { EmailNavTabs } from "./components/EmailNavTabs";
+
 export const metadata: Metadata = {
   title: "Outbound Email Dispatch Log | Admin | Logic Intelligence Technologies",
   description: "Live outbound email activity, delivery audit ledger, and SMTP dispatch tracking.",
@@ -186,6 +188,8 @@ export default async function EmailsPage() {
           </div>
         </div>
       )}
+
+      <EmailNavTabs />
 
       {/* KPI Tiles: Sent, Delivered, Failed, Bounced */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
