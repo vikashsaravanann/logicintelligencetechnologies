@@ -463,7 +463,7 @@ export async function previewCycle(targetSite?: string): Promise<CyclePreviewRes
     : (["LIT-CORP", "LIT-HC", "LIT-LV", "LIT-VS"] as SiteCode[]);
 
   // Fetch db properties if available
-  let dbProps: Record<string, { last_crawl_at: string | null; next_crawl_at: string | null }> = {};
+  const dbProps: Record<string, { last_crawl_at: string | null; next_crawl_at: string | null }> = {};
   try {
     const { data } = await supabaseAdmin.from("seo_site_properties").select("site_id, last_crawl_at, next_crawl_at");
     if (data) {

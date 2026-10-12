@@ -125,7 +125,7 @@ export function InvalidationConsole({ initialSite }: InvalidationConsoleProps) {
           Section 11 Invalidation Rule: Blanket Purges Are Strictly Prohibited
         </div>
         <p className="text-amber-800 leading-relaxed">
-          Wholesale cache invalidations (<code>/*</code> or <code>*</code>) exhaust origin compute capacity and violate operational discipline. Invalidation must target specific modified paths only.
+          Wholesale cache invalidations (<code>{'/*'}</code> or <code>*</code>) exhaust origin compute capacity and violate operational discipline. Invalidation must target specific modified paths only.
         </p>
       </div>
 
@@ -190,7 +190,7 @@ export function InvalidationConsole({ initialSite }: InvalidationConsoleProps) {
         {isBlanket && (
           <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 flex items-center gap-2 font-semibold">
             <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
-            <span>Wildcard pattern (<code>/*</code> or <code>*</code>) detected. Blanket purges are prohibited.</span>
+            <span>Wildcard pattern (<code>{'/*'}</code> or <code>*</code>) detected. Blanket purges are prohibited.</span>
           </div>
         )}
 

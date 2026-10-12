@@ -298,7 +298,7 @@ export default async function CdnOverviewPage({
               Blanket Purges Forbidden
             </div>
             <p className="text-[var(--lit-text-muted,#52677C)] leading-relaxed">
-              Global purge requests (<code>/*</code> or <code>*</code>) are blocked. Blanket invalidation floods origin servers and provides zero SEO indexing advantage.
+              Global purge requests (<code>{'/*'}</code> or <code>*</code>) are blocked. Blanket invalidation floods origin servers and provides zero SEO indexing advantage.
             </p>
           </div>
 
