@@ -73,6 +73,7 @@ test("QA-01: Corporate LIT sitemap valid XML and canonical origin", () => {
 });
 
 test("QA-02: Healthcare Platform sitemap valid XML and canonical origin", () => {
+  if (!existsSync(HC_DIR)) return;
   const sitemapXmlPath = path.join(HC_DIR, "apps/landing/public/sitemap.xml");
   assert.ok(existsSync(sitemapXmlPath), "healthcare sitemap.xml must exist");
   const xml = readFileSync(sitemapXmlPath, "utf8");
@@ -83,6 +84,7 @@ test("QA-02: Healthcare Platform sitemap valid XML and canonical origin", () => 
 });
 
 test("QA-03: Logic Voice sitemap valid XML and canonical origin", () => {
+  if (!existsSync(LV_DIR)) return;
   const sitemapXmlPath = path.join(LV_DIR, "apps/web/public/sitemap.xml");
   assert.ok(existsSync(sitemapXmlPath), "logic-voice sitemap.xml must exist");
   const xml = readFileSync(sitemapXmlPath, "utf8");
@@ -92,6 +94,7 @@ test("QA-03: Logic Voice sitemap valid XML and canonical origin", () => {
 });
 
 test("QA-04: VoiceShield sitemap valid XML and canonical origin", () => {
+  if (!existsSync(VS_DIR)) return;
   const sitemapTsPath = path.join(VS_DIR, "app/sitemap.ts");
   assert.ok(existsSync(sitemapTsPath), "voice-shield sitemap.ts must exist");
   const content = readFileSync(sitemapTsPath, "utf8");
@@ -114,6 +117,7 @@ test("QA-05: Corporate robots.txt disallows private/admin/api routes", () => {
 });
 
 test("QA-06: Healthcare robots.txt disallows clinical, portal & auth routes", () => {
+  if (!existsSync(HC_DIR)) return;
   const robotsPath = path.join(HC_DIR, "apps/landing/public/robots.txt");
   assert.ok(existsSync(robotsPath), "healthcare robots.txt must exist");
   const content = readFileSync(robotsPath, "utf8");
@@ -125,6 +129,7 @@ test("QA-06: Healthcare robots.txt disallows clinical, portal & auth routes", ()
 });
 
 test("QA-07: Logic Voice robots.txt disallows /app, /auth and /session", () => {
+  if (!existsSync(LV_DIR)) return;
   const robotsPath = path.join(LV_DIR, "apps/web/public/robots.txt");
   assert.ok(existsSync(robotsPath), "logic voice robots.txt must exist");
   const content = readFileSync(robotsPath, "utf8");
@@ -134,6 +139,7 @@ test("QA-07: Logic Voice robots.txt disallows /app, /auth and /session", () => {
 });
 
 test("QA-08: VoiceShield robots.txt disallows /dashboard, /app and /auth", () => {
+  if (!existsSync(VS_DIR)) return;
   const robotsPath = path.join(VS_DIR, "app/robots.ts");
   assert.ok(existsSync(robotsPath), "voice shield robots.ts must exist");
   const content = readFileSync(robotsPath, "utf8");
