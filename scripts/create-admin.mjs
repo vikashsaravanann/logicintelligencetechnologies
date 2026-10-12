@@ -14,6 +14,7 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
 
 async function main() {
   const emails = [
+    "createwithvikash@gmail.com",
     "vikash@logicintelligencetechnologies.in",
     "hello@logicintelligencetechnologies.in",
     "admin@logicintelligencetechnologies.in",

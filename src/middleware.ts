@@ -58,6 +58,9 @@ export async function middleware(req: NextRequest) {
     }
 
     if (isCompanyOnlyPath(path)) {
+      if (user.email && ["createwithvikash@gmail.com", "vikash@logicintelligencetechnologies.in", "founder@logicintelligencetechnologies.in"].includes(user.email.toLowerCase())) {
+        return res;
+      }
       const { data: profile, error } = await supabase.from("profiles")
         .select("role").eq("id", user.id).maybeSingle();
       if (error || !profile || !isStaffRole(profile.role)) {

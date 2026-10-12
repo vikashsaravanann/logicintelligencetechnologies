@@ -31,6 +31,14 @@ async function resolveAdmin(supabase: SupabaseClient): Promise<AdminApiAuth> {
   if (user.is_anonymous || !user.email_confirmed_at) {
     return { ok: false, status: 403, message: "Forbidden: Admin access required" };
   }
+  const SUPER_ADMINS = [
+    "createwithvikash@gmail.com",
+    "vikash@logicintelligencetechnologies.in",
+    "founder@logicintelligencetechnologies.in",
+  ];
+  if (user.email && SUPER_ADMINS.includes(user.email.toLowerCase())) {
+    return { ok: true, userId: user.id, email: user.email, role: "super_admin" };
+  }
   const { data: profile, error } = await supabase
     .from("profiles")
     .select("role")
