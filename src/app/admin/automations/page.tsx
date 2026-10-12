@@ -118,10 +118,40 @@ interface ScheduledAutomation {
   actionLabel?: string;
 }
 
-export default async function AutomationsPage() {
+import {
+  getCanonicalWorkflows,
+  getWorkflowCountsBySite,
+  getWorkflowCountsByStatus,
+  type SiteFilter,
+} from "@/lib/automations/unified-four-site";
+import { FourSiteTabs } from "../components/FourSiteTabs";
+import { TruthfulStatusBadge } from "../components/TruthfulStatusBadge";
+import { RiskTierBadge } from "../components/RiskTierBadge";
+
+export default async function AutomationsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ site?: string }>;
+}) {
+  const resolvedParams = searchParams ? await searchParams : undefined;
+  const currentSite = (resolvedParams?.site || "all") as SiteFilter;
   const session = await requireCapabilityPage("automations.read", "/admin/automations");
   const snap = await getAutomationsSnapshot();
   const { events: failedEvents, steps: failedSteps } = await getFailureQueue();
+
+  const allWorkflows = getCanonicalWorkflows();
+  const siteCounts = getWorkflowCountsBySite(allWorkflows);
+  const statusCounts = getWorkflowCountsByStatus(allWorkflows);
+
+  // Filter workflows for site view
+  const siteFilteredWorkflows = currentSite === "all"
+    ? allWorkflows
+    : allWorkflows.filter((w) => w.siteKey === currentSite);
+
+  // High-Risk Queue (R3, R4 items requiring human sign-off)
+  const highRiskQueue = siteFilteredWorkflows
+    .filter((w) => w.riskClass === "R3" || w.riskClass === "R4")
+    .slice(0, 6);
 
   const [pendingRes, totalRes] = await Promise.all([
     supabaseAdmin
@@ -267,6 +297,75 @@ export default async function AutomationsPage() {
             <ImportButton />
           </div>
         )}
+      </div>
+
+      {/* 4-Site Scope Filter */}
+      <FourSiteTabs activeSite={currentSite} baseUrl="/admin/automations" counts={siteCounts} />
+
+      {/* 4-Site Automation Portfolio Overview */}
+      <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 shadow-2xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--lit-border-light,#DFE7EF)]">
+          <div>
+            <h2 className="text-base font-bold text-[var(--lit-navy,#0B2545)]">
+              Canonical 4-Site Automation Portfolio
+            </h2>
+            <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
+              Synchronized registry of canonical workflow definitions spanning all production digital entities.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full border border-slate-200 bg-slate-50 text-[var(--lit-navy,#0B2545)]">
+              {siteFilteredWorkflows.length} Workflows ({currentSite === "all" ? "All Sites" : currentSite})
+            </span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500">Corporate LIT</span>
+            <div className="mt-1 flex items-baseline justify-between">
+              <span className="text-xl font-extrabold font-mono text-[var(--lit-navy,#0B2545)]">{siteCounts.corporate}</span>
+              <TruthfulStatusBadge status="Active" size="sm" />
+            </div>
+          </div>
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500">Healthcare AI</span>
+            <div className="mt-1 flex items-baseline justify-between">
+              <span className="text-xl font-extrabold font-mono text-[var(--lit-navy,#0B2545)]">{siteCounts.healthcare}</span>
+              <TruthfulStatusBadge status="Active" size="sm" />
+            </div>
+          </div>
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500">Logic Voice</span>
+            <div className="mt-1 flex items-baseline justify-between">
+              <span className="text-xl font-extrabold font-mono text-[var(--lit-navy,#0B2545)]">{siteCounts.logic_voice}</span>
+              <TruthfulStatusBadge status="Active" size="sm" />
+            </div>
+          </div>
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500">VoiceShield (Active)</span>
+            <div className="mt-1 flex items-baseline justify-between">
+              <span className="text-xl font-extrabold font-mono text-[var(--lit-navy,#0B2545)]">{siteCounts.voice_shield}</span>
+              <TruthfulStatusBadge status="Active" size="sm" />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 pt-3 border-t border-[var(--lit-border-light,#DFE7EF)] flex flex-wrap items-center justify-between text-xs gap-3">
+          <div className="flex items-center gap-4 text-slate-600 font-mono text-[11px]">
+            <span>Active: <strong className="text-emerald-700">{statusCounts.Active}</strong></span>
+            <span>Staged: <strong className="text-blue-700">{statusCounts.Staged}</strong></span>
+            <span>Paused: <strong className="text-amber-700">{statusCounts.Paused}</strong></span>
+            <span>Deprecated: <strong className="text-slate-500">{statusCounts.Deprecated}</strong></span>
+          </div>
+          <a
+            href="/admin/automations/catalog"
+            className="inline-flex items-center gap-1 font-semibold text-[var(--lit-blue,#1565C0)] hover:underline"
+          >
+            <span>Explore Full 178-Workflow Catalog</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </a>
+        </div>
       </div>
 
       {/* KPI Telemetry Cards */}
@@ -606,6 +705,80 @@ export default async function AutomationsPage() {
             </p>
           </div>
         )}
+      </section>
+
+      {/* High-Risk Governance Queue */}
+      <section className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-bold text-[var(--lit-navy,#0B2545)]">
+                Dual-Control &amp; High-Risk Operations
+              </h2>
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                R3 / R4 Gatekeeper
+              </span>
+            </div>
+            <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
+              High-consequence automations requiring explicit dual-control authorization before deployment or invocation.
+            </p>
+          </div>
+          <a
+            href="/admin/automations/approvals"
+            className="text-xs font-semibold text-[var(--lit-blue,#1565C0)] hover:underline flex items-center gap-1 self-start sm:self-auto"
+          >
+            <span>Open Approvals Console</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </a>
+        </div>
+
+        <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[620px] text-left text-xs">
+              <thead className="border-b border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] font-mono uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
+                <tr>
+                  <th className="px-5 py-3 font-semibold">Workflow ID</th>
+                  <th className="px-5 py-3 font-semibold">Name &amp; Category</th>
+                  <th className="px-5 py-3 font-semibold">Entity</th>
+                  <th className="px-5 py-3 font-semibold">Risk Class</th>
+                  <th className="px-5 py-3 font-semibold">Gate Control</th>
+                  <th className="px-5 py-3 font-semibold text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--lit-border-light,#DFE7EF)]">
+                {highRiskQueue.map((w) => (
+                  <tr key={w.workflowId} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-5 py-3.5 font-mono text-[11px] font-semibold text-[var(--lit-navy,#0B2545)]">
+                      <a href={`/admin/automations/workflows/${w.workflowId}`} className="text-[var(--lit-blue,#1565C0)] hover:underline">
+                        {w.workflowId}
+                      </a>
+                    </td>
+                    <td className="px-5 py-3.5 font-medium text-[var(--lit-navy,#0B2545)]">
+                      <div className="font-semibold">{w.name}</div>
+                      <span className="text-[10px] font-mono text-slate-400">{w.category}</span>
+                    </td>
+                    <td className="px-5 py-3.5 font-mono text-slate-600">
+                      {w.siteName}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <RiskTierBadge riskClass={w.riskClass} />
+                    </td>
+                    <td className="px-5 py-3.5 text-slate-600 text-[11px]">
+                      {w.requiresApproval ? (
+                        <span className="font-semibold text-amber-800">Dual-Signoff Required</span>
+                      ) : (
+                        <span className="text-slate-500">Automated Guarded</span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3.5 text-right">
+                      <TruthfulStatusBadge status={w.status} size="sm" />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
       {/* Failure Recovery Queue */}

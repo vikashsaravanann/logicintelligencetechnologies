@@ -1,0 +1,57 @@
+scenario_id,description,target_site,risk_tier,verifying_agent,expected_assertion,implementation_artifact,verification_status
+QA-01,Corporate LIT sitemap valid XML and reachable,CORPORATE,R0,A12,Sitemap returns 200 valid XML matching canonical origin,logicintelligencetechnologies/src/app/sitemap.ts,VERIFIED
+QA-02,Healthcare sitemap valid XML and reachable,HEALTHCARE,R0,A13,Sitemap returns 200 valid XML matching canonical origin,lit-smart-hospital-platform/apps/landing/public/sitemap.xml,VERIFIED
+QA-03,Logic Voice sitemap valid XML and reachable,LOGIC_VOICE,R0,A14,Sitemap returns 200 valid XML matching canonical origin,logic-voice/apps/web/public/sitemap.xml,VERIFIED
+QA-04,VoiceShield sitemap valid XML and reachable,VOICESHIELD,R0,A15,Sitemap returns 200 valid XML matching canonical origin,voice-shield/app/sitemap.ts,VERIFIED
+QA-05,Corporate private/admin routes excluded from sitemap,CORPORATE,R1,A12,Admin/dashboard/proposal routes excluded with robots disallow,logicintelligencetechnologies/src/app/robots.ts,VERIFIED
+QA-06,Healthcare private/portal routes excluded from sitemap,HEALTHCARE,R1,A13,Company/portal/app routes excluded with robots disallow,lit-smart-hospital-platform/apps/landing/public/robots.txt,VERIFIED
+QA-07,Logic Voice private /app excluded from sitemap,LOGIC_VOICE,R1,A14,Private /app completely removed from sitemap; robots disallow,logic-voice/apps/web/public/sitemap.xml,VERIFIED
+QA-08,VoiceShield private /app excluded from sitemap,VOICESHIELD,R1,A15,Private /app and /dashboard excluded from sitemap; robots disallow,voice-shield/app/robots.ts,VERIFIED
+QA-09,Corporate Search Console property authorization,CORPORATE,R0,A16,Property status checked; unconfigured returns Blocked/Unknown,src/lib/seo/gsc-client.ts,VERIFIED
+QA-10,Healthcare Search Console property authorization,HEALTHCARE,R0,A16,Property status checked; unconfigured returns Blocked/Unknown,src/lib/seo/gsc-client.ts,VERIFIED
+QA-11,Logic Voice Search Console property authorization,LOGIC_VOICE,R0,A16,Property status checked; unconfigured returns Blocked/Unknown,src/lib/seo/gsc-client.ts,VERIFIED
+QA-12,VoiceShield Search Console property authorization,VOICESHIELD,R0,A16,Property status checked; unconfigured returns Blocked/Unknown,src/lib/seo/gsc-client.ts,VERIFIED
+QA-13,Corporate sitemap submission receipt recorded,CORPORATE,R0,A16,Sitemap submission API response stored distinctly from index state,src/lib/seo/gsc-client.ts,VERIFIED
+QA-14,Healthcare sitemap submission receipt recorded,HEALTHCARE,R0,A16,Sitemap submission API response stored distinctly from index state,src/lib/seo/gsc-client.ts,VERIFIED
+QA-15,Logic Voice sitemap submission receipt recorded,LOGIC_VOICE,R0,A16,Sitemap submission API response stored distinctly from index state,src/lib/seo/gsc-client.ts,VERIFIED
+QA-16,VoiceShield sitemap submission receipt recorded,VOICESHIELD,R0,A16,Sitemap submission API response stored distinctly from index state,src/lib/seo/gsc-client.ts,VERIFIED
+QA-17,Corporate GSC URL inspection sampler,CORPORATE,R0,A16,URL inspection returns Google state per URL; respects quotas,src/lib/seo/gsc-client.ts,VERIFIED
+QA-18,Healthcare GSC URL inspection sampler,HEALTHCARE,R0,A16,URL inspection returns Google state per URL; respects quotas,src/lib/seo/gsc-client.ts,VERIFIED
+QA-19,Logic Voice GSC URL inspection sampler,LOGIC_VOICE,R0,A16,URL inspection returns Google state per URL; respects quotas,src/lib/seo/gsc-client.ts,VERIFIED
+QA-20,VoiceShield GSC URL inspection sampler,VOICESHIELD,R0,A16,URL inspection returns Google state per URL; respects quotas,src/lib/seo/gsc-client.ts,VERIFIED
+QA-21,Corporate 72h SEO cycle schedule idempotency,CORPORATE,R0,A17,Slot lock prevents duplicate runs within 72h window,src/lib/seo/scheduler.ts,VERIFIED
+QA-22,Healthcare 72h SEO cycle schedule idempotency,HEALTHCARE,R0,A17,Slot lock prevents duplicate runs within 72h window,src/lib/seo/scheduler.ts,VERIFIED
+QA-23,Logic Voice 72h SEO cycle schedule idempotency,LOGIC_VOICE,R0,A17,Slot lock prevents duplicate runs within 72h window,src/lib/seo/scheduler.ts,VERIFIED
+QA-24,VoiceShield 72h SEO cycle schedule idempotency,VOICESHIELD,R0,A17,Slot lock prevents duplicate runs within 72h window,src/lib/seo/scheduler.ts,VERIFIED
+QA-25,Corporate CDN edge cache inspection & no private cache,CORPORATE,R0,A18,Cache-Control header verified; private data marked no-store,src/lib/cdn/edge-client.ts,VERIFIED
+QA-26,Healthcare CDN edge cache inspection & no private cache,HEALTHCARE,R0,A18,Cache-Control header verified; private data marked no-store,src/lib/cdn/edge-client.ts,VERIFIED
+QA-27,Logic Voice CDN edge cache inspection & no private cache,LOGIC_VOICE,R0,A18,Cache-Control header verified; private data marked no-store,src/lib/cdn/edge-client.ts,VERIFIED
+QA-28,VoiceShield CDN edge cache inspection & no private cache,VOICESHIELD,R0,A18,Cache-Control header verified; private data marked no-store,src/lib/cdn/edge-client.ts,VERIFIED
+QA-29,n8n workflow pagination beyond 100/250 items,CROSS_SITE,R0,A06,Cursor pagination walks all pages without data truncation,src/lib/automations/n8n-client.ts,VERIFIED
+QA-30,37/46 corporate source workflows resolve deterministically,CORPORATE,R1,A02,Unique workflow keys resolve without duplicate counts,src/config/automation.ts,VERIFIED
+QA-31,HC-001..056 and 56 aliases do not duplicate instances,HEALTHCARE,R2,A03,Alias map establishes 56 canonical instances,docs/automation-program/SOURCE_ALIAS_AND_DUPLICATE_MAP.md,VERIFIED
+QA-32,HLT vs HC overlap workflows mapped for deprecation,HEALTHCARE,R3,A03,HLT-01..06 mapped to HC-001..056 canonical counterparts,docs/automation-program/SOURCE_ALIAS_AND_DUPLICATE_MAP.md,VERIFIED
+QA-33,Logic Voice documented workflows show Planned/Unverified,LOGIC_VOICE,R3,A04,Status remains Planned/Unverified until imported and run,src/lib/automations/registry.ts,VERIFIED
+QA-34,VoiceShield proposed workflows show Planned,VOICESHIELD,R3,A05,Status shows Planned in registry until imported,src/lib/automations/registry.ts,VERIFIED
+QA-35,Repeated n8n import is idempotent,CROSS_SITE,R2,A06,Existing workflow matched by key; no duplicates created,src/lib/automations/n8n-client.ts,VERIFIED
+QA-36,Remote n8n graph conflict detected and reported,CROSS_SITE,R2,A06,Content hash diff detects remote modifications before overwrite,src/lib/automations/n8n-client.ts,VERIFIED
+QA-37,Global activate-all script prohibited,CROSS_SITE,R4,A21,activate-all replaced with safe allowlisted script with security guard,scripts/activate-safe-n8n-workflows.mjs,VERIFIED
+QA-38,Invalid HMAC / replay / timestamp fails closed,CROSS_SITE,R4,A21,Missing/invalid secret or stale timestamp rejects immediately,src/lib/automations/webhook-verify.ts,VERIFIED
+QA-39,Healthcare missing signing secret fails closed,HEALTHCARE,R4,A03,No development fallback secret; rejects if secret empty,lit-smart-hospital-platform/automation/n8n/workflows/,VERIFIED
+QA-40,Zero PHI/PII/audio/biometrics in central logs,CROSS_SITE,R4,A22,Execution logs redact all sensitive fields; only metadata stored,src/lib/automations/n8n-client.ts,VERIFIED
+QA-41,Tenant isolation enforced across data plane,HEALTHCARE,R4,A22,Tenant A cannot access Tenant B data; DB RLS verified,lit-smart-hospital-platform/database/tests/,VERIFIED
+QA-42,Staff role cannot activate high-risk workflows,CORPORATE,R3,A11,Role viewer/operator blocked; superadmin + approval required,src/app/api/admin/automation/v2/activation/commit/route.ts,VERIFIED
+QA-43,Direct unauthorized POST rejected server-side,CORPORATE,R3,A11,Mutation endpoint returns 401/403 even if bypassed in UI,src/app/api/admin/automation/v2/pause/route.ts,VERIFIED
+QA-44,n8n disconnected state displays UNKNOWN/UNAVAILABLE,CROSS_SITE,R0,A08,UI shows warning state; never displays green Active,src/app/admin/automations/page.tsx,VERIFIED
+QA-45,Enabled workflow with no runs displays UNVERIFIED,CROSS_SITE,R0,A08,Distinguishes enabled from proven successful run,src/app/admin/automations/page.tsx,VERIFIED
+QA-46,Webhook 200 with failed downstream shows failure,CROSS_SITE,R1,A08,Distinguishes HTTP ack from business execution outcome,src/lib/automations/n8n-client.ts,VERIFIED
+QA-47,Duplicate event retry idempotent; no double sends,CROSS_SITE,R2,A01,Event receipts enforce unique idempotency key,src/lib/automations/schema.sql,VERIFIED
+QA-48,Missing GSC property isolates failure to one site,CROSS_SITE,R0,A16,Failure in one property does not block or hide other three,src/lib/seo/gsc-client.ts,VERIFIED
+QA-49,Sitemap lastModified unchanged when content unchanged,CROSS_SITE,R0,A12,Static release timestamps replace dynamic new Date(),src/app/sitemap.ts,VERIFIED
+QA-50,Unsupported Indexing API guarded against normal pages,CROSS_SITE,R0,A16,Indexing API rejected for non-JobPosting/BroadcastEvent pages,src/lib/seo/gsc-client.ts,VERIFIED
+QA-51,SEO 72h schedule handles month boundary & restarts,CROSS_SITE,R0,A17,Persisted UTC slot with next_due_at anchor logic,src/lib/seo/scheduler.ts,VERIFIED
+QA-52,Targeted invalidation requires human approval,CROSS_SITE,R3,A18,Preview required; global universal purge blocked,src/lib/cdn/edge-client.ts,VERIFIED
+QA-53,Successful n8n run includes timestamp and SHA,CROSS_SITE,R1,A10,Execution projection records git commit SHA and sanitized result,src/lib/automations/schema.sql,VERIFIED
+QA-54,Admin dashboard responsive, keyboard accessible, WCAG AA,CORPORATE,R0,A08,Keyboard navigability and accessible contrast verified,src/app/admin/components/AdminShell.tsx,VERIFIED
+QA-55,Cross-repo isolation preserved; atomic PRs,CROSS_SITE,R0,A24,Zero cross-repo commits; PR boundaries respected,docs/automation-program/DEPLOYMENT_AND_ROLLBACK.md,VERIFIED
+QA-56,Final report reconciles source to live evidence,CROSS_SITE,R0,A25,Evidence report reconciles all 180 workflows and 4 sites,docs/automation-program/FINAL_PRODUCTION_EVIDENCE_REPORT.md,VERIFIED

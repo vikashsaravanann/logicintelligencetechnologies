@@ -28,6 +28,21 @@ const NAV_HIDDEN: Record<string, string> = {
   "/admin/clients/[id]": "reached from Clients",
   "/admin/documents/[id]": "reached from Documents",
   "/admin/contracts/[id]/record-signature": "reached from a client's contracts",
+  "/admin/automations/catalog": "reached from Automations",
+  "/admin/automations/connectors": "reached from Automations",
+  "/admin/automations/dead-letter": "reached from Automations",
+  "/admin/automations/deployments": "reached from Automations",
+  "/admin/automations/events": "reached from Automations",
+  "/admin/automations/executions": "reached from Automations",
+  "/admin/automations/n8n": "reached from Automations",
+  "/admin/automations/schedules": "reached from Automations",
+  "/admin/automations/site-health": "reached from Automations",
+  "/admin/automations/workflows": "reached from Automations",
+  "/admin/seo/sitemaps": "reached from SEO & Indexing",
+  "/admin/seo/sites": "reached from SEO & Indexing",
+  "/admin/seo/url-inspection": "reached from SEO & Indexing",
+  "/admin/seo/schedules": "reached from SEO & Indexing",
+  "/admin/cdn/cache-jobs": "reached from Edge CDN",
 };
 
 test("every nav href resolves to an existing admin page", () => {

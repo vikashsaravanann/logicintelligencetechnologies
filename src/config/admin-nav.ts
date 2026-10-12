@@ -70,9 +70,19 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     ],
   },
   {
+    label: "Automation Intelligence",
+    items: [
+      { label: "Automations", href: "/admin/automations", capability: "automations.read", match: (p) => p === "/admin/automations" },
+      { label: "Approvals", href: "/admin/automations/approvals", capability: "automations.read", match: startsWith("/admin/automations/approvals") },
+      { label: "SEO & Indexing", href: "/admin/seo", capability: "seo.read", match: (p) => p === "/admin/seo" || p.startsWith("/admin/seo/") },
+      { label: "Edge CDN", href: "/admin/cdn", capability: "cdn.read", match: startsWith("/admin/cdn") },
+      { label: "Reliability Reports", href: "/admin/automations/reports", capability: "automations.read", match: startsWith("/admin/automations/reports") },
+      { label: "Governance & Runbooks", href: "/admin/automations/governance", capability: "automations.read", match: startsWith("/admin/automations/governance") },
+    ],
+  },
+  {
     label: "Operations",
     items: [
-      { label: "Automations", href: "/admin/automations", capability: "automations.read", match: startsWith("/admin/automations") },
       { label: "System Status", href: "/admin/status", capability: "status.read", match: startsWith("/admin/status") },
     ],
   },

@@ -55,6 +55,12 @@ export const CAPABILITIES = [
   "automations.read",
   "automations.retry",
   "automations.sync",
+  "automations.manage",
+  "approvals.decide",
+  "seo.read",
+  "seo.manage",
+  "cdn.read",
+  "cdn.manage",
   "status.read",
   "analytics.read",
   "audit.read",
@@ -82,7 +88,10 @@ const OPERATIONS: readonly Capability[] = [
   "contracts.read",
   "documents.read", "documents.upload", "documents.review", "documents.download",
   "onboarding.manage",
-  "automations.read", "automations.retry",
+  "automations.read", "automations.retry", "automations.manage",
+  "approvals.decide",
+  "seo.read", "seo.manage",
+  "cdn.read", "cdn.manage",
   "status.read", "analytics.read",
 ];
 
@@ -99,7 +108,9 @@ const SUPPORT: readonly Capability[] = [
 const DEVELOPER: readonly Capability[] = [
   "dashboard.view",
   "status.read",
-  "automations.read", "automations.retry",
+  "automations.read", "automations.retry", "automations.manage",
+  "seo.read", "seo.manage",
+  "cdn.read", "cdn.manage",
   "clients.read",
   "documents.read",
 ];
@@ -110,6 +121,9 @@ const VIEWER: readonly Capability[] = [
   "status.read",
   "proposals.read",
   "clients.read",
+  "automations.read",
+  "seo.read",
+  "cdn.read",
   // read-only: documents metadata but NOT documents.download
 ];
 

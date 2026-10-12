@@ -1,130 +1,27 @@
-import fs from "fs";
-import path from "path";
+#!/usr/bin/env node
+/**
+ * BLOCKED EXECUTION GUARD: scripts/activate-all-n8n-workflows.mjs
+ *
+ * CRITICAL_POLICY_VIOLATION PREVENTED:
+ * Blind mass-activation of n8n workflows violates LIT Enterprise Governance:
+ * 1. High-risk workflows (R3, R4) that touch external recipients, payments,
+ *    or data erasure must NOT be activated without signed human operator approval.
+ * 2. Unverified workflows or staging workflows must remain inactive (fail-safe).
+ * 3. Workflows with sensitive data classes (Class 3, Class 4) require tenant authorization.
+ *
+ * USE INSTEAD:
+ * node scripts/activate-safe-n8n-workflows.mjs --allowlist=<file_or_codes> --token=<approval_token>
+ */
 
-// 1. Resolve environment variables from .env.local if not already in process.env
-const envLocalPath = path.join(process.cwd(), ".env.local");
-if (fs.existsSync(envLocalPath)) {
-  const lines = fs.readFileSync(envLocalPath, "utf8").split("\n");
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-    const eqIdx = trimmed.indexOf("=");
-    if (eqIdx !== -1) {
-      const key = trimmed.slice(0, eqIdx).trim();
-      let val = trimmed.slice(eqIdx + 1).trim();
-      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-        val = val.slice(1, -1);
-      }
-      if (!process.env[key]) {
-        process.env[key] = val;
-      }
-    }
-  }
-}
+console.error("\n================================================================================");
+console.error("FATAL GOVERNANCE ERROR: BLIND MASS-ACTIVATION SCRIPT IS PERMANENTLY DISABLED");
+console.error("================================================================================");
+console.error("Direct execution of 'activate-all-n8n-workflows.mjs' is prohibited by policy.");
+console.error("Reason: Blind mass-activation bypasses R3/R4 risk tier gates and human approvals.");
+console.error("Reference: LIT Master Automation Governance Section 4 & QA-03 Policy Matrix.");
+console.error("");
+console.error("To safely activate approved low-risk workflows, use:");
+console.error("  node scripts/activate-safe-n8n-workflows.mjs --allowlist=R0,R1");
+console.error("================================================================================\n");
 
-const base = (process.env.N8N_BASE_URL || "").trim().replace(/\/+$/, "");
-const apiKey = (process.env.N8N_API_KEY || "").trim();
-
-if (!base || !apiKey) {
-  console.error("Error: N8N_BASE_URL and N8N_API_KEY must be set.");
-  process.exit(1);
-}
-
-console.log("=== N8N WORKFLOW BATCH ACTIVATION ===");
-console.log(`Target Instance: ${base}`);
-console.log(`Timestamp: ${new Date().toISOString()}\n`);
-
-const headers = {
-  "X-N8N-API-KEY": apiKey,
-  "Authorization": `Bearer ${apiKey}`,
-  "Content-Type": "application/json",
-  "accept": "application/json"
-};
-
-async function run() {
-  console.log("Fetching workflows from n8n instance...");
-  const listRes = await fetch(`${base}/api/v1/workflows?limit=250`, { headers });
-  if (!listRes.ok) {
-    console.error(`Failed to list workflows: HTTP ${listRes.status} ${listRes.statusText}`);
-    process.exit(1);
-  }
-
-  const listData = await listRes.json();
-  const workflows = Array.isArray(listData?.data) ? listData.data : [];
-  console.log(`Found ${workflows.length} total workflows on instance.\n`);
-
-  let alreadyActiveCount = 0;
-  let newlyActivatedCount = 0;
-  let errorCount = 0;
-
-  for (let i = 0; i < workflows.length; i++) {
-    const wf = workflows[i];
-    const prefix = `[${String(i + 1).padStart(2, "0")}/${workflows.length}]`;
-
-    if (wf.active) {
-      console.log(`${prefix} ALREADY ACTIVE: "${wf.name}" (ID: ${wf.id})`);
-      alreadyActiveCount++;
-      continue;
-    }
-
-    try {
-      const activateRes = await fetch(`${base}/api/v1/workflows/${wf.id}/activate`, {
-        method: "POST",
-        headers
-      });
-
-      if (activateRes.ok) {
-        console.log(`${prefix} ACTIVATED:      "${wf.name}" (ID: ${wf.id})`);
-        newlyActivatedCount++;
-      } else {
-        const errText = await activateRes.text();
-        console.error(`${prefix} FAILED:         "${wf.name}" (ID: ${wf.id}) HTTP ${activateRes.status} - ${errText}`);
-        errorCount++;
-      }
-    } catch (err) {
-      console.error(`${prefix} NETWORK ERROR:  "${wf.name}" (ID: ${wf.id}) - ${err.message}`);
-      errorCount++;
-    }
-
-    // Small delay between activation calls to ensure engine stability
-    await new Promise(r => setTimeout(r, 100));
-  }
-
-  console.log("\n================ VERIFICATION ================");
-  console.log("Re-querying instance to verify all active states...");
-  const verifyRes = await fetch(`${base}/api/v1/workflows?limit=250`, { headers });
-  const verifyData = await verifyRes.json();
-  const verifyList = Array.isArray(verifyData?.data) ? verifyData.data : [];
-
-  let totalActive = 0;
-  let totalInactive = 0;
-
-  verifyList.forEach((w, idx) => {
-    if (w.active) {
-      totalActive++;
-    } else {
-      totalInactive++;
-    }
-  });
-
-  console.log(`\nVerification Results:`);
-  console.log(`  Total Workflows:   ${verifyList.length}`);
-  console.log(`  Active Workflows:   ${totalActive}`);
-  console.log(`  Inactive Workflows: ${totalInactive}`);
-  console.log(`  Newly Activated:    ${newlyActivatedCount}`);
-  console.log(`  Already Active:     ${alreadyActiveCount}`);
-  console.log(`  Errors:             ${errorCount}`);
-  console.log("==============================================\n");
-
-  if (totalInactive > 0 || errorCount > 0) {
-    console.warn(`Warning: ${totalInactive} workflows remain inactive.`);
-    process.exit(1);
-  } else {
-    console.log("All workflows are confirmed ACTIVE (active: true) on n8n!");
-  }
-}
-
-run().catch(err => {
-  console.error("Fatal error:", err);
-  process.exit(1);
-});
+process.exit(1);

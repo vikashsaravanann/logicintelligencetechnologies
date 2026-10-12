@@ -163,6 +163,125 @@ export default async function AdminCommandCenterPage() {
         ))}
       </div>
 
+      {/* Four-Site Unified Operational Intelligence Section */}
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-base font-bold text-[var(--lit-navy,#0B2545)] tracking-tight flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--lit-teal,#1FA9A2)]/10 text-[var(--lit-teal,#1FA9A2)]">
+                <Briefcase className="w-3.5 h-3.5" />
+              </span>
+              <span>Four-Site Unified Automation & Edge Operations</span>
+            </h2>
+            <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
+              Centralized orchestration across Corporate, Healthcare, Logic Voice, and VoiceShield properties.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin/automations"
+              className="text-xs font-bold text-[var(--lit-teal,#1FA9A2)] hover:underline flex items-center gap-1"
+            >
+              <span>Automations Hub</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              site: "Corporate LIT",
+              key: "corporate",
+              host: "www.logicintelligencetechnologies.in",
+              workflows: 76,
+              seoStatus: "72h Cadence Configured",
+              cdnStatus: "Edge Active",
+              status: "Connected",
+              tone: "border-teal-200 bg-teal-50 text-[var(--lit-teal,#1FA9A2)]",
+            },
+            {
+              site: "Healthcare Platform",
+              key: "healthcare",
+              host: "healthcare.logicintelligencetechnologies.in",
+              workflows: 62,
+              seoStatus: "72h Cadence Configured",
+              cdnStatus: "Edge Active",
+              status: "Connected",
+              tone: "border-blue-200 bg-blue-50 text-blue-700",
+            },
+            {
+              site: "Logic Voice",
+              key: "logic_voice",
+              host: "logicvoice.logicintelligencetechnologies.in",
+              workflows: 20,
+              seoStatus: "72h Cadence Configured",
+              cdnStatus: "Edge Active",
+              status: "Connected",
+              tone: "border-purple-200 bg-purple-50 text-purple-700",
+            },
+            {
+              site: "VoiceShield",
+              key: "voice_shield",
+              host: "voiceshield.logicintelligencetechnologies.in",
+              workflows: 20,
+              seoStatus: "72h Cadence Configured",
+              cdnStatus: "Edge Active",
+              status: "Connected",
+              tone: "border-indigo-200 bg-indigo-50 text-indigo-700",
+            },
+          ].map((item) => (
+            <div
+              key={item.key}
+              className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 shadow-2xs hover:border-[var(--lit-teal,#1FA9A2)]/40 transition-all flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2 pb-2">
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider font-mono border ${item.tone}`}>
+                    {item.site}
+                  </span>
+                  <span className="text-[10px] font-mono text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                    {item.status}
+                  </span>
+                </div>
+                <p className="text-[11px] font-mono text-[var(--lit-text-muted,#52677C)] truncate mt-1">
+                  {item.host}
+                </p>
+                <div className="mt-4 space-y-1.5 text-xs">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-[var(--lit-text-muted,#52677C)]">Catalog Workflows:</span>
+                    <span className="font-bold font-mono text-[var(--lit-navy,#0B2545)]">{item.workflows}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-[var(--lit-text-muted,#52677C)]">SEO Cycle:</span>
+                    <span className="font-mono text-slate-700">{item.seoStatus}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-[var(--lit-text-muted,#52677C)]">CDN Freshness:</span>
+                    <span className="font-mono text-slate-700">{item.cdnStatus}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-[var(--lit-border-light,#DFE7EF)] flex items-center justify-between text-[11px]">
+                <Link
+                  href={`/admin/automations/catalog?site=${item.key}`}
+                  className="font-bold text-[var(--lit-teal,#1FA9A2)] hover:underline"
+                >
+                  Workflows →
+                </Link>
+                <Link
+                  href={`/admin/seo/sites/${item.key}`}
+                  className="text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] font-medium"
+                >
+                  SEO Audit →
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Quick Launchpad Navigation */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
@@ -170,8 +289,8 @@ export default async function AdminCommandCenterPage() {
           { href: "/admin/invoices", label: "Invoices" },
           { href: "/admin/bookings", label: "Calendar Bookings" },
           { href: "/admin/proposals", label: "Proposals & SOWs" },
-          { href: "/admin/outreach", label: "Outreach Pipeline" },
-          { href: "/admin/support", label: "Support Tickets" },
+          { href: "/admin/automations/catalog", label: "Workflow Catalog (180)" },
+          { href: "/admin/seo", label: "SEO Intelligence" },
         ].map((q) => (
           <Link
             key={q.href}
