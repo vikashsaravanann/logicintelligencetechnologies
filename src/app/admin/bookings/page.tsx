@@ -48,6 +48,16 @@ const STATUS_CONFIG: Record<
   string,
   { label: string; badge: string; icon: React.ComponentType<{ className?: string }> }
 > = {
+  received: {
+    label: "Received",
+    badge: "border-amber-200 bg-amber-50 text-amber-800",
+    icon: Clock,
+  },
+  pending_scheduling: {
+    label: "Pending Verification",
+    badge: "border-amber-200 bg-amber-50 text-amber-800",
+    icon: Clock,
+  },
   Scheduled: {
     label: "Scheduled",
     badge: "border-blue-200 bg-blue-50 text-blue-800",
@@ -75,7 +85,9 @@ export default async function AdminBookingsPage() {
 
   const bookings = (rawBookings ?? []) as BookingRow[];
   const totalCount = bookings.length;
-  const scheduledCount = bookings.filter((b) => (b.status || "Scheduled") === "Scheduled").length;
+  const scheduledCount = bookings.filter((b) =>
+    ["Scheduled", "received", "pending_scheduling"].includes(b.status || "Scheduled")
+  ).length;
   const completedCount = bookings.filter((b) => b.status === "Completed").length;
   const cancelledCount = bookings.filter((b) => b.status === "Cancelled").length;
 

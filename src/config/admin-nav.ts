@@ -35,6 +35,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
   {
     label: "Pipeline",
     items: [
+      { label: "Intake Stream", href: "/admin/intake", capability: "leads.read", match: startsWith("/admin/intake") },
       { label: "Leads", href: "/admin/leads", capability: "leads.read", match: startsWith("/admin/leads") },
       { label: "AI Leads", href: "/admin/ai-leads", capability: "leads.read", match: startsWith("/admin/ai-leads") },
       { label: "Bookings", href: "/admin/bookings", capability: "bookings.read", match: startsWith("/admin/bookings") },

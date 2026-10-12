@@ -8,8 +8,12 @@ export function getLeadNotificationRecipients(): string[] {
     .split(",")
     .map((item) => normalizeEmail(item))
     .filter(isValidEmail);
-  if (fromEnv.length) return fromEnv;
-  return [COMPANY.emails.support];
+  const recipients = new Set<string>();
+  // Mandatory tested administrative recipient per LIT specification
+  recipients.add("admin@logicintelligencetechnologies.in");
+  for (const r of fromEnv) recipients.add(r);
+  if (COMPANY.emails?.support) recipients.add(COMPANY.emails.support);
+  return Array.from(recipients);
 }
 
 export function getAdminAlertRecipient(): string {

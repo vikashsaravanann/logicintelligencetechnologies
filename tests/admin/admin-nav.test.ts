@@ -23,6 +23,8 @@ const NAV_HIDDEN: Record<string, string> = {
   "/admin": "redirects to command-center",
   "/admin/forbidden": "shown on capability denial",
   "/admin/emails/new": "reached from the Emails page",
+  "/admin/emails/mailboxes": "reached from the Emails page",
+  "/admin/emails/outbox": "reached from the Emails page",
   "/admin/proposals/new": "reached from the Proposals page",
   "/admin/invoices/new": "reached from the Invoices page",
   "/admin/clients/[id]": "reached from Clients",

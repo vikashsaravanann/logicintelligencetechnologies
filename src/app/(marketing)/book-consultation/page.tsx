@@ -81,6 +81,19 @@ export default function BookConsultationPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  function parseSlotToTime(slot: string): string {
+    const match = slot.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+    if (!match) return "10:00:00";
+    let hours = parseInt(match[1], 10);
+    const mins = match[2];
+    const modifier = match[3];
+    if (modifier) {
+      if (modifier.toUpperCase() === "PM" && hours < 12) hours += 12;
+      if (modifier.toUpperCase() === "AM" && hours === 12) hours = 0;
+    }
+    return `${String(hours).padStart(2, "0")}:${mins}:00`;
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email) return;
@@ -88,7 +101,8 @@ export default function BookConsultationPage() {
     setLoading(true);
     setError(null);
 
-    const slotDateTime = `${selectedDate}T${selectedSlot}:00Z`;
+    const timePart = parseSlotToTime(selectedSlot);
+    const slotDateTime = `${selectedDate}T${timePart}Z`;
 
     try {
       const res = await fetch("/api/booking", {
@@ -117,12 +131,15 @@ export default function BookConsultationPage() {
         timezone: selectedTimezone,
       });
 
+      const bookingRef = data.requestId || data.bookingId || "";
       const queryParams = new URLSearchParams({
         name,
         type: selectedType.title,
         date: selectedDate,
         slot: selectedSlot,
         tz: selectedTimezone,
+        ref: bookingRef,
+        status: data.status || "received",
       });
 
       router.push(`/booking/success?${queryParams.toString()}`);

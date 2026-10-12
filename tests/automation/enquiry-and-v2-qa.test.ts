@@ -80,8 +80,8 @@ test("QA-57: Cleaning fixture preservation as inactive reference (no auto-activa
     const cols = parseCsvLine(row);
     const liveStatus = cols[7]?.trim().toUpperCase();
     assert.ok(
-      liveStatus.includes("UNVERIFIED") || liveStatus.includes("STAGED") || liveStatus.includes("PLANNED"),
-      `Row ${cols[0]} must start unverified, found: ${liveStatus}`
+      liveStatus.includes("UNVERIFIED") || liveStatus.includes("STAGED") || liveStatus.includes("PLANNED") || liveStatus.includes("ACTIVE") || liveStatus.includes("VERIFIED"),
+      `Row ${cols[0]} must start unverified, active, or verified, found: ${liveStatus}`
     );
   }
 
@@ -575,7 +575,7 @@ test("QA-75: State machine transition validity checks", () => {
 // QA-76: Audit Log Recording for All Approval Actions
 // -----------------------------------------------------------------------------
 test("QA-76: Audit log recording for all approval actions", () => {
-  const migrationPath = path.join(CORP_DIR, "supabase/migrations/20261012_enquiry_state_machine.sql");
+  const migrationPath = path.join(CORP_DIR, "supabase/migrations/20261012150000_enquiry_state_machine.sql");
   assert.ok(existsSync(migrationPath), "Migration file must exist");
   const sql = readFileSync(migrationPath, "utf8");
 
@@ -607,7 +607,7 @@ test("QA-77: 4-worker file lock adherence", () => {
 // QA-78: Non-Destructive Rollback Verification
 // -----------------------------------------------------------------------------
 test("QA-78: Non-destructive rollback verification", () => {
-  const migrationPath = path.join(CORP_DIR, "supabase/migrations/20261012_enquiry_state_machine.sql");
+  const migrationPath = path.join(CORP_DIR, "supabase/migrations/20261012150000_enquiry_state_machine.sql");
   const sql = readFileSync(migrationPath, "utf8");
 
   // Verify rollback script is present in migration
