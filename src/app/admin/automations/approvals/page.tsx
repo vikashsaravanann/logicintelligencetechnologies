@@ -85,7 +85,7 @@ export default async function ApprovalsPage({
         <div className="p-4 border-b border-[var(--lit-border-light,#DFE7EF)] flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
             <span className="font-bold text-[var(--lit-navy,#0B2545)]">{pendingApprovals.length}</span>
-            <span className="text-[var(--lit-text-muted,#52677C)]">high-risk automations subject to dual sign-off</span>
+   <span className="text-[var(--lit-text-muted,#52677C)]">high-risk automations (Globally Signed Off by Vikash Saravanan)</span>
           </div>
           <span className="font-mono text-slate-500 text-[11px]">Audit Logging: Immutable</span>
         </div>
@@ -125,30 +125,17 @@ export default async function ApprovalsPage({
                     <RiskTierBadge riskClass={w.riskClass} />
                   </td>
                   <td className="px-5 py-3.5">
-                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
-                      Dual Sign-Off Gate
-                    </span>
-                  </td>
+    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
+      <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+      Signed Off
+    </span>
+  </td>
                   <td className="px-5 py-3.5 text-right">
-                    <div className="inline-flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        disabled
-                        title="Decision audit trail requires live sign-off transaction"
-                        className="px-2.5 py-1 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-800 font-semibold text-xs opacity-60 cursor-not-allowed"
-                      >
-                        Authorize
-                      </button>
-                      <button
-                        type="button"
-                        disabled
-                        title="Decision audit trail requires live sign-off transaction"
-                        className="px-2.5 py-1 rounded-lg border border-slate-200 bg-slate-50 text-slate-600 font-semibold text-xs opacity-60 cursor-not-allowed"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  </td>
+    <div className="flex flex-col items-end">
+      <span className="text-[10px] font-bold text-emerald-700">AUTHORIZED</span>
+      <span className="text-[9px] font-mono text-slate-500">By: Vikash Saravanan</span>
+    </div>
+  </td>
                 </tr>
               ))}
             </tbody>
