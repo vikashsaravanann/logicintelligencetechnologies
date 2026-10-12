@@ -33,7 +33,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: \"compliance_event_processed\",\n    detail: {\n      task: \"Evaluate rule expiry & send reminders\",\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst eventId = item.eventId;\n\n// Compliance policy expiry review reminder notice generation\nconst ruleKey = payload.ruleKey || payload.rule_key || 'all';\nconst daysUntilExpiry = payload.daysUntilExpiry ?? null;\n\nreturn [{\n  json: {\n    eventId,\n    status: \"compliance_expiry_notice_prepared\",\n    detail: {\n      task: \"Evaluate rule expiry & send reminders\",\n      ruleKey,\n      daysUntilExpiry,\n      notice: \"Notification prepared for legal reviewer queue.\",\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
       },
       "id": "node-proc-lit-compliance-review-reminder",
       "name": "Evaluate rule expiry & send reminders",

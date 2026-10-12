@@ -33,7 +33,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: \"compliance_event_processed\",\n    detail: {\n      task: \"Verify human operator approval\",\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst eventId = item.eventId;\n\n// Human operator QA signoff intake\n// Note: n8n never creates legal approval. Human approval in n8n is content/draft QA only.\nconst approvedBy = payload.approvedBy || payload.operatorId || 'system_review_queue';\nconst reviewStatus = payload.decision === 'rejected' ? 'content_draft_rejected' : 'content_draft_reviewed';\n\nreturn [{\n  json: {\n    eventId,\n    status: reviewStatus,\n    detail: {\n      task: \"Intake human operator draft review\",\n      approvedBy,\n      notice: \"Draft content signoff recorded. Legal authorization remains governed exclusively by canonical legal policy engine.\",\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
       },
       "id": "node-proc-lit-outreach-approval",
       "name": "Verify human operator approval",

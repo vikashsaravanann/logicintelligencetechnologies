@@ -33,7 +33,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $input.first().json;\nreturn [{\n  json: {\n    eventId: item.eventId,\n    status: \"compliance_event_processed\",\n    detail: {\n      task: \"Alert on policy bypass attempt\",\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
+        "jsCode": "const item = $input.first().json;\nconst payload = (item.body && item.body.payload) ? item.body.payload : (item.body || {});\nconst eventId = item.eventId;\n\n// Alert on policy bypass attempt / compliance rejection\nconst violationType = payload.violationType || payload.error || 'compliance_rejection';\nconst recipient = payload.recipient || payload.email || 'unknown';\n\nreturn [{\n  json: {\n    eventId,\n    status: \"security_alert_dispatched\",\n    detail: {\n      task: \"Alert on policy bypass attempt\",\n      violationType,\n      recipient,\n      escalatedToSecurity: true,\n      executedAt: new Date().toISOString()\n    }\n  }\n}];"
       },
       "id": "node-proc-lit-compliance-failure-alert",
       "name": "Alert on policy bypass attempt",

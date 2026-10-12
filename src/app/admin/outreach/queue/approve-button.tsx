@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Check, CheckCheck, AlertCircle } from "lucide-react";
+import { Loader2, Check, CheckCheck, AlertCircle, FileCheck } from "lucide-react";
 import { approveDraft } from "../studio/actions";
 
 interface ApproveButtonProps {
@@ -43,14 +43,18 @@ export function ApproveButton({ messageId, disabled }: ApproveButtonProps) {
         onClick={onApprove}
         disabled={loading || disabled}
         className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-        title={disabled ? "Resolve blocker gates in Outreach Studio first" : "Authorize dispatch"}
+        title={
+          disabled
+            ? "Resolve blocker gates in Outreach Studio first"
+            : "Sign off on draft content (QA approval). Note: Dispatch remains a separate controlled step subject to legal policy gating."
+        }
       >
         {loading ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
-          <Check className="h-3.5 w-3.5" />
+          <FileCheck className="h-3.5 w-3.5" />
         )}
-        <span>Approve Dispatch</span>
+        <span>Approve Draft Content</span>
       </button>
 
       {msg ? (
@@ -82,7 +86,7 @@ export function BatchApproveButton({ messageIds }: BatchApproveButtonProps) {
   async function onBatchApprove() {
     if (
       !window.confirm(
-        `Authorize dispatch for all ${count} QA-verified messages? Messages will enter the scheduled dispatch sequence.`
+        `Approve draft content for all ${count} QA-verified messages?\n\nNote: This signs off on draft content only. Dispatch remains governed by legal compliance and controlled gateway transmission.`
       )
     ) {
       return;
@@ -107,7 +111,7 @@ export function BatchApproveButton({ messageIds }: BatchApproveButtonProps) {
     }
 
     setLoading(false);
-    setStatus(`Batch complete: ${succeeded} approved${failed > 0 ? `, ${failed} failed` : ""}.`);
+    setStatus(`Batch complete: ${succeeded} draft(s) approved for content${failed > 0 ? `, ${failed} failed` : ""}. Dispatches remain governed by legal gates.`);
     router.refresh();
   }
 
@@ -118,13 +122,14 @@ export function BatchApproveButton({ messageIds }: BatchApproveButtonProps) {
         onClick={onBatchApprove}
         disabled={loading || count === 0}
         className="inline-flex items-center gap-2 rounded-xl bg-[var(--lit-navy,#0B2545)] px-4 py-2 text-xs font-bold text-white shadow-2xs hover:bg-[#12365e] active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+        title="Approve message content for all passing drafts. Does not trigger email dispatches."
       >
         {loading ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin text-[var(--lit-teal,#1FA9A2)]" />
         ) : (
           <CheckCheck className="h-4 w-4 text-[var(--lit-teal,#1FA9A2)]" />
         )}
-        <span>Batch Approve ({count}) Passing</span>
+        <span>Batch Approve Draft Content ({count})</span>
       </button>
 
       {status ? (

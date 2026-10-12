@@ -5,7 +5,6 @@ import { outreachStats } from "@/lib/outreach/intelligence/queues";
 import { AdminBackLink } from "../../components/AdminBackLink";
 import { OutreachNav } from "../components/OutreachNav";
 import {
-  BarChart3,
   TrendingUp,
   Send,
   Clock,
@@ -14,12 +13,12 @@ import {
   Globe,
   Users,
   Layers,
-  ArrowRight,
-  Filter,
-  Check,
   AlertCircle,
   Percent,
   ShieldCheck,
+  Scale,
+  FileCheck,
+  Info,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -36,6 +35,11 @@ const JUR_TONE: Record<string, { label: string; tone: string }> = {
   blocked: { label: "Restricted — evidence required", tone: "border-rose-200 bg-rose-50 text-rose-800" },
 };
 
+function formatRate(numerator: number, denominator: number): string {
+  if (denominator <= 0) return "N/A";
+  return `${Math.round((numerator / denominator) * 100)}%`;
+}
+
 export default async function OutreachAnalyticsPage() {
   await requireCapabilityPage("outreach.read", "/admin/outreach/analytics");
   const s = await outreachStats();
@@ -46,66 +50,67 @@ export default async function OutreachAnalyticsPage() {
   const review = m.needs_review ?? 0;
   const drafts = m.draft ?? 0;
   const totalMessages = Object.values(m).reduce((a, b) => a + b, 0);
-  const totalLeads = Object.values(s.leadsByStatus).reduce((a, b) => a + b, 0);
+  const totalBusinesses = s.totalBusinesses;
+  const totalScoredLeads = s.totalScoredLeads;
 
-  const approvalRate =
-    review + approved + sent > 0
-      ? Math.round(((approved + sent) / (review + approved + sent)) * 100)
-      : 0;
+  const approvalRateDisplay = formatRate(approved + sent, review + approved + sent);
+  const dispatchRateDisplay = formatRate(sent, approved + sent);
 
-  const dispatchRate =
-    approved + sent > 0 ? Math.round((sent / (approved + sent)) * 100) : 0;
-
-  // Conversion funnel steps
+  // Conversion funnel steps with safe division
   const funnelSteps = [
     {
-      id: "leads",
-      label: "1. Verified Leads Scored",
-      count: totalLeads,
-      description: "Enriched target businesses with verified signals",
+      id: "businesses",
+      label: "1. Verified Businesses",
+      count: totalBusinesses,
+      description: "Indexed target business entities in CRM database",
       color: "bg-[var(--lit-navy,#0B2545)] text-white",
-      percent: 100,
+      percentDisplay: totalBusinesses > 0 ? "100%" : "0 base",
+      fillPercent: totalBusinesses > 0 ? 100 : 0,
+    },
+    {
+      id: "scored",
+      label: "2. Scored Leads",
+      count: totalScoredLeads,
+      description: "Qualified targets with current multi-signal fit scores",
+      color: "bg-blue-700 text-white",
+      percentDisplay: formatRate(totalScoredLeads, totalBusinesses),
+      fillPercent: totalBusinesses > 0 ? Math.min(100, Math.round((totalScoredLeads / totalBusinesses) * 100)) : 0,
     },
     {
       id: "drafted",
-      label: "2. Messages Drafted",
+      label: "3. Messages Drafted",
       count: totalMessages,
-      description: "AI-assisted drafts generated from verified evidence",
+      description: "Draft communications generated in Message Studio",
       color: "bg-[var(--lit-blue,#1565C0)] text-white",
-      percent: totalLeads > 0 ? Math.min(100, Math.round((totalMessages / totalLeads) * 100)) : 0,
+      percentDisplay: formatRate(totalMessages, totalScoredLeads > 0 ? totalScoredLeads : totalBusinesses),
+      fillPercent: totalBusinesses > 0 ? Math.min(100, Math.round((totalMessages / Math.max(1, totalBusinesses)) * 100)) : 0,
     },
     {
       id: "review",
-      label: "3. QA Gates Cleared",
+      label: "4. QA Gates Cleared",
       count: review + approved + sent,
-      description: "Passed all 10 automated QA blocker gates",
+      description: "Passed 10-point automated compliance and QA blockers",
       color: "bg-indigo-600 text-white",
-      percent:
-        totalMessages > 0
-          ? Math.min(100, Math.round(((review + approved + sent) / totalMessages) * 100))
-          : 0,
+      percentDisplay: formatRate(review + approved + sent, totalMessages),
+      fillPercent: totalMessages > 0 ? Math.min(100, Math.round(((review + approved + sent) / totalMessages) * 100)) : 0,
     },
     {
       id: "approved",
-      label: "4. Human Authorized",
+      label: "5. Human Authorized",
       count: approved + sent,
-      description: "Explicitly approved by admin operator",
+      description: "Explicitly signed off by authorized admin operator",
       color: "bg-[var(--lit-teal,#1FA9A2)] text-white",
-      percent:
-        review + approved + sent > 0
-          ? Math.min(100, Math.round(((approved + sent) / (review + approved + sent)) * 100))
-          : 0,
+      percentDisplay: formatRate(approved + sent, review + approved + sent),
+      fillPercent: review + approved + sent > 0 ? Math.min(100, Math.round(((approved + sent) / (review + approved + sent)) * 100)) : 0,
     },
     {
       id: "sent",
-      label: "5. Dispatched to Market",
+      label: "6. Dispatched",
       count: sent,
       description: "Successfully delivered through controlled dispatch",
       color: "bg-emerald-600 text-white",
-      percent:
-        approved + sent > 0
-          ? Math.min(100, Math.round((sent / (approved + sent)) * 100))
-          : 0,
+      percentDisplay: formatRate(sent, approved + sent),
+      fillPercent: approved + sent > 0 ? Math.min(100, Math.round((sent / (approved + sent)) * 100)) : 0,
     },
   ];
 
@@ -136,33 +141,43 @@ export default async function OutreachAnalyticsPage() {
         {/* Global Outreach Navigation */}
         <OutreachNav active="analytics" />
 
-      {s.error && (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 flex items-start gap-3 text-rose-900">
-          <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-          <div className="space-y-1 text-xs">
-            <h3 className="font-bold">Telemetry Data Temporarily Unavailable</h3>
-            <p>
-              Supabase database query execution failed or timed out. Metric figures may be incomplete.
-              Automated compliance triggers remain enforced in fail-closed mode.
-            </p>
+        {s.error && (
+          <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 flex items-start gap-3 text-rose-900">
+            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+            <div className="space-y-1 text-xs">
+              <h3 className="font-bold">Telemetry Data Temporarily Unavailable</h3>
+              <p>
+                Supabase database query execution failed or timed out. Metric figures may be incomplete.
+                Automated compliance triggers remain enforced in fail-closed mode.
+              </p>
+            </div>
           </div>
-        </div>
-      )}
-      </div>
+        )}
 
-      {s.error ? (
-        <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-xs font-medium text-amber-800 shadow-2xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
-          <span>Some metrics could not be loaded due to an intermittent database read timeout.</span>
-        </div>
-      ) : null}
+        {/* Environment Unseeded Truthful Banner */}
+        {s.isUnseeded && !s.error && (
+          <div className="rounded-2xl border border-blue-200 bg-blue-50/75 p-4 flex items-start gap-3 text-blue-900 shadow-2xs">
+            <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+            <div className="space-y-1 text-xs">
+              <h4 className="font-bold text-blue-950">
+                Authoritative Zero Baseline &mdash; Database Unseeded
+              </h4>
+              <p className="text-blue-800">
+                The target business and message queue tables contain 0 records in this database environment.
+                No outbound marketing communications have been drafted, scheduled, or dispatched.
+                In adherence to LIT compliance principles, metrics reflect authentic database truth without synthetic inflation.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Top KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-5 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
-              Scored Leads
+              Discovered Businesses
             </span>
             <span className="p-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700">
               <Users className="w-3.5 h-3.5" />
@@ -170,9 +185,11 @@ export default async function OutreachAnalyticsPage() {
           </div>
           <div className="mt-4">
             <span className="text-3xl font-extrabold font-mono tracking-tight text-[var(--lit-navy,#0B2545)]">
-              {totalLeads}
+              {totalBusinesses}
             </span>
-            <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1">Verified businesses</p>
+            <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1">
+              {totalScoredLeads} scored leads
+            </p>
           </div>
         </div>
 
@@ -246,30 +263,28 @@ export default async function OutreachAnalyticsPage() {
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-teal-200 bg-teal-50 text-xs font-mono font-bold text-[var(--lit-teal,#1FA9A2)]">
               <Percent className="w-3.5 h-3.5" />
-              {approvalRate}% Human Authorization Rate
+              {approvalRateDisplay} Human Authorization Rate
             </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-          {funnelSteps.map((step, idx) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+          {funnelSteps.map((step) => (
             <div
               key={step.id}
-              className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col justify-between relative"
+              className="rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 flex flex-col justify-between relative"
             >
               <div>
                 <span className="font-mono text-[10px] font-bold text-[var(--lit-text-muted,#52677C)] uppercase block">
                   {step.label}
                 </span>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <span className="font-mono text-2xl font-extrabold text-[var(--lit-navy,#0B2545)]">
+                  <span className="font-mono text-xl font-extrabold text-[var(--lit-navy,#0B2545)]">
                     {step.count}
                   </span>
-                  {idx > 0 && (
-                    <span className="font-mono text-xs text-[var(--lit-text-muted,#52677C)]">
-                      ({step.percent}%)
-                    </span>
-                  )}
+                  <span className="font-mono text-[11px] text-[var(--lit-text-muted,#52677C)]">
+                    ({step.percentDisplay})
+                  </span>
                 </div>
                 <p className="mt-2 text-[11px] text-slate-600 leading-snug">
                   {step.description}
@@ -280,12 +295,70 @@ export default async function OutreachAnalyticsPage() {
                 <div className="h-1.5 w-full rounded-full bg-slate-200 overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${step.color.split(" ")[0]}`}
-                    style={{ width: `${Math.max(4, step.percent)}%` }}
+                    style={{ width: `${Math.max(step.fillPercent > 0 ? 4 : 0, step.fillPercent)}%` }}
                   />
                 </div>
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Compliance & Regulatory Telemetry Section */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+        <div className="p-4 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs">
+          <div className="flex items-center gap-2 text-slate-600 font-bold text-[11px]">
+            <Scale className="w-4 h-4 text-[var(--lit-teal,#1FA9A2)]" />
+            <span>Active Policy Rules</span>
+          </div>
+          <span className="text-2xl font-mono font-bold text-[var(--lit-navy,#0B2545)] block mt-2">
+            {s.totalPolicyRules}
+          </span>
+          <span className="text-[10px] text-slate-400 block mt-0.5">Deduplicated matrix</span>
+        </div>
+
+        <div className="p-4 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs">
+          <div className="flex items-center gap-2 text-emerald-700 font-bold text-[11px]">
+            <FileCheck className="w-4 h-4 text-emerald-600" />
+            <span>Legal Approvals</span>
+          </div>
+          <span className="text-2xl font-mono font-bold text-emerald-800 block mt-2">
+            {s.activeLegalApprovals}
+          </span>
+          <span className="text-[10px] text-emerald-600 block mt-0.5">Active counsel signoffs</span>
+        </div>
+
+        <div className="p-4 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs">
+          <div className="flex items-center gap-2 text-amber-700 font-bold text-[11px]">
+            <Clock className="w-4 h-4 text-amber-600" />
+            <span>Pending Reviews</span>
+          </div>
+          <span className="text-2xl font-mono font-bold text-amber-800 block mt-2">
+            {s.pendingLegalReviews}
+          </span>
+          <span className="text-[10px] text-amber-600 block mt-0.5">Awaiting determination</span>
+        </div>
+
+        <div className="p-4 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs">
+          <div className="flex items-center gap-2 text-slate-700 font-bold text-[11px]">
+            <ShieldCheck className="w-4 h-4 text-[var(--lit-navy,#0B2545)]" />
+            <span>Evaluations Run</span>
+          </div>
+          <span className="text-2xl font-mono font-bold text-[var(--lit-navy,#0B2545)] block mt-2">
+            {s.totalDecisions}
+          </span>
+          <span className="text-[10px] text-slate-400 block mt-0.5">Durable decision logs</span>
+        </div>
+
+        <div className="p-4 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs col-span-2 sm:col-span-1">
+          <div className="flex items-center gap-2 text-rose-700 font-bold text-[11px]">
+            <ShieldAlert className="w-4 h-4 text-rose-600" />
+            <span>Suppressions</span>
+          </div>
+          <span className="text-2xl font-mono font-bold text-rose-800 block mt-2">
+            {s.suppressions}
+          </span>
+          <span className="text-[10px] text-rose-600 block mt-0.5">Global opt-out blocklist</span>
         </div>
       </div>
 
@@ -358,7 +431,7 @@ export default async function OutreachAnalyticsPage() {
               </p>
             </div>
             <span className="font-mono text-xs font-bold text-[var(--lit-navy,#0B2545)]">
-              {totalLeads} Total
+              {totalBusinesses} Total
             </span>
           </div>
 
@@ -369,7 +442,7 @@ export default async function OutreachAnalyticsPage() {
           ) : (
             <div className="space-y-3">
               {Object.entries(s.leadsByStatus).map(([k, count]) => {
-                const pct = totalLeads > 0 ? Math.round((count / totalLeads) * 100) : 0;
+                const pct = totalBusinesses > 0 ? Math.round((count / totalBusinesses) * 100) : 0;
                 return (
                   <div key={k} className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
@@ -401,25 +474,25 @@ export default async function OutreachAnalyticsPage() {
             <div className="flex items-center gap-2">
               <Globe className="w-4 h-4 text-[var(--lit-teal,#1FA9A2)]" />
               <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">
-                Jurisdiction &amp; Regulatory Compliance Matrix
+                Broad Country Stance Registry (`lead_jurisdictions`)
               </h3>
             </div>
             <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-0.5">
-              Outreach legality and compliance classification per ISO country code.
+              Baseline country stances. Granular channel/purpose permissions are governed by the Scoped Policy Rules Matrix.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-rose-200 bg-rose-50 text-rose-800 text-xs font-mono font-bold">
               <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
-              {s.suppressions} Active Global Suppressions
+              {s.suppressions} Active Suppressions
             </span>
             <Link
               href="/admin/outreach/compliance"
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] text-xs font-semibold hover:bg-slate-50 transition-colors min-h-[32px]"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-[var(--lit-teal,#1FA9A2)]" />
-              Review Policy &amp; Rules
+              Review Policy Rules Matrix
             </Link>
           </div>
         </div>
@@ -429,14 +502,15 @@ export default async function OutreachAnalyticsPage() {
             <thead className="border-b border-[var(--lit-border-light,#DFE7EF)] bg-slate-50/75 text-[10px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
               <tr>
                 <th className="px-5 py-3">Country ISO</th>
-                <th className="px-5 py-3">Compliance Status</th>
+                <th className="px-5 py-3">Macro Compliance Stance</th>
+                <th className="px-5 py-3">Note / Specific Overrides</th>
                 <th className="px-5 py-3 text-right">Target Businesses</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--lit-border-light,#DFE7EF)]">
               {s.jurisdictions.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-5 py-8 text-center text-slate-500">
+                  <td colSpan={4} className="px-5 py-8 text-center text-slate-500">
                     No jurisdictions configured in database registry.
                   </td>
                 </tr>
@@ -456,6 +530,17 @@ export default async function OutreachAnalyticsPage() {
                           {statusInfo.label}
                         </span>
                       </td>
+                      <td className="px-5 py-3 text-slate-500 text-[11px]">
+                        {j.country_code === "IN" ? (
+                          <span className="text-amber-800 font-medium">
+                            Narrow B2B Pilot demonstration permitted (v1.0-pilot); baseline review-required
+                          </span>
+                        ) : j.outreach_status === "allowed" ? (
+                          "Scoped to corporate B2B email with mandatory opt-out"
+                        ) : (
+                          "Requires legal signoff and verification"
+                        )}
+                      </td>
                       <td className="px-5 py-3 text-right font-mono font-bold text-slate-700">
                         {j.businesses}
                       </td>
@@ -470,10 +555,9 @@ export default async function OutreachAnalyticsPage() {
         <div className="rounded-xl border border-slate-200 bg-slate-50/75 p-3.5 flex items-start gap-2.5 text-xs text-slate-600">
           <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
           <p>
-            <strong>Regulatory Gate Enforced:</strong> Outreach drafts and dispatches are strictly blocked by
-            database row-level triggers unless the target country is explicitly marked{" "}
-            <span className="font-mono text-emerald-700 font-bold">allowed</span>. Countries requiring legal review
-            or prohibited by regional communications acts are rejected automatically.
+            <strong>Default-Deny Precedence:</strong> Broad country stance does NOT authorize outreach alone.
+            The deterministic eligibility engine enforces exact rule matching, requiring active legal approval,
+            verified consent (when statutory), and zero suppression before any message can be dispatched.
           </p>
         </div>
       </div>
