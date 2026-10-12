@@ -31,23 +31,25 @@ import {
   toWorkflowDetail,
 } from "../../src/lib/automations/n8n-core";
 
-import {
+/* eslint-disable @typescript-eslint/no-require-imports */
+const {
   CANONICAL_GSC_SITES,
   assertIndexingApiEligibility,
   getRemainingDailyQuota,
   resolveGscCredentials,
-} from "../../src/lib/seo/gsc-client";
-import {
+} = require("../../src/lib/seo/gsc-client");
+const {
   calculate72hSlot,
   formatKolkataTime,
   ANCHOR_EPOCH_MS,
   CYCLE_INTERVAL_MS,
-} from "../../src/lib/seo/scheduler";
-import {
+} = require("../../src/lib/seo/scheduler");
+const {
   CANONICAL_CDN_SITES,
   resolveCdnSiteId,
   previewInvalidation,
-} from "../../src/lib/cdn/edge-client";
+} = require("../../src/lib/cdn/edge-client");
+/* eslint-enable @typescript-eslint/no-require-imports */
 import { hasCapability, type StaffRole } from "../../src/config/roles";
 
 const ROOT_DIR = path.resolve(process.cwd(), "..");
