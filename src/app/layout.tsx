@@ -49,11 +49,11 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'Logic Intelligence Technologies | AI',
+    default: 'Enterprise AI Products & Smart Hospital Systems | Logic Intelligence',
     template: '%s',
   },
   description:
-    'Enterprise AI products, smart hospital systems, and autonomous voice engines.',
+    'Logic Intelligence Technologies builds enterprise AI products, smart hospital systems, and autonomous voice engines. Explore products & book a consultation.',
   keywords: [
     'Logic Intelligence Technologies',
     'AI technology company',
@@ -84,9 +84,9 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     siteName: COMPANY.legalName,
-    title: 'Logic Intelligence Technologies | AI',
+    title: 'Enterprise AI Products & Smart Hospital Systems | Logic Intelligence',
     description:
-      'Enterprise AI products, smart hospital systems, and autonomous voice engines.',
+      'Logic Intelligence Technologies builds enterprise AI products, smart hospital systems, and autonomous voice engines. Explore products & book a consultation.',
     images: [
       {
         url: 'https://www.logicintelligencetechnologies.in/assets/og-banner.jpg',
@@ -108,9 +108,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Logic Intelligence Technologies | AI',
+    title: 'Enterprise AI Products & Smart Hospital Systems | Logic Intelligence',
     description:
-      'Enterprise AI products, smart hospital systems, and autonomous voice engines.',
+      'Logic Intelligence Technologies builds enterprise AI products, smart hospital systems, and autonomous voice engines. Explore products & book a consultation.',
     images: ['https://www.logicintelligencetechnologies.in/assets/og-banner.jpg'],
   },
   icons: {
