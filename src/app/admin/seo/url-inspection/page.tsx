@@ -232,82 +232,161 @@ export default async function UrlInspectionPage({
               Inspection Findings
             </h2>
             <TruthfulStatusBadge
-              status={inspectionOutcome.ok ? "Success" : "Unconfigured"}
+              status={
+                inspectionOutcome.ok
+                  ? inspectionOutcome.source === "DIRECT_EDGE_INSPECTION"
+                    ? "Active"
+                    : "Success"
+                  : "Error"
+              }
               size="md"
             />
           </div>
 
           {!inspectionOutcome.ok ? (
-            <div className="p-5 rounded-2xl border border-amber-200 bg-amber-50/90 text-amber-950 shadow-2xs space-y-2">
+            <div className="p-5 rounded-2xl border border-rose-200 bg-rose-50/90 text-rose-950 shadow-2xs space-y-2">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
-                <h3 className="text-sm font-bold text-amber-900">
-                  Search Console Inspection Returned Unconfigured
+                <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
+                <h3 className="text-sm font-bold text-rose-900">
+                  Inspection Request Failed
                 </h3>
               </div>
-              <p className="text-xs text-amber-800 leading-relaxed">
-                {inspectionOutcome.error || "The Google Search Console API responded that live credentials are unconfigured."}
+              <p className="text-xs text-rose-800 leading-relaxed">
+                {inspectionOutcome.error || "The target URL could not be inspected or reached."}
               </p>
-              <p className="text-[11px] font-mono text-amber-900 pt-1">
+              <p className="text-[11px] font-mono text-rose-900 pt-1">
                 Target URL: {inspectTargetUrl}
               </p>
             </div>
           ) : (
-            <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 shadow-2xs space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--lit-border-light,#DFE7EF)]">
-                <div>
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--lit-teal,#1FA9A2)]">
-                    Inspection Target
-                  </span>
-                  <h3 className="text-base font-bold font-mono text-[var(--lit-navy,#0B2545)] break-all">
-                    {inspectionOutcome.result?.url}
-                  </h3>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-                    Verdict: {inspectionOutcome.result?.verdict}
-                  </span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
-                  <span className="font-bold text-slate-900 text-xs block">Indexing &amp; Crawl State</span>
-                  <div className="flex justify-between py-1 border-b border-slate-200">
-                    <span className="text-slate-600">Coverage State:</span>
-                    <span className="font-mono font-bold text-slate-800">{inspectionOutcome.result?.coverageState}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-slate-200">
-                    <span className="text-slate-600">Indexing Allowed:</span>
-                    <span className="font-mono font-bold text-emerald-700">{inspectionOutcome.result?.indexingState}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-slate-200">
-                    <span className="text-slate-600">Crawled As:</span>
-                    <span className="font-mono text-slate-800">{inspectionOutcome.result?.crawledAs}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-slate-600">Last Crawl Time:</span>
-                    <span className="font-mono text-slate-800">{formatKolkataTime(inspectionOutcome.result?.lastCrawlTime)}</span>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
-                  <span className="font-bold text-slate-900 text-xs block">Canonical Evaluation</span>
-                  <div className="py-1 border-b border-slate-200">
-                    <span className="text-slate-600 text-[11px] block">User-Declared Canonical:</span>
-                    <span className="font-mono font-semibold text-slate-800 text-[11px] break-all">
-                      {inspectionOutcome.result?.userCanonical || "None declared"}
+            <div className="space-y-4">
+              {inspectionOutcome.source === "DIRECT_EDGE_INSPECTION" && (
+                <div className="p-4 rounded-2xl border border-teal-200 bg-teal-50/80 text-teal-950 shadow-2xs space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-[var(--lit-teal,#1FA9A2)] shrink-0" />
+                      <h3 className="text-xs font-bold text-teal-950">
+                        Live Edge Indexability Active · GSC Service Account Optional / Pending Delegation
+                      </h3>
+                    </div>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 border border-teal-200">
+                      DIRECT_EDGE_INSPECTION
                     </span>
                   </div>
-                  <div className="py-1 border-b border-slate-200">
-                    <span className="text-slate-600 text-[11px] block">Google-Selected Canonical:</span>
-                    <span className="font-mono font-semibold text-slate-800 text-[11px] break-all">
-                      {inspectionOutcome.result?.googleCanonical || "Same as user declared"}
+                  <p className="text-xs text-teal-900 leading-relaxed">
+                    Direct edge inspection verified live HTTP response, canonical headers, robots directives, and site verification tags for this public route. Google Search Console API credentials remain unconfigured (or pending service account RSA delegation); no fake Search Console data is injected.
+                  </p>
+                  {inspectionOutcome.gscStatus?.reason && (
+                    <p className="text-[11px] font-mono text-teal-800/90 pt-0.5">
+                      GSC Status Note: {inspectionOutcome.gscStatus.reason}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 shadow-2xs space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--lit-border-light,#DFE7EF)]">
+                  <div>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--lit-teal,#1FA9A2)]">
+                      Inspection Target
+                    </span>
+                    <h3 className="text-base font-bold font-mono text-[var(--lit-navy,#0B2545)] break-all">
+                      {inspectionOutcome.result?.url}
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      Verdict: {inspectionOutcome.result?.verdict}
                     </span>
                   </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-slate-600">Telemetry Source:</span>
-                    <span className="font-mono text-slate-700">{inspectionOutcome.result?.source}</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+                  {/* Indexing & Crawl State */}
+                  <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
+                    <span className="font-bold text-slate-900 text-xs block">Indexing &amp; Crawl State</span>
+                    <div className="flex justify-between py-1 border-b border-slate-200">
+                      <span className="text-slate-600">Coverage State:</span>
+                      <span className="font-mono font-bold text-slate-800">{inspectionOutcome.result?.coverageState}</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-200">
+                      <span className="text-slate-600">Indexing Allowed:</span>
+                      <span className="font-mono font-bold text-emerald-700">{inspectionOutcome.result?.indexingState}</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-200">
+                      <span className="text-slate-600">Crawled As:</span>
+                      <span className="font-mono text-slate-800">{inspectionOutcome.result?.crawledAs}</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-200">
+                      <span className="text-slate-600">Page Fetch:</span>
+                      <span className="font-mono text-slate-800">{inspectionOutcome.result?.pageFetchState || "SUCCESSFUL"}</span>
+                    </div>
+                    <div className="flex justify-between py-1">
+                      <span className="text-slate-600">Last Checked / Crawl:</span>
+                      <span className="font-mono text-slate-800">{formatKolkataTime(inspectionOutcome.result?.lastCrawlTime)}</span>
+                    </div>
+                  </div>
+
+                  {/* Canonical Evaluation */}
+                  <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
+                    <span className="font-bold text-slate-900 text-xs block">Canonical Evaluation</span>
+                    <div className="py-1 border-b border-slate-200">
+                      <span className="text-slate-600 text-[11px] block">User-Declared Canonical:</span>
+                      <span className="font-mono font-semibold text-slate-800 text-[11px] break-all">
+                        {inspectionOutcome.result?.userCanonical || "None declared"}
+                      </span>
+                    </div>
+                    <div className="py-1 border-b border-slate-200">
+                      <span className="text-slate-600 text-[11px] block">Google-Selected Canonical:</span>
+                      <span className="font-mono font-semibold text-slate-800 text-[11px] break-all">
+                        {inspectionOutcome.result?.googleCanonical || "Same as user declared"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-200">
+                      <span className="text-slate-600">Self-Referential:</span>
+                      <span className={`font-mono font-bold ${inspectionOutcome.result?.edgeDetails?.isCanonicalSelfReferential ? "text-emerald-700" : "text-amber-700"}`}>
+                        {inspectionOutcome.result?.edgeDetails ? (inspectionOutcome.result.edgeDetails.isCanonicalSelfReferential ? "YES (Conformant)" : "NO / Non-matching") : "Evaluated in GSC"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-1">
+                      <span className="text-slate-600">Telemetry Source:</span>
+                      <span className="font-mono text-slate-700">{inspectionOutcome.result?.source}</span>
+                    </div>
+                  </div>
+
+                  {/* Edge Directives & Verification */}
+                  <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
+                    <span className="font-bold text-slate-900 text-xs block">Edge Directives &amp; Security</span>
+                    <div className="flex justify-between py-1 border-b border-slate-200">
+                      <span className="text-slate-600">HTTP Status:</span>
+                      <span className="font-mono font-bold text-emerald-700">
+                        {inspectionOutcome.result?.edgeDetails ? `${inspectionOutcome.result.edgeDetails.httpStatus} OK` : "200 OK"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-200">
+                      <span className="text-slate-600">Latency:</span>
+                      <span className="font-mono text-slate-800">
+                        {inspectionOutcome.result?.edgeDetails ? `${inspectionOutcome.result.edgeDetails.responseTimeMs}ms` : "—"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-200">
+                      <span className="text-slate-600">Meta Robots:</span>
+                      <span className="font-mono text-slate-800">
+                        {inspectionOutcome.result?.edgeDetails?.metaRobots || "None (Default Indexable)"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-200">
+                      <span className="text-slate-600">Robots.txt Allowance:</span>
+                      <span className="font-mono text-emerald-700 font-bold">
+                        {inspectionOutcome.result?.edgeDetails?.isRobotsAllowed ? "Allowed" : "Blocked"}
+                      </span>
+                    </div>
+                    <div className="py-1">
+                      <span className="text-slate-600 text-[11px] block">Site Verification Meta:</span>
+                      <span className="font-mono text-slate-700 text-[11px] break-all">
+                        {inspectionOutcome.result?.edgeDetails?.googleSiteVerification || "Not detected in head"}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

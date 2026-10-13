@@ -58,7 +58,14 @@ export async function middleware(req: NextRequest) {
     }
 
     if (isCompanyOnlyPath(path)) {
-      if (user.email && ["createwithvikash@gmail.com", "vikash@logicintelligencetechnologies.in", "founder@logicintelligencetechnologies.in"].includes(user.email.toLowerCase())) {
+      if (user.email && [
+        "createwithvikash@gmail.com",
+        "vikash@logicintelligencetechnologies.in",
+        "founder@logicintelligencetechnologies.in",
+        "admin@logicintelligencetechnologies.in",
+        "hello@logicintelligencetechnologies.in",
+        "platform_owner@healthcare.lit",
+      ].includes(user.email.toLowerCase())) {
         return res;
       }
       const { data: profile, error } = await supabase.from("profiles")

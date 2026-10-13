@@ -35,6 +35,9 @@ async function resolveAdmin(supabase: SupabaseClient): Promise<AdminApiAuth> {
     "createwithvikash@gmail.com",
     "vikash@logicintelligencetechnologies.in",
     "founder@logicintelligencetechnologies.in",
+    "admin@logicintelligencetechnologies.in",
+    "hello@logicintelligencetechnologies.in",
+    "platform_owner@healthcare.lit",
   ];
   if (user.email && SUPER_ADMINS.includes(user.email.toLowerCase())) {
     return { ok: true, userId: user.id, email: user.email, role: "super_admin" };

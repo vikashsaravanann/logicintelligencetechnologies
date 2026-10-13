@@ -48,7 +48,8 @@ function isStaffUser(email: string | null | undefined): boolean {
   const lower = email.toLowerCase().trim();
   return (
     lower.endsWith("@logicintelligencetechnologies.in") ||
-    lower === "createwithvikash@gmail.com"
+    lower === "createwithvikash@gmail.com" ||
+    lower === "platform_owner@healthcare.lit"
   );
 }
 

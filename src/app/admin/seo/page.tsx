@@ -101,21 +101,32 @@ export default async function SeoOverviewPage() {
 
       {/* Truthful Alert Banner */}
       {!isConfigured ? (
-        <div className="p-4 rounded-2xl border border-amber-200 bg-amber-50/90 text-amber-950 shadow-2xs">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-            <div className="text-xs space-y-1">
-              <p className="font-bold text-amber-900">
-                Truthful Status: Google Search Console Service Account Unconfigured
-              </p>
-              <p className="text-amber-800 leading-relaxed">
-                Environment variables <code className="font-mono font-semibold">GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL</code> and <code className="font-mono font-semibold">GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY</code> are not configured in this deployment.
-                All 4 properties truthfully reflect <strong className="font-semibold">UNCONFIGURED</strong>. No fake mock-green data is displayed.
-              </p>
-              <p className="text-amber-800 text-[11px] pt-1">
-                <strong className="font-semibold text-amber-900">Policy Guard (QA-50 / Sec 10.3):</strong> Google Indexing API calls are strictly forbidden for ordinary marketing pages; only Sitemaps and standard Search Console APIs are authorized.
-              </p>
+        <div className="p-5 rounded-2xl border border-amber-200 bg-amber-50/90 text-amber-950 shadow-2xs">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="text-xs space-y-1.5">
+                <p className="font-bold text-amber-900">
+                  Truthful Status: GSC Service Account Unconfigured · Direct Edge Inspection Active
+                </p>
+                <p className="text-amber-800 leading-relaxed">
+                  Environment variables <code className="font-mono font-semibold">GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL</code> and <code className="font-mono font-semibold">GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY</code> are awaiting RSA service account delegation ({creds.reason}). All 4 properties truthfully reflect <strong className="font-semibold">UNCONFIGURED</strong> for GSC Search Analytics.
+                </p>
+                <p className="text-teal-900 leading-relaxed">
+                  <strong>Direct Edge Indexability:</strong> Real-time edge inspection is operational across all canonical properties. Probes verify HTTP 200, canonical conformity, robots.txt, and site verification headers directly without mock fixtures.
+                </p>
+                <p className="text-amber-800 text-[11px] pt-0.5">
+                  <strong className="font-semibold text-amber-900">Policy Guard (QA-50 / Sec 10.3):</strong> Google Indexing API calls are strictly forbidden for ordinary marketing pages; only Sitemaps and standard Search Console / URL Inspection APIs are authorized.
+                </p>
+              </div>
             </div>
+            <Link
+              href="/admin/seo/url-inspection"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl bg-[var(--lit-teal,#1FA9A2)] text-white hover:bg-[var(--lit-teal,#1FA9A2)]/90 shadow-2xs transition-colors shrink-0 self-start"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>Launch URL Inspection</span>
+            </Link>
           </div>
         </div>
       ) : (
