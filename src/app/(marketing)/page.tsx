@@ -18,7 +18,7 @@ import { COMPANY } from '@/config/company';
 export const metadata: Metadata = {
   title: 'Logic Intelligence Technologies | Enterprise AI & Healthcare',
   description:
-    'Logic Intelligence Technologies develops intelligent AI products, connected digital infrastructure, and enterprise automation solutions, including LIT Healthcare, Logic Voice, and Voice Shield.',
+    'Logic Intelligence Technologies develops enterprise AI products, smart hospital systems, and voice automation, including LIT Healthcare and Logic Voice.',
   openGraph: {
     type: 'website',
     locale: 'en_IN',

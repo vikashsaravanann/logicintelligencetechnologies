@@ -30,16 +30,16 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Voice Shield — Real-Time AI Voice Biometrics & Deepfake Defense | Logic Intelligence Technologies",
+  title: "Voice Shield | Real-Time AI Voice Defense & Anti-Spoofing",
   description:
-    "Voice Shield by Logic Intelligence Technologies is an enterprise audio firewall protecting telephony, SIP trunking, and call centers from synthetic voice clones, AI impersonation, and deepfake wire fraud.",
+    "Voice Shield protects telephony and enterprise call centers from synthetic voice clones, AI impersonation, and deepfake wire fraud.",
   alternates: {
     canonical: "/voice-shield",
   },
   openGraph: {
-    title: "Voice Shield — Real-Time AI Voice Biometrics & Deepfake Defense",
+    title: "Voice Shield | Real-Time AI Voice Defense & Anti-Spoofing",
     description:
-      "Enterprise audio security firewall detecting AI voice clones and synthetic speech under 15ms. Zero-retention DPDP 2023 & HIPAA compliant architecture.",
+      "Voice Shield protects telephony and enterprise call centers from synthetic voice clones, AI impersonation, and deepfake wire fraud.",
     images: [{ url: "/images/products/voice-shield.svg", width: 1200, height: 630, alt: "Voice Shield AI Audio Firewall" }],
   },
   keywords: [

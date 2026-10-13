@@ -9,7 +9,7 @@ import CTASection from "@/components/ui/cta-section";
 export const metadata: Metadata = {
   title: "Featured Client Projects | Logic Intelligence Technologies",
   description:
-    "Explore our curated selection of high-performance web applications, scalable enterprise platforms, and bespoke digital solutions designed to drive operational excellence.",
+    "Explore our curated high-performance web applications, scalable enterprise platforms, and bespoke digital solutions driving operational excellence.",
   alternates: {
     canonical: "/work",
   },

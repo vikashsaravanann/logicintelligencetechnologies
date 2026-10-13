@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     template: '%s',
   },
   description:
-    'Logic Intelligence Technologies builds AI-driven products, intelligent automation, and connected digital platforms for modern organizations. Creators of LIT Healthcare and Logic Voice — based in Coimbatore, Tamil Nadu, India.',
+    'Logic Intelligence Technologies develops enterprise AI products, intelligent automation, and healthcare platforms, including LIT Healthcare and Logic Voice.',
   keywords: [
     'Logic Intelligence Technologies',
     'AI technology company',

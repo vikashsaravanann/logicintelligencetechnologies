@@ -27,7 +27,7 @@ import CTASection from "@/components/ui/cta-section";
 
 export const metadata: Metadata = {
   title: "Security & Trust Architecture | Logic Intelligence Technologies",
-  description: "Enterprise security controls, zero-persistence processing, volatile inference runtimes, cryptographic isolation, and responsible disclosure protocols at Logic Intelligence Technologies.",
+  description: "Enterprise security controls, zero-persistence processing, cryptographic isolation, and responsible disclosure at Logic Intelligence Technologies.",
 };
 
 const SECURITY_METRICS = [
