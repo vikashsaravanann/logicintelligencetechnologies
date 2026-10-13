@@ -1,0 +1,76 @@
+{
+  "name": "Mention Verification",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "mv-0000-0000-4000-8000-000000000000",
+      "name": "Manual trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 1 * * 3"
+            }
+          ]
+        }
+      },
+      "id": "mv-0001-0001-4001-8001-000000000001",
+      "name": "Weekly schedule (Wed 07:00 IST)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst SB_URL = $env.SUPABASE_URL;\nconst SB_KEY = $env.SUPABASE_SERVICE_ROLE_KEY;\nconst http = this.helpers.httpRequest;\nif (!SB_URL || !SB_KEY) return [{ json: { skipped: true, reason: 'SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set' } }];\n\nfunction rest(path, opts) {\n  opts = opts || {};\n  return http(Object.assign({ url: SB_URL + '/rest/v1/' + path, json: true }, opts, {\n    headers: Object.assign({ apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' }, opts.headers || {}),\n  }));\n}\nfunction normDomain(d) { if (!d) return ''; return String(d).toLowerCase().replace(/^https?:\\/\\//, '').replace(/^www\\./, '').replace(/\\/.*$/, '').trim(); }\nfunction textIncludes(t, n) { if (!t || !n) return false; return String(t).toLowerCase().includes(String(n).toLowerCase()); }\nfunction sameUrl(a, b) {\n  if (!a || !b) return false;\n  const na = String(a).replace(/\\/$/, '').toLowerCase();\n  const nb = String(b).replace(/\\/$/, '').toLowerCase();\n  return na === nb || na.indexOf(nb) === 0 || nb.indexOf(na) === 0;\n}\n\nconst live = await rest('citation_targets?select=id,entity_id,citation_url,name,tracked_entities(name,domain)&status=eq.live&citation_url=not.is.null');\nif (!live.length) return [{ json: { note: 'no live citations to verify' } }];\n\nconst checks = await rest('visibility_checks?select=source_urls');\nconst allSourceUrls = [];\nfor (const ch of checks) { const u = Array.isArray(ch.source_urls) ? ch.source_urls : []; for (const x of u) allSourceUrls.push(x); }\n\nconst out = [];\nconst mentionRows = [];\nfor (const t of live) {\n  const ent = Array.isArray(t.tracked_entities) ? t.tracked_entities[0] : t.tracked_entities;\n  const name = ent && ent.name ? ent.name : '';\n  const dom = ent && ent.domain ? normDomain(ent.domain) : '';\n  let isLive = false;\n  let note = '';\n  try {\n    const html = await http({ url: t.citation_url, json: false, headers: { 'User-Agent': 'LIT-VisibilityEngine/1.0' } });\n    const text = String(html).replace(/<[^>]+>/g, ' ');\n    isLive = textIncludes(text, name) || (dom && textIncludes(text, dom));\n    note = isLive ? 'citation_url resolves and still mentions us' : 'citation_url resolves but mention not found';\n  } catch (e) {\n    isLive = false;\n    note = 'citation_url did not resolve: ' + String((e && e.message) || e);\n  }\n  const seenInAi = allSourceUrls.some((u) => sameUrl(u, t.citation_url));\n  if (seenInAi) note += '; appears in probe source_urls (feeding AI answers)';\n  mentionRows.push({ citation_target_id: t.id, is_live: isLive, seen_in_ai: seenInAi, note: note });\n  out.push({ json: { target: t.name, citation_url: t.citation_url, is_live: isLive, seen_in_ai: seenInAi } });\n}\nif (mentionRows.length) {\n  await rest('mention_checks', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: mentionRows });\n}\nreturn out;\n"
+      },
+      "id": "mv-0002-0002-4002-8002-000000000002",
+      "name": "Verify live mentions",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Manual trigger": {
+      "main": [
+        [
+          {
+            "node": "Verify live mentions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekly schedule (Wed 07:00 IST)": {
+      "main": [
+        [
+          {
+            "node": "Verify live mentions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

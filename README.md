@@ -148,7 +148,7 @@ Active database tables:
 - `public.profiles` — authenticated user profiles (synced with `auth.users`)
 - `public.projects` — CRM: client projects
 - `public.invoices` — CRM: project invoices
-- `public.tracked_entities` / `public.target_queries` / `public.visibility_checks` / `public.competitors` / `public.visibility_gaps` / `public.content_assets` / `public.content_suggestions` — Visibility Engine (see below)
+- `public.tracked_entities` / `public.target_queries` / `public.visibility_checks` / `public.competitors` / `public.visibility_gaps` / `public.content_assets` / `public.content_suggestions` / `public.citation_targets` / `public.mention_checks` — Visibility Engine (see below)
 
 ## Vercel Deployment
 
@@ -292,6 +292,57 @@ the product repo (reusable `<JsonLd>`, a **visible** FAQ section + matching
 `main`. A worked example PR lives on the `voice-shield` repo. After a human
 merges, `--mark-applied --pr <url>` flips those suggestions to `applied` and
 stores the PR link (shown in the Content tab).
+
+### Phase 4 — citation & mention engine (earn → verify → proven-in-AI)
+
+Phase 4 is the off-site half: earn mentions/citations across directories,
+communities, press, review sites and Wikipedia-eligible sources so the products
+appear in AI training data and get cited by retrieval engines. It **reuses the
+Lead Engine's human-reviewed outreach queue** — it does not build a parallel
+outreach system, and nothing goes out without human approval.
+
+- Migration `supabase/migrations/20261014120000_visibility_engine_phase4.sql`
+  adds `citation_targets` (status `identified → queued → actioned → live`, or
+  `rejected`) and `mention_checks` (`is_live`, `seen_in_ai`).
+- Workflows: `n8n/citation-discovery.json`, `n8n/mention-verification.json`
+  (both pure Supabase read/compute/write via `SUPABASE_URL` +
+  `SUPABASE_SERVICE_ROLE_KEY` — no outbound API keys).
+- UI: the **Citations** tab on `/admin/command-center/visibility`.
+
+**Compliance (enforced throughout).** No spam, no mass unsolicited email, no
+fake reviews, no sockpuppet posts, no paid links disguised as editorial, no
+self-editing of our own Wikipedia page. Directory submissions and genuine
+outreach only; every outbound message is queued for human approval and never
+auto-sent. Promotion-restricted channels (e.g. Reddit, Product Hunt, Indie
+Hackers) are *suggested for manual participation* — the system never posts to
+them.
+
+**1. Earn — discovery.** "Citation Discovery" (manual or weekly) prioritises
+entities by how many `visibility_gaps` they have, then proposes targets from (a)
+a curated catalog of real submission venues (Clutch, GoodFirms, G2, Capterra,
+SoftwareSuggest, Sulekha/Justdial, YourStory/Inc42, …) and (b) third-party
+domains already surfacing for the entity's queries in the probe's
+`visibility_checks.source_urls` — i.e. places competitors already get cited.
+It upserts `citation_targets` (status `identified`) ignoring duplicates, so a
+human's progress is never reset. No new scraper stack — it reuses probe data +
+the Lead Engine's outreach machinery.
+
+**2. Outreach — reuse the queue.** In the **Citations** tab, **Promote to
+queue** stages the venue as a `lead_businesses` row and drafts a
+`lead_outreach_messages` record (`status='needs_review'`) — a directory
+submission checklist/listing copy for directories/review sites, or a
+personalised, integrity-ruled outreach note for press/community/partner. The
+draft appears in **Outreach → Dispatch & Approval Queue** and is approved there
+like any other message. Nothing auto-sends. Human-driven buttons move the target
+`actioned`, then `live` (with its `citation_url`).
+
+**3. Verify — close the loop.** "Mention Verification" (weekly) re-checks each
+`live` target's `citation_url` (still resolves, still mentions us →
+`is_live`) and cross-references Phase 1 probe data: if the `citation_url`
+appears in any `visibility_checks.source_urls`, it sets `seen_in_ai=true` —
+proof the citation is actually feeding AI answers. The Citations tab shows the
+funnel (`identified → queued → actioned → live`) and highlights **live +
+seen_in_ai**, the money metric.
 
 ## Security Notes
 

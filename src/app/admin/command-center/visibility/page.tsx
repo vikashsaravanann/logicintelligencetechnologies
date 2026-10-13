@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Eye, Quote, AlertTriangle, ArrowLeft, Crosshair, FileText } from "lucide-react";
+import { Eye, Quote, AlertTriangle, ArrowLeft, Crosshair, FileText, Link2, Sparkles } from "lucide-react";
 import { requireCapabilityPage } from "@/lib/auth/session";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { formatIST } from "@/lib/format/datetime";
@@ -15,6 +15,7 @@ import {
 import { EntitySelect, type EntityOption } from "./EntitySelect";
 import { VisibilityTrendChart } from "./VisibilityTrendChart";
 import { ContentReviewControls } from "./ContentReviewControls";
+import { CitationControls } from "./CitationControls";
 
 export const metadata: Metadata = {
   title: "Visibility Engine | Command Center",
@@ -32,8 +33,32 @@ type PageProps = {
     tab?: string;
     cStatus?: string;
     cKind?: string;
+    ctType?: string;
   }>;
 };
+
+const CITATION_STATUSES = ["identified", "queued", "actioned", "live", "rejected"] as const;
+const CITATION_TYPES = ["directory", "community", "press", "wiki_source", "review_site", "partner"] as const;
+const CITATION_TYPE_LABELS: Record<string, string> = {
+  directory: "Directory",
+  community: "Community",
+  press: "Press",
+  wiki_source: "Wiki source",
+  review_site: "Review site",
+  partner: "Partner",
+};
+
+interface CitationRow {
+  id: string;
+  type: string;
+  name: string;
+  url: string;
+  status: "identified" | "queued" | "actioned" | "live" | "rejected";
+  citation_url: string | null;
+  relevance_note: string | null;
+  is_live: boolean;
+  seen_in_ai: boolean;
+}
 
 const SUGGESTION_KINDS = ["json_ld", "faq", "meta", "factual_sentences"] as const;
 const SUGGESTION_STATUSES = ["draft", "approved", "rejected", "applied"] as const;
@@ -147,7 +172,8 @@ export default async function VisibilityPage({ searchParams }: PageProps) {
   const filteredGaps = gapPlatform ? gapRows.filter((g) => g.platform === gapPlatform) : gapRows;
 
   // --- Content suggestions for the selected entity (Content tab) -------------
-  const tab = params.tab === "content" ? "content" : "overview";
+  const tab =
+    params.tab === "content" ? "content" : params.tab === "citations" ? "citations" : "overview";
   const suggestionsRes =
     selected && tab === "content"
       ? await supabaseAdmin
@@ -197,8 +223,68 @@ export default async function VisibilityPage({ searchParams }: PageProps) {
     else suggestionsByPage.set(s.page_url, [s]);
   }
 
+  // --- Citation targets + latest mention check (Citations tab) ---------------
+  const citationsRes =
+    selected && tab === "citations"
+      ? await supabaseAdmin
+          .from("citation_targets")
+          .select("id, type, name, url, status, citation_url, relevance_note, created_at")
+          .eq("entity_id", selected.id)
+          .order("created_at", { ascending: false })
+          .limit(500)
+      : { data: [], error: null };
+
+  const citationTargetsRaw = (citationsRes.data ?? []) as Array<Record<string, unknown>>;
+  const liveIds = citationTargetsRaw.filter((t) => t.status === "live").map((t) => String(t.id));
+  const mentionsRes =
+    liveIds.length > 0
+      ? await supabaseAdmin
+          .from("mention_checks")
+          .select("citation_target_id, is_live, seen_in_ai, checked_at")
+          .in("citation_target_id", liveIds)
+          .order("checked_at", { ascending: false })
+      : { data: [], error: null };
+  const latestMention = new Map<string, { is_live: boolean; seen_in_ai: boolean }>();
+  for (const m of (mentionsRes.data ?? []) as Array<Record<string, unknown>>) {
+    const key = String(m.citation_target_id);
+    if (!latestMention.has(key)) {
+      latestMention.set(key, { is_live: Boolean(m.is_live), seen_in_ai: Boolean(m.seen_in_ai) });
+    }
+  }
+
+  const citationRows: CitationRow[] = citationTargetsRaw.map((t) => {
+    const mc = latestMention.get(String(t.id));
+    return {
+      id: String(t.id),
+      type: String(t.type),
+      name: String(t.name),
+      url: String(t.url),
+      status: t.status as CitationRow["status"],
+      citation_url: (t.citation_url as string | null) ?? null,
+      relevance_note: (t.relevance_note as string | null) ?? null,
+      is_live: mc?.is_live ?? false,
+      seen_in_ai: mc?.seen_in_ai ?? false,
+    };
+  });
+
+  const citationFunnel: Record<string, number> = {};
+  for (const st of CITATION_STATUSES) citationFunnel[st] = 0;
+  for (const c of citationRows) citationFunnel[c.status] = (citationFunnel[c.status] ?? 0) + 1;
+  const seenInAiCount = citationRows.filter((c) => c.status === "live" && c.seen_in_ai).length;
+  const ctType = CITATION_TYPES.includes(params.ctType as (typeof CITATION_TYPES)[number])
+    ? params.ctType
+    : undefined;
+  const citationTypes = Array.from(new Set(citationRows.map((c) => c.type))).sort();
+  const filteredCitations = ctType ? citationRows.filter((c) => c.type === ctType) : citationRows;
+
   const anyError = Boolean(
-    entitiesRes.error || queriesRes.error || checksRes.error || gapsRes.error || suggestionsRes.error,
+    entitiesRes.error ||
+      queriesRes.error ||
+      checksRes.error ||
+      gapsRes.error ||
+      suggestionsRes.error ||
+      citationsRes.error ||
+      mentionsRes.error,
   );
 
   const scores = platformScores(checks, queryIds.length);
@@ -256,6 +342,7 @@ export default async function VisibilityPage({ searchParams }: PageProps) {
           <div className="flex items-center gap-1 border-b border-[var(--lit-border-light,#DFE7EF)]">
             <TabLink entityId={selected.id} tab="overview" active={tab === "overview"} label="Overview" />
             <TabLink entityId={selected.id} tab="content" active={tab === "content"} label="Content" />
+            <TabLink entityId={selected.id} tab="citations" active={tab === "citations"} label="Citations" />
           </div>
 
           {tab === "overview" ? (
@@ -538,9 +625,175 @@ export default async function VisibilityPage({ searchParams }: PageProps) {
               )}
             </div>
           ) : null}
+
+          {tab === "citations" ? (
+            <div className="space-y-6">
+              {/* Funnel */}
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
+                {CITATION_STATUSES.map((st) => (
+                  <div
+                    key={st}
+                    className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-4 shadow-2xs"
+                  >
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
+                      {st}
+                    </div>
+                    <div className="mt-1 font-mono text-2xl font-black text-[var(--lit-navy,#0B2545)]">
+                      {citationFunnel[st] ?? 0}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Proven-in-AI highlight */}
+              <div
+                className={`flex items-center gap-2.5 rounded-2xl border p-4 text-xs font-medium shadow-2xs ${
+                  seenInAiCount > 0
+                    ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+                    : "border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-text-muted,#52677C)]"
+                }`}
+              >
+                <Sparkles className="h-4 w-4 shrink-0" />
+                <span>
+                  <span className="font-bold">{seenInAiCount}</span> live citation
+                  {seenInAiCount === 1 ? "" : "s"} proven to feed AI answers (seen in a probe's source
+                  URLs) — the money metric.
+                </span>
+              </div>
+
+              {/* Table */}
+              <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 shadow-2xs">
+                <div className="mb-4 flex flex-col gap-3 border-b border-[var(--lit-border-light,#DFE7EF)] pb-4 sm:flex-row sm:items-center sm:justify-between">
+                  <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)]">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-teal,#1FA9A2)]/10 text-[var(--lit-teal,#1FA9A2)]">
+                      <Link2 className="h-4 w-4" />
+                    </span>
+                    Citation Targets
+                  </h2>
+                  {citationTypes.length > 0 ? (
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <CitationTypePill entityId={selected.id} value={undefined} current={ctType} label="All" />
+                      {citationTypes.map((t) => (
+                        <CitationTypePill
+                          key={t}
+                          entityId={selected.id}
+                          value={t}
+                          current={ctType}
+                          label={CITATION_TYPE_LABELS[t] ?? t}
+                        />
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+
+                {filteredCitations.length === 0 ? (
+                  <p className="py-8 text-center text-xs font-medium text-[var(--lit-text-muted,#52677C)]">
+                    No citation targets yet. Run the Citation Discovery workflow to populate them.
+                  </p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[760px] text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-[var(--lit-border-light,#DFE7EF)] text-[10px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
+                          <th className="py-2 pr-3">Target</th>
+                          <th className="px-3 py-2">Type</th>
+                          <th className="px-3 py-2">Status</th>
+                          <th className="px-3 py-2">Proven in AI</th>
+                          <th className="px-3 py-2 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[var(--lit-border-light,#DFE7EF)]">
+                        {filteredCitations.map((c) => (
+                          <tr key={c.id} className="align-top hover:bg-[var(--lit-cloud,#F7F9FC)]">
+                            <td className="py-3 pr-3">
+                              <a
+                                href={c.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="font-bold text-[var(--lit-navy,#0B2545)] hover:text-[var(--lit-teal,#1FA9A2)]"
+                              >
+                                {c.name}
+                              </a>
+                              {c.relevance_note ? (
+                                <p className="mt-0.5 max-w-sm text-[10px] text-[var(--lit-text-muted,#52677C)]">
+                                  {c.relevance_note}
+                                </p>
+                              ) : null}
+                              {c.citation_url ? (
+                                <a
+                                  href={c.citation_url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="mt-0.5 block truncate text-[10px] text-[var(--lit-teal,#1FA9A2)] underline"
+                                >
+                                  {c.citation_url}
+                                </a>
+                              ) : null}
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-3 font-mono text-[11px] text-slate-700">
+                              {CITATION_TYPE_LABELS[c.type] ?? c.type}
+                            </td>
+                            <td className="px-3 py-3">
+                              <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                                {c.status}
+                              </span>
+                            </td>
+                            <td className="px-3 py-3">
+                              {c.status === "live" && c.seen_in_ai ? (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-700">
+                                  <Sparkles className="h-3 w-3" /> Seen in AI
+                                </span>
+                              ) : c.status === "live" ? (
+                                <span className="text-[10px] text-[var(--lit-text-muted,#52677C)]">
+                                  {c.is_live ? "live" : "not verified"}
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-[var(--lit-text-muted,#52677C)]">—</span>
+                              )}
+                            </td>
+                            <td className="px-3 py-3 text-right">
+                              <CitationControls id={c.id} status={c.status} />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : null}
         </>
       )}
     </div>
+  );
+}
+
+function CitationTypePill({
+  entityId,
+  value,
+  current,
+  label,
+}: {
+  entityId: string;
+  value: string | undefined;
+  current: string | undefined;
+  label: string;
+}) {
+  const qs = new URLSearchParams({ entity: entityId, tab: "citations" });
+  if (value) qs.set("ctType", value);
+  const active = current === value || (!current && !value);
+  return (
+    <Link
+      href={`?${qs.toString()}`}
+      className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-colors ${
+        active
+          ? "border-[var(--lit-teal,#1FA9A2)] bg-[var(--lit-teal,#1FA9A2)]/10 text-[var(--lit-navy,#0B2545)]"
+          : "border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-text-muted,#52677C)] hover:border-slate-300"
+      }`}
+    >
+      {label}
+    </Link>
   );
 }
 
