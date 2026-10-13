@@ -11,7 +11,7 @@ import { PDF_RESOURCES } from '@/config/pdfs';
 export const dynamic = 'force-static';
 
 // Verifiable content release baseline timestamp to avoid artificial lastmod spoofing
-const LAST_RELEASE_DATE = new Date('2026-10-12T00:00:00.000Z');
+const LAST_RELEASE_DATE = new Date('2026-10-14T00:00:00.000Z');
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = COMPANY.websiteUrl.replace(/\/$/, '');
@@ -30,6 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/healthcare`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'weekly', priority: 0.95 },
     { url: `${baseUrl}/healthcare/plans`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'weekly', priority: 0.90 },
     { url: `${baseUrl}/products/logic-voice`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${baseUrl}/voice-shield`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'weekly', priority: 0.95 },
     { url: `${baseUrl}/pricing`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/resources`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/packages`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'monthly', priority: 0.9 },
@@ -46,6 +47,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/free-demo`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/ai`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/investors`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/architecture`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/roi-calculator`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/docs/api`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/privacy`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/privacy-policy`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/security`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'yearly', priority: 0.3 },
