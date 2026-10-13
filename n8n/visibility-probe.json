@@ -1,0 +1,159 @@
+{
+  "name": "Visibility Probe",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 0 * * *"
+            }
+          ]
+        }
+      },
+      "id": "vp-0001-0001-4001-8001-000000000001",
+      "name": "Schedule (06:00 IST daily)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "tracked_entities",
+        "returnAll": true
+      },
+      "id": "vp-0002-0002-4002-8002-000000000002",
+      "name": "Get tracked entities",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        480,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "",
+          "name": "Supabase LIT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "target_queries",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "active",
+              "condition": "eq",
+              "keyValue": "true"
+            }
+          ]
+        }
+      },
+      "id": "vp-0003-0003-4003-8003-000000000003",
+      "name": "Get active queries",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        720,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "",
+          "name": "Supabase LIT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// ===========================================================================\n// Visibility Probe — run once for all items.\n// Reads active queries (from \"Get active queries\") joined to their entity\n// (from \"Get tracked entities\"), probes each enabled platform, and returns one\n// item per (query, platform) shaped exactly like a visibility_checks row.\n// ===========================================================================\n\n// --- Platform config: adding/removing a platform is a config change here. ----\nconst PLATFORMS = [\n  { platform: 'google',             keyEnv: 'SERPAPI_KEY',        via: 'serpapi' },\n  { platform: 'google_ai_overview', keyEnv: 'SERPAPI_KEY',        via: 'serpapi' }, // derived from same SerpAPI call\n  { platform: 'perplexity',         keyEnv: 'PERPLEXITY_API_KEY', via: 'perplexity' },\n  { platform: 'chatgpt',            keyEnv: 'OPENAI_API_KEY',     via: 'openai' },\n  { platform: 'gemini',             keyEnv: 'GEMINI_API_KEY',     via: 'gemini' },\n  { platform: 'claude',             keyEnv: 'ANTHROPIC_API_KEY',  via: 'anthropic' },\n];\n\nconst http = this.helpers.httpRequest;\n\n// --- Small helpers -----------------------------------------------------------\nfunction normDomain(d) {\n  if (!d) return '';\n  return String(d).toLowerCase().replace(/^https?:\\/\\//, '').replace(/^www\\./, '').replace(/\\/.*$/, '').trim();\n}\nfunction hostOf(url) {\n  try { return normDomain(new URL(url).host); } catch { return normDomain(url); }\n}\nfunction urlMatchesDomain(url, domain) {\n  if (!url || !domain) return false;\n  const h = hostOf(url);\n  return h === domain || h.endsWith('.' + domain);\n}\nfunction textIncludes(text, needle) {\n  if (!text || !needle) return false;\n  return String(text).toLowerCase().includes(String(needle).toLowerCase());\n}\nfunction nameMatches(text, name) {\n  if (!text || !name) return false;\n  if (textIncludes(text, name)) return true;\n  // also match the distinctive leading tokens of a long brand name\n  const lead = String(name).split(/\\s+/).slice(0, 2).join(' ');\n  return lead.length >= 4 ? textIncludes(text, lead) : false;\n}\nfunction collectUrls(obj, acc = [], depth = 0) {\n  if (!obj || depth > 6) return acc;\n  if (typeof obj === 'string') {\n    const m = obj.match(/https?:\\/\\/[^\\s\"'<>)\\]]+/g);\n    if (m) for (const u of m) acc.push(u);\n    return acc;\n  }\n  if (Array.isArray(obj)) { for (const v of obj) collectUrls(v, acc, depth + 1); return acc; }\n  if (typeof obj === 'object') { for (const k of Object.keys(obj)) collectUrls(obj[k], acc, depth + 1); }\n  return acc;\n}\nfunction baseRow(queryId, platform, extra) {\n  return Object.assign({\n    query_id: queryId,\n    platform,\n    mentioned: false,\n    cited: false,\n    rank: null,\n    snippet: null,\n    source_urls: [],\n    raw_response: null,\n  }, extra || {});\n}\n\n// --- Load entities and build an id -> entity map -----------------------------\nconst entityItems = $('Get tracked entities').all();\nconst entityById = {};\nfor (const it of entityItems) {\n  const e = it.json || {};\n  if (e.id) entityById[e.id] = e;\n}\n\nconst queryItems = $('Get active queries').all();\n\n// --- Per-platform probes. Each returns a partial row (the base is merged). ---\nasync function probeSerpApi(apiKey, entity, queryText) {\n  const data = await http({\n    method: 'GET',\n    url: 'https://serpapi.com/search.json',\n    qs: {\n      engine: 'google',\n      q: queryText,\n      api_key: apiKey,\n      hl: 'en',\n      gl: 'in',\n      num: 20,\n    },\n    json: true,\n  });\n\n  const domain = normDomain(entity.domain);\n  const name = entity.name || '';\n\n  // google (organic)\n  const organic = Array.isArray(data.organic_results) ? data.organic_results : [];\n  let hit = null;\n  for (const r of organic) {\n    const link = r.link || r.displayed_link || '';\n    if ((domain && (urlMatchesDomain(link, domain) || textIncludes(r.displayed_link || '', domain))) ||\n        (name && nameMatches(r.title || '', name))) { hit = r; break; }\n  }\n  const google = baseRow(null, 'google', {\n    mentioned: Boolean(hit),\n    cited: Boolean(hit),\n    rank: hit ? (hit.position ?? null) : null,\n    snippet: hit ? (hit.snippet || hit.title || null) : null,\n    source_urls: hit && hit.link ? [hit.link] : [],\n    raw_response: { engine: 'google', organic_count: organic.length, hit: hit || null },\n  });\n\n  // google_ai_overview (AI overview block, if present)\n  const ai = data.ai_overview || data.answer_box || null;\n  let aiMentioned = false, aiCited = false, aiUrls = [], aiSnippet = null;\n  if (ai) {\n    const aiText = JSON.stringify(ai);\n    aiMentioned = (domain && textIncludes(aiText, domain)) || (name && nameMatches(aiText, name));\n    const refs = collectUrls(ai);\n    aiUrls = refs.filter((u) => urlMatchesDomain(u, domain));\n    aiCited = aiUrls.length > 0;\n    if (Array.isArray(ai.text_blocks) && ai.text_blocks[0]) {\n      aiSnippet = ai.text_blocks[0].snippet || ai.text_blocks[0].text || null;\n    }\n  }\n  const aiOverview = baseRow(null, 'google_ai_overview', {\n    mentioned: Boolean(aiMentioned),\n    cited: Boolean(aiCited),\n    snippet: aiSnippet,\n    source_urls: aiUrls,\n    raw_response: ai ? { engine: 'google_ai_overview', present: true } : { engine: 'google_ai_overview', present: false },\n  });\n\n  return { google, google_ai_overview: aiOverview };\n}\n\nasync function probePerplexity(apiKey, entity, queryText) {\n  const data = await http({\n    method: 'POST',\n    url: 'https://api.perplexity.ai/chat/completions',\n    headers: { Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json' },\n    body: {\n      model: 'sonar',\n      messages: [{ role: 'user', content: queryText }],\n    },\n    json: true,\n  });\n  const content = data?.choices?.[0]?.message?.content || '';\n  const citations = data.citations || data.search_results || [];\n  const citationUrls = (Array.isArray(citations) ? citations : []).map((c) => (typeof c === 'string' ? c : (c.url || c.link || ''))).filter(Boolean);\n  return parseAnswer(entity, content, citationUrls, { engine: 'perplexity' });\n}\n\nasync function probeOpenAI(apiKey, entity, queryText) {\n  const data = await http({\n    method: 'POST',\n    url: 'https://api.openai.com/v1/responses',\n    headers: { Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json' },\n    body: {\n      model: 'gpt-4o-mini',\n      tools: [{ type: 'web_search_preview' }],\n      input: queryText,\n    },\n    json: true,\n  });\n  const text = data.output_text || collectText(data.output);\n  const urls = collectUrls(data.output || data);\n  return parseAnswer(entity, text, urls, { engine: 'chatgpt' });\n}\n\nasync function probeGemini(apiKey, entity, queryText) {\n  const data = await http({\n    method: 'POST',\n    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',\n    qs: { key: apiKey },\n    headers: { 'Content-Type': 'application/json' },\n    body: {\n      contents: [{ role: 'user', parts: [{ text: queryText }] }],\n      tools: [{ google_search: {} }],\n    },\n    json: true,\n  });\n  const cand = data?.candidates?.[0];\n  const parts = cand?.content?.parts || [];\n  const text = parts.map((p) => p.text || '').join(' ');\n  const chunks = cand?.groundingMetadata?.groundingChunks || [];\n  const urls = chunks.map((c) => c?.web?.uri).filter(Boolean);\n  return parseAnswer(entity, text, urls.length ? urls : collectUrls(data), { engine: 'gemini' });\n}\n\nasync function probeAnthropic(apiKey, entity, queryText) {\n  const data = await http({\n    method: 'POST',\n    url: 'https://api.anthropic.com/v1/messages',\n    headers: {\n      'x-api-key': apiKey,\n      'anthropic-version': '2023-06-01',\n      'Content-Type': 'application/json',\n    },\n    body: {\n      model: 'claude-3-5-haiku-latest',\n      max_tokens: 1024,\n      messages: [{ role: 'user', content: queryText }],\n      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 5 }],\n    },\n    json: true,\n  });\n  const blocks = Array.isArray(data.content) ? data.content : [];\n  const text = blocks.filter((b) => b.type === 'text').map((b) => b.text || '').join(' ');\n  const urls = collectUrls(data.content || data);\n  return parseAnswer(entity, text, urls, { engine: 'claude' });\n}\n\nfunction collectText(output) {\n  if (!output) return '';\n  try {\n    return JSON.stringify(output).match(/\"text\":\"((?:[^\"\\\\]|\\\\.)*)\"/g)?.map((m) => m).join(' ') || '';\n  } catch { return ''; }\n}\n\n// Shared parser for the AI-answer platforms (perplexity/chatgpt/gemini/claude).\nfunction parseAnswer(entity, answerText, urls, rawMeta) {\n  const domain = normDomain(entity.domain);\n  const name = entity.name || '';\n  const uniqueUrls = Array.from(new Set((urls || []).filter(Boolean)));\n  const citedUrls = uniqueUrls.filter((u) => urlMatchesDomain(u, domain));\n  const mentioned = (domain && (textIncludes(answerText, domain) || citedUrls.length > 0)) ||\n                    (name && nameMatches(answerText, name));\n  const snippet = answerText ? String(answerText).slice(0, 500) : null;\n  return {\n    mentioned: Boolean(mentioned),\n    cited: citedUrls.length > 0,\n    source_urls: citedUrls.length ? citedUrls : uniqueUrls.slice(0, 10),\n    snippet,\n    raw_response: Object.assign({}, rawMeta, { answer_chars: answerText ? answerText.length : 0, citation_count: uniqueUrls.length }),\n  };\n}\n\n// --- Main loop ---------------------------------------------------------------\nconst out = [];\nfor (const qItem of queryItems) {\n  const q = qItem.json || {};\n  const entity = entityById[q.entity_id] || { name: null, domain: null };\n\n  for (const cfg of PLATFORMS) {\n    const apiKey = $env[cfg.keyEnv];\n    if (!apiKey) {\n      console.log('[visibility-probe] skipping ' + cfg.platform + ' for query ' + q.id + ' — ' + cfg.keyEnv + ' not set');\n      continue;\n    }\n    try {\n      if (cfg.via === 'serpapi') {\n        // One SerpAPI call yields both google and google_ai_overview rows.\n        // Compute once (on the 'google' pass) and cache on the query item.\n        if (cfg.platform === 'google') {\n          const r = await probeSerpApi(apiKey, entity, q.query_text);\n          qItem.__serp = r;\n          out.push(baseRow(q.id, 'google', r.google));\n        } else if (cfg.platform === 'google_ai_overview') {\n          const r = qItem.__serp || (await probeSerpApi(apiKey, entity, q.query_text));\n          out.push(baseRow(q.id, 'google_ai_overview', r.google_ai_overview));\n        }\n      } else {\n        let partial;\n        if (cfg.via === 'perplexity') partial = await probePerplexity(apiKey, entity, q.query_text);\n        else if (cfg.via === 'openai') partial = await probeOpenAI(apiKey, entity, q.query_text);\n        else if (cfg.via === 'gemini') partial = await probeGemini(apiKey, entity, q.query_text);\n        else if (cfg.via === 'anthropic') partial = await probeAnthropic(apiKey, entity, q.query_text);\n        out.push(baseRow(q.id, cfg.platform, partial));\n      }\n    } catch (err) {\n      console.log('[visibility-probe] ' + cfg.platform + ' failed for query ' + q.id + ': ' + (err && err.message));\n      out.push(baseRow(q.id, cfg.platform, {\n        mentioned: false,\n        cited: false,\n        raw_response: { error: String(err && err.message || err), platform: cfg.platform },\n      }));\n    }\n  }\n}\n\nreturn out.map((json) => ({ json }));\n"
+      },
+      "id": "vp-0004-0004-4004-8004-000000000004",
+      "name": "Probe platforms",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "visibility_checks",
+        "dataToSend": "autoMapInputData"
+      },
+      "id": "vp-0005-0005-4005-8005-000000000005",
+      "name": "Insert visibility_checks",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "",
+          "name": "Supabase LIT"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule (06:00 IST daily)": {
+      "main": [
+        [
+          {
+            "node": "Get tracked entities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get tracked entities": {
+      "main": [
+        [
+          {
+            "node": "Get active queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get active queries": {
+      "main": [
+        [
+          {
+            "node": "Probe platforms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Probe platforms": {
+      "main": [
+        [
+          {
+            "node": "Insert visibility_checks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

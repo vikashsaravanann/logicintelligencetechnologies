@@ -148,6 +148,7 @@ Active database tables:
 - `public.profiles` — authenticated user profiles (synced with `auth.users`)
 - `public.projects` — CRM: client projects
 - `public.invoices` — CRM: project invoices
+- `public.tracked_entities` / `public.target_queries` / `public.visibility_checks` — Visibility Engine (see below)
 
 ## Vercel Deployment
 
@@ -160,6 +161,55 @@ See [docs/vercel-deployment.md](docs/vercel-deployment.md) for Vercel deployment
 See [docs/email-infrastructure.md](docs/email-infrastructure.md) for Zoho SMTP configuration.
 
 ---
+
+## Visibility Engine (Command Center module)
+
+Measures where LIT (and later, clients) appear across Google and AI answer
+engines (Perplexity, ChatGPT, Gemini, Claude). Phase 1 = data model + a
+scheduled probe + a read-only dashboard.
+
+**Pieces**
+
+- Migration `supabase/migrations/20261014090000_visibility_engine_phase1.sql` —
+  `tracked_entities`, `target_queries`, `visibility_checks` (service-role-only
+  RLS, same model as the lead tables). Seeds one `self` entity (LIT) and a few
+  realistic queries; seeds are idempotent.
+- n8n workflow `n8n/visibility-probe.json` — "Visibility Probe". Runs daily at
+  **06:00 IST** (cron `30 0 * * *` on the Schedule node — change that expression
+  to adjust cadence), reads active queries + entities from Supabase, probes each
+  enabled platform, and writes one `visibility_checks` row per (query, platform).
+- Dashboard `/admin/command-center/visibility` — read-only, behind the same
+  capability guard as other Command Center pages (`seo.read`). Entity selector,
+  per-platform score cards, a trend chart, and a latest-checks table.
+
+**Set the API keys**
+
+The probe reads each key from an n8n environment variable / credential — keys
+are **never** stored in the workflow JSON. In n8n (Settings → Variables, or the
+host environment), set any of:
+
+```
+SERPAPI_KEY=         # google + google_ai_overview (one SerpAPI call)
+PERPLEXITY_API_KEY=  # perplexity
+OPENAI_API_KEY=      # chatgpt (web search)
+GEMINI_API_KEY=      # gemini (grounding/search)
+ANTHROPIC_API_KEY=   # claude (web search)
+```
+
+Any key left unset means that platform is **skipped gracefully** (logged, not a
+crash). At minimum set `SERPAPI_KEY` to get Google results. These are also
+listed in `.env.example` for reference. The Supabase node uses an n8n
+`supabaseApi` credential named **"Supabase LIT"** (link it on import).
+
+**Trigger the first run**
+
+1. Apply the migration (see Supabase Setup) so the tables + seeds exist.
+2. In n8n: **Import from File** → `n8n/visibility-probe.json`, then link the
+   "Supabase LIT" credential and set at least `SERPAPI_KEY`.
+3. Click **Execute Workflow** for a manual run — it inserts `visibility_checks`
+   rows for the seeded queries.
+4. Open `/admin/command-center/visibility` to see the score cards, trend, and
+   checks table populate. Leave the schedule enabled for the daily cadence.
 
 ## Security Notes
 
