@@ -48,6 +48,8 @@ next-env.d.ts
 # test artifacts and development scratch files
 *.log
 *.txt
+!public/robots.txt
+!public/deploy-stamp.txt
 *.py
 !services/**/*.py
 !services/**/requirements.txt

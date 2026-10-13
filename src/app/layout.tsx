@@ -49,11 +49,11 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'Logic Intelligence Technologies | Enterprise AI & Healthcare',
+    default: 'Logic Intelligence Technologies | AI',
     template: '%s',
   },
   description:
-    'Logic Intelligence Technologies develops enterprise AI products, intelligent automation, and healthcare platforms, including LIT Healthcare and Logic Voice.',
+    'Enterprise AI products, smart hospital systems, and autonomous voice engines.',
   keywords: [
     'Logic Intelligence Technologies',
     'AI technology company',
@@ -84,9 +84,9 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     siteName: COMPANY.legalName,
-    title: 'Logic Intelligence Technologies | Intelligent Technology. Connected Possibilities.',
+    title: 'Logic Intelligence Technologies | AI',
     description:
-      'Logic Intelligence Technologies builds AI-driven products, intelligent automation and connected digital platforms — including LIT Healthcare and Logic Voice.',
+      'Enterprise AI products, smart hospital systems, and autonomous voice engines.',
     images: [
       {
         url: 'https://www.logicintelligencetechnologies.in/assets/og-banner.jpg',
@@ -108,9 +108,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Logic Intelligence Technologies | Where Logic Meets Innovation',
+    title: 'Logic Intelligence Technologies | AI',
     description:
-      'Deterministic AI Platforms, Autonomous Voice Engines & Smart Hospital Infrastructure. Creators of LIT Healthcare, Logic Voice, and Voice Shield.',
+      'Enterprise AI products, smart hospital systems, and autonomous voice engines.',
     images: ['https://www.logicintelligencetechnologies.in/assets/og-banner.jpg'],
   },
   icons: {

@@ -7,24 +7,30 @@ export default function robots(): MetadataRoute.Robots {
   const baseUrl = COMPANY.websiteUrl.replace(/\/$/, '');
 
   return {
-    rules: {
-      userAgent: '*',
-      allow: '/',
-      disallow: [
-        '/admin',
-        '/admin/',
-        '/client',
-        '/client/',
-        '/api',
-        '/api/',
-        '/proposal',
-        '/proposal/',
-        '/dashboard',
-        '/dashboard/',
-        '/profile',
-        '/profile/',
-      ],
-    },
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: [
+          '/admin',
+          '/admin/',
+          '/client',
+          '/client/',
+          '/api',
+          '/api/',
+          '/proposal',
+          '/proposal/',
+          '/dashboard',
+          '/dashboard/',
+          '/profile',
+          '/profile/',
+        ],
+      },
+      {
+        userAgent: 'Yeti',
+        allow: '/',
+      },
+    ],
     sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /client
+Disallow: /client/
+Disallow: /api
+Disallow: /api/
+Disallow: /proposal
+Disallow: /proposal/
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /profile
+Disallow: /profile/
+
+User-agent: Yeti
+Allow: /
+
+Sitemap: https://www.logicintelligencetechnologies.in/sitemap.xml
