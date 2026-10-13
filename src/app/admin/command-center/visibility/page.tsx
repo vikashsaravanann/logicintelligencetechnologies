@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Eye, Quote, AlertTriangle, ArrowLeft, Crosshair } from "lucide-react";
+import { Eye, Quote, AlertTriangle, ArrowLeft, Crosshair, FileText } from "lucide-react";
 import { requireCapabilityPage } from "@/lib/auth/session";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { formatIST } from "@/lib/format/datetime";
@@ -14,6 +14,7 @@ import {
 } from "@/lib/visibility/metrics";
 import { EntitySelect, type EntityOption } from "./EntitySelect";
 import { VisibilityTrendChart } from "./VisibilityTrendChart";
+import { ContentReviewControls } from "./ContentReviewControls";
 
 export const metadata: Metadata = {
   title: "Visibility Engine | Command Center",
@@ -25,8 +26,37 @@ export const metadata: Metadata = {
 export const revalidate = 0;
 
 type PageProps = {
-  searchParams?: Promise<{ entity?: string; gapPlatform?: string }>;
+  searchParams?: Promise<{
+    entity?: string;
+    gapPlatform?: string;
+    tab?: string;
+    cStatus?: string;
+    cKind?: string;
+  }>;
 };
+
+const SUGGESTION_KINDS = ["json_ld", "faq", "meta", "factual_sentences"] as const;
+const SUGGESTION_STATUSES = ["draft", "approved", "rejected", "applied"] as const;
+const KIND_LABELS: Record<string, string> = {
+  json_ld: "JSON-LD",
+  faq: "FAQ",
+  meta: "Meta",
+  factual_sentences: "Factual sentences",
+};
+
+interface SuggestionRow {
+  id: string;
+  kind: string;
+  status: "draft" | "approved" | "rejected" | "applied";
+  rationale: string | null;
+  payload: unknown;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  pr_url: string | null;
+  created_at: string;
+  page_url: string;
+  query_text: string | null;
+}
 
 /** A gap row flattened from the embedded PostgREST select. */
 interface GapRow {
@@ -116,8 +146,59 @@ export default async function VisibilityPage({ searchParams }: PageProps) {
   const gapPlatform = params.gapPlatform;
   const filteredGaps = gapPlatform ? gapRows.filter((g) => g.platform === gapPlatform) : gapRows;
 
+  // --- Content suggestions for the selected entity (Content tab) -------------
+  const tab = params.tab === "content" ? "content" : "overview";
+  const suggestionsRes =
+    selected && tab === "content"
+      ? await supabaseAdmin
+          .from("content_suggestions")
+          .select(
+            "id, kind, status, rationale, payload, reviewed_by, reviewed_at, pr_url, created_at, content_assets!inner(url, entity_id), target_queries(query_text)",
+          )
+          .eq("content_assets.entity_id", selected.id)
+          .order("created_at", { ascending: false })
+          .limit(300)
+      : { data: [], error: null };
+
+  const suggestions: SuggestionRow[] = (suggestionsRes.data ?? []).map(
+    (s: Record<string, unknown>) => {
+      const asset = one(s.content_assets as { url?: string } | { url?: string }[]);
+      const q = one(s.target_queries as { query_text?: string } | { query_text?: string }[]);
+      return {
+        id: String(s.id),
+        kind: String(s.kind),
+        status: s.status as SuggestionRow["status"],
+        rationale: (s.rationale as string | null) ?? null,
+        payload: s.payload,
+        reviewed_by: (s.reviewed_by as string | null) ?? null,
+        reviewed_at: (s.reviewed_at as string | null) ?? null,
+        pr_url: (s.pr_url as string | null) ?? null,
+        created_at: String(s.created_at),
+        page_url: asset?.url ?? "—",
+        query_text: q?.query_text ?? null,
+      };
+    },
+  );
+
+  const cStatus = SUGGESTION_STATUSES.includes(params.cStatus as (typeof SUGGESTION_STATUSES)[number])
+    ? params.cStatus
+    : undefined;
+  const cKind = SUGGESTION_KINDS.includes(params.cKind as (typeof SUGGESTION_KINDS)[number])
+    ? params.cKind
+    : undefined;
+  const filteredSuggestions = suggestions.filter(
+    (s) => (!cStatus || s.status === cStatus) && (!cKind || s.kind === cKind),
+  );
+  // group filtered suggestions by page url
+  const suggestionsByPage = new Map<string, SuggestionRow[]>();
+  for (const s of filteredSuggestions) {
+    const bucket = suggestionsByPage.get(s.page_url);
+    if (bucket) bucket.push(s);
+    else suggestionsByPage.set(s.page_url, [s]);
+  }
+
   const anyError = Boolean(
-    entitiesRes.error || queriesRes.error || checksRes.error || gapsRes.error,
+    entitiesRes.error || queriesRes.error || checksRes.error || gapsRes.error || suggestionsRes.error,
   );
 
   const scores = platformScores(checks, queryIds.length);
@@ -171,6 +252,14 @@ export default async function VisibilityPage({ searchParams }: PageProps) {
             {queryIds.length === 1 ? "query" : "queries"} tracked
           </p>
 
+          {/* Tab nav */}
+          <div className="flex items-center gap-1 border-b border-[var(--lit-border-light,#DFE7EF)]">
+            <TabLink entityId={selected.id} tab="overview" active={tab === "overview"} label="Overview" />
+            <TabLink entityId={selected.id} tab="content" active={tab === "content"} label="Content" />
+          </div>
+
+          {tab === "overview" ? (
+          <>
           {/* Score cards (most recent run per query/platform) */}
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
             {scores.map((s) => (
@@ -362,9 +451,213 @@ export default async function VisibilityPage({ searchParams }: PageProps) {
               </div>
             )}
           </div>
+          </>
+          ) : null}
+
+          {tab === "content" ? (
+            <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 shadow-2xs">
+              <div className="mb-4 flex flex-col gap-3 border-b border-[var(--lit-border-light,#DFE7EF)] pb-4">
+                <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)]">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-teal,#1FA9A2)]/10 text-[var(--lit-teal,#1FA9A2)]">
+                    <FileText className="h-4 w-4" />
+                  </span>
+                  Content Suggestions
+                </h2>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="mr-1 text-[10px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">Status</span>
+                    <ContentFilterPill entityId={selected.id} param="cStatus" value={undefined} current={cStatus} kind={cKind} status={cStatus} label="All" />
+                    {SUGGESTION_STATUSES.map((st) => (
+                      <ContentFilterPill key={st} entityId={selected.id} param="cStatus" value={st} current={cStatus} kind={cKind} status={cStatus} label={st} />
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="mr-1 text-[10px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">Kind</span>
+                    <ContentFilterPill entityId={selected.id} param="cKind" value={undefined} current={cKind} kind={cKind} status={cStatus} label="All" />
+                    {SUGGESTION_KINDS.map((k) => (
+                      <ContentFilterPill key={k} entityId={selected.id} param="cKind" value={k} current={cKind} kind={cKind} status={cStatus} label={KIND_LABELS[k]} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {filteredSuggestions.length === 0 ? (
+                <p className="py-8 text-center text-xs font-medium text-[var(--lit-text-muted,#52677C)]">
+                  No content suggestions yet. Run the Content Engine workflow to generate drafts for underperforming pages.
+                </p>
+              ) : (
+                <div className="space-y-6">
+                  {Array.from(suggestionsByPage.entries()).map(([pageUrl, rows]) => (
+                    <div key={pageUrl}>
+                      <div className="mb-2 flex items-center gap-2 text-xs font-bold text-[var(--lit-navy,#0B2545)]">
+                        <span className="truncate font-mono">{pageUrl}</span>
+                        <span className="text-[var(--lit-text-muted,#52677C)]">· {rows.length}</span>
+                      </div>
+                      <div className="space-y-3">
+                        {rows.map((s) => (
+                          <div key={s.id} className="rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] p-4">
+                            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                <span className="rounded-full border border-[var(--lit-teal,#1FA9A2)]/30 bg-[var(--lit-teal,#1FA9A2)]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--lit-teal,#1FA9A2)]">
+                                  {KIND_LABELS[s.kind] ?? s.kind}
+                                </span>
+                                {s.query_text ? (
+                                  <span className="text-[11px] text-[var(--lit-text-muted,#52677C)]">
+                                    for “{s.query_text}”
+                                  </span>
+                                ) : null}
+                              </div>
+                              <ContentReviewControls id={s.id} status={s.status} />
+                            </div>
+                            {s.rationale ? (
+                              <p className="mb-2 text-[11px] leading-relaxed text-[var(--lit-text-muted,#52677C)]">
+                                {s.rationale}
+                              </p>
+                            ) : null}
+                            <SuggestionPayload kind={s.kind} payload={s.payload} />
+                            {s.reviewed_by ? (
+                              <p className="mt-2 text-[10px] text-[var(--lit-text-muted,#52677C)]">
+                                {s.status} by {s.reviewed_by}
+                                {s.reviewed_at ? ` · ${formatIST(s.reviewed_at, "datetime")}` : ""}
+                                {s.pr_url ? (
+                                  <>
+                                    {" · "}
+                                    <a href={s.pr_url} className="text-[var(--lit-teal,#1FA9A2)] underline" target="_blank" rel="noreferrer">
+                                      PR
+                                    </a>
+                                  </>
+                                ) : null}
+                              </p>
+                            ) : null}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : null}
         </>
       )}
     </div>
+  );
+}
+
+function TabLink({
+  entityId,
+  tab,
+  active,
+  label,
+}: {
+  entityId: string;
+  tab: string;
+  active: boolean;
+  label: string;
+}) {
+  const qs = new URLSearchParams({ entity: entityId });
+  if (tab !== "overview") qs.set("tab", tab);
+  return (
+    <Link
+      href={`?${qs.toString()}`}
+      aria-current={active ? "page" : undefined}
+      className={`-mb-px border-b-2 px-4 py-2 text-xs font-bold transition-colors ${
+        active
+          ? "border-[var(--lit-teal,#1FA9A2)] text-[var(--lit-navy,#0B2545)]"
+          : "border-transparent text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)]"
+      }`}
+    >
+      {label}
+    </Link>
+  );
+}
+
+function ContentFilterPill({
+  entityId,
+  param,
+  value,
+  current,
+  kind,
+  status,
+  label,
+}: {
+  entityId: string;
+  param: "cStatus" | "cKind";
+  value: string | undefined;
+  current: string | undefined;
+  kind: string | undefined;
+  status: string | undefined;
+  label: string;
+}) {
+  const qs = new URLSearchParams({ entity: entityId, tab: "content" });
+  // preserve the other filter
+  if (param === "cStatus") {
+    if (value) qs.set("cStatus", value);
+    if (kind) qs.set("cKind", kind);
+  } else {
+    if (status) qs.set("cStatus", status);
+    if (value) qs.set("cKind", value);
+  }
+  const active = current === value || (!current && !value);
+  return (
+    <Link
+      href={`?${qs.toString()}`}
+      className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-colors ${
+        active
+          ? "border-[var(--lit-teal,#1FA9A2)] bg-[var(--lit-teal,#1FA9A2)]/10 text-[var(--lit-navy,#0B2545)]"
+          : "border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-text-muted,#52677C)] hover:border-slate-300"
+      }`}
+    >
+      {label}
+    </Link>
+  );
+}
+
+/** Readable render of a suggestion payload by kind. */
+function SuggestionPayload({ kind, payload }: { kind: string; payload: unknown }) {
+  if (kind === "faq" && Array.isArray(payload)) {
+    return (
+      <div className="space-y-2">
+        {(payload as Array<{ question?: string; answer?: string }>).map((qa, i) => (
+          <div key={i} className="rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white p-3">
+            <p className="text-xs font-bold text-[var(--lit-navy,#0B2545)]">{qa.question ?? "—"}</p>
+            <p className="mt-1 text-[11px] leading-relaxed text-[var(--lit-text-muted,#52677C)]">{qa.answer ?? ""}</p>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (kind === "meta" && payload && typeof payload === "object") {
+    const m = payload as { title?: string; description?: string };
+    return (
+      <div className="space-y-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white p-3 text-[11px]">
+        <div>
+          <span className="font-bold text-[var(--lit-navy,#0B2545)]">New title</span>{" "}
+          <span className="text-[var(--lit-text-muted,#52677C)]">({(m.title ?? "").length} chars)</span>
+          <p className="font-mono text-slate-700">{m.title ?? "—"}</p>
+        </div>
+        <div>
+          <span className="font-bold text-[var(--lit-navy,#0B2545)]">New description</span>{" "}
+          <span className="text-[var(--lit-text-muted,#52677C)]">({(m.description ?? "").length} chars)</span>
+          <p className="font-mono text-slate-700">{m.description ?? "—"}</p>
+        </div>
+      </div>
+    );
+  }
+  if (kind === "factual_sentences" && Array.isArray(payload)) {
+    return (
+      <ul className="list-disc space-y-1 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white p-3 pl-6 text-[11px] text-slate-700">
+        {(payload as string[]).map((line, i) => (
+          <li key={i}>{line}</li>
+        ))}
+      </ul>
+    );
+  }
+  // json_ld or anything else: pretty-printed JSON
+  return (
+    <pre className="max-h-72 overflow-auto rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white p-3 text-[10px] leading-relaxed text-slate-700">
+      {JSON.stringify(payload, null, 2)}
+    </pre>
   );
 }
 

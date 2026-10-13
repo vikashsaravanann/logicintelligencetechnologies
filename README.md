@@ -148,7 +148,7 @@ Active database tables:
 - `public.profiles` — authenticated user profiles (synced with `auth.users`)
 - `public.projects` — CRM: client projects
 - `public.invoices` — CRM: project invoices
-- `public.tracked_entities` / `public.target_queries` / `public.visibility_checks` / `public.competitors` / `public.visibility_gaps` — Visibility Engine (see below)
+- `public.tracked_entities` / `public.target_queries` / `public.visibility_checks` / `public.competitors` / `public.visibility_gaps` / `public.content_assets` / `public.content_suggestions` — Visibility Engine (see below)
 
 ## Vercel Deployment
 
@@ -241,6 +241,57 @@ recomputes it, so re-runs never pile up duplicates. It needs only the Supabase
 credential — no API keys. View gaps in the **Visibility Gaps** section of
 `/admin/command-center/visibility`; the entity selector switches between all
 four products.
+
+### Phase 3 — content engine (generate → review → apply)
+
+Phase 3 adds the optimization half: for underperforming pages it **generates**
+improved SEO/GEO assets, stores them as **reviewable suggestions**, lets a human
+**approve/reject** in the dashboard, and turns approved assets into **pull
+requests** on the product repos. Nothing is auto-published.
+
+- Migration `supabase/migrations/20261014110000_visibility_engine_phase3.sql`
+  adds `content_assets` (pages we optimise) and `content_suggestions`
+  (generated assets; `status` flows `draft → approved/rejected → applied`).
+- Workflow `n8n/visibility-content-engine.json` ("Visibility Content Engine").
+- Review UI: the **Content** tab on `/admin/command-center/visibility`.
+- Apply step: `scripts/apply-suggestions.md` + `scripts/apply-suggestions.mjs`.
+
+**Content integrity rules** (enforced in the generation prompt itself):
+
+- Generate only claims true of the product per its own site/repo. Never invent
+  features, numbers, clients, awards, or capabilities.
+- No unverifiable superlatives ("the best", "#1", "most secure").
+- Healthcare / Smart Hospital: no medical, clinical, diagnostic, or outcome
+  claims — software/management tooling only.
+- Voice Shield: only what the product's own materials state; no efficacy
+  percentages unless the page already publishes them.
+- Every FAQ answer and factual sentence must be defensible from the page;
+  when unsure, generate a weaker, accurate version.
+
+**1. Generate.** Run "Visibility Content Engine" (manual, or the weekly Monday
+07:00 IST schedule). It selects pages where recent checks show `mentioned=false`
+(prioritising those with a `visibility_gaps` row), upserts a `content_assets`
+row per page, fetches the live page, and calls one LLM (Anthropic) with the page
+content + target query + competitor note + the integrity rules verbatim. It
+stores up to four `content_suggestions` per page — `json_ld`, `faq`, `meta`,
+`factual_sentences` — as `draft` (idempotent per asset+kind+query). Set these as
+n8n env vars: `ANTHROPIC_API_KEY` (skips gracefully if absent), plus
+`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`.
+
+**2. Review.** In the Command Center → Visibility → **Content** tab, suggestions
+are grouped by page and filterable by status + kind. Each renders readably
+(pretty-printed JSON-LD, FAQ as Q&A, meta with char counts). **Approve** / **Reject**
+records the reviewer and timestamp. Approval only flips status to `approved` — it
+does not apply anything.
+
+**3. Apply (human-run → PR).** Follow `scripts/apply-suggestions.md`.
+`scripts/apply-suggestions.mjs --entity <domain>` exports an entity's approved
+suggestions and a ready-to-paste PR body; you implement them idiomatically in
+the product repo (reusable `<JsonLd>`, a **visible** FAQ section + matching
+`FAQPage` JSON-LD, metadata, on-page copy) and open a PR — never a push to
+`main`. A worked example PR lives on the `voice-shield` repo. After a human
+merges, `--mark-applied --pr <url>` flips those suggestions to `applied` and
+stores the PR link (shown in the Content tab).
 
 ## Security Notes
 
