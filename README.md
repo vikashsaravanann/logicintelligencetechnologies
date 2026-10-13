@@ -148,7 +148,7 @@ Active database tables:
 - `public.profiles` — authenticated user profiles (synced with `auth.users`)
 - `public.projects` — CRM: client projects
 - `public.invoices` — CRM: project invoices
-- `public.tracked_entities` / `public.target_queries` / `public.visibility_checks` — Visibility Engine (see below)
+- `public.tracked_entities` / `public.target_queries` / `public.visibility_checks` / `public.competitors` / `public.visibility_gaps` — Visibility Engine (see below)
 
 ## Vercel Deployment
 
@@ -210,6 +210,37 @@ listed in `.env.example` for reference. The Supabase node uses an n8n
    rows for the seeded queries.
 4. Open `/admin/command-center/visibility` to see the score cards, trend, and
    checks table populate. Leave the schedule enabled for the daily cadence.
+
+### Phase 2 — multi-product entities + gap analysis
+
+Phase 2 tracks all four LIT products as entities and surfaces **gaps** — where
+a competitor is cited or ranked for a query and we are not.
+
+- Migration `supabase/migrations/20261014100000_visibility_engine_phase2.sql`
+  adds the `competitors` and `visibility_gaps` tables (service-role RLS, same
+  model) and widens `tracked_entities.type` to allow `competitor`.
+- Seed `supabase/migrations/20261014100001_visibility_engine_phase2_seed.sql`
+  registers the 4 products (company, Smart Hospital Platform, Logic Voice, Voice
+  Shield) with researched buyer queries and genuinely comparable competitors.
+  Logic Voice intentionally has no competitors seeded (no clearly contested
+  commercial category — see the comment in that file).
+- Workflow `n8n/visibility-gap-analysis.json` ("Visibility Gap Analysis").
+
+**How gap analysis works.** It does **not** call any external API — it reuses
+the `source_urls` and `snippet` that the Visibility Probe already stored on
+every `visibility_checks` row. For each active query it takes the latest check
+per platform, and for each competitor of that query's entity it checks whether
+the competitor's domain appears in that check's `source_urls` (or the snippet).
+It writes a `visibility_gaps` row when **the competitor appears AND our own
+entity was not mentioned** on that same row, with a human-readable `note`.
+
+**When it runs.** Daily at **06:30 IST** (cron `0 1 * * *`), i.e. 30 minutes
+after the Visibility Probe, so it reads fresh data. Change that cron on the
+Schedule node to adjust the offset. Each run first clears `visibility_gaps` and
+recomputes it, so re-runs never pile up duplicates. It needs only the Supabase
+credential — no API keys. View gaps in the **Visibility Gaps** section of
+`/admin/command-center/visibility`; the entity selector switches between all
+four products.
 
 ## Security Notes
 

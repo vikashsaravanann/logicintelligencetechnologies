@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Eye, Quote, AlertTriangle, ArrowLeft } from "lucide-react";
+import { Eye, Quote, AlertTriangle, ArrowLeft, Crosshair } from "lucide-react";
 import { requireCapabilityPage } from "@/lib/auth/session";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { formatIST } from "@/lib/format/datetime";
@@ -25,8 +25,23 @@ export const metadata: Metadata = {
 export const revalidate = 0;
 
 type PageProps = {
-  searchParams?: Promise<{ entity?: string }>;
+  searchParams?: Promise<{ entity?: string; gapPlatform?: string }>;
 };
+
+/** A gap row flattened from the embedded PostgREST select. */
+interface GapRow {
+  id: string;
+  platform: string;
+  note: string | null;
+  computed_at: string;
+  query_text: string;
+  competitor_name: string;
+}
+
+/** PostgREST embeds a to-one relation as an object, but types widen to arrays. */
+function one<T>(v: T | T[] | null | undefined): T | undefined {
+  return Array.isArray(v) ? v[0] : v ?? undefined;
+}
 
 export default async function VisibilityPage({ searchParams }: PageProps) {
   await requireCapabilityPage("seo.read", "/admin/command-center/visibility");
@@ -41,9 +56,10 @@ export default async function VisibilityPage({ searchParams }: PageProps) {
     .order("name", { ascending: true });
 
   const entities = (entitiesRes.data ?? []) as EntityOption[];
+  const companyEntity = entities.find((e) => e.domain === "logicintelligencetechnologies.in");
   const selfEntity = entities.find((e) => e.type === "self");
   const selected =
-    entities.find((e) => e.id === params.entity) ?? selfEntity ?? entities[0] ?? null;
+    entities.find((e) => e.id === params.entity) ?? companyEntity ?? selfEntity ?? entities[0] ?? null;
 
   // --- Active queries for the selected entity --------------------------------
   const queriesRes = selected
@@ -71,7 +87,38 @@ export default async function VisibilityPage({ searchParams }: PageProps) {
 
   const checks = (checksRes.data ?? []) as VisibilityCheckRow[];
 
-  const anyError = Boolean(entitiesRes.error || queriesRes.error || checksRes.error);
+  // --- Gaps for the selected entity (competitor cited/ranked where we aren't) -
+  const gapsRes = selected
+    ? await supabaseAdmin
+        .from("visibility_gaps")
+        .select(
+          "id, platform, note, computed_at, target_queries!inner(query_text, entity_id), competitors!inner(name)",
+        )
+        .eq("target_queries.entity_id", selected.id)
+        .order("computed_at", { ascending: false })
+        .limit(200)
+    : { data: [], error: null };
+
+  const gapRows: GapRow[] = (gapsRes.data ?? []).map((g: Record<string, unknown>) => {
+    const q = one(g.target_queries as { query_text?: string } | { query_text?: string }[]);
+    const c = one(g.competitors as { name?: string } | { name?: string }[]);
+    return {
+      id: String(g.id),
+      platform: String(g.platform),
+      note: (g.note as string | null) ?? null,
+      computed_at: String(g.computed_at),
+      query_text: q?.query_text ?? "—",
+      competitor_name: c?.name ?? "—",
+    };
+  });
+
+  const gapPlatforms = Array.from(new Set(gapRows.map((g) => g.platform))).sort();
+  const gapPlatform = params.gapPlatform;
+  const filteredGaps = gapPlatform ? gapRows.filter((g) => g.platform === gapPlatform) : gapRows;
+
+  const anyError = Boolean(
+    entitiesRes.error || queriesRes.error || checksRes.error || gapsRes.error,
+  );
 
   const scores = platformScores(checks, queryIds.length);
   const trend = trendSeries(checks, queryIds.length);
@@ -236,9 +283,115 @@ export default async function VisibilityPage({ searchParams }: PageProps) {
               </div>
             )}
           </div>
+
+          {/* Gaps — where a competitor is cited/ranked and we are not */}
+          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 shadow-2xs">
+            <div className="mb-4 flex flex-col gap-3 border-b border-[var(--lit-border-light,#DFE7EF)] pb-4 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)]">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-amber-500/10 text-amber-600">
+                  <Crosshair className="h-4 w-4" />
+                </span>
+                Visibility Gaps
+              </h2>
+              {gapPlatforms.length > 0 ? (
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <GapFilterPill
+                    entityId={selected.id}
+                    platform={undefined}
+                    active={!gapPlatform}
+                    label="All"
+                  />
+                  {gapPlatforms.map((p) => (
+                    <GapFilterPill
+                      key={p}
+                      entityId={selected.id}
+                      platform={p}
+                      active={gapPlatform === p}
+                      label={PLATFORM_LABELS[p as VisibilityPlatform] ?? p}
+                    />
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            {filteredGaps.length === 0 ? (
+              <p className="py-8 text-center text-xs font-medium text-[var(--lit-text-muted,#52677C)]">
+                No gaps found — or no competitor data yet.
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[720px] text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-[var(--lit-border-light,#DFE7EF)] text-[10px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
+                      <th className="py-2 pr-3">Query</th>
+                      <th className="px-3 py-2">Platform</th>
+                      <th className="px-3 py-2">Competitor</th>
+                      <th className="px-3 py-2">Note</th>
+                      <th className="px-3 py-2">Computed At</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--lit-border-light,#DFE7EF)]">
+                    {filteredGaps.map((g) => (
+                      <tr key={g.id} className="align-top hover:bg-[var(--lit-cloud,#F7F9FC)]">
+                        <td className="py-2.5 pr-3 font-medium text-[var(--lit-navy,#0B2545)]">
+                          {g.query_text}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2.5">
+                          <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-slate-700">
+                            <span
+                              className="h-2 w-2 rounded-full"
+                              style={{ backgroundColor: PLATFORM_COLORS[g.platform as VisibilityPlatform] ?? "#94a3b8" }}
+                              aria-hidden
+                            />
+                            {PLATFORM_LABELS[g.platform as VisibilityPlatform] ?? g.platform}
+                          </span>
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2.5 font-semibold text-rose-700">
+                          {g.competitor_name}
+                        </td>
+                        <td className="max-w-md px-3 py-2.5 text-[var(--lit-text-muted,#52677C)]">
+                          {g.note || "—"}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2.5 font-mono text-[11px] text-[var(--lit-text-muted,#52677C)]">
+                          {formatIST(g.computed_at, "datetime")}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>
+  );
+}
+
+function GapFilterPill({
+  entityId,
+  platform,
+  active,
+  label,
+}: {
+  entityId: string;
+  platform: string | undefined;
+  active: boolean;
+  label: string;
+}) {
+  const qs = new URLSearchParams({ entity: entityId });
+  if (platform) qs.set("gapPlatform", platform);
+  return (
+    <Link
+      href={`?${qs.toString()}`}
+      className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-colors ${
+        active
+          ? "border-[var(--lit-teal,#1FA9A2)] bg-[var(--lit-teal,#1FA9A2)]/10 text-[var(--lit-navy,#0B2545)]"
+          : "border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-text-muted,#52677C)] hover:border-slate-300"
+      }`}
+    >
+      {label}
+    </Link>
   );
 }
 

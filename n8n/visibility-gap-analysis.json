@@ -1,0 +1,233 @@
+{
+  "name": "Visibility Gap Analysis",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 1 * * *"
+            }
+          ]
+        }
+      },
+      "id": "vg-0001-0001-4001-8001-000000000001",
+      "name": "Schedule (06:30 IST, +30m after probe)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "visibility_gaps",
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "neq",
+              "keyValue": "00000000-0000-0000-0000-000000000000"
+            }
+          ]
+        }
+      },
+      "id": "vg-0002-0002-4002-8002-000000000002",
+      "name": "Clear previous gaps",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "",
+          "name": "Supabase LIT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "target_queries",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "active",
+              "condition": "eq",
+              "keyValue": "true"
+            }
+          ]
+        }
+      },
+      "id": "vg-0003-0003-4003-8003-000000000003",
+      "name": "Get active queries",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        700,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "",
+          "name": "Supabase LIT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "competitors",
+        "returnAll": true
+      },
+      "id": "vg-0004-0004-4004-8004-000000000004",
+      "name": "Get competitors",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        940,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "",
+          "name": "Supabase LIT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "visibility_checks",
+        "returnAll": true
+      },
+      "id": "vg-0005-0005-4005-8005-000000000005",
+      "name": "Get recent checks",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "",
+          "name": "Supabase LIT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// Run once for all items. Reads the three upstream Supabase fetches by name.\nfunction normDomain(d) {\n  if (!d) return '';\n  return String(d).toLowerCase().replace(/^https?:\\/\\//, '').replace(/^www\\./, '').replace(/\\/.*$/, '').trim();\n}\nfunction hostOf(url) {\n  try { return normDomain(new URL(url).host); } catch { return normDomain(url); }\n}\nfunction urlMatchesDomain(url, domain) {\n  if (!url || !domain) return false;\n  const h = hostOf(url);\n  return h === domain || h.endsWith('.' + domain);\n}\nfunction textIncludes(text, needle) {\n  if (!text || !needle) return false;\n  return String(text).toLowerCase().includes(String(needle).toLowerCase());\n}\n\nconst queries = $('Get active queries').all().map((i) => i.json || {});\nconst competitors = $('Get competitors').all().map((i) => i.json || {});\nconst checks = $('Get recent checks').all().map((i) => i.json || {});\n\n// competitors grouped by the entity they belong to\nconst compByEntity = {};\nfor (const c of competitors) {\n  if (!c.entity_id) continue;\n  (compByEntity[c.entity_id] = compByEntity[c.entity_id] || []).push(c);\n}\n\n// latest visibility_checks row per (query_id, platform)\nconst latest = {};\nfor (const ch of checks) {\n  const k = ch.query_id + '\\u0000' + ch.platform;\n  const prev = latest[k];\n  if (!prev || new Date(ch.run_at).getTime() > new Date(prev.run_at).getTime()) latest[k] = ch;\n}\n\nconst gaps = [];\nfor (const q of queries) {\n  const comps = compByEntity[q.entity_id] || [];\n  if (comps.length === 0) continue; // nothing to compare against\n  for (const key of Object.keys(latest)) {\n    const ch = latest[key];\n    if (ch.query_id !== q.id) continue;\n    // we only record a gap when WE are not mentioned on this row\n    if (ch.mentioned !== false) continue;\n    const urls = Array.isArray(ch.source_urls) ? ch.source_urls : [];\n    const snippet = ch.snippet || '';\n    for (const comp of comps) {\n      const dom = normDomain(comp.domain);\n      const inUrls = urls.some((u) => urlMatchesDomain(u, dom));\n      const inSnippet = textIncludes(snippet, dom) || textIncludes(snippet, comp.name);\n      if (!inUrls && !inSnippet) continue;\n      const where = inUrls ? 'cited in sources' : 'named in the answer';\n      gaps.push({\n        json: {\n          query_id: q.id,\n          platform: ch.platform,\n          competitor_id: comp.id,\n          note: comp.name + ' ' + where + ' for \"' + q.query_text + '\" on ' + ch.platform + '; we are not mentioned',\n        },\n      });\n    }\n  }\n}\n\nreturn gaps;\n"
+      },
+      "id": "vg-0006-0006-4006-8006-000000000006",
+      "name": "Compute gaps",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "visibility_gaps",
+        "dataToSend": "autoMapInputData"
+      },
+      "id": "vg-0007-0007-4007-8007-000000000007",
+      "name": "Insert gaps",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1660,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "",
+          "name": "Supabase LIT"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule (06:30 IST, +30m after probe)": {
+      "main": [
+        [
+          {
+            "node": "Clear previous gaps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear previous gaps": {
+      "main": [
+        [
+          {
+            "node": "Get active queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get active queries": {
+      "main": [
+        [
+          {
+            "node": "Get competitors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get competitors": {
+      "main": [
+        [
+          {
+            "node": "Get recent checks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get recent checks": {
+      "main": [
+        [
+          {
+            "node": "Compute gaps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute gaps": {
+      "main": [
+        [
+          {
+            "node": "Insert gaps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
