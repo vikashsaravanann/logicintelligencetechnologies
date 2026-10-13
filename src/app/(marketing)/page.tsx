@@ -16,17 +16,17 @@ import FreeDemoCTA from '@/features/leads/components/free-demo-cta';
 import { COMPANY } from '@/config/company';
 
 export const metadata: Metadata = {
-  title: 'Logic Intelligence Technologies | Enterprise AI & Healthcare',
+  title: 'Logic Intelligence Technologies | AI',
   description:
-    'Logic Intelligence Technologies develops enterprise AI products, smart hospital systems, and voice automation, including LIT Healthcare and Logic Voice.',
+    'Enterprise AI products, smart hospital systems, and autonomous voice engines.',
   openGraph: {
     type: 'website',
     locale: 'en_IN',
     url: 'https://www.logicintelligencetechnologies.in',
     siteName: COMPANY.legalName,
-    title: 'Logic Intelligence Technologies | Where Logic Meets Innovation',
+    title: 'Logic Intelligence Technologies | AI',
     description:
-      'Deterministic AI Platforms, Autonomous Voice Engines & Smart Hospital Infrastructure. LIT Healthcare · Logic Voice · Voice Shield.',
+      'Enterprise AI products, smart hospital systems, and autonomous voice engines.',
     images: [
       {
         url: 'https://www.logicintelligencetechnologies.in/assets/og-banner.jpg',
@@ -48,9 +48,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Logic Intelligence Technologies | Where Logic Meets Innovation',
+    title: 'Logic Intelligence Technologies | AI',
     description:
-      'Deterministic AI Platforms, Autonomous Voice Engines & Smart Hospital Infrastructure. LIT Healthcare · Logic Voice · Voice Shield.',
+      'Enterprise AI products, smart hospital systems, and autonomous voice engines.',
     images: ['https://www.logicintelligencetechnologies.in/assets/og-banner.jpg'],
   },
 };
