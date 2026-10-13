@@ -32,7 +32,7 @@ import ServiceCardAnimation from "@/components/services/service-card-animation";
 import CTASection from "@/components/ui/cta-section";
 
 export const metadata: Metadata = {
-  title: "Enterprise Engineering & AI Solutions | Logic Intelligence Technologies",
+  title: "Enterprise Engineering & AI | Logic Intelligence Technologies",
   description:
     "Comprehensive software engineering services: Full-Stack Web Development, Autonomous AI, Cloud Systems, Custom ERP, and Real-Time Systems.",
   openGraph: {

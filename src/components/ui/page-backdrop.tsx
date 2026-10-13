@@ -16,7 +16,7 @@ export default function PageBackdrop({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
-        alt=""
+        alt="Logic Intelligence Technologies Ambient Visual Backdrop"
         className="absolute inset-0 h-full w-full object-cover opacity-40"
         style={{ objectPosition: position }}
         decoding="async"

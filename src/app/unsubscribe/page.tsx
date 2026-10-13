@@ -45,7 +45,7 @@ export default async function UnsubscribePage({
             <span className="relative block w-9 h-9 rounded-xl overflow-hidden border border-[var(--lit-border-light,#DFE7EF)] bg-white shrink-0 shadow-2xs">
               <Image
                 src={COMPANY.logoIconPath}
-                alt=""
+                alt={`${COMPANY.displayName} Logo`}
                 width={36}
                 height={36}
                 className="w-full h-full object-cover"

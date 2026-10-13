@@ -210,7 +210,7 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
           {user.avatarUrl ? (
             <Image
               src={user.avatarUrl}
-              alt=""
+              alt="User profile avatar"
               width={36}
               height={36}
               className="rounded-full object-cover border border-[var(--lit-border-light)]"
@@ -275,7 +275,7 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
         {user.avatarUrl ? (
           <Image
             src={user.avatarUrl}
-            alt=""
+            alt="User profile avatar"
             width={20}
             height={20}
             className="rounded-full object-cover shrink-0"

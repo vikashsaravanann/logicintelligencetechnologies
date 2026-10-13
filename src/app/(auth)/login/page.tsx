@@ -306,7 +306,7 @@ export default function LoginPage() {
                 <span className="relative block w-10 h-10 rounded-xl overflow-hidden border border-white/20 bg-white shrink-0">
                   <Image
                     src={COMPANY.logoIconPath}
-                    alt=""
+                    alt={`${COMPANY.displayName} Logo`}
                     width={40}
                     height={40}
                     className="w-full h-full object-cover"

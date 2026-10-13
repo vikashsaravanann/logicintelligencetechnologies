@@ -85,7 +85,7 @@ export default async function OnboardPage({ searchParams }: Props) {
             <span className="relative block w-5 h-5 rounded-md overflow-hidden shrink-0">
               <Image
                 src={COMPANY.logoIconPath}
-                alt=""
+                alt={`${COMPANY.displayName} Logo`}
                 width={20}
                 height={20}
                 className="w-full h-full object-cover"

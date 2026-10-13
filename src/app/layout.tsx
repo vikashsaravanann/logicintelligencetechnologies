@@ -49,8 +49,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'Logic Intelligence Technologies | AI Products & Healthcare Technology',
-    template: '%s | Logic Intelligence Technologies',
+    default: 'Logic Intelligence Technologies | Enterprise AI & Healthcare',
+    template: '%s',
   },
   description:
     'Logic Intelligence Technologies builds AI-driven products, intelligent automation, and connected digital platforms for modern organizations. Creators of LIT Healthcare and Logic Voice — based in Coimbatore, Tamil Nadu, India.',
@@ -125,6 +125,9 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
   verification: {
     google: '37m02DgA2U-ZJ40jbzGhSw3l4UluW2B-Y_0g5b069K8',
+    other: {
+      'naver-site-verification': '87bb7556d3074f2fdc46420853dc7856',
+    },
   },
 };
 
@@ -137,6 +140,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${poppins.variable} ${lora.variable} ${jetbrainsMono.variable} overflow-x-hidden w-full max-w-[100vw]`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="naver-site-verification" content="87bb7556d3074f2fdc46420853dc7856" />
         <link rel="icon" href="/icon-48.png" type="image/png" sizes="48x48" />
         <link rel="icon" href="/assets/logo-icon.jpg" type="image/jpeg" />
         <link rel="apple-touch-icon" href="/apple-icon.png" sizes="180x180" />

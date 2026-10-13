@@ -535,7 +535,7 @@ export default function AiChatPage() {
   const SenderFace = () =>
     userAvatar ? (
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={userAvatar} alt="" className="w-8 h-8 rounded-full object-cover border border-white/20 shrink-0" />
+      <img src={userAvatar} alt="User Profile Avatar" className="w-8 h-8 rounded-full object-cover border border-white/20 shrink-0" />
     ) : (
       <div className="w-8 h-8 rounded-full bg-[#E8651C] text-white text-xs font-bold grid place-items-center shrink-0" title={userEmail || "Guest"}>{initials(userEmail)}</div>
     );
@@ -706,7 +706,7 @@ export default function AiChatPage() {
                 >
                   {userAvatar ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={userAvatar} alt="" className="w-8 h-8 rounded-full object-cover border border-[var(--lit-border-light,#DFE7EF)] hover:ring-2 hover:ring-[var(--lit-teal,#1FA9A2)]/50" />
+                    <img src={userAvatar} alt="User Profile Avatar" className="w-8 h-8 rounded-full object-cover border border-[var(--lit-border-light,#DFE7EF)] hover:ring-2 hover:ring-[var(--lit-teal,#1FA9A2)]/50" />
                   ) : (
                     <span className="w-8 h-8 rounded-full bg-[var(--lit-navy,#0B2545)] text-white text-[11px] font-bold grid place-items-center border border-[var(--lit-border-light,#DFE7EF)] hover:ring-2 hover:ring-[var(--lit-teal,#1FA9A2)]/50">{initials(userEmail)}</span>
                   )}
@@ -798,11 +798,11 @@ export default function AiChatPage() {
                     )}
                     {m.role === "user" && m.image && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={m.image} alt="" className="mt-2 max-h-48 w-auto rounded-xl border border-white/20" />
+                      <img src={m.image} alt="User uploaded attachment" className="mt-2 max-h-48 w-auto rounded-xl border border-white/20" />
                     )}
                     {m.role === "user" && !m.image && /https?:\/\/\S+\.(png|jpe?g|gif|webp)/i.test(m.content) && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={m.content.match(/https?:\/\/\S+\.(png|jpe?g|gif|webp)/i)?.[0]} alt="" className="mt-2 max-h-48 w-auto rounded-xl" />
+                      <img src={m.content.match(/https?:\/\/\S+\.(png|jpe?g|gif|webp)/i)?.[0]} alt="Message image preview" className="mt-2 max-h-48 w-auto rounded-xl" />
                     )}
                     {m.error && <button type="button" className="mt-2 text-xs inline-flex items-center gap-1 text-red-600 hover:text-red-800" onClick={() => void send(lastUser?.content)}><RefreshCw className="w-3 h-3" /> Retry</button>}
                     {m.role === "assistant" && m.content && !m.error && (
@@ -868,7 +868,7 @@ export default function AiChatPage() {
                   <div className="mb-1.5 flex items-center gap-2 border border-[var(--lit-border-light,#DFE7EF)] bg-white rounded-lg px-2 py-1 shadow-2xs">
                     {attach.kind === "image" ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={attach.data} alt="" className="h-8 w-8 rounded-md object-cover border border-[var(--lit-border-light,#DFE7EF)]" />
+                      <img src={attach.data} alt="Attached image thumbnail" className="h-8 w-8 rounded-md object-cover border border-[var(--lit-border-light,#DFE7EF)]" />
                     ) : (
                       <span className="grid h-8 w-8 place-items-center rounded-md bg-[var(--lit-light-blue,#E7F3FF)] text-[var(--lit-blue,#1565C0)] text-[9px] font-bold">PDF</span>
                     )}
