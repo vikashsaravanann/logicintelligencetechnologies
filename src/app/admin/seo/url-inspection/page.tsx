@@ -234,7 +234,7 @@ export default async function UrlInspectionPage({
             <TruthfulStatusBadge
               status={
                 inspectionOutcome.ok
-                  ? inspectionOutcome.source === "DIRECT_EDGE_INSPECTION"
+                  ? inspectionOutcome.result?.source === "DIRECT_EDGE_INSPECTION"
                     ? "Active"
                     : "Success"
                   : "Error"
@@ -260,7 +260,7 @@ export default async function UrlInspectionPage({
             </div>
           ) : (
             <div className="space-y-4">
-              {inspectionOutcome.source === "DIRECT_EDGE_INSPECTION" && (
+              {inspectionOutcome.result?.source === "DIRECT_EDGE_INSPECTION" && (
                 <div className="p-4 rounded-2xl border border-teal-200 bg-teal-50/80 text-teal-950 shadow-2xs space-y-1.5">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
@@ -276,9 +276,9 @@ export default async function UrlInspectionPage({
                   <p className="text-xs text-teal-900 leading-relaxed">
                     Direct edge inspection verified live HTTP response, canonical headers, robots directives, and site verification tags for this public route. Google Search Console API credentials remain unconfigured (or pending service account RSA delegation); no fake Search Console data is injected.
                   </p>
-                  {inspectionOutcome.gscStatus?.reason && (
+                  {inspectionOutcome.result?.gscStatus?.reason && (
                     <p className="text-[11px] font-mono text-teal-800/90 pt-0.5">
-                      GSC Status Note: {inspectionOutcome.gscStatus.reason}
+                      GSC Status Note: {inspectionOutcome.result.gscStatus.reason}
                     </p>
                   )}
                 </div>
@@ -319,7 +319,7 @@ export default async function UrlInspectionPage({
                     </div>
                     <div className="flex justify-between py-1 border-b border-slate-200">
                       <span className="text-slate-600">Page Fetch:</span>
-                      <span className="font-mono text-slate-800">{inspectionOutcome.result?.pageFetchState || "SUCCESSFUL"}</span>
+                      <span className="font-mono text-slate-800">{inspectionOutcome.result?.edgeDetails?.httpStatusText || "SUCCESSFUL"}</span>
                     </div>
                     <div className="flex justify-between py-1">
                       <span className="text-slate-600">Last Checked / Crawl:</span>
