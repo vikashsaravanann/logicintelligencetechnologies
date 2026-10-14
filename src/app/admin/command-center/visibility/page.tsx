@@ -134,7 +134,7 @@ export default async function VisibilityPage({ searchParams }: PageProps) {
     queryIds.length > 0
       ? await supabaseAdmin
           .from("visibility_checks")
-          .select("id, query_id, platform, run_at, mentioned, cited, rank, snippet")
+          .select("id, query_id, platform, run_at, mentioned, cited, rank, snippet, ok")
           .in("query_id", queryIds)
           .order("run_at", { ascending: false })
           .limit(5000)
@@ -287,8 +287,8 @@ export default async function VisibilityPage({ searchParams }: PageProps) {
       mentionsRes.error,
   );
 
-  const scores = platformScores(checks, queryIds.length);
-  const trend = trendSeries(checks, queryIds.length);
+  const scores = platformScores(checks);
+  const trend = trendSeries(checks);
   const latestChecks = checks.slice(0, 50);
 
   return (

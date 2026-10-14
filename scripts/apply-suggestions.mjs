@@ -19,7 +19,9 @@
  *
  * Usage:
  *   node scripts/apply-suggestions.mjs --entity voiceshield.logicintelligencetechnologies.in [--out .visibility-apply]
- *   node scripts/apply-suggestions.mjs --entity <domain|uuid|name> --mark-applied --pr https://github.com/owner/repo/pull/123
+ *   node scripts/apply-suggestions.mjs --entity <domain|uuid|name> --mark-applied \
+ *        --suggestion <uuid>[,<uuid>...] --pr https://github.com/owner/repo/pull/123
+ *   (mark-applied transitions ONLY the listed approved suggestions, and only after the PR is merged.)
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -85,21 +87,46 @@ const approved = await rest(
 
 if (arg("mark-applied")) {
   const pr = arg("pr");
-  if (!pr || pr === true) {
-    console.error("Pass --pr <url> with --mark-applied.");
+  if (!pr || pr === true || !/^https:\/\/github\.com\/[^/]+\/[^/]+\/pull\/\d+$/.test(String(pr))) {
+    console.error("Pass a specific merged PR with --pr https://github.com/<owner>/<repo>/pull/<n>.");
     process.exit(1);
   }
-  if (!approved.length) {
-    console.log("No approved suggestions to mark applied.");
-    process.exit(0);
+  // Require the exact suggestion id(s) that this PR actually applied — never
+  // blanket-mark every approved row for the entity. Each suggestion gets the
+  // PR that shipped it, so pr_url is a true suggestion->PR relationship.
+  const idsArg = arg("suggestion") || arg("suggestions");
+  if (!idsArg || idsArg === true) {
+    console.error(
+      "Pass --suggestion <uuid>[,<uuid>...] listing exactly the approved suggestions this PR applied.\n" +
+        "Approved suggestions available (id — kind — page):",
+    );
+    for (const s of approved) {
+      console.error(`  ${s.id}  ${s.kind}  ${s.content_assets?.url ?? ""}`);
+    }
+    process.exit(1);
   }
-  const ids = approved.map((s) => s.id);
-  await rest(`content_suggestions?id=in.(${ids.join(",")})`, {
-    method: "PATCH",
-    headers: { Prefer: "return=minimal" },
-    body: JSON.stringify({ status: "applied", pr_url: pr }),
-  });
-  console.log(`Marked ${ids.length} suggestion(s) applied; pr_url=${pr}`);
+  const wanted = String(idsArg)
+    .split(",")
+    .map((x) => x.trim())
+    .filter(Boolean);
+  const approvedIds = new Set(approved.map((s) => s.id));
+  const bad = wanted.filter((id) => !approvedIds.has(id));
+  if (bad.length) {
+    console.error(`These ids are not approved suggestions for this entity: ${bad.join(", ")}`);
+    process.exit(1);
+  }
+  // Only transition approved -> applied for exactly these ids; return the rows
+  // so we can confirm the affected count.
+  const updated = await rest(
+    `content_suggestions?id=in.(${wanted.join(",")})&status=eq.approved`,
+    {
+      method: "PATCH",
+      headers: { Prefer: "return=representation" },
+      body: JSON.stringify({ status: "applied", pr_url: pr }),
+    },
+  );
+  console.log(`Marked ${(updated || []).length} of ${wanted.length} requested suggestion(s) applied; pr_url=${pr}`);
+  console.log("Reminder: only run this after the PR is actually merged.");
   process.exit(0);
 }
 
