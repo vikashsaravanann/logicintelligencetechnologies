@@ -289,9 +289,13 @@ export default function Footer() {
              System status: Operational
           </Link>
 
-          <p className="text-[10px] sm:text-xs text-[#B5BECC]/70 text-center md:text-right uppercase tracking-widest leading-relaxed">
-            © {new Date().getFullYear()} {COMPANY.legalName}. ALL RIGHTS RESERVED.
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-[10px] sm:text-xs text-[#B5BECC]/70 text-center md:text-right uppercase tracking-widest leading-relaxed">
+            {COMPANY.registration?.msmeUdyamNumber ? (
+              <span>MSME: {COMPANY.registration.msmeUdyamNumber}</span>
+            ) : null}
+            <span className="hidden sm:inline">•</span>
+            <span>© {new Date().getFullYear()} {COMPANY.legalName}. ALL RIGHTS RESERVED.</span>
+          </div>
         </div>
 
       </div>
