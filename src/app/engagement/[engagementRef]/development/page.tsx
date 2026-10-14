@@ -1,6 +1,12 @@
 import React from 'react';
-import { getEngagementByRef, getStageByKey } from '@/lib/engagements/db';
+import { notFound } from 'next/navigation';
+import {
+  getEngagementByRef,
+  getStageByKey,
+  getEngagementDocumentLinks,
+} from '@/lib/engagements/db';
 import StageHeader from '../components/StageHeader';
+import LockedStageCard from '../components/LockedStageCard';
 import DevelopmentStageClient from './DevelopmentStageClient';
 
 interface DevelopmentPageProps {
@@ -10,7 +16,19 @@ interface DevelopmentPageProps {
 export default async function DevelopmentStagePage({ params }: DevelopmentPageProps) {
   const { engagementRef } = await params;
   const engagement = await getEngagementByRef(engagementRef);
-  const stage = await getStageByKey(engagement?.id || 'sample', 'development');
+  if (!engagement) notFound();
+
+  const stage = await getStageByKey(engagement.id, 'development');
+  if (stage?.status === 'locked') {
+    return (
+      <div className="space-y-6">
+        <StageHeader engagementRef={engagementRef} stageKey="development" status="locked" />
+        <LockedStageCard engagementRef={engagementRef} stageKey="development" />
+      </div>
+    );
+  }
+
+  const docs = await getEngagementDocumentLinks(engagement.id, 'development');
 
   return (
     <div className="space-y-6">
@@ -22,7 +40,10 @@ export default async function DevelopmentStagePage({ params }: DevelopmentPagePr
 
       <DevelopmentStageClient
         engagementRef={engagementRef}
-        companyName={engagement?.company_name || 'Client Organization'}
+        companyName={engagement.company_name}
+        initialStatus={stage?.status}
+        initialData={stage?.snapshot}
+        document={docs[0]}
       />
     </div>
   );

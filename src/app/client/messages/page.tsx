@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import BackButton from "@/components/navigation/back-button";
 import { getPortalContext } from "@/lib/client-portal/data";
+import { listClientMessages } from "@/lib/client-portal/messages";
 import ClientMessagesView from "./client-messages-view";
 
 export const metadata: Metadata = {
@@ -12,6 +13,7 @@ export const revalidate = 0;
 
 export default async function ClientMessagesPage() {
   const portal = await getPortalContext("/client/messages");
+  const thread = await listClientMessages(portal.user.email || "");
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -39,7 +41,10 @@ export default async function ClientMessagesPage() {
       </div>
 
       {/* Interactive Chat Stream */}
-      <ClientMessagesView userEmail={portal.user.email || "Client Representative"} />
+      <ClientMessagesView
+        userEmail={portal.user.email || "Client Representative"}
+        initialMessages={thread.messages}
+      />
     </div>
   );
 }

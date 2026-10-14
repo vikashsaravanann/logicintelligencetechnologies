@@ -9,6 +9,9 @@ interface DeliveryAcceptanceStageClientProps {
   companyName: string;
   contactName: string;
   contactEmail: string;
+  initialStatus?: string;
+  initialData?: Record<string, any>;
+  document?: any;
 }
 
 export default function DeliveryAcceptanceStageClient({
@@ -16,14 +19,22 @@ export default function DeliveryAcceptanceStageClient({
   companyName,
   contactName,
   contactEmail,
+  initialStatus = 'available',
+  initialData = {},
+  document,
 }: DeliveryAcceptanceStageClientProps) {
-  const [signerName, setSignerName] = useState(contactName);
-  const [signerRole, setSignerRole] = useState('Authorized Client Signatory');
-  const [signerEmail, setSignerEmail] = useState(contactEmail);
-  const [hasConfirmedDelivery, setHasConfirmedDelivery] = useState(false);
+  const [signerName, setSignerName] = useState(initialData?.signerName || contactName);
+  const [signerRole, setSignerRole] = useState(initialData?.signerRole || 'Authorized Client Signatory');
+  const [signerEmail, setSignerEmail] = useState(initialData?.signerEmail || contactEmail);
+  const [hasConfirmedDelivery, setHasConfirmedDelivery] = useState(
+    ['accepted', 'completed'].includes(initialStatus)
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSigned, setIsSigned] = useState(false);
-  const [signatureHash, setSignatureHash] = useState('');
+  const [isSigned, setIsSigned] = useState(
+    ['accepted', 'completed'].includes(initialStatus)
+  );
+  const [auditHash, setAuditHash] = useState<string | null>(initialData?.last_audit_hash || null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const acceptanceCriteria = [
     {
@@ -48,29 +59,63 @@ export default function DeliveryAcceptanceStageClient({
     },
   ];
 
-  const handleSignAcceptance = (e: React.FormEvent) => {
+  const handleSignAcceptance = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!hasConfirmedDelivery || !signerName) return;
+    if (!hasConfirmedDelivery || !signerName.trim() || !signerEmail.trim()) {
+      setErrorMessage('Please confirm delivery assent and provide signatory name and email.');
+      return;
+    }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch(`/api/engagements/${engagementRef}/stages/delivery-acceptance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'accept_delivery',
+          payload: {
+            signerName: signerName.trim(),
+            signerRole: signerRole.trim(),
+            signerEmail: signerEmail.trim().toLowerCase(),
+            companyName,
+            confirmedAt: new Date().toISOString(),
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to record formal delivery acceptance.');
+      }
+
+      setAuditHash(data.auditHash);
       setIsSigned(true);
-      setSignatureHash(`SIG-LIT-${Math.random().toString(36).substring(2, 10).toUpperCase()}-VERIFIED`);
-    }, 700);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Error occurred while executing delivery sign-off.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       {/* Official Master PDF Card */}
       <StageDocumentCard
-        documentRef="LIT-05-Delivery-Acceptance-Report.pdf"
-        title="LIT-05 Delivery & Acceptance Report"
+        documentRef={document?.master_id ? `${document.master_id}-Delivery-Acceptance-Report.pdf` : 'LIT-05-Delivery-Acceptance-Report.pdf'}
+        title={document?.document_title || 'LIT-05 Delivery & Acceptance Report'}
         description="Formal engineering handover and acceptance report confirming deliverable completion, verification proofs, and commencement of warranty period."
-        documentMasterPath="/assets/docs/masters/LIT-05-Delivery-Acceptance-Report.pdf"
-        version="v2.0 (Official Delivery Sign-off)"
+        documentMasterPath={document?.file_url || '/assets/docs/masters/LIT-05-Delivery-Acceptance-Report.pdf'}
+        version={document?.version_label || 'v2.0 (Official Delivery Sign-off)'}
         status="active"
       />
+
+      {errorMessage && (
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs">
+          {errorMessage}
+        </div>
+      )}
 
       {/* Acceptance Criteria Table */}
       <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs space-y-4">
@@ -113,7 +158,11 @@ export default function DeliveryAcceptanceStageClient({
             </h3>
             <p className="text-xs text-emerald-700 max-w-lg mx-auto mt-1 leading-relaxed">
               Signed by <strong>{signerName}</strong> ({signerRole}) for {companyName}. 
-              Digital verification hash: <code className="font-mono bg-emerald-100 px-1.5 py-0.5 rounded text-[11px]">{signatureHash}</code>.
+              {auditHash && (
+                <span className="block mt-1">
+                  Cryptographic Audit Digest: <code className="font-mono bg-emerald-100 px-1.5 py-0.5 rounded text-[11px] text-emerald-900 font-bold">{auditHash}</code>
+                </span>
+              )}
             </p>
           </div>
           <div className="pt-2">

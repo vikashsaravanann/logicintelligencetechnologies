@@ -6,24 +6,67 @@ import Link from 'next/link';
 interface DiscoveryStageClientProps {
   engagementRef: string;
   companyName: string;
+  initialStatus?: string;
+  initialData?: Record<string, any>;
 }
 
-export default function DiscoveryStageClient({ engagementRef, companyName }: DiscoveryStageClientProps) {
-  const [meetingDate, setMeetingDate] = useState('2026-10-20');
-  const [meetingTime, setMeetingTime] = useState('14:30');
-  const [technicalAnswers, setTechnicalAnswers] = useState({
-    cloudProvider: 'GCP (Google Cloud Platform) + Vercel Enterprise',
-    databasePreference: 'Supabase PostgreSQL + pgvector (Managed)',
-    complianceReqs: 'HIPAA compliant PHI data isolation, MSME statutory alignment',
-    ehrIntegrations: 'FHIR API / HL7 standard endpoints for hospital lab and pharmacy sync',
-    aiRequirements: 'Groq LPU high-throughput inference with local RAG embeddings',
-  });
-  const [customNote, setCustomNote] = useState('');
-  const [isSaved, setIsSaved] = useState(false);
+export default function DiscoveryStageClient({
+  engagementRef,
+  companyName,
+  initialStatus = 'available',
+  initialData = {},
+}: DiscoveryStageClientProps) {
+  const [meetingDate, setMeetingDate] = useState(initialData?.meetingDate || '2026-10-20');
+  const [meetingTime, setMeetingTime] = useState(initialData?.meetingTime || '14:30');
+  const [technicalAnswers, setTechnicalAnswers] = useState(
+    initialData?.technicalAnswers || {
+      cloudProvider: 'GCP (Google Cloud Platform) + Vercel Enterprise',
+      databasePreference: 'Supabase PostgreSQL + pgvector (Managed)',
+      complianceReqs: 'HIPAA compliant PHI data isolation, MSME statutory alignment',
+      ehrIntegrations: 'FHIR API / HL7 standard endpoints for hospital lab and pharmacy sync',
+      aiRequirements: 'Groq LPU high-throughput inference with local RAG embeddings',
+    }
+  );
+  const [customNote, setCustomNote] = useState(initialData?.customNote || '');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSaved, setIsSaved] = useState(['completed', 'under_review', 'approved'].includes(initialStatus));
+  const [auditHash, setAuditHash] = useState<string | null>(initialData?.last_audit_hash || null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaved(true);
+    setIsSubmitting(true);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch(`/api/engagements/${engagementRef}/stages/discovery`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'acknowledge_discovery',
+          payload: {
+            meetingDate,
+            meetingTime,
+            customNote,
+            technicalAnswers,
+            acknowledgedAt: new Date().toISOString(),
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to record discovery acknowledgment');
+      }
+
+      setIsSaved(true);
+      setAuditHash(data.auditHash);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error submitting discovery notes';
+      setErrorMessage(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -80,18 +123,38 @@ export default function DiscoveryStageClient({ engagementRef, companyName }: Dis
       <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs">
         <h3 className="text-sm font-bold text-[#0B2545] mb-4">Submit Technical Clarification or Meeting Availability</h3>
 
+        {errorMessage && (
+          <div className="mb-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-medium">
+            {errorMessage}
+          </div>
+        )}
+
         {isSaved ? (
-          <div className="bg-[#ECFDF5] border border-[#A7F3D0] p-4 rounded-xl text-xs text-[#065F46] space-y-2">
-            <p className="font-semibold">✓ Clarifications Logged Successfully</p>
+          <div className="bg-[#ECFDF5] border border-[#A7F3D0] p-5 rounded-xl text-xs text-[#065F46] space-y-3">
+            <p className="font-semibold text-sm">✓ Clarifications & Technical Baseline Formally Acknowledged</p>
             <p>
-              Your notes and meeting slot have been recorded. Technical lead will incorporate these into Stage 3 Commercial Proposal.
+              Your notes and preferred meeting slot have been logged. Stage 03 Commercial Proposal is ready for review.
             </p>
-            <Link
-              href={`/engagement/${engagementRef}/proposal`}
-              className="inline-block mt-2 bg-[#065F46] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#044e39]"
-            >
-              Proceed to Stage 3 Commercial Proposal →
-            </Link>
+            {auditHash && (
+              <p className="font-mono text-[11px] text-slate-600 bg-white/70 p-2 rounded border border-emerald-200">
+                Audit Digest: {auditHash}
+              </p>
+            )}
+            <div className="pt-2 flex items-center gap-3">
+              <Link
+                href={`/engagement/${engagementRef}/proposal`}
+                className="inline-block bg-[#065F46] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#044e39] transition-colors"
+              >
+                Proceed to Stage 3 Commercial Proposal →
+              </Link>
+              <button
+                type="button"
+                onClick={() => setIsSaved(false)}
+                className="text-xs text-slate-600 hover:text-slate-900 underline"
+              >
+                Edit Notes
+              </button>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSave} className="space-y-4 text-xs">
@@ -102,7 +165,7 @@ export default function DiscoveryStageClient({ engagementRef, companyName }: Dis
                   type="date"
                   value={meetingDate}
                   onChange={(e) => setMeetingDate(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-[#1565C0] outline-none"
                 />
               </div>
               <div>
@@ -111,7 +174,7 @@ export default function DiscoveryStageClient({ engagementRef, companyName }: Dis
                   type="time"
                   value={meetingTime}
                   onChange={(e) => setMeetingTime(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-[#1565C0] outline-none"
                 />
               </div>
             </div>
@@ -132,9 +195,10 @@ export default function DiscoveryStageClient({ engagementRef, companyName }: Dis
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
                 type="submit"
-                className="bg-[#0B2545] hover:bg-[#1565C0] text-white px-5 py-2.5 rounded-xl font-semibold shadow-xs transition-colors"
+                disabled={isSubmitting}
+                className="bg-[#0B2545] hover:bg-[#1565C0] text-white px-5 py-2.5 rounded-xl font-semibold shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
               >
-                Save & Acknowledge Discovery Baseline →
+                {isSubmitting ? 'Saving Baseline...' : 'Save & Acknowledge Discovery Baseline →'}
               </button>
             </div>
           </form>

@@ -7,35 +7,75 @@ import StageDocumentCard from '../components/StageDocumentCard';
 interface TechnicalSpecStageClientProps {
   engagementRef: string;
   companyName: string;
+  initialStatus?: string;
+  initialData?: Record<string, any>;
+  document?: any;
 }
 
 export default function TechnicalSpecStageClient({
   engagementRef,
   companyName,
+  initialStatus = 'available',
+  initialData = {},
+  document,
 }: TechnicalSpecStageClientProps) {
-  const [hasConfirmedArchitecture, setHasConfirmedArchitecture] = useState(false);
+  const [hasConfirmedArchitecture, setHasConfirmedArchitecture] = useState(
+    ['approved', 'completed'].includes(initialStatus)
+  );
   const [activeTab, setActiveTab] = useState<'architecture' | 'security' | 'api' | 'database'>('architecture');
   const [isApproving, setIsApproving] = useState(false);
+  const [auditHash, setAuditHash] = useState<string | null>(initialData?.last_audit_hash || null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleApproveSpec = () => {
+  const handleApproveSpec = async () => {
     setIsApproving(true);
-    setTimeout(() => {
-      setIsApproving(false);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch(`/api/engagements/${engagementRef}/stages/technical-spec`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'approve_spec',
+          payload: {
+            specificationVersion: 'v3.1 (Approved Engineering Baseline)',
+            approvedByCompany: companyName,
+            approvedAt: new Date().toISOString(),
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to record architecture approval.');
+      }
+
+      setAuditHash(data.auditHash);
       setHasConfirmedArchitecture(true);
-    }, 700);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Network error occurred while confirming architecture.');
+    } finally {
+      setIsApproving(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       {/* Official Master PDF Card */}
       <StageDocumentCard
-        documentRef="LIT-04-Technical-Specification.pdf"
-        title="LIT-04 Technical Specification Blueprint"
+        documentRef={document?.master_id ? `${document.master_id}-Technical-Specification.pdf` : 'LIT-04-Technical-Specification.pdf'}
+        title={document?.document_title || 'LIT-04 Technical Specification Blueprint'}
         description="Authoritative systems engineering specification detailing component topology, API schemas, PostgreSQL data models, security parameters, and deployment gates."
-        documentMasterPath="/assets/docs/masters/LIT-04-Technical-Specification.pdf"
-        version="v3.1 (Approved Engineering Baseline)"
+        documentMasterPath={document?.file_url || '/assets/docs/masters/LIT-04-Technical-Specification.pdf'}
+        version={document?.version_label || 'v3.1 (Approved Engineering Baseline)'}
         status="active"
       />
+
+      {errorMessage && (
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs">
+          {errorMessage}
+        </div>
+      )}
 
       {/* Interactive Blueprint Viewer */}
       <div className="bg-white rounded-2xl border border-[#DFE7EF] overflow-hidden shadow-xs">
@@ -209,9 +249,9 @@ export default function TechnicalSpecStageClient({
                     </tr>
                     <tr>
                       <td className="p-2.5 text-emerald-600 font-bold">POST</td>
-                      <td className="p-2.5">/api/engagements/payment-report</td>
+                      <td className="p-2.5">/api/engagements/[ref]/stages/[stageKey]</td>
                       <td className="p-2.5 text-slate-500">Client / Write</td>
-                      <td className="p-2.5 text-slate-700">Submits manual UPI UTR and billing details</td>
+                      <td className="p-2.5 text-slate-700">Submits verified stage action and records audit hash</td>
                     </tr>
                     <tr>
                       <td className="p-2.5 text-purple-600 font-bold">PATCH</td>
@@ -270,13 +310,20 @@ export default function TechnicalSpecStageClient({
           </Link>
 
           {hasConfirmedArchitecture ? (
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1.5">
-                <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Architecture Baseline Confirmed
-              </span>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <div className="space-y-0.5">
+                <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1.5">
+                  <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Architecture Baseline Confirmed
+                </span>
+                {auditHash && (
+                  <div className="font-mono text-[10px] text-slate-500">
+                    Audit SHA-256: <span className="text-[#0B2545] font-bold">{auditHash.slice(0, 16)}...</span>
+                  </div>
+                )}
+              </div>
               <Link
                 href={`/engagement/${engagementRef}/development`}
                 className="px-4 py-2 bg-[#1565C0] text-white text-xs font-semibold rounded-lg hover:bg-[#0B2545] transition-colors shadow-xs"

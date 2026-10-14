@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
 import { getEngagementByRef, getEngagementStages } from '@/lib/engagements/db';
 import { CANONICAL_13_STAGES, ORDERED_STAGE_KEYS } from '@/lib/engagements/types';
 import IdentityCorrectionButton from './components/IdentityCorrectionButton';
@@ -22,7 +23,12 @@ interface EngagementLayoutProps {
 export default async function EngagementLayout({ children, params }: EngagementLayoutProps) {
   const { engagementRef } = await params;
   const engagement = await getEngagementByRef(engagementRef);
-  const stages = await getEngagementStages(engagement?.id || 'sample');
+
+  if (!engagement) {
+    notFound();
+  }
+
+  const stages = await getEngagementStages(engagement.id);
 
   const completedCount = stages.filter((s) => ['completed', 'signed', 'verified', 'paid', 'accepted'].includes(s.status)).length;
   const progressPercent = Math.round((completedCount / 13) * 100);

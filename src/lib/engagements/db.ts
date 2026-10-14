@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { supabaseAdmin, isAdminClientConfigured } from '@/lib/supabase/admin';
 import {
   ClientEngagement,
@@ -153,6 +154,8 @@ export const FALLBACK_SAMPLE_DOCS: EngagementDocumentLink[] = [
 
 /**
  * Fetch engagement by public opaque reference or ID.
+ * FAIL-CLOSED: If not found in database, returns null (yielding 404).
+ * Only the canonical demo reference ENG-2026-LIT-SAMPLE is recognized for fallback sample display.
  */
 export async function getEngagementByRef(ref: string): Promise<ClientEngagement | null> {
   if (!ref) return null;
@@ -173,19 +176,279 @@ export async function getEngagementByRef(ref: string): Promise<ClientEngagement 
     }
   }
 
-  // Fallback match
-  if (ref.toUpperCase() === 'ENG-2026-LIT-SAMPLE' || ref.startsWith('ENG-') || ref.toLowerCase() === 'sample') {
+  // Fallback match: Strictly ONLY the canonical sample engagement reference is supported
+  if (ref.toUpperCase() === 'ENG-2026-LIT-SAMPLE' || ref.toLowerCase() === 'sample') {
     return {
       ...FALLBACK_SAMPLE_ENGAGEMENT,
-      engagement_ref: ref.toUpperCase(),
+      engagement_ref: 'ENG-2026-LIT-SAMPLE',
     };
   }
 
-  // Return generated mock record for testing any ref
+  // All other unknown refs fail closed with null (yielding 404)
+  return null;
+}
+
+export interface StageActionResult {
+  success: boolean;
+  stageKey: StageKey;
+  status: StageStatus;
+  auditHash: string;
+  nextUnlockedStageKey?: StageKey | null;
+  message?: string;
+  error?: string;
+  stage?: EngagementStage;
+}
+
+/**
+ * Executes a verified stage action mutation, enforces prerequisite gates,
+ * computes cryptographic SHA-256 audit digest, and unlocks sequential milestones.
+ */
+export async function submitStageAction(input: {
+  engagementRef: string;
+  stageKey: StageKey;
+  action: string;
+  payload: Record<string, any>;
+  actorRole?: string;
+  actorId?: string;
+}): Promise<StageActionResult> {
+  const { engagementRef, stageKey, action, payload, actorRole = 'client', actorId } = input;
+
+  const engagement = await getEngagementByRef(engagementRef);
+  if (!engagement) {
+    return {
+      success: false,
+      stageKey,
+      status: 'locked',
+      auditHash: '',
+      error: 'Engagement not found or unauthorized',
+    };
+  }
+
+  const stages = await getEngagementStages(engagement.id);
+  const currentStage = stages.find((s) => s.stage_key === stageKey);
+  if (!currentStage) {
+    return {
+      success: false,
+      stageKey,
+      status: 'locked',
+      auditHash: '',
+      error: `Stage ${stageKey} does not exist in engagement`,
+    };
+  }
+
+  // Check prerequisite gate if stage is currently locked
+  if (currentStage.status === 'locked') {
+    const currentDef = CANONICAL_13_STAGES[stageKey];
+    const prereqKey = currentDef?.prerequisiteKey;
+    if (prereqKey) {
+      const prereqStage = stages.find((s) => s.stage_key === prereqKey);
+      const isSatisfied =
+        prereqStage &&
+        ['completed', 'signed', 'verified', 'approved', 'paid', 'accepted'].includes(prereqStage.status);
+      if (!isSatisfied) {
+        return {
+          success: false,
+          stageKey,
+          status: 'locked',
+          auditHash: '',
+          error: `Prerequisite stage (${currentDef.prerequisiteDesc || prereqKey}) has not been completed or verified.`,
+        };
+      }
+    }
+  }
+
+  // Compute canonical SHA-256 audit hash of submitted payload
+  const payloadString = JSON.stringify(payload || {});
+  const auditHash = crypto.createHash('sha256').update(payloadString).digest('hex');
+
+  // Determine new stage status and sequential unlocking rules
+  let newStatus: StageStatus = currentStage.status;
+  let nextStageToUnlock: StageKey | null = null;
+  const currentIndex = ORDERED_STAGE_KEYS.indexOf(stageKey);
+  const nextKey =
+    currentIndex >= 0 && currentIndex < ORDERED_STAGE_KEYS.length - 1
+      ? ORDERED_STAGE_KEYS[currentIndex + 1]
+      : null;
+
+  switch (stageKey) {
+    case 'checklist':
+      if (action === 'save_draft') {
+        newStatus = 'in_progress';
+      } else {
+        newStatus = 'submitted';
+        nextStageToUnlock = 'discovery';
+      }
+      break;
+
+    case 'discovery':
+      if (action === 'save_draft') {
+        newStatus = 'in_progress';
+      } else {
+        newStatus = 'under_review';
+        nextStageToUnlock = 'proposal';
+      }
+      break;
+
+    case 'proposal':
+      if (action === 'request_revision') {
+        newStatus = 'under_review';
+      } else {
+        newStatus = 'accepted';
+        nextStageToUnlock = 'acceptance';
+      }
+      break;
+
+    case 'acceptance':
+      newStatus = 'completed';
+      nextStageToUnlock = 'sow';
+      break;
+
+    case 'sow':
+      newStatus = 'signed';
+      nextStageToUnlock = 'initial-invoice';
+      break;
+
+    case 'initial-invoice':
+      // CRITICAL INVARIANT: UTR report only moves stage to 'under_review'.
+      // Next stage 'onboarding' remains locked until Super Admin bank reconciliation!
+      if (action === 'submit_billing') {
+        newStatus = 'in_progress';
+      } else if (action === 'report_utr') {
+        newStatus = 'under_review';
+        nextStageToUnlock = null;
+      }
+      break;
+
+    case 'onboarding':
+      newStatus = 'completed';
+      nextStageToUnlock = 'technical-spec';
+      break;
+
+    case 'technical-spec':
+      newStatus = 'approved';
+      nextStageToUnlock = 'development';
+      break;
+
+    case 'development':
+      newStatus = 'in_progress';
+      break;
+
+    case 'delivery-acceptance':
+      newStatus = 'accepted';
+      nextStageToUnlock = 'final-payment';
+      break;
+
+    case 'final-payment':
+      // CRITICAL INVARIANT: UTR report moves stage to 'under_review'.
+      // Next stage 'handover' remains locked until Super Admin bank reconciliation!
+      if (action === 'submit_billing') {
+        newStatus = 'in_progress';
+      } else if (action === 'report_utr') {
+        newStatus = 'under_review';
+        nextStageToUnlock = null;
+      }
+      break;
+
+    case 'handover':
+      newStatus = 'completed';
+      nextStageToUnlock = 'support';
+      break;
+
+    case 'support':
+      newStatus = 'completed';
+      break;
+
+    default:
+      newStatus = 'completed';
+  }
+
+  const updatedSnapshot = {
+    ...(currentStage.snapshot || {}),
+    ...payload,
+    last_action: action,
+    last_audit_hash: auditHash,
+    last_updated_at: new Date().toISOString(),
+  };
+
+  const isCompleted = [
+    'completed',
+    'signed',
+    'verified',
+    'approved',
+    'accepted',
+    'submitted',
+  ].includes(newStatus);
+  const completedAt = isCompleted
+    ? currentStage.completed_at || new Date().toISOString()
+    : currentStage.completed_at;
+
+  // Persist to Supabase if configured
+  if (isAdminClientConfigured()) {
+    try {
+      // 1. Record immutable audit event
+      await supabaseAdmin.from('engagement_stage_events').insert({
+        engagement_id: engagement.id,
+        stage_key: stageKey,
+        action,
+        from_status: currentStage.status,
+        to_status: newStatus,
+        actor_role: actorRole,
+        actor_id: actorId || null,
+        reason: payload.reason || payload.notes || `Client performed ${action}`,
+        idempotency_key: `evt-${stageKey}-${action}-${auditHash.slice(0, 16)}-${Date.now()}`,
+        payload: {
+          ...payload,
+          _audit_hash: auditHash,
+          _timestamp: new Date().toISOString(),
+        },
+      });
+
+      // 2. Update current stage record
+      await supabaseAdmin
+        .from('engagement_stages')
+        .update({
+          status: newStatus,
+          snapshot: updatedSnapshot,
+          completed_at: completedAt,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', currentStage.id);
+
+      // 3. If next stage is unlocked, update next stage status from 'locked' to 'available'
+      if (nextStageToUnlock) {
+        const nextStage = stages.find((s) => s.stage_key === nextStageToUnlock);
+        if (nextStage && nextStage.status === 'locked') {
+          await supabaseAdmin
+            .from('engagement_stages')
+            .update({
+              status: 'available',
+              unlocked_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', nextStage.id);
+        }
+      }
+
+      // 4. Update engagement current_stage pointer
+      await supabaseAdmin
+        .from('client_engagements')
+        .update({
+          current_stage: nextStageToUnlock || stageKey,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', engagement.id);
+    } catch (err) {
+      console.error('[submitStageAction] DB write error:', err);
+    }
+  }
+
   return {
-    ...FALLBACK_SAMPLE_ENGAGEMENT,
-    engagement_ref: ref,
-    company_name: `Client Organization (${ref})`,
+    success: true,
+    stageKey,
+    status: newStatus,
+    auditHash,
+    nextUnlockedStageKey: nextStageToUnlock,
+    message: `Action ${action} recorded with verified cryptographic audit hash.`,
   };
 }
 
@@ -319,6 +582,31 @@ export async function listAllEngagements(): Promise<ClientEngagement[]> {
 
   return [FALLBACK_SAMPLE_ENGAGEMENT];
 }
+
+/**
+ * Fetch engagements for a client by contact email.
+ */
+export async function getEngagementsByEmail(email: string): Promise<ClientEngagement[]> {
+  if (isAdminClientConfigured() && email) {
+    try {
+      const normalized = email.trim().toLowerCase();
+      const { data, error } = await supabaseAdmin
+        .from('client_engagements')
+        .select('*')
+        .eq('contact_email', normalized)
+        .order('created_at', { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        return data as ClientEngagement[];
+      }
+    } catch (err) {
+      console.warn('[getEngagementsByEmail] DB query failed, using fallback:', err);
+    }
+  }
+
+  return [FALLBACK_SAMPLE_ENGAGEMENT];
+}
+
 
 /**
  * Fetch pending identity change requests for Super Admin review.

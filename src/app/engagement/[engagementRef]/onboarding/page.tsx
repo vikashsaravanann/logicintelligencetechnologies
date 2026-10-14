@@ -1,6 +1,8 @@
 import React from 'react';
+import { notFound } from 'next/navigation';
 import { getEngagementByRef, getStageByKey } from '@/lib/engagements/db';
 import StageHeader from '../components/StageHeader';
+import LockedStageCard from '../components/LockedStageCard';
 import OnboardingStageClient from './OnboardingStageClient';
 
 interface OnboardingPageProps {
@@ -10,7 +12,17 @@ interface OnboardingPageProps {
 export default async function OnboardingStagePage({ params }: OnboardingPageProps) {
   const { engagementRef } = await params;
   const engagement = await getEngagementByRef(engagementRef);
-  const stage = await getStageByKey(engagement?.id || 'sample', 'onboarding');
+  if (!engagement) notFound();
+
+  const stage = await getStageByKey(engagement.id, 'onboarding');
+  if (stage?.status === 'locked') {
+    return (
+      <div className="space-y-6">
+        <StageHeader engagementRef={engagementRef} stageKey="onboarding" status="locked" />
+        <LockedStageCard engagementRef={engagementRef} stageKey="onboarding" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -22,9 +34,11 @@ export default async function OnboardingStagePage({ params }: OnboardingPageProp
 
       <OnboardingStageClient
         engagementRef={engagementRef}
-        companyName={engagement?.company_name || 'Client Organization'}
-        contactName={engagement?.contact_name || 'Authorized Lead'}
-        contactEmail={engagement?.contact_email || 'client@example.com'}
+        companyName={engagement.company_name}
+        contactName={engagement.contact_name}
+        contactEmail={engagement.contact_email}
+        initialStatus={stage?.status}
+        initialData={stage?.snapshot}
       />
     </div>
   );

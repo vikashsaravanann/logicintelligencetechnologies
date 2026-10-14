@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { getEngagementByRef, getEngagementStages } from '@/lib/engagements/db';
 import { CANONICAL_13_STAGES, ORDERED_STAGE_KEYS, StageKey, StageStatus } from '@/lib/engagements/types';
 import VisitAllFilterClient from './components/VisitAllFilterClient';
@@ -11,7 +12,12 @@ interface EngagementPageProps {
 export default async function EngagementVisitAllPage({ params }: EngagementPageProps) {
   const { engagementRef } = await params;
   const engagement = await getEngagementByRef(engagementRef);
-  const stages = await getEngagementStages(engagement?.id || 'sample');
+
+  if (!engagement) {
+    notFound();
+  }
+
+  const stages = await getEngagementStages(engagement.id);
 
   // Map database stages into keyed map
   const stagesByKey: Record<string, (typeof stages)[0]> = {};

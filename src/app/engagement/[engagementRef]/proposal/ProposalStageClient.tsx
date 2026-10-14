@@ -7,6 +7,7 @@ interface ProposalStageClientProps {
   engagementRef: string;
   companyName: string;
   contactName: string;
+  initialStatus?: string;
 }
 
 export default function ProposalStageClient({

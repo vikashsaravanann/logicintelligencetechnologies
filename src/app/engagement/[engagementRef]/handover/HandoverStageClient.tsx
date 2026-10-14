@@ -7,16 +7,28 @@ interface HandoverStageClientProps {
   engagementRef: string;
   companyName: string;
   contactName: string;
+  initialStatus?: string;
+  initialData?: Record<string, any>;
+  document?: any;
 }
 
 export default function HandoverStageClient({
   engagementRef,
   companyName,
   contactName,
+  initialStatus = 'available',
+  initialData = {},
+  document,
 }: HandoverStageClientProps) {
-  const [acknowledged, setAcknowledged] = useState(false);
+  const [acknowledged, setAcknowledged] = useState(
+    ['completed'].includes(initialStatus)
+  );
   const [isConfirming, setIsConfirming] = useState(false);
-  const [isHandedOver, setIsHandedOver] = useState(false);
+  const [isHandedOver, setIsHandedOver] = useState(
+    ['completed'].includes(initialStatus)
+  );
+  const [auditHash, setAuditHash] = useState<string | null>(initialData?.last_audit_hash || null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const manifestItems = [
     {
@@ -45,15 +57,43 @@ export default function HandoverStageClient({
     },
   ];
 
-  const handleConfirmHandover = (e: React.FormEvent) => {
+  const handleConfirmHandover = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!acknowledged) return;
+    if (!acknowledged) {
+      setErrorMessage('Please check the receipt and custody confirmation box.');
+      return;
+    }
 
     setIsConfirming(true);
-    setTimeout(() => {
-      setIsConfirming(false);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch(`/api/engagements/${engagementRef}/stages/handover`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'confirm_handover',
+          payload: {
+            companyName,
+            contactName,
+            confirmedAt: new Date().toISOString(),
+            manifestItemsCount: manifestItems.length,
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to record custody handover confirmation.');
+      }
+
+      setAuditHash(data.auditHash);
       setIsHandedOver(true);
-    }, 700);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Error occurred while confirming asset custody.');
+    } finally {
+      setIsConfirming(false);
+    }
   };
 
   return (
@@ -70,6 +110,12 @@ export default function HandoverStageClient({
           </p>
         </div>
       </div>
+
+      {errorMessage && (
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs">
+          {errorMessage}
+        </div>
+      )}
 
       {/* Manifest Table */}
       <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs space-y-4">
@@ -115,7 +161,11 @@ export default function HandoverStageClient({
             </h3>
             <p className="text-xs text-emerald-700 max-w-lg mx-auto mt-1 leading-relaxed">
               Ownership transfer is finalized. {companyName} is now the primary administrative custodian of all production systems. 
-              Stage 13 (Maintenance & Support SLA) is now active.
+              {auditHash && (
+                <span className="block mt-1">
+                  Cryptographic Audit Digest: <code className="font-mono bg-emerald-100 px-1.5 py-0.5 rounded text-[11px] text-emerald-900 font-bold">{auditHash}</code>
+                </span>
+              )}
             </p>
           </div>
           <div className="pt-2">

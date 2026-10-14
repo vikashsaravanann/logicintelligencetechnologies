@@ -9,6 +9,9 @@ interface SupportStageClientProps {
   companyName: string;
   contactName: string;
   contactEmail: string;
+  initialStatus?: string;
+  initialData?: Record<string, any>;
+  document?: any;
 }
 
 export default function SupportStageClient({
@@ -16,6 +19,9 @@ export default function SupportStageClient({
   companyName,
   contactName,
   contactEmail,
+  initialStatus = 'available',
+  initialData = {},
+  document,
 }: SupportStageClientProps) {
   const [ticketSubject, setTicketSubject] = useState('');
   const [severity, setSeverity] = useState<'P1' | 'P2' | 'P3'>('P2');
@@ -24,6 +30,8 @@ export default function SupportStageClient({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [ticketId, setTicketId] = useState('');
+  const [auditHash, setAuditHash] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const slaTiers = [
     {
@@ -49,29 +57,69 @@ export default function SupportStageClient({
     },
   ];
 
-  const handleTicketSubmit = (e: React.FormEvent) => {
+  const handleTicketSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!ticketSubject || !description) return;
+    if (!ticketSubject.trim() || !description.trim()) {
+      setErrorMessage('Please provide an incident subject and detailed description.');
+      return;
+    }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setErrorMessage(null);
+
+    const generatedId = `TKT-LIT-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    try {
+      const res = await fetch(`/api/engagements/${engagementRef}/stages/support`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submit_ticket',
+          payload: {
+            ticketId: generatedId,
+            subject: ticketSubject.trim(),
+            severity,
+            component,
+            description: description.trim(),
+            contactEmail,
+            companyName,
+            submittedAt: new Date().toISOString(),
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to dispatch incident ticket.');
+      }
+
+      setTicketId(generatedId);
+      setAuditHash(data.auditHash);
       setIsSubmitted(true);
-      setTicketId(`TKT-LIT-${Math.floor(100000 + Math.random() * 900000)}`);
-    }, 700);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Error occurred while logging support incident.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       {/* Official Master PDF Card */}
       <StageDocumentCard
-        documentRef="LIT-07-Maintenance-Support-Agreement.pdf"
-        title="LIT-07 Maintenance & Support Agreement Master"
+        documentRef={document?.master_id ? `${document.master_id}-Maintenance-Support-Agreement.pdf` : 'LIT-07-Maintenance-Support-Agreement.pdf'}
+        title={document?.document_title || 'LIT-07 Maintenance & Support Agreement Master'}
         description="Official post-launch service level agreement establishing guaranteed response times, bug remediation protocols, and quarterly security audits."
-        documentMasterPath="/assets/docs/masters/LIT-07-Maintenance-Support-Agreement.pdf"
-        version="v2.1 (Active Support Standard)"
+        documentMasterPath={document?.file_url || '/assets/docs/masters/LIT-07-Maintenance-Support-Agreement.pdf'}
+        version={document?.version_label || 'v2.1 (Active Support Standard)'}
         status="active"
       />
+
+      {errorMessage && (
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs">
+          {errorMessage}
+        </div>
+      )}
 
       {/* SLA Tiers Table */}
       <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs space-y-4">
@@ -123,6 +171,11 @@ export default function SupportStageClient({
                 Your incident has been dispatched to our engineering on-call rotation. 
                 You will receive updates directly at <strong>{contactEmail}</strong> per your SLA response guarantee.
               </p>
+              {auditHash && (
+                <div className="font-mono text-[10px] text-emerald-900 mt-2">
+                  Cryptographic Audit Digest: <code className="bg-emerald-100 px-1.5 py-0.5 rounded font-bold">{auditHash}</code>
+                </div>
+              )}
             </div>
             <button
               onClick={() => {

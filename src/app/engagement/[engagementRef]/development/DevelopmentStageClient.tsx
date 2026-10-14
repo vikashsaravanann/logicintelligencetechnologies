@@ -7,17 +7,26 @@ import StageDocumentCard from '../components/StageDocumentCard';
 interface DevelopmentStageClientProps {
   engagementRef: string;
   companyName: string;
+  initialStatus?: string;
+  initialData?: Record<string, any>;
+  document?: any;
 }
 
 export default function DevelopmentStageClient({
   engagementRef,
   companyName,
+  initialStatus = 'in_progress',
+  initialData = {},
+  document,
 }: DevelopmentStageClientProps) {
   const [showRfcModal, setShowRfcModal] = useState(false);
   const [rfcTitle, setRfcTitle] = useState('');
   const [rfcDescription, setRfcDescription] = useState('');
   const [rfcImpact, setRfcImpact] = useState<'low' | 'medium' | 'high'>('low');
+  const [isSubmittingRfc, setIsSubmittingRfc] = useState(false);
   const [rfcSubmitted, setRfcSubmitted] = useState(false);
+  const [rfcAuditHash, setRfcAuditHash] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const sprints = [
     {
@@ -74,27 +83,58 @@ export default function DevelopmentStageClient({
     },
   ];
 
-  const handleRfcSubmit = (e: React.FormEvent) => {
+  const handleRfcSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!rfcTitle || !rfcDescription) return;
-    setRfcSubmitted(true);
-    setTimeout(() => {
-      setShowRfcModal(false);
-      setRfcSubmitted(false);
-      setRfcTitle('');
-      setRfcDescription('');
-    }, 1200);
+    if (!rfcTitle.trim() || !rfcDescription.trim()) return;
+
+    setIsSubmittingRfc(true);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch(`/api/engagements/${engagementRef}/stages/development`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submit_rfc',
+          payload: {
+            title: rfcTitle.trim(),
+            impact: rfcImpact,
+            description: rfcDescription.trim(),
+            companyName,
+            submittedAt: new Date().toISOString(),
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to submit Change Request.');
+      }
+
+      setRfcAuditHash(data.auditHash);
+      setRfcSubmitted(true);
+      setTimeout(() => {
+        setShowRfcModal(false);
+        setRfcSubmitted(false);
+        setRfcTitle('');
+        setRfcDescription('');
+      }, 2000);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Error logging Change Request.');
+    } finally {
+      setIsSubmittingRfc(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       {/* Official Master PDF Card for Change Requests */}
       <StageDocumentCard
-        documentRef="LIT-06-Change-Request.pdf"
-        title="LIT-06 Change Request & Scope Amendment Master"
+        documentRef={document?.master_id ? `${document.master_id}-Change-Request.pdf` : 'LIT-06-Change-Request.pdf'}
+        title={document?.document_title || 'LIT-06 Change Request & Scope Amendment Master'}
         description="Official template governing out-of-scope enhancements, technical deviations, timelines, and commercial impact assessments."
-        documentMasterPath="/assets/docs/masters/LIT-06-Change-Request.pdf"
-        version="v1.8 (Formal Amendment Standard)"
+        documentMasterPath={document?.file_url || '/assets/docs/masters/LIT-06-Change-Request.pdf'}
+        version={document?.version_label || 'v1.8 (Formal Amendment Standard)'}
         status="active"
       />
 
@@ -204,9 +244,20 @@ export default function DevelopmentStageClient({
               </button>
             </div>
 
+            {errorMessage && (
+              <div className="p-3 bg-red-50 text-red-700 rounded-xl text-xs">
+                {errorMessage}
+              </div>
+            )}
+
             {rfcSubmitted ? (
-              <div className="p-4 bg-emerald-50 text-emerald-800 rounded-xl text-xs text-center font-medium">
-                Change request logged! A technical lead will evaluate the scope impact within 24 hours.
+              <div className="p-4 bg-emerald-50 text-emerald-800 rounded-xl text-xs text-center font-medium space-y-2">
+                <div>Change request logged! A technical lead will evaluate the scope impact within 24 hours.</div>
+                {rfcAuditHash && (
+                  <div className="font-mono text-[10px] text-emerald-900">
+                    Audit SHA-256: {rfcAuditHash}
+                  </div>
+                )}
               </div>
             ) : (
               <form onSubmit={handleRfcSubmit} className="space-y-4 text-xs">
@@ -263,9 +314,10 @@ export default function DevelopmentStageClient({
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-[#1565C0] text-white rounded-lg font-semibold hover:bg-[#0B2545]"
+                    disabled={isSubmittingRfc}
+                    className="px-5 py-2 bg-[#1565C0] text-white rounded-lg font-semibold hover:bg-[#0B2545] disabled:opacity-50"
                   >
-                    Submit RFC
+                    {isSubmittingRfc ? 'Recording RFC...' : 'Submit RFC'}
                   </button>
                 </div>
               </form>

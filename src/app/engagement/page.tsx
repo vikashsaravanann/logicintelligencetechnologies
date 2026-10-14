@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   description:
     'Universal 13-stage client lifecycle portal, technical requirements intake, proposal governance, and verified manual bank payment reconciliation.',
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
   },
 };
 

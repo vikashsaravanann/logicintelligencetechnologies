@@ -3,12 +3,19 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import StageDocumentCard from '../components/StageDocumentCard';
 
 interface FinalPaymentStageClientProps {
   engagementRef: string;
   companyName: string;
   contactName: string;
   contactEmail: string;
+  qrDataUrl?: string;
+  upiDeepLink?: string;
+  transactionRef?: string;
+  initialStatus?: string;
+  initialData?: Record<string, any>;
+  document?: any;
 }
 
 export default function FinalPaymentStageClient({
@@ -16,18 +23,28 @@ export default function FinalPaymentStageClient({
   companyName,
   contactName,
   contactEmail,
+  qrDataUrl,
+  upiDeepLink,
+  transactionRef = `LIT-PAY-${engagementRef}-FINAL`,
+  initialStatus = 'available',
+  initialData = {},
+  document,
 }: FinalPaymentStageClientProps) {
-  const [utrNumber, setUtrNumber] = useState('');
-  const [paymentDate, setPaymentDate] = useState('2026-10-15');
-  const [remitterName, setRemitterName] = useState(contactName);
-  const [remitterBank, setRemitterBank] = useState('State Bank of India');
-  const [gstin, setGstin] = useState('');
-  const [placeOfSupply, setPlaceOfSupply] = useState('Tamil Nadu (33)');
+  const [utrNumber, setUtrNumber] = useState(initialData?.utrNumber || '');
+  const [paymentDate, setPaymentDate] = useState(initialData?.paymentDate || new Date().toISOString().split('T')[0]);
+  const [remitterName, setRemitterName] = useState(initialData?.remitterName || contactName);
+  const [remitterBank, setRemitterBank] = useState(initialData?.remitterBank || 'State Bank of India');
+  const [gstin, setGstin] = useState(initialData?.gstin || '');
+  const [placeOfSupply, setPlaceOfSupply] = useState(initialData?.placeOfSupply || 'Tamil Nadu (33)');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isReported, setIsReported] = useState(false);
+  const [isReported, setIsReported] = useState(
+    ['under_review', 'customer_claimed_paid', 'paid', 'verified', 'completed'].includes(initialStatus)
+  );
+  const [auditHash, setAuditHash] = useState<string | null>(initialData?.last_audit_hash || null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const paymentData = {
-    requestRef: 'LIT-PAY-2026-FINAL-84',
+    requestRef: transactionRef,
     milestone: 'Final Settlement (50% Completion & Handover)',
     subtotal: '₹9,00,000.00',
     cgst: '₹81,000.00 (9%)',
@@ -36,23 +53,69 @@ export default function FinalPaymentStageClient({
     totalNumeric: '1062000.00',
     beneficiaryVpa: '9342877474@ptyes',
     beneficiaryName: 'S VIKASH',
+    msmeRegistration: 'UDYAM-TN-03-0345274',
     brandName: 'Logic Intelligence Technologies',
-    upiDeepLink: 'upi://pay?pa=9342877474@ptyes&pn=S%20VIKASH&am=1062000.00&cu=INR&tn=LIT-PAY-2026-FINAL-84',
+    upiDeepLink: upiDeepLink || `upi://pay?pa=9342877474@ptyes&pn=S%20VIKASH&am=1062000.00&cu=INR&tr=${transactionRef}&tn=Final%20Settlement%2050`,
   };
 
-  const handleReportPayment = (e: React.FormEvent) => {
+  const handleReportPayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!utrNumber || !remitterName) return;
+    if (!utrNumber.trim() || !remitterName.trim()) {
+      setErrorMessage('Please provide both the 12-digit UTR number and remitter account name.');
+      return;
+    }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch(`/api/engagements/${engagementRef}/stages/final-payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'report_utr',
+          payload: {
+            utrNumber: utrNumber.trim(),
+            paymentDate,
+            remitterName: remitterName.trim(),
+            remitterBank: remitterBank.trim(),
+            gstin: gstin.trim(),
+            placeOfSupply: placeOfSupply.trim(),
+            amountReported: paymentData.totalPayable,
+            beneficiaryVpa: paymentData.beneficiaryVpa,
+            beneficiaryName: paymentData.beneficiaryName,
+            msmeRegistration: paymentData.msmeRegistration,
+            transactionRef: paymentData.requestRef,
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to record UTR reporting.');
+      }
+
+      setAuditHash(data.auditHash);
       setIsReported(true);
-    }, 700);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Error occurred while submitting payment details.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="space-y-6">
+      {/* Official Master PDF Card */}
+      <StageDocumentCard
+        documentRef={document?.master_id ? `${document.master_id}-Invoice.pdf` : 'LIT-03-Final-Tax-Invoice.pdf'}
+        title={document?.document_title || 'LIT-03 Final Settlement Tax Invoice'}
+        description="Official proforma and final tax invoice with statutory MSME registration, GSTIN split, and receiving bank details."
+        documentMasterPath={document?.file_url || '/assets/docs/masters/LIT-03-Invoice.pdf'}
+        version={document?.version_label || 'v2.2 (Final Settlement)'}
+        status="active"
+      />
+
       {/* Financial Security Notice */}
       <div className="bg-[#E7F3FF] border border-[#B9DCFF] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 text-xs text-[#0B2545]">
         <svg className="w-5 h-5 text-[#1565C0] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,11 +124,17 @@ export default function FinalPaymentStageClient({
         <div>
           <span className="font-bold block">Final Settlement Clearing · Zero Gateway Deductions</span>
           <p className="mt-1 text-slate-600 leading-relaxed">
-            Final settlement is cleared via manual UPI/NEFT to the Founder receiving account. 
-            Upon receiving bank credit verification by the Super Admin, the final Tax Invoice and Handover Manifest are immediately issued.
+            Final settlement is cleared via direct UPI/NEFT to the verified Founder receiving account. 
+            Upon receiving bank credit reconciliation by the Super Admin, the final Tax Invoice with GST breakdown is released and Stage 12 (Custody Handover) is unlocked.
           </p>
         </div>
       </div>
+
+      {errorMessage && (
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs">
+          {errorMessage}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Payment Summary & Dynamic UPI QR */}
@@ -108,23 +177,29 @@ export default function FinalPaymentStageClient({
               Scan Exact Amount Dynamic UPI QR
             </div>
             <div className="inline-block p-3 bg-white border border-[#DFE7EF] rounded-xl shadow-xs">
-              <Image
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-                  paymentData.upiDeepLink
-                )}`}
-                alt="Final Settlement Dynamic UPI QR"
-                width={180}
-                height={180}
-                className="mx-auto"
-                unoptimized
-              />
+              {qrDataUrl ? (
+                <Image
+                  src={qrDataUrl}
+                  alt="Final Settlement Dynamic UPI QR"
+                  width={180}
+                  height={180}
+                  className="mx-auto"
+                />
+              ) : (
+                <div className="w-[180px] h-[180px] flex items-center justify-center bg-slate-100 text-slate-400 font-mono text-[11px] rounded-lg">
+                  Generating Dynamic QR...
+                </div>
+              )}
             </div>
             <div className="space-y-1">
               <div className="text-xs font-mono font-bold text-[#0B2545]">
                 {paymentData.beneficiaryVpa}
               </div>
               <div className="text-[11px] text-[#52677C]">
-                Beneficiary: {paymentData.beneficiaryName} ({paymentData.brandName})
+                Beneficiary: <strong>{paymentData.beneficiaryName}</strong> ({paymentData.brandName})
+              </div>
+              <div className="text-[10px] text-slate-500 font-mono">
+                MSME Udyam: {paymentData.msmeRegistration}
               </div>
             </div>
 
@@ -151,10 +226,21 @@ export default function FinalPaymentStageClient({
                   Final Settlement Details Submitted
                 </h3>
                 <p className="text-xs text-[#52677C] leading-relaxed">
-                  Your settlement UTR <code className="font-mono bg-slate-100 px-1 py-0.5 rounded text-[#0B2545] font-bold">{utrNumber}</code> has been queued for Super-Admin bank reconciliation.
+                  Your settlement UTR <code className="font-mono bg-slate-100 px-1 py-0.5 rounded text-[#0B2545] font-bold">{utrNumber}</code> has been queued for Super Admin manual bank reconciliation.
                 </p>
-                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs text-left mt-3">
-                  <strong>Verification Status:</strong> Verification Pending. Upon confirmation of receiving bank credit, the Final Tax Invoice will be released and Stage 12 (Handover & IP Transfer) will be unlocked.
+                {auditHash && (
+                  <div className="font-mono text-[10px] text-slate-500 mt-1">
+                    Cryptographic Audit Digest: <code className="bg-slate-100 px-1 rounded text-[#0B2545]">{auditHash}</code>
+                  </div>
+                )}
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs text-left mt-3 space-y-1">
+                  <div className="font-bold flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-amber-500" />
+                    Status: Pending Super Admin Bank Reconciliation
+                  </div>
+                  <p className="text-[11px] text-amber-800 leading-relaxed">
+                    Per the zero-PSP manual receiving bank invariant, funds must be credited and verified on the bank statement before Stage 12 (Custody Handover & IP Transfer) is unlocked.
+                  </p>
                 </div>
               </div>
 
@@ -277,7 +363,7 @@ export default function FinalPaymentStageClient({
 
                 <button
                   type="submit"
-                  disabled={isSubmitting || !utrNumber}
+                  disabled={isSubmitting || !utrNumber.trim()}
                   className="w-full sm:w-auto px-6 py-2.5 bg-[#1565C0] text-white text-xs font-semibold rounded-lg hover:bg-[#0B2545] transition-colors shadow-xs disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (

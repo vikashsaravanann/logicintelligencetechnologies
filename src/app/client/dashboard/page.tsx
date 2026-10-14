@@ -14,7 +14,9 @@ import {
   Sparkles,
 } from "lucide-react";
 import { getPortalContext, listOwnRows } from "@/lib/client-portal/data";
+import { getEngagementsByEmail, getEngagementStages } from "@/lib/engagements/db";
 import { formatINR, formatIST } from "@/lib/format/datetime";
+import { GitBranch } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Executive Dashboard | Client Portal | Logic Intelligence Technologies",
@@ -25,16 +27,28 @@ export const revalidate = 0;
 
 export default async function ClientDashboardPage() {
   const portal = await getPortalContext("/client/dashboard");
-  const [projects, invoices, tickets, files] = await Promise.all([
+  const [projects, invoices, tickets, files, engagements] = await Promise.all([
     listOwnRows(portal, "projects", 4),
     listOwnRows(portal, "invoices", 4),
     listOwnRows(portal, "support_tickets", 4),
     listOwnRows(portal, "client_files", 4),
+    getEngagementsByEmail(portal.user.email || ""),
   ]);
 
   const activeProjects = projects?.filter((p) => p.status !== "Completed") || [];
   const pendingInvoices = invoices?.filter((i) => i.status === "Pending") || [];
   const openTickets = tickets?.filter((t) => t.status === "Open" || t.status === "In Progress") || [];
+
+  const primaryEngagement = engagements[0] || null;
+  const stages = primaryEngagement ? await getEngagementStages(primaryEngagement.id) : [];
+  const completedStagesCount = stages.filter((s) =>
+    ["completed", "signed", "verified", "paid", "accepted"].includes(s.status)
+  ).length;
+
+  const nextActionStage =
+    stages.find((s) => ["available", "in_progress", "changes_requested"].includes(s.status)) ||
+    stages.find((s) => s.status === "locked") ||
+    stages[0];
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -74,6 +88,95 @@ export default async function ClientDashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* UPGRADE 01: Next Best Action Card & 13-Stage Journey Header */}
+      {primaryEngagement && (
+        <div className="rounded-3xl border border-[var(--lit-border-light,#DFE7EF)] bg-gradient-to-br from-white via-white to-[var(--lit-cloud,#F7F9FC)] p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--lit-border-light,#DFE7EF)] pb-5">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  Ref: {primaryEngagement.engagement_ref}
+                </span>
+                <span className="text-xs text-[var(--lit-text-muted,#52677C)]">
+                  {primaryEngagement.company_name}
+                </span>
+              </div>
+              <h2 className="text-lg sm:text-xl font-bold text-[var(--lit-navy,#0B2545)] font-poppins">
+                {primaryEngagement.project_title}
+              </h2>
+            </div>
+            <Link
+              href={`/engagement/${primaryEngagement.engagement_ref}`}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] text-xs font-semibold shadow-2xs transition-all self-start sm:self-auto"
+            >
+              <GitBranch className="w-3.5 h-3.5 text-teal-600" />
+              <span>Visit 13-Stage Timeline</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Action Recommendation */}
+          {nextActionStage && (
+            <div className="rounded-2xl border border-teal-200 bg-teal-50/50 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--lit-navy,#0B2545)] text-white text-[11px] font-bold font-mono">
+                    {nextActionStage.ordinal}
+                  </span>
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-teal-900">
+                    Next Required Action
+                  </span>
+                </div>
+                <h3 className="text-base font-bold text-[var(--lit-navy,#0B2545)] font-poppins">
+                  Stage {nextActionStage.ordinal}: {nextActionStage.title}
+                </h3>
+                <p className="text-xs text-[var(--lit-text-muted,#52677C)] max-w-xl">
+                  {nextActionStage.summary || "Review and complete the requirements for this milestone stage."}
+                </p>
+              </div>
+
+              <Link
+                href={`/engagement/${primaryEngagement.engagement_ref}/${nextActionStage.stage_key}`}
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-navy,#0B2545)]/90 text-white font-semibold text-xs tracking-wide shadow-sm transition-all shrink-0 self-start sm:self-auto"
+              >
+                <span>Complete Stage {nextActionStage.ordinal}</span>
+                <ArrowRight className="w-4 h-4 text-cyan-300" />
+              </Link>
+            </div>
+          )}
+
+          {/* 13-Stage Step Dots / Progress Indicator */}
+          <div className="space-y-2 pt-2">
+            <div className="flex items-center justify-between text-xs font-mono text-[var(--lit-text-muted,#52677C)]">
+              <span>Lifecycle Milestone Progression</span>
+              <span className="font-bold text-[var(--lit-navy,#0B2545)]">
+                {completedStagesCount} of 13 Stages Completed ({Math.round((completedStagesCount / 13) * 100)}%)
+              </span>
+            </div>
+            <div className="flex items-center gap-1 sm:gap-1.5 w-full overflow-x-auto pb-1">
+              {stages.map((st) => {
+                const isComplete = ["completed", "signed", "verified", "paid", "accepted"].includes(st.status);
+                const isAvail = ["available", "in_progress", "changes_requested"].includes(st.status);
+                return (
+                  <Link
+                    key={st.stage_key}
+                    href={`/engagement/${primaryEngagement.engagement_ref}/${st.stage_key}`}
+                    title={`Stage ${st.ordinal}: ${st.title} (${st.status})`}
+                    className={`flex-1 min-w-[20px] h-2.5 rounded-full transition-all ${
+                      isComplete
+                        ? "bg-emerald-500 hover:bg-emerald-600"
+                        : isAvail
+                          ? "bg-teal-500 hover:bg-teal-600 ring-2 ring-teal-200"
+                          : "bg-slate-200 hover:bg-slate-300"
+                    }`}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* KPI Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

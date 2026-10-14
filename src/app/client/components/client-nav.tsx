@@ -12,10 +12,12 @@ import {
   User,
   ShieldCheck,
   ChevronRight,
+  GitBranch,
 } from "lucide-react";
 
 export const NAV_ITEMS = [
   { label: "Dashboard", href: "/client/dashboard", icon: LayoutDashboard },
+  { label: "Lifecycle Stages", href: "/engagement", icon: GitBranch },
   { label: "Projects", href: "/client/projects", icon: Briefcase },
   { label: "Documents Vault", href: "/client/documents", icon: FileText },
   { label: "Invoices & Billing", href: "/client/invoices", icon: Receipt },

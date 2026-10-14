@@ -8,6 +8,8 @@ interface AcceptanceStageClientProps {
   companyName: string;
   contactName: string;
   contactEmail: string;
+  initialStatus?: string;
+  initialData?: Record<string, any>;
 }
 
 export default function AcceptanceStageClient({
@@ -15,24 +17,57 @@ export default function AcceptanceStageClient({
   companyName,
   contactName,
   contactEmail,
+  initialStatus = 'available',
+  initialData = {},
 }: AcceptanceStageClientProps) {
-  const [signerName, setSignerName] = useState(contactName);
-  const [signerTitle, setSignerTitle] = useState('Managing Director / Authorized Representative');
+  const [signerName, setSignerName] = useState(initialData?.signerName || contactName);
+  const [signerTitle, setSignerTitle] = useState(initialData?.signerTitle || 'Managing Director / Authorized Representative');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [accepted, setAccepted] = useState(false);
-  const [acceptedTimestamp, setAcceptedTimestamp] = useState('');
+  const [accepted, setAccepted] = useState(['completed', 'accepted', 'approved'].includes(initialStatus));
+  const [acceptedTimestamp, setAcceptedTimestamp] = useState(initialData?.acceptedTimestamp || '');
+  const [auditHash, setAuditHash] = useState<string>(initialData?.last_audit_hash || '');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleAccept = (e: React.FormEvent) => {
+  const handleAccept = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreedToTerms || !signerName) return;
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setErrorMessage(null);
+
+    try {
+      const now = new Date().toUTCString();
+      const res = await fetch(`/api/engagements/${engagementRef}/stages/acceptance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'accept_proposal',
+          payload: {
+            signerName,
+            signerTitle,
+            agreedToTerms: true,
+            contactEmail,
+            acceptedTimestamp: now,
+            proposalReference: 'LIT-PROP-2026-084',
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to record proposal acceptance');
+      }
+
       setAccepted(true);
-      setAcceptedTimestamp(new Date().toUTCString());
-    }, 600);
+      setAcceptedTimestamp(now);
+      setAuditHash(data.auditHash);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error accepting proposal';
+      setErrorMessage(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -46,6 +81,12 @@ export default function AcceptanceStageClient({
           </p>
         </div>
 
+        {errorMessage && (
+          <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-medium">
+            {errorMessage}
+          </div>
+        )}
+
         {accepted ? (
           <div className="space-y-6">
             <div className="bg-[#ECFDF5] border border-[#A7F3D0] rounded-2xl p-6 text-xs text-[#065F46] space-y-3">
@@ -53,7 +94,7 @@ export default function AcceptanceStageClient({
                 <span className="w-7 h-7 rounded-full bg-[#065F46] text-white flex items-center justify-center font-bold text-sm">
                   ✓
                 </span>
-                <h3 className="text-base font-bold">Proposal Accepted & Receipt Logged</h3>
+                <h3 className="text-base font-bold">Proposal Formally Accepted & Digitally Verified</h3>
               </div>
               <p>
                 Authorized client assent has been immutably recorded for <strong className="text-slate-800">{companyName}</strong>.
@@ -61,18 +102,22 @@ export default function AcceptanceStageClient({
               <div className="bg-white/80 border border-emerald-200 rounded-xl p-3 font-mono text-[11px] text-slate-700 space-y-1">
                 <div>Signer: <strong>{signerName}</strong> ({signerTitle})</div>
                 <div>Email: {contactEmail}</div>
-                <div>Recorded UTC Timestamp: {acceptedTimestamp}</div>
-                <div>Audit Hash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</div>
+                <div>Recorded UTC Timestamp: {acceptedTimestamp || 'Recorded via verified session'}</div>
+                {auditHash && (
+                  <div className="break-all">
+                    Cryptographic Audit Digest: <strong>{auditHash}</strong>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
+            <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl gap-3">
               <span className="text-xs text-slate-600">
                 Next required step: Stage 5 Statement of Work (SOW) Execution.
               </span>
               <Link
                 href={`/engagement/${engagementRef}/sow`}
-                className="bg-[#0B2545] hover:bg-[#1565C0] text-white px-5 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition-colors"
+                className="w-full sm:w-auto text-center bg-[#0B2545] hover:bg-[#1565C0] text-white px-5 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition-colors"
               >
                 Proceed to Stage 5 SOW / Agreement →
               </Link>
@@ -97,7 +142,7 @@ export default function AcceptanceStageClient({
                   required
                   value={signerName}
                   onChange={(e) => setSignerName(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-[#1565C0] outline-none"
                 />
               </div>
               <div>
@@ -107,7 +152,7 @@ export default function AcceptanceStageClient({
                   required
                   value={signerTitle}
                   onChange={(e) => setSignerTitle(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-[#1565C0] outline-none"
                 />
               </div>
             </div>
@@ -127,7 +172,7 @@ export default function AcceptanceStageClient({
               </label>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
               <Link
                 href={`/engagement/${engagementRef}/proposal`}
                 className="text-slate-500 hover:text-slate-700 font-medium"
@@ -137,7 +182,7 @@ export default function AcceptanceStageClient({
               <button
                 type="submit"
                 disabled={isSubmitting || !agreedToTerms}
-                className="bg-[#0B2545] hover:bg-[#1565C0] text-white px-6 py-2.5 rounded-xl font-semibold shadow-xs disabled:opacity-50 transition-colors"
+                className="w-full sm:w-auto bg-[#0B2545] hover:bg-[#1565C0] text-white px-6 py-2.5 rounded-xl font-semibold shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
               >
                 {isSubmitting ? 'Recording Acceptance...' : 'Digitally Accept Proposal Version →'}
               </button>

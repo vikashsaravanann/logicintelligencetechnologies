@@ -7,28 +7,68 @@ interface SowStageClientProps {
   engagementRef: string;
   companyName: string;
   contactName: string;
+  initialStatus?: string;
+  initialData?: Record<string, any>;
 }
 
-export default function SowStageClient({ engagementRef, companyName, contactName }: SowStageClientProps) {
-  const [signedBy, setSignedBy] = useState(contactName);
+export default function SowStageClient({
+  engagementRef,
+  companyName,
+  contactName,
+  initialStatus = 'available',
+  initialData = {},
+}: SowStageClientProps) {
+  const [signedBy, setSignedBy] = useState(initialData?.signerName || contactName);
   const [agreedClauses, setAgreedClauses] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
-  const [isSigned, setIsSigned] = useState(false);
-  const [signedRecord, setSignedRecord] = useState<{ timestamp: string; hash: string } | null>(null);
+  const [isSigned, setIsSigned] = useState(['signed', 'completed', 'verified', 'approved'].includes(initialStatus));
+  const [signedRecord, setSignedRecord] = useState<{ timestamp: string; hash: string } | null>(
+    initialData?.last_audit_hash
+      ? { timestamp: initialData?.signedAt || 'Recorded in contract registry', hash: initialData.last_audit_hash }
+      : null
+  );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSign = (e: React.FormEvent) => {
+  const handleSign = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreedClauses || !signedBy) return;
 
     setIsSigning(true);
-    setTimeout(() => {
-      setIsSigning(false);
+    setErrorMessage(null);
+
+    try {
+      const now = new Date().toUTCString();
+      const res = await fetch(`/api/engagements/${engagementRef}/stages/sow`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'sign_sow',
+          payload: {
+            signerName: signedBy,
+            companyName,
+            agreedClauses: true,
+            contractRef: 'LIT-01-SOW',
+            signedAt: now,
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to execute Statement of Work');
+      }
+
       setIsSigned(true);
       setSignedRecord({
-        timestamp: new Date().toUTCString(),
-        hash: '9f8e7d6c5b4a3210fedcba9876543210abcdef1234567890abcdef1234567890',
+        timestamp: now,
+        hash: data.auditHash,
       });
-    }, 700);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error executing SOW';
+      setErrorMessage(msg);
+    } finally {
+      setIsSigning(false);
+    }
   };
 
   return (
@@ -41,6 +81,12 @@ export default function SowStageClient({ engagementRef, companyName, contactName
             Binding legal contract between Logic Intelligence Technologies and {companyName}.
           </p>
         </div>
+
+        {errorMessage && (
+          <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-medium">
+            {errorMessage}
+          </div>
+        )}
 
         {/* Contractual Summary Pillars */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
@@ -67,7 +113,7 @@ export default function SowStageClient({ engagementRef, companyName, contactName
         </div>
 
         {/* Digital Signature Panel */}
-        {isSigned && signedRecord ? (
+        {isSigned ? (
           <div className="space-y-6">
             <div className="bg-[#ECFDF5] border border-[#A7F3D0] rounded-2xl p-6 text-xs text-[#065F46] space-y-3">
               <div className="flex items-center gap-2">
@@ -82,18 +128,22 @@ export default function SowStageClient({ engagementRef, companyName, contactName
               <div className="bg-white/80 border border-emerald-200 rounded-xl p-3 font-mono text-[11px] text-slate-700 space-y-1">
                 <div>Client Signer: <strong>{signedBy}</strong></div>
                 <div>Founder Countersign: <strong>S Vikash (Founder, LIT)</strong></div>
-                <div>Execution Timestamp: {signedRecord.timestamp}</div>
-                <div>Document SHA-256: {signedRecord.hash}</div>
+                <div>Execution Timestamp: {signedRecord?.timestamp || 'Recorded'}</div>
+                {signedRecord?.hash && (
+                  <div className="break-all">
+                    Cryptographic Audit Digest: <strong>{signedRecord.hash}</strong>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
+            <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl gap-3">
               <span className="text-xs text-slate-600">
                 SOW execution completes prerequisite for Stage 6 Initial Payment.
               </span>
               <Link
                 href={`/engagement/${engagementRef}/initial-invoice`}
-                className="bg-[#0B2545] hover:bg-[#1565C0] text-white px-5 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition-colors"
+                className="w-full sm:w-auto text-center bg-[#0B2545] hover:bg-[#1565C0] text-white px-5 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition-colors"
               >
                 Proceed to Stage 6 Initial Payment & UPI QR →
               </Link>
@@ -108,7 +158,7 @@ export default function SowStageClient({ engagementRef, companyName, contactName
                 required
                 value={signedBy}
                 onChange={(e) => setSignedBy(e.target.value)}
-                className="w-full sm:w-80 bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800"
+                className="w-full sm:w-80 bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-[#1565C0] outline-none"
               />
             </div>
 
@@ -126,7 +176,7 @@ export default function SowStageClient({ engagementRef, companyName, contactName
               </label>
             </div>
 
-            <div className="flex items-center justify-between pt-3">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3">
               <Link
                 href={`/engagement/${engagementRef}/acceptance`}
                 className="text-slate-500 hover:text-slate-700 font-medium"
@@ -136,7 +186,7 @@ export default function SowStageClient({ engagementRef, companyName, contactName
               <button
                 type="submit"
                 disabled={isSigning || !agreedClauses}
-                className="bg-[#0B2545] hover:bg-[#1565C0] text-white px-6 py-2.5 rounded-xl font-semibold shadow-xs disabled:opacity-50 transition-colors"
+                className="w-full sm:w-auto bg-[#0B2545] hover:bg-[#1565C0] text-white px-6 py-2.5 rounded-xl font-semibold shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
               >
                 {isSigning ? 'Executing SOW...' : 'Sign & Execute Statement of Work →'}
               </button>

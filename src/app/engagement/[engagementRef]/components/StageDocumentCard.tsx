@@ -30,11 +30,12 @@ export default function StageDocumentCard({
   status,
 }: StageDocumentCardProps) {
   const resolvedFilename = filename || documentRef || 'document.pdf';
-  const resolvedUrl = fileUrl || documentMasterPath || '#';
+  const resolvedUrl = fileUrl || documentMasterPath || '';
+  const isAvailable = Boolean(resolvedUrl && resolvedUrl !== '#');
   const resolvedVersion = version || versionLabel;
   const formattedSize = fileSizeBytes
     ? `${(fileSizeBytes / 1024).toFixed(0)} KB`
-    : 'Enterprise PDF Master';
+    : isAvailable ? 'Enterprise PDF Master' : 'Pending Milestone Issue';
 
   return (
     <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs space-y-4">
@@ -82,27 +83,40 @@ export default function StageDocumentCard({
 
         {/* Document Action Buttons */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <a
-            href={resolvedUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-[#DFE7EF] bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-2xs transition-colors"
-          >
-            <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-            <span>Preview PDF</span>
-          </a>
-          <a
-            href={resolvedUrl}
-            download={resolvedFilename}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#0B2545] hover:bg-[#1565C0] text-xs font-semibold text-white shadow-xs transition-colors"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            <span>Download Master</span>
-          </a>
+          {isAvailable ? (
+            <>
+              <a
+                href={resolvedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-[#DFE7EF] bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-2xs transition-colors"
+              >
+                <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                <span>Preview PDF</span>
+              </a>
+              <a
+                href={resolvedUrl}
+                download={resolvedFilename}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#0B2545] hover:bg-[#1565C0] text-xs font-semibold text-white shadow-xs transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>Download Master</span>
+              </a>
+            </>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-500 text-xs font-medium">
+                <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Document not yet issued</span>
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

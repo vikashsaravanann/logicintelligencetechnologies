@@ -29,9 +29,9 @@ export async function sendEngagementInvitationEmail(
     }
   }
 
-  // Fallback lookup if sample
+  // Fallback lookup strictly for canonical sample only
   if (!engagement) {
-    if (engagementIdOrRef.toUpperCase() === 'ENG-2026-LIT-SAMPLE' || engagementIdOrRef.startsWith('ENG-')) {
+    if (engagementIdOrRef.toUpperCase() === 'ENG-2026-LIT-SAMPLE') {
       engagement = {
         id: 'd9b0e1a2-3f4c-5a6b-7c8d-9e0f1a2b3c4d',
         engagement_ref: engagementIdOrRef.toUpperCase(),

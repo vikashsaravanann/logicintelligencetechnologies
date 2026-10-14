@@ -1,19 +1,32 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { ENTERPRISE_CHECKPOINTS, ENTERPRISE_CHECKLIST_PHASES } from '@/data/enterpriseDeploymentChecklist';
 
 interface ChecklistStageClientProps {
   engagementRef: string;
+  initialSelectedItems?: number[];
+  initialNotes?: string;
+  initialStatus?: string;
 }
 
-export default function ChecklistStageClient({ engagementRef }: ChecklistStageClientProps) {
+export default function ChecklistStageClient({
+  engagementRef,
+  initialSelectedItems = [],
+  initialNotes = '',
+  initialStatus = 'available',
+}: ChecklistStageClientProps) {
   const [selectedPhase, setSelectedPhase] = useState<number | 'all'>('all');
-  const [selectedItems, setSelectedItems] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+  const [selectedItems, setSelectedItems] = useState<number[]>(initialSelectedItems);
   const [searchQuery, setSearchQuery] = useState('');
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState(initialNotes);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [submitted, setSubmitted] = useState(['submitted', 'completed', 'under_review'].includes(initialStatus));
+  const [auditHash, setAuditHash] = useState<string | null>(null);
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const toggleItem = (num: number) => {
     setSelectedItems((prev) =>
@@ -41,13 +54,77 @@ export default function ChecklistStageClient({ engagementRef }: ChecklistStageCl
     return true;
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSaveDraft = async () => {
+    setIsSavingDraft(true);
+    setErrorMessage(null);
+    setFeedbackMessage(null);
+    try {
+      const res = await fetch(`/api/engagements/${engagementRef}/stages/checklist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'save_draft',
+          payload: {
+            selectedItems,
+            notes,
+            totalSelected: selectedItems.length,
+          },
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to save draft');
+      }
+      setAuditHash(data.auditHash);
+      setFeedbackMessage('Draft saved successfully with verified cryptographic digest.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error saving draft';
+      setErrorMessage(msg);
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (selectedItems.length === 0) {
+      setErrorMessage('Please select at least one enterprise checkpoint before submitting.');
+      return;
+    }
+
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setErrorMessage(null);
+    setFeedbackMessage(null);
+
+    try {
+      const res = await fetch(`/api/engagements/${engagementRef}/stages/checklist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submit_checklist',
+          payload: {
+            selectedItems,
+            notes,
+            totalSelected: selectedItems.length,
+            submittedAt: new Date().toISOString(),
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to submit checklist scope');
+      }
+
       setSubmitted(true);
-    }, 600);
+      setAuditHash(data.auditHash);
+      setFeedbackMessage('Scope baseline formally submitted and Stage 2 Discovery unlocked.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error submitting checklist';
+      setErrorMessage(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -70,13 +147,15 @@ export default function ChecklistStageClient({ engagementRef }: ChecklistStageCl
           <div className="flex flex-col gap-1.5">
             <button
               onClick={selectAll}
-              className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors"
+              type="button"
+              className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
             >
               Select All 50
             </button>
             <button
               onClick={clearAll}
-              className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold rounded-lg transition-colors"
+              type="button"
+              className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold rounded-lg transition-colors cursor-pointer"
             >
               Clear
             </button>
@@ -90,7 +169,8 @@ export default function ChecklistStageClient({ engagementRef }: ChecklistStageCl
         <div className="flex items-center gap-1.5 overflow-x-auto w-full lg:w-auto pb-1 lg:pb-0">
           <button
             onClick={() => setSelectedPhase('all')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+            type="button"
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
               selectedPhase === 'all'
                 ? 'bg-[#0B2545] text-white shadow-2xs'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -102,7 +182,8 @@ export default function ChecklistStageClient({ engagementRef }: ChecklistStageCl
             <button
               key={p.phase}
               onClick={() => setSelectedPhase(p.phase)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+              type="button"
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 selectedPhase === p.phase
                   ? 'bg-[#1565C0] text-white shadow-2xs'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -127,6 +208,20 @@ export default function ChecklistStageClient({ engagementRef }: ChecklistStageCl
           </svg>
         </div>
       </div>
+
+      {/* Notifications */}
+      {feedbackMessage && (
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center justify-between">
+          <span>{feedbackMessage}</span>
+          {auditHash && <span className="font-mono text-[10px] text-emerald-600">SHA-256: {auditHash.slice(0, 16)}...</span>}
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-medium">
+          {errorMessage}
+        </div>
+      )}
 
       {/* Checkpoints List */}
       <div className="space-y-3">
@@ -186,12 +281,32 @@ export default function ChecklistStageClient({ engagementRef }: ChecklistStageCl
       {/* Submission Form */}
       <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs">
         {submitted ? (
-          <div className="bg-[#ECFDF5] border border-[#A7F3D0] rounded-xl p-5 text-xs text-[#065F46] space-y-2">
-            <h4 className="text-sm font-bold">✓ Checklist Scope Baseline Submitted</h4>
+          <div className="bg-[#ECFDF5] border border-[#A7F3D0] rounded-xl p-5 text-xs text-[#065F46] space-y-3">
+            <h4 className="text-sm font-bold">✓ Checklist Scope Baseline Formally Submitted</h4>
             <p>
-              Your selection of <strong>{selectedItems.length} points</strong> has been logged to engagement reference{' '}
-              <strong className="font-mono">{engagementRef}</strong>. LIT Engineering Lead has been notified to generate your Discovery & Scoping Review.
+              Your selection of <strong>{selectedItems.length} points</strong> has been recorded to engagement reference{' '}
+              <strong className="font-mono">{engagementRef}</strong>.
             </p>
+            {auditHash && (
+              <p className="font-mono text-[11px] text-slate-600 bg-white/70 p-2 rounded border border-emerald-200">
+                Cryptographic Audit Digest: {auditHash}
+              </p>
+            )}
+            <div className="pt-2 flex items-center gap-3">
+              <Link
+                href={`/engagement/${engagementRef}/discovery`}
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#065F46] hover:bg-[#044e39] text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+              >
+                <span>Proceed to Stage 2: Technical Discovery →</span>
+              </Link>
+              <button
+                type="button"
+                onClick={() => setSubmitted(false)}
+                className="text-xs text-slate-600 hover:text-slate-900 underline"
+              >
+                Modify Scope Selection
+              </button>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -208,17 +323,27 @@ export default function ChecklistStageClient({ engagementRef }: ChecklistStageCl
               />
             </div>
 
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
               <span className="text-xs text-slate-500">
                 Selected points will form the basis of Stage 2 Technical Discovery.
               </span>
-              <button
-                type="submit"
-                disabled={isSubmitting || selectedItems.length === 0}
-                className="bg-[#0B2545] hover:bg-[#1565C0] text-white px-6 py-2.5 rounded-xl text-xs font-semibold shadow-xs disabled:opacity-50 transition-colors"
-              >
-                {isSubmitting ? 'Submitting Scope...' : `Submit Scope (${selectedItems.length} Points) →`}
-              </button>
+              <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={handleSaveDraft}
+                  disabled={isSavingDraft || isSubmitting}
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs disabled:opacity-50 transition-colors cursor-pointer"
+                >
+                  {isSavingDraft ? 'Saving...' : 'Save Draft'}
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting || isSavingDraft || selectedItems.length === 0}
+                  className="w-full sm:w-auto bg-[#0B2545] hover:bg-[#1565C0] text-white px-6 py-2.5 rounded-xl text-xs font-semibold shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
+                >
+                  {isSubmitting ? 'Submitting Scope...' : `Submit Scope (${selectedItems.length} Points) →`}
+                </button>
+              </div>
             </div>
           </form>
         )}
