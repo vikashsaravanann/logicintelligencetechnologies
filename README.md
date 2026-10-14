@@ -148,6 +148,7 @@ Active database tables:
 - `public.profiles` — authenticated user profiles (synced with `auth.users`)
 - `public.projects` — CRM: client projects
 - `public.invoices` — CRM: project invoices
+- `public.tracked_entities` / `public.target_queries` / `public.visibility_checks` / `public.competitors` / `public.visibility_gaps` / `public.content_assets` / `public.content_suggestions` / `public.citation_targets` / `public.mention_checks` — Visibility Engine (see below)
 
 ## Vercel Deployment
 
@@ -160,6 +161,188 @@ See [docs/vercel-deployment.md](docs/vercel-deployment.md) for Vercel deployment
 See [docs/email-infrastructure.md](docs/email-infrastructure.md) for Zoho SMTP configuration.
 
 ---
+
+## Visibility Engine (Command Center module)
+
+Measures where LIT (and later, clients) appear across Google and AI answer
+engines (Perplexity, ChatGPT, Gemini, Claude). Phase 1 = data model + a
+scheduled probe + a read-only dashboard.
+
+**Pieces**
+
+- Migration `supabase/migrations/20261014090000_visibility_engine_phase1.sql` —
+  `tracked_entities`, `target_queries`, `visibility_checks` (service-role-only
+  RLS, same model as the lead tables). Seeds one `self` entity (LIT) and a few
+  realistic queries; seeds are idempotent.
+- n8n workflow `n8n/visibility-probe.json` — "Visibility Probe". Runs daily at
+  **06:00 IST** (cron `30 0 * * *` on the Schedule node — change that expression
+  to adjust cadence), reads active queries + entities from Supabase, probes each
+  enabled platform, and writes one `visibility_checks` row per (query, platform).
+- Dashboard `/admin/command-center/visibility` — read-only, behind the same
+  capability guard as other Command Center pages (`seo.read`). Entity selector,
+  per-platform score cards, a trend chart, and a latest-checks table.
+
+**Set the API keys**
+
+The probe reads each key from an n8n environment variable / credential — keys
+are **never** stored in the workflow JSON. In n8n (Settings → Variables, or the
+host environment), set any of:
+
+```
+SERPAPI_KEY=         # google + google_ai_overview (one SerpAPI call)
+PERPLEXITY_API_KEY=  # perplexity
+OPENAI_API_KEY=      # chatgpt (web search)
+GEMINI_API_KEY=      # gemini (grounding/search)
+ANTHROPIC_API_KEY=   # claude (web search)
+```
+
+Any key left unset means that platform is **skipped gracefully** (logged, not a
+crash). At minimum set `SERPAPI_KEY` to get Google results. These are also
+listed in `.env.example` for reference. The Supabase node uses an n8n
+`supabaseApi` credential named **"Supabase LIT"** (link it on import).
+
+**Trigger the first run**
+
+1. Apply the migration (see Supabase Setup) so the tables + seeds exist.
+2. In n8n: **Import from File** → `n8n/visibility-probe.json`, then link the
+   "Supabase LIT" credential and set at least `SERPAPI_KEY`.
+3. Click **Execute Workflow** for a manual run — it inserts `visibility_checks`
+   rows for the seeded queries.
+4. Open `/admin/command-center/visibility` to see the score cards, trend, and
+   checks table populate. Leave the schedule enabled for the daily cadence.
+
+### Phase 2 — multi-product entities + gap analysis
+
+Phase 2 tracks all four LIT products as entities and surfaces **gaps** — where
+a competitor is cited or ranked for a query and we are not.
+
+- Migration `supabase/migrations/20261014100000_visibility_engine_phase2.sql`
+  adds the `competitors` and `visibility_gaps` tables (service-role RLS, same
+  model) and widens `tracked_entities.type` to allow `competitor`.
+- Seed `supabase/migrations/20261014100001_visibility_engine_phase2_seed.sql`
+  registers the 4 products (company, Smart Hospital Platform, Logic Voice, Voice
+  Shield) with researched buyer queries and genuinely comparable competitors.
+  Logic Voice intentionally has no competitors seeded (no clearly contested
+  commercial category — see the comment in that file).
+- Workflow `n8n/visibility-gap-analysis.json` ("Visibility Gap Analysis").
+
+**How gap analysis works.** It does **not** call any external API — it reuses
+the `source_urls` and `snippet` that the Visibility Probe already stored on
+every `visibility_checks` row. For each active query it takes the latest check
+per platform, and for each competitor of that query's entity it checks whether
+the competitor's domain appears in that check's `source_urls` (or the snippet).
+It writes a `visibility_gaps` row when **the competitor appears AND our own
+entity was not mentioned** on that same row, with a human-readable `note`.
+
+**When it runs.** Daily at **06:30 IST** (cron `0 1 * * *`), i.e. 30 minutes
+after the Visibility Probe, so it reads fresh data. Change that cron on the
+Schedule node to adjust the offset. Each run first clears `visibility_gaps` and
+recomputes it, so re-runs never pile up duplicates. It needs only the Supabase
+credential — no API keys. View gaps in the **Visibility Gaps** section of
+`/admin/command-center/visibility`; the entity selector switches between all
+four products.
+
+### Phase 3 — content engine (generate → review → apply)
+
+Phase 3 adds the optimization half: for underperforming pages it **generates**
+improved SEO/GEO assets, stores them as **reviewable suggestions**, lets a human
+**approve/reject** in the dashboard, and turns approved assets into **pull
+requests** on the product repos. Nothing is auto-published.
+
+- Migration `supabase/migrations/20261014110000_visibility_engine_phase3.sql`
+  adds `content_assets` (pages we optimise) and `content_suggestions`
+  (generated assets; `status` flows `draft → approved/rejected → applied`).
+- Workflow `n8n/visibility-content-engine.json` ("Visibility Content Engine").
+- Review UI: the **Content** tab on `/admin/command-center/visibility`.
+- Apply step: `scripts/apply-suggestions.md` + `scripts/apply-suggestions.mjs`.
+
+**Content integrity rules** (enforced in the generation prompt itself):
+
+- Generate only claims true of the product per its own site/repo. Never invent
+  features, numbers, clients, awards, or capabilities.
+- No unverifiable superlatives ("the best", "#1", "most secure").
+- Healthcare / Smart Hospital: no medical, clinical, diagnostic, or outcome
+  claims — software/management tooling only.
+- Voice Shield: only what the product's own materials state; no efficacy
+  percentages unless the page already publishes them.
+- Every FAQ answer and factual sentence must be defensible from the page;
+  when unsure, generate a weaker, accurate version.
+
+**1. Generate.** Run "Visibility Content Engine" (manual, or the weekly Monday
+07:00 IST schedule). It selects pages where recent checks show `mentioned=false`
+(prioritising those with a `visibility_gaps` row), upserts a `content_assets`
+row per page, fetches the live page, and calls one LLM (Anthropic) with the page
+content + target query + competitor note + the integrity rules verbatim. It
+stores up to four `content_suggestions` per page — `json_ld`, `faq`, `meta`,
+`factual_sentences` — as `draft` (idempotent per asset+kind+query). Set these as
+n8n env vars: `ANTHROPIC_API_KEY` (skips gracefully if absent), plus
+`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`.
+
+**2. Review.** In the Command Center → Visibility → **Content** tab, suggestions
+are grouped by page and filterable by status + kind. Each renders readably
+(pretty-printed JSON-LD, FAQ as Q&A, meta with char counts). **Approve** / **Reject**
+records the reviewer and timestamp. Approval only flips status to `approved` — it
+does not apply anything.
+
+**3. Apply (human-run → PR).** Follow `scripts/apply-suggestions.md`.
+`scripts/apply-suggestions.mjs --entity <domain>` exports an entity's approved
+suggestions and a ready-to-paste PR body; you implement them idiomatically in
+the product repo (reusable `<JsonLd>`, a **visible** FAQ section + matching
+`FAQPage` JSON-LD, metadata, on-page copy) and open a PR — never a push to
+`main`. A worked example PR lives on the `voice-shield` repo. After a human
+merges, `--mark-applied --pr <url>` flips those suggestions to `applied` and
+stores the PR link (shown in the Content tab).
+
+### Phase 4 — citation & mention engine (earn → verify → proven-in-AI)
+
+Phase 4 is the off-site half: earn mentions/citations across directories,
+communities, press, review sites and Wikipedia-eligible sources so the products
+appear in AI training data and get cited by retrieval engines. It **reuses the
+Lead Engine's human-reviewed outreach queue** — it does not build a parallel
+outreach system, and nothing goes out without human approval.
+
+- Migration `supabase/migrations/20261014120000_visibility_engine_phase4.sql`
+  adds `citation_targets` (status `identified → queued → actioned → live`, or
+  `rejected`) and `mention_checks` (`is_live`, `seen_in_ai`).
+- Workflows: `n8n/citation-discovery.json`, `n8n/mention-verification.json`
+  (both pure Supabase read/compute/write via `SUPABASE_URL` +
+  `SUPABASE_SERVICE_ROLE_KEY` — no outbound API keys).
+- UI: the **Citations** tab on `/admin/command-center/visibility`.
+
+**Compliance (enforced throughout).** No spam, no mass unsolicited email, no
+fake reviews, no sockpuppet posts, no paid links disguised as editorial, no
+self-editing of our own Wikipedia page. Directory submissions and genuine
+outreach only; every outbound message is queued for human approval and never
+auto-sent. Promotion-restricted channels (e.g. Reddit, Product Hunt, Indie
+Hackers) are *suggested for manual participation* — the system never posts to
+them.
+
+**1. Earn — discovery.** "Citation Discovery" (manual or weekly) prioritises
+entities by how many `visibility_gaps` they have, then proposes targets from (a)
+a curated catalog of real submission venues (Clutch, GoodFirms, G2, Capterra,
+SoftwareSuggest, Sulekha/Justdial, YourStory/Inc42, …) and (b) third-party
+domains already surfacing for the entity's queries in the probe's
+`visibility_checks.source_urls` — i.e. places competitors already get cited.
+It upserts `citation_targets` (status `identified`) ignoring duplicates, so a
+human's progress is never reset. No new scraper stack — it reuses probe data +
+the Lead Engine's outreach machinery.
+
+**2. Outreach — reuse the queue.** In the **Citations** tab, **Promote to
+queue** stages the venue as a `lead_businesses` row and drafts a
+`lead_outreach_messages` record (`status='needs_review'`) — a directory
+submission checklist/listing copy for directories/review sites, or a
+personalised, integrity-ruled outreach note for press/community/partner. The
+draft appears in **Outreach → Dispatch & Approval Queue** and is approved there
+like any other message. Nothing auto-sends. Human-driven buttons move the target
+`actioned`, then `live` (with its `citation_url`).
+
+**3. Verify — close the loop.** "Mention Verification" (weekly) re-checks each
+`live` target's `citation_url` (still resolves, still mentions us →
+`is_live`) and cross-references Phase 1 probe data: if the `citation_url`
+appears in any `visibility_checks.source_urls`, it sets `seen_in_ai=true` —
+proof the citation is actually feeding AI answers. The Citations tab shows the
+funnel (`identified → queued → actioned → live`) and highlights **live +
+seen_in_ai**, the money metric.
 
 ## Security Notes
 

@@ -76,6 +76,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { label: "Automations", href: "/admin/automations", capability: "automations.read", match: (p) => p === "/admin/automations" },
       { label: "Approvals", href: "/admin/automations/approvals", capability: "automations.read", match: startsWith("/admin/automations/approvals") },
       { label: "SEO & Indexing", href: "/admin/seo", capability: "seo.read", match: (p) => p === "/admin/seo" || p.startsWith("/admin/seo/") },
+      { label: "Visibility Engine", href: "/admin/command-center/visibility", capability: "seo.read", match: startsWith("/admin/command-center/visibility") },
       { label: "Edge CDN", href: "/admin/cdn", capability: "cdn.read", match: startsWith("/admin/cdn") },
       { label: "Reliability Reports", href: "/admin/automations/reports", capability: "automations.read", match: startsWith("/admin/automations/reports") },
       { label: "Governance & Runbooks", href: "/admin/automations/governance", capability: "automations.read", match: startsWith("/admin/automations/governance") },

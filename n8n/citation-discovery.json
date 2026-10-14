@@ -1,0 +1,76 @@
+{
+  "name": "Citation Discovery",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "cd-0000-0000-4000-8000-000000000000",
+      "name": "Manual trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 1 * * 2"
+            }
+          ]
+        }
+      },
+      "id": "cd-0001-0001-4001-8001-000000000001",
+      "name": "Weekly schedule (Tue 07:00 IST)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst SB_URL = $env.SUPABASE_URL;\nconst SB_KEY = $env.SUPABASE_SERVICE_ROLE_KEY;\nconst http = this.helpers.httpRequest;\nif (!SB_URL || !SB_KEY) return [{ json: { skipped: true, reason: 'SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set' } }];\n\nfunction rest(path, opts) {\n  opts = opts || {};\n  return http(Object.assign({ url: SB_URL + '/rest/v1/' + path, json: true }, opts, {\n    headers: Object.assign({ apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' }, opts.headers || {}),\n  }));\n}\nfunction normDomain(d) {\n  if (!d) return '';\n  return String(d).toLowerCase().replace(/^https?:\\/\\//, '').replace(/^www\\./, '').replace(/\\/.*$/, '').trim();\n}\nfunction hostOf(u) { try { return normDomain(new URL(u).host); } catch { return normDomain(u); } }\n\n// Curated, REAL venues. Broadly applicable to B2B software/products; a human\n// prunes what does not fit each product. Community/wiki entries are suggestions\n// for MANUAL participation — the system never posts to them.\nconst CATALOG = [\n  { type: 'directory',   name: 'Clutch',          url: 'https://clutch.co',          note: 'B2B services/software directory; submit a verified company profile.' },\n  { type: 'directory',   name: 'GoodFirms',       url: 'https://www.goodfirms.co',   note: 'B2B software & services directory; claim/submit a profile.' },\n  { type: 'directory',   name: 'DesignRush',      url: 'https://www.designrush.com', note: 'Agency/vendor directory; submit a listing.' },\n  { type: 'directory',   name: 'Sulekha',         url: 'https://www.sulekha.com',    note: 'India local business directory.' },\n  { type: 'directory',   name: 'Justdial',        url: 'https://www.justdial.com',   note: 'India local business directory.' },\n  { type: 'review_site', name: 'G2',              url: 'https://www.g2.com',         note: 'Software review platform; create a product profile, earn genuine reviews (never fake).' },\n  { type: 'review_site', name: 'Capterra',        url: 'https://www.capterra.com',   note: 'Software review platform; create a listing, earn genuine reviews (never fake).' },\n  { type: 'review_site', name: 'SoftwareSuggest', url: 'https://www.softwaresuggest.com', note: 'India software review/listing platform.' },\n  { type: 'press',       name: 'YourStory',       url: 'https://yourstory.com',      note: 'Indian startup/tech press; pitch a genuine story.' },\n  { type: 'press',       name: 'Inc42',           url: 'https://inc42.com',          note: 'Indian startup/tech press; pitch a genuine story.' },\n  { type: 'community',   name: 'Product Hunt',    url: 'https://www.producthunt.com', note: 'Launch venue; MANUAL participation only, respect platform rules — system does not post.' },\n  { type: 'community',   name: 'Indie Hackers',   url: 'https://www.indiehackers.com', note: 'Community; MANUAL participation only, respect self-promo rules — system does not post.' },\n  { type: 'wiki_source', name: 'Independent coverage (Wikipedia-eligible)', url: 'https://en.wikipedia.org/wiki/Wikipedia:Reliable_sources', note: 'Earn coverage in independent reliable sources so the entity becomes citable; NEVER self-edit Wikipedia.' },\n];\n\n// Load entities (self), their queries, gaps, competitors, and probe source_urls.\nconst entities = await rest('tracked_entities?select=id,name,domain,type&type=eq.self');\nconst queries = await rest('target_queries?select=id,entity_id');\nconst gaps = await rest('visibility_gaps?select=query_id');\nconst competitors = await rest('competitors?select=entity_id,domain');\nconst checks = await rest('visibility_checks?select=query_id,source_urls');\n\nconst entityByQuery = {};\nfor (const q of queries) entityByQuery[q.id] = q.entity_id;\nconst gapCountByEntity = {};\nfor (const g of gaps) { const e = entityByQuery[g.query_id]; if (e) gapCountByEntity[e] = (gapCountByEntity[e] || 0) + 1; }\nconst ourDomains = {}; for (const e of entities) if (e.domain) ourDomains[normDomain(e.domain)] = true;\nconst competitorDomains = {}; for (const c of competitors) competitorDomains[normDomain(c.domain)] = true;\n\n// third-party source domains per entity, from probe source_urls\nconst sourcesByEntity = {};\nfor (const ch of checks) {\n  const e = entityByQuery[ch.query_id]; if (!e) continue;\n  const urls = Array.isArray(ch.source_urls) ? ch.source_urls : [];\n  for (const u of urls) {\n    const d = hostOf(u);\n    if (!d || ourDomains[d]) continue; // skip our own\n    (sourcesByEntity[e] = sourcesByEntity[e] || {})[d] = true;\n  }\n}\n\n// process entities most-gaps-first (prioritisation)\nconst ordered = entities.slice().sort((a, b) => (gapCountByEntity[b.id] || 0) - (gapCountByEntity[a.id] || 0));\n\nconst rows = [];\nfor (const ent of ordered) {\n  const gapN = gapCountByEntity[ent.id] || 0;\n  // (a) curated catalog\n  for (const c of CATALOG) {\n    rows.push({ entity_id: ent.id, type: c.type, name: c.name, url: c.url, relevance_note: c.note + ' · ' + ent.name + ' has ' + gapN + ' visibility gap(s).', status: 'identified' });\n  }\n  // (b) third-party sources already surfacing for this entity's queries\n  const srcs = Object.keys(sourcesByEntity[ent.id] || {});\n  for (const d of srcs) {\n    const competitorCited = competitorDomains[d] ? false : true; // competitor root domains are not \"sources\"\n    if (!competitorCited) continue;\n    rows.push({\n      entity_id: ent.id,\n      type: 'press',\n      name: d,\n      url: 'https://' + d,\n      relevance_note: 'Third-party source already surfacing in AI/search results for this entity’s queries (from probe source_urls) — a place competitors get cited, so pitch genuine coverage here.',\n      status: 'identified',\n    });\n  }\n}\n\n// idempotent upsert: ignore duplicates so human-progressed status is preserved\nlet inserted = 0;\nif (rows.length) {\n  // chunk to keep requests small\n  for (let i = 0; i < rows.length; i += 100) {\n    const chunk = rows.slice(i, i + 100);\n    await rest('citation_targets?on_conflict=entity_id,url', {\n      method: 'POST',\n      headers: { Prefer: 'resolution=ignore-duplicates,return=minimal' },\n      body: chunk,\n    });\n    inserted += chunk.length;\n  }\n}\nreturn [{ json: { entities: ordered.length, candidates_upserted: inserted, note: 'duplicates ignored; existing statuses preserved' } }];\n"
+      },
+      "id": "cd-0002-0002-4002-8002-000000000002",
+      "name": "Discover citation targets",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Manual trigger": {
+      "main": [
+        [
+          {
+            "node": "Discover citation targets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekly schedule (Tue 07:00 IST)": {
+      "main": [
+        [
+          {
+            "node": "Discover citation targets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
