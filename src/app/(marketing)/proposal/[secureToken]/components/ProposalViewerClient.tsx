@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   CheckCircle2,
   ShieldCheck,
@@ -13,7 +14,9 @@ import {
   Calendar,
   CreditCard,
   User,
+  ArrowRight,
 } from "lucide-react";
+
 import { COMPANY } from "@/config/company";
 import { trackEvent } from "@/lib/analytics";
 
@@ -241,15 +244,35 @@ export default function ProposalViewerClient({ proposal }: Props) {
           )}
 
           {isApproved ? (
-            <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center gap-4 shadow-xs">
-              <CheckCircle2 className="w-8 h-8 text-emerald-600 shrink-0" />
-              <div>
-                <p className="font-bold text-sm text-[var(--lit-navy,#0B2545)]">
-                  Proposal Successfully Accepted
-                </p>
-                <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-0.5">
-                  Thank you. Our engineering team will coordinate your onboarding repository access and kickoff session.
-                </p>
+            <div className="space-y-4">
+              <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-start sm:items-center gap-4 shadow-xs">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600 shrink-0 mt-0.5 sm:mt-0" />
+                <div className="flex-1">
+                  <p className="font-bold text-sm text-[var(--lit-navy,#0B2545)]">
+                    Proposal Successfully Accepted & Signed
+                  </p>
+                  <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-0.5 leading-relaxed">
+                    Thank you. Statement of work has been recorded. Complete your billing details to unlock the Stage 06 dynamic UPI payment gateway.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-white border border-[#B9DCFF] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <span className="text-xs font-mono font-bold text-[var(--lit-blue,#1565C0)] tracking-wider uppercase block">
+                    Next Stage · Stage 06 Initial Payment Gate
+                  </span>
+                  <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-0.5">
+                    Form-first billing gate with dynamic amount-specific UPI QR & instant invoice generation.
+                  </p>
+                </div>
+                <Link
+                  href={`/payment/${proposal.secure_token}`}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white font-semibold text-xs uppercase tracking-wider transition-all shadow-sm shrink-0"
+                >
+                  <span>Proceed to Payment Portal</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </div>
             </div>
           ) : (

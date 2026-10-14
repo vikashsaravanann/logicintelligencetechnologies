@@ -39,11 +39,14 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
-  // Token-secured client invitation pages (/proposal/[token], /enterprise-checklist/[token])
+  // Token-secured client invitation and lifecycle pages (/proposal/[token], /enterprise-checklist/[token], /payment/[token], /onboarding/[token], /handover/[token])
   // are validated server-side by cryptographically secure bearer tokens without requiring a staff session.
   if (
     (path.startsWith("/proposal/") && path.length > "/proposal/".length) ||
-    (path.startsWith("/enterprise-checklist/") && path.length > "/enterprise-checklist/".length)
+    (path.startsWith("/enterprise-checklist/") && path.length > "/enterprise-checklist/".length) ||
+    (path.startsWith("/payment/") && path.length > "/payment/".length) ||
+    (path.startsWith("/onboarding/") && path.length > "/onboarding/".length) ||
+    (path.startsWith("/handover/") && path.length > "/handover/".length)
   ) {
     return res;
   }

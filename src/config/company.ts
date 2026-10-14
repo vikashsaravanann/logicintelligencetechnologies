@@ -6,11 +6,28 @@ export const COMPANY = {
    *  page states incorporation is still pending, so no company-form suffix. */
   entityType: 'Technology Startup',
   entityLabel: 'Technology Startup',
-  address: 'Coimbatore, Tamil Nadu, India',
+  address: 'Eachanari, Coimbatore, Tamil Nadu 641021, India',
   location: {
+    addressLine: 'Eachanari',
     city: 'Coimbatore',
     state: 'Tamil Nadu',
+    postalCode: '641021',
     country: 'India',
+  },
+  registration: {
+    msmeUdyamNumber: 'UDYAM-TN-03-0345274',
+    enterpriseName: 'LOGIC INTELLIGENCE TECHNOLOGIES',
+    enterpriseType: 'Micro Enterprise',
+    majorActivity: 'Services',
+    registeredAddress: 'Eachanari, Coimbatore, Tamil Nadu 641021',
+    gstin: null, // Zero fabricated GSTIN; explicitly null until registered
+    pan: null,
+  },
+  beneficiary: {
+    accountHolder: 'S VIKASH',
+    upiId: '9342877474@ptyes',
+    brandName: 'Logic Intelligence Technologies',
+    bankName: 'YES BANK (PTYES)',
   },
   email: 'hello@logicintelligencetechnologies.in',
   contactEmail: 'contact@logicintelligencetechnologies.in',

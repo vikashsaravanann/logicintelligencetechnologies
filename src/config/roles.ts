@@ -33,6 +33,7 @@ export const CAPABILITIES = [
   "proposals.send",
   "invoices.read",
   "invoices.write",
+  "payment.verify",
   "support.read",
   "support.reply",
   "outreach.read",

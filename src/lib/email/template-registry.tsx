@@ -22,6 +22,7 @@ import NewsletterDoubleOptinEmail from "@/emails/newsletter-double-optin-email";
 import OutreachSequenceEmail from "@/emails/outreach-sequence-email";
 import PasswordResetEmail from "@/emails/password-reset-email";
 import PaymentReceivedEmail from "@/emails/payment-received-email";
+import PaymentVerifiedDualDocumentEmail from "@/emails/payment-verified-dual-document-email";
 import ProjectDeliveredEmail from "@/emails/project-delivered-email";
 import ProjectKickoffEmail from "@/emails/project-kickoff-email";
 import ProposalSentEmail from "@/emails/proposal-sent-email";
@@ -197,6 +198,29 @@ export const EMAIL_TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
         fullName="Marcus Vance"
         amount="USD 25,000"
         invoiceNumber="INV-2026-104"
+      />
+    ),
+  },
+  "payment-verified-dual-document": {
+    key: "payment-verified-dual-document",
+    name: "Payment Verified & Dual Documents",
+    category: "billing",
+    description: "Delivers verified Tax Invoice and Payment Receipt PDFs with stage unlocking instructions.",
+    defaultSender: "billing@logicintelligencetechnologies.in",
+    replyTo: "billing@logicintelligencetechnologies.in",
+    subject: "Payment Verified & Documents Issued (Tax Invoice + Payment Receipt)",
+    getElement: () => (
+      <PaymentVerifiedDualDocumentEmail
+        recipientName="Marcus Vance"
+        milestoneTitle="Stage 6: Initial Project Milestone (50%)"
+        amountPaid="₹1,50,000.00"
+        paymentDate="October 14, 2026"
+        utrReference="UPI/428910398471"
+        bankCreditReference="YESB-CMS-20261014-9918"
+        invoiceDownloadUrl="https://www.logicintelligencetechnologies.in/api/documents/invoice-demo"
+        receiptDownloadUrl="https://www.logicintelligencetechnologies.in/api/documents/receipt-demo"
+        stageNumber={6}
+        nextStageUrl="https://www.logicintelligencetechnologies.in/onboarding"
       />
     ),
   },

@@ -62,6 +62,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { label: "Onboarding", href: "/admin/onboarding", capability: "onboarding.manage", match: startsWith("/admin/onboarding") },
       { label: "Proposals", href: "/admin/proposals", capability: "proposals.read", match: startsWith("/admin/proposals") },
       { label: "Invoices", href: "/admin/invoices", capability: "invoices.read", match: startsWith("/admin/invoices") },
+      { label: "Payments", href: "/admin/payments", capability: "payment.verify", match: startsWith("/admin/payments") },
     ],
   },
   {
@@ -92,6 +93,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
   {
     label: "Governance",
     items: [
+      { label: "Company", href: "/admin/company", capability: "dashboard.view", match: startsWith("/admin/company") },
       { label: "Team", href: "/admin/team", capability: "team.read", match: startsWith("/admin/team") },
       { label: "Audit Log", href: "/admin/audit", capability: "audit.read", match: startsWith("/admin/audit") },
     ],

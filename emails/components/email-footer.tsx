@@ -5,9 +5,16 @@ import { EMAIL } from "./email-styles";
 interface EmailFooterProps {
   unsubscribeUrl?: string;
   signature?: string;
+  msmeRegistration?: string;
+  registeredAddress?: string;
 }
 
-export const EmailFooter = ({ unsubscribeUrl, signature }: EmailFooterProps) => {
+export const EmailFooter = ({
+  unsubscribeUrl,
+  signature,
+  msmeRegistration,
+  registeredAddress,
+}: EmailFooterProps) => {
   return (
     <Section style={footer}>
       <Hr style={divider} />
@@ -21,7 +28,12 @@ export const EmailFooter = ({ unsubscribeUrl, signature }: EmailFooterProps) => 
         </Text>
       ) : null}
       <Text style={company}>{EMAIL.company}</Text>
-      <Text style={addressText}>Coimbatore, Tamil Nadu, India</Text>
+      {msmeRegistration ? (
+        <Text style={msmeStyle}>MSME / Udyam: {msmeRegistration}</Text>
+      ) : null}
+      <Text style={addressText}>
+        {registeredAddress || "Coimbatore, Tamil Nadu, India"}
+      </Text>
       <Text style={site}>
         <Link href={EMAIL.siteUrl} style={siteLink}>
           logicintelligencetechnologies.in
@@ -79,6 +91,15 @@ const company = {
   color: EMAIL.colors.text,
   fontSize: "13px",
   fontWeight: "700" as const,
+  margin: "0 0 4px 0",
+  fontFamily: EMAIL.font,
+  letterSpacing: "0.02em",
+};
+
+const msmeStyle = {
+  color: EMAIL.colors.muted,
+  fontSize: "12px",
+  fontWeight: "600" as const,
   margin: "0 0 4px 0",
   fontFamily: EMAIL.font,
   letterSpacing: "0.02em",
