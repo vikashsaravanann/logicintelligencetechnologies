@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { requireCapabilityAction } from "@/lib/auth/session";
+import { recordAdminAction } from "@/lib/admin/audit";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 const schema = z.object({
@@ -22,6 +23,7 @@ export async function reviewSuggestion(input: {
   decision: "approved" | "rejected";
 }): Promise<ReviewResult> {
   const session = await requireCapabilityAction("seo.manage", "visibility.content_review");
+  const actor = { userId: session.userId, email: session.email, role: session.role };
 
   const parsed = schema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Invalid review input." };
@@ -35,6 +37,15 @@ export async function reviewSuggestion(input: {
     })
     .eq("id", parsed.data.id)
     .neq("status", "applied"); // applied suggestions are immutable here
+
+  await recordAdminAction({
+    actor,
+    action: "visibility.content_review",
+    capability: "seo.manage",
+    target: { type: "content_suggestion", id: parsed.data.id },
+    outcome: error ? "failed" : "succeeded",
+    metadata: { decision: parsed.data.decision },
+  });
 
   if (error) return { ok: false, error: "Could not update the suggestion." };
 
@@ -113,6 +124,16 @@ export type CitationResult = { ok: true; message: string } | { ok: false; error:
  */
 export async function promoteCitationTarget(id: string): Promise<CitationResult> {
   const session = await requireCapabilityAction("outreach.manage", "visibility.citation_promote");
+  const actor = { userId: session.userId, email: session.email, role: session.role };
+  const audit = (outcome: "succeeded" | "failed", metadata?: Record<string, unknown>) =>
+    recordAdminAction({
+      actor,
+      action: "visibility.citation_promote",
+      capability: "outreach.manage",
+      target: { type: "citation_target", id },
+      outcome,
+      metadata,
+    });
 
   if (!z.string().uuid().safeParse(id).success) return { ok: false, error: "Invalid target." };
 
@@ -151,7 +172,10 @@ export async function promoteCitationTarget(id: string): Promise<CitationResult>
     })
     .select("id")
     .maybeSingle();
-  if (bizErr || !biz) return { ok: false, error: "Could not stage the outreach venue." };
+  if (bizErr || !biz) {
+    await audit("failed", { step: "stage_venue" });
+    return { ok: false, error: "Could not stage the outreach venue." };
+  }
 
   // 2. draft into the existing human-review queue (needs_review, approvable)
   const { error: msgErr } = await supabaseAdmin.from("lead_outreach_messages").insert({
@@ -167,9 +191,13 @@ export async function promoteCitationTarget(id: string): Promise<CitationResult>
     status: "needs_review",
     generated_by: session.email ?? session.userId,
   });
-  if (msgErr) return { ok: false, error: "Could not create the outreach draft." };
+  if (msgErr) {
+    await audit("failed", { step: "create_draft" });
+    return { ok: false, error: "Could not create the outreach draft." };
+  }
 
   await supabaseAdmin.from("citation_targets").update({ status: "queued" }).eq("id", id);
+  await audit("succeeded", { type: target.type, channel: draft.channel });
 
   revalidatePath("/admin/command-center/visibility");
   return {
@@ -190,7 +218,8 @@ export async function markCitationStatus(input: {
   status: "actioned" | "live" | "rejected";
   citationUrl?: string;
 }): Promise<CitationResult> {
-  await requireCapabilityAction("seo.manage", "visibility.citation_mark");
+  const session = await requireCapabilityAction("seo.manage", "visibility.citation_mark");
+  const actor = { userId: session.userId, email: session.email, role: session.role };
   const parsed = markSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Invalid input." };
   if (parsed.data.status === "live" && !parsed.data.citationUrl) {
@@ -201,6 +230,16 @@ export async function markCitationStatus(input: {
   if (parsed.data.status === "live") patch.citation_url = parsed.data.citationUrl;
 
   const { error } = await supabaseAdmin.from("citation_targets").update(patch).eq("id", parsed.data.id);
+
+  await recordAdminAction({
+    actor,
+    action: "visibility.citation_mark",
+    capability: "seo.manage",
+    target: { type: "citation_target", id: parsed.data.id },
+    outcome: error ? "failed" : "succeeded",
+    metadata: { status: parsed.data.status },
+  });
+
   if (error) return { ok: false, error: "Could not update the target." };
 
   revalidatePath("/admin/command-center/visibility");
