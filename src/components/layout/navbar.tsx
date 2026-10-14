@@ -131,9 +131,6 @@ export default function Navbar() {
               <span className="text-[11px] font-bold text-[var(--lit-navy)] tracking-[0.10em] uppercase hidden min-[1536px]:inline group-hover:text-[var(--lit-blue)] transition-colors whitespace-nowrap">
                 {COMPANY.displayName.toUpperCase()}
               </span>
-              <span className="text-[11px] font-bold text-[var(--lit-navy)] tracking-[0.08em] uppercase hidden xl:inline min-[1536px]:hidden group-hover:text-[var(--lit-blue)] transition-colors whitespace-nowrap">
-                LOGIC INTELLIGENCE
-              </span>
             </Link>
 
             <div className="hidden xl:flex items-center justify-center gap-0.5 min-w-0 shrink">
