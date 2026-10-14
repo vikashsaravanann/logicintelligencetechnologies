@@ -44,16 +44,19 @@ export interface VisibilityCheckRow {
   cited: boolean;
   rank: number | null;
   snippet: string | null;
+  /** false = the probe call failed/was skipped; such rows are excluded from scores. */
+  ok?: boolean;
 }
 
 export interface PlatformScore {
   platform: VisibilityPlatform;
   label: string;
   mentionedCount: number;
+  /** denominator = queries with a SUCCESSFUL latest check on this platform. */
   total: number;
   /** 0–100, rounded. */
   pct: number;
-  /** whether any check exists for this platform yet. */
+  /** whether any successful check exists for this platform yet. */
   hasData: boolean;
 }
 
@@ -75,6 +78,7 @@ function keyOf(queryId: string, platform: string): string {
 export function latestPerQueryPlatform(rows: VisibilityCheckRow[]): Map<string, VisibilityCheckRow> {
   const latest = new Map<string, VisibilityCheckRow>();
   for (const r of rows) {
+    if (r.ok === false) continue; // exclude failed/skipped probes from the "latest" set
     const k = keyOf(r.query_id, r.platform);
     const prev = latest.get(k);
     if (!prev || new Date(r.run_at).getTime() > new Date(prev.run_at).getTime()) {
@@ -85,23 +89,22 @@ export function latestPerQueryPlatform(rows: VisibilityCheckRow[]): Map<string, 
 }
 
 /**
- * Visibility score per platform = % of active queries where mentioned=true,
- * from the most recent run per (query, platform). Denominator is the active
- * query count, so a query never probed on a platform counts as "not mentioned".
+ * Visibility score per platform = % of SUCCESSFULLY-probed queries where
+ * mentioned=true, from the most recent successful run per (query, platform).
+ * Failed/skipped probes (ok=false) are excluded, so a provider outage does not
+ * masquerade as genuine invisibility. The denominator is therefore the number
+ * of queries with a successful latest check on that platform, not every query.
  */
-export function platformScores(
-  rows: VisibilityCheckRow[],
-  activeQueryCount: number,
-): PlatformScore[] {
-  const latest = latestPerQueryPlatform(rows);
+export function platformScores(rows: VisibilityCheckRow[]): PlatformScore[] {
+  const latest = latestPerQueryPlatform(rows); // already excludes ok=false
   const mentioned: Record<string, number> = {};
   const seen: Record<string, number> = {};
   for (const r of latest.values()) {
     seen[r.platform] = (seen[r.platform] ?? 0) + 1;
     if (r.mentioned) mentioned[r.platform] = (mentioned[r.platform] ?? 0) + 1;
   }
-  const total = Math.max(0, activeQueryCount);
   return VISIBILITY_PLATFORMS.map((platform) => {
+    const total = seen[platform] ?? 0;
     const mentionedCount = mentioned[platform] ?? 0;
     return {
       platform,
@@ -109,7 +112,7 @@ export function platformScores(
       mentionedCount,
       total,
       pct: total > 0 ? Math.round((mentionedCount / total) * 100) : 0,
-      hasData: (seen[platform] ?? 0) > 0,
+      hasData: total > 0,
     };
   });
 }
@@ -132,10 +135,7 @@ export function istDayKey(value: string): string {
  * is a day; a platform value is null when there were no runs that day so the
  * chart can show a gap rather than a fake zero.
  */
-export function trendSeries(
-  rows: VisibilityCheckRow[],
-  activeQueryCount: number,
-): TrendPoint[] {
+export function trendSeries(rows: VisibilityCheckRow[]): TrendPoint[] {
   const byDay = new Map<string, VisibilityCheckRow[]>();
   for (const r of rows) {
     const day = istDayKey(r.run_at);
@@ -144,10 +144,9 @@ export function trendSeries(
     if (bucket) bucket.push(r);
     else byDay.set(day, [r]);
   }
-  const total = Math.max(0, activeQueryCount);
   const days = Array.from(byDay.keys()).sort();
   return days.map((day) => {
-    const latest = latestPerQueryPlatform(byDay.get(day)!);
+    const latest = latestPerQueryPlatform(byDay.get(day)!); // excludes ok=false
     const mentioned: Record<string, number> = {};
     const seen: Record<string, number> = {};
     for (const r of latest.values()) {
@@ -156,10 +155,8 @@ export function trendSeries(
     }
     const point: TrendPoint = { date: day };
     for (const platform of VISIBILITY_PLATFORMS) {
-      point[platform] =
-        (seen[platform] ?? 0) > 0 && total > 0
-          ? Math.round(((mentioned[platform] ?? 0) / total) * 100)
-          : null;
+      const total = seen[platform] ?? 0; // successful latest checks that day
+      point[platform] = total > 0 ? Math.round(((mentioned[platform] ?? 0) / total) * 100) : null;
     }
     return point;
   });

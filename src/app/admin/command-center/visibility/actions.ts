@@ -28,7 +28,9 @@ export async function reviewSuggestion(input: {
   const parsed = schema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Invalid review input." };
 
-  const { error } = await supabaseAdmin
+  // Permitted transitions: only draft/approved/rejected rows may be re-decided.
+  // 'applied' is terminal. Confirm exactly one row changed (affected-row check).
+  const { data, error } = await supabaseAdmin
     .from("content_suggestions")
     .update({
       status: parsed.data.decision,
@@ -36,18 +38,23 @@ export async function reviewSuggestion(input: {
       reviewed_at: new Date().toISOString(),
     })
     .eq("id", parsed.data.id)
-    .neq("status", "applied"); // applied suggestions are immutable here
+    .in("status", ["draft", "approved", "rejected"])
+    .select("id");
 
+  const changed = (data ?? []).length;
   await recordAdminAction({
     actor,
     action: "visibility.content_review",
     capability: "seo.manage",
     target: { type: "content_suggestion", id: parsed.data.id },
-    outcome: error ? "failed" : "succeeded",
-    metadata: { decision: parsed.data.decision },
+    outcome: error || changed !== 1 ? "failed" : "succeeded",
+    metadata: { decision: parsed.data.decision, changed },
   });
 
   if (error) return { ok: false, error: "Could not update the suggestion." };
+  if (changed !== 1) {
+    return { ok: false, error: "Suggestion is not in a reviewable state (already applied or missing)." };
+  }
 
   revalidatePath("/admin/command-center/visibility");
   return { ok: true };
@@ -63,6 +70,28 @@ function hostFromUrl(u: string): string {
   } catch {
     return u.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "").toLowerCase();
   }
+}
+
+/**
+ * Reject anything that is not a public https:// URL (defence-in-depth so a
+ * citation_url can't point at an internal address). Returns a reason or null.
+ */
+function ssrfReasonForUrl(u: string): string | null {
+  let x: URL;
+  try {
+    x = new URL(u);
+  } catch {
+    return "unparseable URL";
+  }
+  if (x.protocol !== "https:") return "non-https scheme";
+  if (x.username || x.password) return "embedded credentials";
+  if (x.port && x.port !== "443") return "non-standard port";
+  const host = x.hostname.toLowerCase();
+  if (host === "localhost" || /\.(localhost|local|internal)$/.test(host)) return "internal hostname";
+  if (host.includes(":")) return "ipv6 literal host";
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) return "ip-literal host";
+  if (!host.includes(".")) return "non-fqdn host";
+  return null;
 }
 
 /** Build a truthful, human-editable outreach/submission draft for a target. */
@@ -177,7 +206,11 @@ export async function promoteCitationTarget(id: string): Promise<CitationResult>
     return { ok: false, error: "Could not stage the outreach venue." };
   }
 
-  // 2. draft into the existing human-review queue (needs_review, approvable)
+  // 2. draft into the existing Lead Engine queue as a plain DRAFT. We do NOT
+  //    set blockers_pass:true or 'needs_review' — that would let approveDraft
+  //    approve a citation message that never ran the outreach QA/compliance
+  //    gates. It lands as 'draft' with blockers_pass:false so the established
+  //    QA + jurisdiction/suppression gates must pass before it is approvable.
   const { error: msgErr } = await supabaseAdmin.from("lead_outreach_messages").insert({
     business_id: biz.id,
     version: 1,
@@ -187,8 +220,8 @@ export async function promoteCitationTarget(id: string): Promise<CitationResult>
     evidence_used: [],
     claims_requiring_review: [],
     qa_gates: [],
-    blockers_pass: true,
-    status: "needs_review",
+    blockers_pass: false,
+    status: "draft",
     generated_by: session.email ?? session.userId,
   });
   if (msgErr) {
@@ -202,7 +235,8 @@ export async function promoteCitationTarget(id: string): Promise<CitationResult>
   revalidatePath("/admin/command-center/visibility");
   return {
     ok: true,
-    message: "Draft queued for human review in Outreach → Dispatch & Approval Queue. It will not send automatically.",
+    message:
+      "Outreach draft created in the Lead Engine queue as a DRAFT. It must pass the outreach QA/compliance gates before it can be approved, and it will never auto-send.",
   };
 }
 
@@ -211,6 +245,15 @@ const markSchema = z.object({
   status: z.enum(["actioned", "live", "rejected"]),
   citationUrl: z.string().url().optional(),
 });
+
+/** Allowed status transitions for a citation target (human-driven). */
+const CITATION_TRANSITIONS: Record<string, string[]> = {
+  identified: ["rejected"], // promote handles identified -> queued
+  queued: ["actioned", "rejected"],
+  actioned: ["live", "rejected"],
+  live: [],
+  rejected: [],
+};
 
 /** Human-driven status transitions for a citation target. */
 export async function markCitationStatus(input: {
@@ -225,22 +268,44 @@ export async function markCitationStatus(input: {
   if (parsed.data.status === "live" && !parsed.data.citationUrl) {
     return { ok: false, error: "A citation URL is required to mark a target live." };
   }
+  if (parsed.data.status === "live" && ssrfReasonForUrl(parsed.data.citationUrl!)) {
+    return { ok: false, error: "Citation URL must be a public https:// address." };
+  }
+
+  // Validate the transition against the current status (enforce the matrix).
+  const { data: current } = await supabaseAdmin
+    .from("citation_targets")
+    .select("status")
+    .eq("id", parsed.data.id)
+    .maybeSingle();
+  if (!current) return { ok: false, error: "Citation target not found." };
+  const allowed = CITATION_TRANSITIONS[current.status as string] ?? [];
+  if (!allowed.includes(parsed.data.status)) {
+    return { ok: false, error: `Cannot move a '${current.status}' target to '${parsed.data.status}'.` };
+  }
 
   const patch: Record<string, unknown> = { status: parsed.data.status };
   if (parsed.data.status === "live") patch.citation_url = parsed.data.citationUrl;
 
-  const { error } = await supabaseAdmin.from("citation_targets").update(patch).eq("id", parsed.data.id);
+  // Affected-row check: only transition from the status we validated.
+  const { data, error } = await supabaseAdmin
+    .from("citation_targets")
+    .update(patch)
+    .eq("id", parsed.data.id)
+    .eq("status", current.status as string)
+    .select("id");
+  const changed = (data ?? []).length;
 
   await recordAdminAction({
     actor,
     action: "visibility.citation_mark",
     capability: "seo.manage",
     target: { type: "citation_target", id: parsed.data.id },
-    outcome: error ? "failed" : "succeeded",
-    metadata: { status: parsed.data.status },
+    outcome: error || changed !== 1 ? "failed" : "succeeded",
+    metadata: { from: current.status, to: parsed.data.status, changed },
   });
 
-  if (error) return { ok: false, error: "Could not update the target." };
+  if (error || changed !== 1) return { ok: false, error: "Could not update the target (state changed?)." };
 
   revalidatePath("/admin/command-center/visibility");
   return { ok: true, message: `Marked ${parsed.data.status}.` };
