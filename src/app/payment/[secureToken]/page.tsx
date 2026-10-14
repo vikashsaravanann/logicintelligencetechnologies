@@ -10,8 +10,13 @@ interface Props {
   params: Promise<{ secureToken: string }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { secureToken } = await params;
+function isPaymentExpired(expiresAt?: string | null): boolean {
+  if (!expiresAt) return false;
+  const expiresMs = new Date(expiresAt).getTime();
+  return !isNaN(expiresMs) && expiresMs < Date.now();
+}
+
+export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Secure Milestone Payment | Logic Intelligence Technologies",
     description: "Enterprise manual UPI clearing & settlement gateway for Logic Intelligence Technologies engagements.",
@@ -34,11 +39,8 @@ export default async function PaymentPage({ params }: Props) {
   }
 
   // Check expiration
-  if (paymentData.request.expires_at) {
-    const expiresMs = new Date(paymentData.request.expires_at).getTime();
-    if (!isNaN(expiresMs) && expiresMs < Date.now()) {
-      return <PaymentErrorCard reason="expired" token={secureToken} />;
-    }
+  if (isPaymentExpired(paymentData.request.expires_at)) {
+    return <PaymentErrorCard reason="expired" token={secureToken} />;
   }
 
   let upiUri: string | null = null;
