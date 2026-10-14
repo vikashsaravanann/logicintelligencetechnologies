@@ -54,24 +54,7 @@ test("essential system and auth entrypoints remain public", () => {
   }
 });
 
-test("marketing and product routes are not public and are protected", () => {
-  const targetRoutes = [
-    "/about",
-    "/services",
-    "/products",
-    "/packages",
-    "/pricing",
-    "/healthcare",
-    "/voice-shield",
-  ];
-
-  for (const r of targetRoutes) {
-    assert.equal(isPublicPath(r), false, `${r} must not be public`);
-    assert.equal(isProtectedPath(r), true, `${r} must be protected`);
-  }
-});
-
-test("every page in the (marketing) route group requires login", () => {
+test("every page in the (marketing) route group is public", () => {
   const routes = fs
     .readdirSync(MARKETING_DIR, { withFileTypes: true })
     .filter((e) => e.isDirectory() && !/^[[(_]/.test(e.name))
@@ -79,17 +62,17 @@ test("every page in the (marketing) route group requires login", () => {
     .map((e) => `/${e.name}`);
 
   assert.ok(routes.length > 20, `expected many marketing routes, found ${routes.length}`);
-  const accidentallyPublic = routes.filter((r) => isPublicPath(r));
-  assert.deepEqual(accidentallyPublic, [], `marketing routes must not be public: ${accidentallyPublic.join(", ")}`);
+  const locked = routes.filter((r) => !isPublicPath(r));
+  assert.deepEqual(locked, [], `marketing routes redirected to /login: ${locked.join(", ")}`);
 
-  const unprotected = routes.filter((r) => !isProtectedPath(r));
-  assert.deepEqual(unprotected, [], `marketing routes must be protected: ${unprotected.join(", ")}`);
+  const protectedRoutes = routes.filter((r) => isProtectedPath(r));
+  assert.deepEqual(protectedRoutes, [], `marketing routes must not be protected: ${protectedRoutes.join(", ")}`);
 });
 
-test("pages outside the (marketing) group are protected behind login", () => {
-  for (const p of ["/pricing", "/security", "/company/facts", "/ai"]) {
-    assert.equal(isPublicPath(p), false, `${p} must not be public`);
-    assert.equal(isProtectedPath(p), true, `${p} must be protected`);
+test("public pages outside the (marketing) group stay reachable", () => {
+  for (const p of ["/pricing", "/security", "/company/facts", "/ai", "/onboard"]) {
+    assert.equal(isPublicPath(p), true, `${p} should be public`);
+    assert.equal(isProtectedPath(p), false, `${p} must not be protected`);
   }
 });
 
@@ -111,29 +94,17 @@ test("/admin and /dashboard are company-only", () => {
   }
 });
 
-test("every page in pageUrls() is classified properly: / is public, all other pages are protected", () => {
+test("every page is classified public or protected (no unlisted private page)", () => {
   const urls = pageUrls();
   assert.ok(urls.length > 60, `expected many pages, found ${urls.length}`);
 
   // No unclassified pages
   const unclassified = urls.filter((u) => !isPublicPath(u) && !isProtectedPath(u));
-  assert.deepEqual(unclassified, [], `add to PROTECTED_PREFIXES: ${unclassified.join(", ")}`);
+  assert.deepEqual(unclassified, [], `add to PUBLIC_MARKETING_PREFIXES or PROTECTED_PREFIXES: ${unclassified.join(", ")}`);
 
   // No pages listed as both public and protected
   const both = urls.filter((u) => isPublicPath(u) && isProtectedPath(u));
   assert.deepEqual(both, [], `listed as both public and protected: ${both.join(", ")}`);
-
-  // / is public and not protected
-  assert.equal(isPublicPath("/"), true, "/ must be public");
-  assert.equal(isProtectedPath("/"), false, "/ must not be protected");
-
-  // Every other page in pageUrls() is protected behind login (excluding auth/system entrypoints)
-  const AUTH_SYSTEM_ENTRYPOINTS = new Set(["/login", "/reset-password", "/unsubscribe"]);
-  const protectedPages = urls.filter((u) => u !== "/" && !AUTH_SYSTEM_ENTRYPOINTS.has(u));
-  for (const u of protectedPages) {
-    assert.equal(isPublicPath(u), false, `${u} must not be public`);
-    assert.equal(isProtectedPath(u), true, `${u} must be protected`);
-  }
 });
 
 test("prefix matching does not leak lookalike paths", () => {
@@ -157,15 +128,11 @@ test("protected matching survives encoding, case, slash tricks, and malformed en
     "/ADMIN/leads",
     "//admin",
     "/dashboard%2Fleads",
-    "/%61bout",
-    "/ABOUT",
-    "//pricing",
-    "/SERVICES",
     "/%E0%A4%A", // malformed URI encoding: fails closed
   ]) {
     assert.equal(isProtectedPath(p), true, `${p} must be protected`);
   }
-  for (const p of ["/does-not-exist", "/adminx", "/reply-drafter.html"]) {
+  for (const p of ["/does-not-exist", "/adminx", "/reply-drafter.html", "/about", "/services"]) {
     assert.equal(isProtectedPath(p), false, `${p} is not a signed-in area`);
   }
 });

@@ -2,7 +2,64 @@
  * Routes reachable without signing in.
  * Only the homepage and essential auth / static asset routes are public.
  */
-export const PUBLIC_MARKETING_PREFIXES: readonly string[] = [];
+export const PUBLIC_MARKETING_PREFIXES: readonly string[] = [
+  // (marketing) route group
+  "/about",
+  "/accessibility",
+  "/ai-assistant",
+  "/ai-discovery",
+  "/ai-ethics",
+  "/architecture",
+  "/blog",
+  "/book-consultation",
+  "/booking",
+  "/careers",
+  "/certifications",
+  "/checklist",
+  "/community",
+  "/contact",
+  "/cookie-policy",
+  "/discovery",
+  "/docs",
+  "/enterprise-checklist",
+  "/expertise",
+  "/free-demo",
+  "/healthcare",
+  "/help-center",
+  "/industries",
+  "/investor-brief",
+  "/investors",
+  "/jobs",
+  "/knowledge-base",
+  "/packages",
+  "/press",
+  "/privacy",
+  "/privacy-policy",
+  "/products",
+  "/proposal",
+  "/refund-policy",
+  "/resources",
+  "/roi-calculator",
+  "/sales",
+  "/search",
+  "/services",
+  "/status",
+  "/support",
+  "/terms",
+  "/terms-of-service",
+  "/voice-shield",
+  "/work",
+
+  // Public & lifecycle pages that live outside the (marketing) group
+  "/ai",
+  "/company",
+  "/handover",
+  "/onboard",
+  "/onboarding",
+  "/payment",
+  "/pricing",
+  "/security",
+];
 
 export function isPublicPath(path: string): boolean {
   const p = path.split("?")[0];
@@ -21,7 +78,12 @@ export function isPublicPath(path: string): boolean {
   if (p.startsWith("/sitemap")) return true;
   if (p.startsWith("/robots")) return true;
   if (p.startsWith("/manifest")) return true;
-  return false;
+
+  const normalized = normalizePath(p);
+  if (normalized === null) return false;
+  return PUBLIC_MARKETING_PREFIXES.some(
+    (prefix) => normalized === prefix || normalized.startsWith(prefix + "/")
+  );
 }
 
 /**
@@ -38,61 +100,6 @@ export const PROTECTED_PREFIXES: readonly string[] = [
   "/client",
   "/dashboard",
   "/profile",
-
-  // Pages requiring sign-in
-  "/about",
-  "/accessibility",
-  "/ai",
-  "/ai-assistant",
-  "/ai-discovery",
-  "/ai-ethics",
-  "/architecture",
-  "/blog",
-  "/book-consultation",
-  "/booking",
-  "/careers",
-  "/certifications",
-  "/checklist",
-  "/community",
-  "/company",
-  "/contact",
-  "/cookie-policy",
-  "/discovery",
-  "/docs",
-  "/enterprise-checklist",
-  "/expertise",
-  "/free-demo",
-  "/handover",
-  "/healthcare",
-  "/help-center",
-  "/industries",
-  "/investor-brief",
-  "/investors",
-  "/jobs",
-  "/knowledge-base",
-  "/onboard",
-  "/onboarding",
-  "/packages",
-  "/payment",
-  "/press",
-  "/pricing",
-  "/privacy",
-  "/privacy-policy",
-  "/products",
-  "/proposal",
-  "/refund-policy",
-  "/resources",
-  "/roi-calculator",
-  "/sales",
-  "/search",
-  "/security",
-  "/services",
-  "/status",
-  "/support",
-  "/terms",
-  "/terms-of-service",
-  "/voice-shield",
-  "/work",
 ];
 
 /** Decoded, slash-collapsed, lower-cased path; null when the encoding is malformed. */
