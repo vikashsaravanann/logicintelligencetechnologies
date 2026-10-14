@@ -24,6 +24,7 @@ export function EmailNavTabs() {
     { name: "Approvals", href: "/admin/emails/approvals", icon: CheckSquare },
     { name: "Incident Console", href: "/admin/emails/incidents", icon: ShieldAlert },
     { name: "n8n Orchestration", href: "/admin/emails/n8n", icon: Settings },
+    { name: "Template Gallery", href: "/admin/email-preview", icon: Mail },
     { name: "Live Test", href: "/admin/emails/test", icon: TerminalSquare },
   ];
 

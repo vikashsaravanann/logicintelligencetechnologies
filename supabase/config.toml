@@ -217,25 +217,31 @@ otp_length = 6
 otp_expiry = 3600
 
 # Use a production-ready SMTP server
-# [auth.email.smtp]
-# enabled = true
-# host = "smtp.sendgrid.net"
-# port = 587
-# user = "apikey"
-# pass = "env(SENDGRID_API_KEY)"
-# admin_email = "admin@email.com"
-# sender_name = "Admin"
+[auth.email.smtp]
+enabled = true
+host = "smtp.zoho.in"
+port = 587
+user = "no-reply@logicintelligencetechnologies.in"
+pass = "env(SMTP_NOREPLY_PASS)"
+admin_email = "no-reply@logicintelligencetechnologies.in"
+sender_name = "Logic Intelligence Technologies"
 
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Corporate branded email templates (LIT Email v2)
+[auth.email.template.confirmation]
+subject = "Confirm your email | Logic Intelligence Technologies"
+content_path = "./supabase/templates/confirmation.html"
 
-# Uncomment to customize notification email template
-# [auth.email.notification.password_changed]
-# enabled = true
-# subject = "Your password has been changed"
-# content_path = "./templates/password_changed_notification.html"
+[auth.email.template.recovery]
+subject = "Reset your password | Logic Intelligence Technologies"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.invite]
+subject = "You have been invited | Logic Intelligence Technologies"
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.template.magic_link]
+subject = "Your sign-in link | Logic Intelligence Technologies"
+content_path = "./supabase/templates/magic_link.html"
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.

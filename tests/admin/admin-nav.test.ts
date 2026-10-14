@@ -22,6 +22,7 @@ function adminPageRoutes(dir = ADMIN_DIR, segs: string[] = []): string[] {
 const NAV_HIDDEN: Record<string, string> = {
   "/admin": "redirects to command-center",
   "/admin/forbidden": "shown on capability denial",
+  "/admin/email-preview": "reached from the Emails page (Template Gallery)",
   "/admin/emails/new": "reached from the Emails page",
   "/admin/emails/mailboxes": "reached from the Emails page",
   "/admin/emails/outbox": "reached from the Emails page",

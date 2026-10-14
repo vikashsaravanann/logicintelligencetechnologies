@@ -4,12 +4,22 @@ import { EMAIL } from "./email-styles";
 
 interface EmailFooterProps {
   unsubscribeUrl?: string;
+  signature?: string;
 }
 
-export const EmailFooter = ({ unsubscribeUrl }: EmailFooterProps) => {
+export const EmailFooter = ({ unsubscribeUrl, signature }: EmailFooterProps) => {
   return (
     <Section style={footer}>
       <Hr style={divider} />
+      {signature ? (
+        <Text style={sigText}>
+          Warm regards,
+          <br />
+          <strong style={{ color: EMAIL.colors.text }}>{signature}</strong>
+          <br />
+          {EMAIL.company}
+        </Text>
+      ) : null}
       <Text style={company}>{EMAIL.company}</Text>
       <Text style={addressText}>Coimbatore, Tamil Nadu, India</Text>
       <Text style={site}>
@@ -19,33 +29,33 @@ export const EmailFooter = ({ unsubscribeUrl }: EmailFooterProps) => {
       </Text>
       <Text style={links}>
         <Link href={`${EMAIL.siteUrl}/privacy`} style={link}>
-          Privacy
+          Privacy Policy
         </Link>
         {"  ·  "}
         <Link href={`${EMAIL.siteUrl}/terms`} style={link}>
-          Terms
+          Terms of Service
         </Link>
         {"  ·  "}
         <Link href={`${EMAIL.siteUrl}/contact`} style={link}>
-          Contact
+          Contact Us
         </Link>
       </Text>
       {unsubscribeUrl ? (
         <Text style={unsub}>
-          <Link href={unsubscribeUrl} style={link}>
-            Unsubscribe
+          <Link href={unsubscribeUrl} style={unsubLink}>
+            Unsubscribe from this list
           </Link>
         </Text>
       ) : null}
       <Text style={copy}>
-        © {new Date().getFullYear()} {EMAIL.company}
+        © {new Date().getFullYear()} {EMAIL.company}. All rights reserved.
       </Text>
     </Section>
   );
 };
 
 const footer = {
-  padding: "8px 32px 28px 32px",
+  padding: "12px 32px 32px 32px",
   textAlign: "center" as const,
   backgroundColor: EMAIL.colors.cardBg,
 };
@@ -53,23 +63,69 @@ const footer = {
 const divider = {
   borderColor: EMAIL.colors.divider,
   borderTop: `1px solid ${EMAIL.colors.divider}`,
+  margin: "0 0 24px 0",
+};
+
+const sigText = {
+  color: EMAIL.colors.muted,
+  fontSize: "14px",
+  lineHeight: "22px",
   margin: "0 0 20px 0",
+  fontFamily: EMAIL.font,
+  textAlign: "center" as const,
 };
 
 const company = {
   color: EMAIL.colors.text,
   fontSize: "13px",
-  fontWeight: "600" as const,
+  fontWeight: "700" as const,
   margin: "0 0 4px 0",
+  fontFamily: EMAIL.font,
+  letterSpacing: "0.02em",
+};
+
+const addressText = {
+  color: EMAIL.colors.muted,
+  fontSize: "12px",
+  margin: "0 0 8px 0",
   fontFamily: EMAIL.font,
 };
 
-const addressText = { color: EMAIL.colors.muted, fontSize: "11px", margin: "0 0 6px 0", fontFamily: EMAIL.font };
 const site = { margin: "0 0 12px 0" };
-const siteLink = { color: EMAIL.colors.link, fontSize: "13px", textDecoration: "none" };
-const links = { color: EMAIL.colors.muted, fontSize: "12px", margin: "0 0 8px 0", fontFamily: EMAIL.font };
-const link = { color: EMAIL.colors.muted, textDecoration: "none", fontSize: "12px" };
-const unsub = { margin: "0 0 8px 0", fontSize: "12px" };
-const copy = { color: EMAIL.colors.faint, fontSize: "11px", margin: "12px 0 0 0", fontFamily: EMAIL.font };
+
+const siteLink = {
+  color: EMAIL.colors.primary,
+  fontSize: "13px",
+  fontWeight: "600" as const,
+  textDecoration: "none",
+};
+
+const links = {
+  color: EMAIL.colors.muted,
+  fontSize: "12px",
+  margin: "0 0 10px 0",
+  fontFamily: EMAIL.font,
+};
+
+const link = {
+  color: EMAIL.colors.muted,
+  textDecoration: "underline",
+  fontSize: "12px",
+};
+
+const unsub = { margin: "0 0 10px 0", fontSize: "12px" };
+
+const unsubLink = {
+  color: EMAIL.colors.faint,
+  textDecoration: "underline",
+  fontSize: "11px",
+};
+
+const copy = {
+  color: EMAIL.colors.faint,
+  fontSize: "11px",
+  margin: "16px 0 0 0",
+  fontFamily: EMAIL.font,
+};
 
 export default EmailFooter;

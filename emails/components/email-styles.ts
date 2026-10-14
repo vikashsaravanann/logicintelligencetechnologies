@@ -1,25 +1,37 @@
-/** Shared email design tokens — Highly Professional PDF-like layout */
+/** Shared email design tokens — LIT EMAIL v2 Enterprise Design System */
 export const EMAIL = {
-  width: 680, // Slightly wider for a more professional document look
+  version: "LIT EMAIL v2",
+  width: 620, // Centered 620px card container
   logoUrl: "https://www.logicintelligencetechnologies.in/assets/logo-icon.jpg",
   siteUrl: "https://www.logicintelligencetechnologies.in",
   company: "Logic Intelligence Technologies",
   colors: {
-    pageBg: "#F5F1E7", // Sandal/Parchment background like a PDF document
-    cardBg: "#FFFFFF", // Crisp white for the document body
-    text: "#111827", // Almost black for high contrast reading
-    body: "#374151",
-    muted: "#6B7280",
-    faint: "#9CA3AF",
-    border: "#E5E7EB",
-    divider: "#E5E7EB",
-    ctaBg: "#111827", // Professional dark button
+    pageBg: "#F7F9FC", // Cloud/off-white canvas
+    cardBg: "#FFFFFF", // Crisp white card
+    text: "#0B2545", // Corporate navy for headings & primary accents
+    body: "#121826", // Readable high-contrast ink
+    muted: "#52677C", // Slate supporting text
+    faint: "#8898AA", // Subtle metadata / copyright
+    border: "#DFE7EF", // Clean light border
+    divider: "#DFE7EF",
+    primary: "#1565C0", // Corporate action blue
+    accent: "#1FA9A2", // Selective accent teal
+    ctaBg: "#1565C0", // Primary action button background
     ctaText: "#FFFFFF",
-    link: "#2563EB",
-    softBg: "#F9FAFB",
+    ctaSecondaryBg: "#0B2545",
+    link: "#1565C0",
+    softBg: "#F7F9FC",
+    tintBg: "#E7F3FF", // Subtle informational tint
+    successBg: "#ECFDF5",
+    successText: "#065F46",
+    successBorder: "#A7F3D0",
+    warningBg: "#FFFBEB",
+    warningText: "#92400E",
+    warningBorder: "#FDE68A",
     alertBg: "#FEF2F2",
     alertText: "#991B1B",
+    alertBorder: "#FECACA",
   },
-  font: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-  fontMono: '"JetBrains Mono", Consolas, Menlo, Monaco, monospace',
+  font: "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+  fontMono: "'JetBrains Mono', Consolas, Menlo, Monaco, monospace",
 } as const;
