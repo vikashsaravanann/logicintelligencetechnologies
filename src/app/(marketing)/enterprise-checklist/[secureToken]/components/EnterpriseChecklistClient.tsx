@@ -4,29 +4,25 @@ import { useState, useEffect, useMemo } from "react";
 import {
   CheckCircle2,
   FileText,
-  Search,
-  Filter,
   Download,
-  Eye,
-  Check,
+  Search,
+  ExternalLink,
   ChevronDown,
   ChevronUp,
-  AlertCircle,
-  Clock,
-  Building2,
-  User,
+  Sparkles,
   ShieldCheck,
-  ArrowRight,
-  ExternalLink,
-  Printer,
+  AlertCircle,
+  Building2,
+  Calendar,
   X,
   Loader2,
+  ArrowRight,
+  Check,
 } from "lucide-react";
 import type { EnterpriseCheckpoint, EnterpriseChecklistPhase } from "@/data/enterpriseDeploymentChecklist";
 
 interface Props {
   token: string;
-  initialState: string;
   invitation: {
     id: string;
     recipientName: string;
@@ -34,65 +30,66 @@ interface Props {
     expiresAt: string;
     status: string;
     version?: {
-      document_title?: string;
-      document_version?: string;
-      checkpoint_count?: number;
-      phase_count?: number;
+      document_title: string;
+      document_version: string;
+      checkpoint_count: number;
+      phase_count: number;
     } | null;
   };
   initialResponse?: {
-    id?: string;
-    confirmation_reference?: string;
-    selected_count?: number;
+    id: string;
+    confirmation_reference: string;
+    selected_count: number;
     client_notes?: string | null;
-    submitted_at?: string;
+    submitted_at: string;
     selectedPoints?: number[];
   } | null;
-  checkpoints: EnterpriseCheckpoint[];
+  initialState: "valid" | "invalid" | "revoked" | "submitted" | "expired";
   phases: EnterpriseChecklistPhase[];
+  checkpoints: EnterpriseCheckpoint[];
 }
 
 export default function EnterpriseChecklistClient({
   token,
-  initialState,
   invitation,
   initialResponse,
-  checkpoints,
+  initialState,
   phases,
+  checkpoints,
 }: Props) {
-  const [selectedPoints, setSelectedPoints] = useState<number[]>(
-    initialResponse?.selectedPoints || []
-  );
+  const isAlreadySubmitted = initialState === "submitted" || Boolean(initialResponse);
+  const [selectedNumbers, setSelectedNumbers] = useState<Set<number>>(() => {
+    if (initialResponse?.selectedPoints) {
+      return new Set(initialResponse.selectedPoints);
+    }
+    return new Set<number>();
+  });
+
+  const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set([1, 2, 6, 13, 20, 28, 33, 39, 45]));
   const [searchQuery, setSearchQuery] = useState("");
-  const [activePhase, setActivePhase] = useState<number | null>(null);
-  const [expandedCards, setExpandedCards] = useState<Record<number, boolean>>({});
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [submitterName, setSubmitterName] = useState(invitation.recipientName || "");
-  const [clientNotes, setClientNotes] = useState("");
+  const [clientNotes, setClientNotes] = useState(initialResponse?.client_notes || "");
+  const [agreeDisclaimer, setAgreeDisclaimer] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submissionResult, setSubmissionResult] = useState<{
+  const [submittedData, setSubmittedData] = useState<{
     confirmationReference: string;
     selectedCount: number;
     submittedAt: string;
   } | null>(
-    initialResponse?.confirmation_reference
+    initialResponse
       ? {
           confirmationReference: initialResponse.confirmation_reference,
-          selectedCount: initialResponse.selected_count || initialResponse.selectedPoints?.length || 0,
-          submittedAt: initialResponse.submitted_at || new Date().toISOString(),
+          selectedCount: initialResponse.selected_count,
+          submittedAt: initialResponse.submitted_at,
         }
       : null
   );
 
-  const isAlreadySubmitted = Boolean(submissionResult || initialState === "submitted");
-  const isExpired = initialState === "expired";
-  const isRevoked = initialState === "revoked";
-
-  // Track view event on mount (best-effort, once)
+  // Record client view asynchronously on mount
   useEffect(() => {
-    if (!isAlreadySubmitted && !isExpired && !isRevoked) {
+    if (!isAlreadySubmitted) {
       const controller = new AbortController();
       fetch(`/api/enterprise-checklists/${token}/view`, {
         method: "POST",
@@ -100,70 +97,69 @@ export default function EnterpriseChecklistClient({
       }).catch(() => {});
       return () => controller.abort();
     }
-  }, [token, isAlreadySubmitted, isExpired, isRevoked]);
+  }, [token, isAlreadySubmitted]);
 
-  // Filter checkpoints based on search query and active phase
+  const toggleSelect = (num: number) => {
+    if (submittedData) return;
+    setSelectedNumbers((prev) => {
+      const next = new Set(prev);
+      if (next.has(num)) {
+        next.delete(num);
+      } else {
+        next.add(num);
+      }
+      return next;
+    });
+  };
+
+  const selectAll = () => {
+    if (submittedData) return;
+    setSelectedNumbers(new Set(checkpoints.map((c) => c.number)));
+  };
+
+  const clearAll = () => {
+    if (submittedData) return;
+    setSelectedNumbers(new Set());
+  };
+
+  const toggleExpand = (num: number) => {
+    setExpandedCards((prev) => {
+      const next = new Set(prev);
+      if (next.has(num)) {
+        next.delete(num);
+      } else {
+        next.add(num);
+      }
+      return next;
+    });
+  };
+
+  // Filter checkpoints based on search query
   const filteredCheckpoints = useMemo(() => {
-    return checkpoints.filter((cp) => {
-      const matchesPhase = activePhase === null || cp.phase === activePhase;
-      if (!matchesPhase) return false;
-
-      if (!searchQuery.trim()) return true;
-      const q = searchQuery.toLowerCase();
-      return (
-        cp.title.toLowerCase().includes(q) ||
-        cp.engineering_requirement.toLowerCase().includes(q) ||
-        cp.acceptance_criteria.toLowerCase().includes(q) ||
-        cp.verification_evidence.toLowerCase().includes(q) ||
-        cp.phase_title.toLowerCase().includes(q) ||
-        cp.number.toString().includes(q)
-      );
-    });
-  }, [checkpoints, searchQuery, activePhase]);
-
-  // Toggle single checkpoint selection
-  const handleTogglePoint = (num: number) => {
-    if (isAlreadySubmitted || isExpired || isRevoked) return;
-    setSelectedPoints((prev) =>
-      prev.includes(num) ? prev.filter((p) => p !== num) : [...prev, num].sort((a, b) => a - b)
+    if (!searchQuery.trim()) return checkpoints;
+    const q = searchQuery.toLowerCase();
+    return checkpoints.filter(
+      (c) =>
+        c.title.toLowerCase().includes(q) ||
+        c.phase_title.toLowerCase().includes(q) ||
+        c.engineering_requirement.toLowerCase().includes(q) ||
+        c.acceptance_criteria.toLowerCase().includes(q) ||
+        String(c.number).includes(q)
     );
-  };
+  }, [checkpoints, searchQuery]);
 
-  // Select all 50 points
-  const handleSelectAll = () => {
-    if (isAlreadySubmitted || isExpired || isRevoked) return;
-    setSelectedPoints(checkpoints.map((c) => c.number));
-  };
+  const filteredNumbers = useMemo(
+    () => new Set(filteredCheckpoints.map((c) => c.number)),
+    [filteredCheckpoints]
+  );
 
-  // Clear selections
-  const handleClearAll = () => {
-    if (isAlreadySubmitted || isExpired || isRevoked) return;
-    setSelectedPoints([]);
-  };
-
-  // Toggle expanded details on a card
-  const handleToggleCard = (num: number) => {
-    setExpandedCards((prev) => ({ ...prev, [num]: !prev[num] }));
-  };
-
-  // Expand all cards in current view
-  const handleExpandAll = () => {
-    const next: Record<number, boolean> = {};
-    checkpoints.forEach((c) => {
-      next[c.number] = true;
-    });
-    setExpandedCards(next);
-  };
-
-  // Collapse all cards
-  const handleCollapseAll = () => {
-    setExpandedCards({});
-  };
-
-  // Submit selections to backend
-  const handleSubmitSelections = async () => {
-    if (selectedPoints.length === 0) {
-      setSubmitError("Please select at least 1 checkpoint.");
+  const handleSubmit = async () => {
+    if (selectedNumbers.size === 0) {
+      setSubmitError("Please select at least 1 checkpoint to submit.");
+      return;
+    }
+    if (!agreeDisclaimer) {
+      setSubmitError("Please acknowledge the requirements selection disclaimer before submitting.");
       return;
     }
 
@@ -175,18 +171,18 @@ export default function EnterpriseChecklistClient({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          selectedPoints,
-          submittedByName: submitterName.trim() || invitation.recipientName,
-          clientNotes: clientNotes.trim() || undefined,
+          selectedPoints: Array.from(selectedNumbers),
+          submittedByName: invitation.recipientName,
+          clientNotes,
         }),
       });
 
       const data = await res.json();
-      if (!res.ok || !data.ok) {
-        throw new Error(data.message || "Failed to submit checklist selections.");
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to submit checklist.");
       }
 
-      setSubmissionResult({
+      setSubmittedData({
         confirmationReference: data.confirmationReference,
         selectedCount: data.selectedCount,
         submittedAt: data.submittedAt,
@@ -199,605 +195,555 @@ export default function EnterpriseChecklistClient({
     }
   };
 
-  const expiryFormatted = invitation.expiresAt
-    ? new Date(invitation.expiresAt).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
-    : null;
+  const selectedList = useMemo(() => {
+    return checkpoints.filter((c) => selectedNumbers.has(c.number));
+  }, [checkpoints, selectedNumbers]);
 
   return (
     <div className="space-y-8">
-      {/* 1. Header Card */}
+      {/* Header Document Banner matching ProposalViewerClient style */}
       <div className="rounded-3xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 sm:p-10 relative overflow-hidden shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 border-b border-[var(--lit-border-light,#DFE7EF)]">
           <div>
-            <span className="text-xs font-mono font-bold text-[var(--lit-blue,#1565C0)] tracking-wider uppercase block mb-1.5">
-              LOGIC INTELLIGENCE TECHNOLOGIES · ENTERPRISE DEPLOYMENT
-            </span>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[10px] sm:text-xs font-mono font-bold text-[var(--lit-blue,#1565C0)] tracking-wider uppercase bg-[#E7F3FF] border border-[#B9DCFF] px-2.5 py-0.5 rounded-full">
+                OFFICIAL STANDARD OPERATING PROCEDURE · V1.0
+              </span>
+              <span className="text-[10px] sm:text-xs font-mono text-[var(--lit-teal,#1FA9A2)] font-semibold">
+                8 Phases · 50 Checkpoints
+              </span>
+            </div>
             <h1 className="font-poppins text-2xl sm:text-4xl font-extrabold text-[var(--lit-navy,#0B2545)] tracking-tight">
               The 50-Point Enterprise Deployment Checklist
             </h1>
-            <p className="mt-2 text-sm text-[var(--lit-muted,#52677C)] max-w-2xl">
-              Official engineering standard for enterprise web systems, hospital platforms, and autonomous AI agents.
+            <p className="font-serif italic text-xs sm:text-sm text-[var(--lit-teal,#1FA9A2)] mt-1.5">
+              Standard Operating Procedure for Production-Grade AI Architectures
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-3">
             <span
               className={`px-4 py-1.5 rounded-full text-xs font-mono font-bold uppercase tracking-wider ${
-                isAlreadySubmitted
+                submittedData
                   ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                  : isExpired
-                  ? "bg-rose-50 text-rose-800 border border-rose-200"
                   : "bg-[#E7F3FF] text-[var(--lit-blue,#1565C0)] border border-[#B9DCFF]"
               }`}
             >
-              {isAlreadySubmitted ? "Submitted & Confirmed" : isExpired ? "Invitation Expired" : "Private Client Review"}
-            </span>
-
-            <span className="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-              v1.0 · 50 Points
+              {submittedData ? "Selections Submitted" : "Private Client Invitation"}
             </span>
           </div>
         </div>
 
         {/* Client & Metadata Info */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-8 text-xs">
-          <div className="flex items-start gap-3">
-            <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600">
-              <Building2 className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="text-slate-400 font-mono uppercase block text-[10px]">Client / Organization</span>
-              <span className="font-semibold text-slate-800 text-sm block">
-                {invitation.recipientCompany || "Confidential Enterprise Client"}
+          <div>
+            <span className="text-[var(--lit-text-muted,#52677C)] font-mono font-bold uppercase block mb-1">
+              Prepared For
+            </span>
+            <span className="text-[var(--lit-navy,#0B2545)] font-bold text-sm block">
+              {invitation.recipientName}
+            </span>
+            {invitation.recipientCompany && (
+              <span className="text-[var(--lit-text-muted,#52677C)] block">
+                {invitation.recipientCompany}
               </span>
-            </div>
+            )}
           </div>
 
-          <div className="flex items-start gap-3">
-            <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600">
-              <User className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="text-slate-400 font-mono uppercase block text-[10px]">Prepared For</span>
-              <span className="font-semibold text-slate-800 text-sm block">{invitation.recipientName}</span>
-            </div>
+          <div>
+            <span className="text-[var(--lit-text-muted,#52677C)] font-mono font-bold uppercase block mb-1">
+              Specification Document
+            </span>
+            <span className="text-[var(--lit-navy,#0B2545)] font-semibold block">
+              21-Page Official PDF SOP
+            </span>
+            <span className="text-[var(--lit-text-muted,#52677C)] font-mono text-[11px] block mt-0.5">
+              Approved · In Force
+            </span>
           </div>
 
-          <div className="flex items-start gap-3">
-            <div className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600">
-              <Clock className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="text-slate-400 font-mono uppercase block text-[10px]">Valid Until</span>
-              <span className="font-semibold text-slate-800 text-sm block">{expiryFormatted || "Standard Validity"}</span>
-            </div>
+          <div>
+            <span className="text-[var(--lit-text-muted,#52677C)] font-mono font-bold uppercase block mb-1">
+              Invitation Validity
+            </span>
+            <span className="text-[var(--lit-navy,#0B2545)] font-mono block">
+              {new Date(invitation.expiresAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
+            <span className="text-emerald-700 font-medium block mt-0.5 text-[11px]">
+              Active Token Session
+            </span>
           </div>
 
-          <div className="flex items-center gap-2 lg:justify-end">
-            <button
-              onClick={() => setShowPdfModal(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition"
-              title="Preview complete 21-page PDF document"
-            >
-              <Eye className="w-3.5 h-3.5 text-[var(--lit-blue,#1565C0)]" />
-              View 21-Page PDF
-            </button>
-            <a
-              href="/assets/docs/LIT_50_Point_Enterprise_Deployment_Checklist.pdf"
-              download="LIT_50_Point_Enterprise_Deployment_Checklist.pdf"
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition"
-              title="Download original approved PDF"
-            >
-              <Download className="w-3.5 h-3.5 text-slate-600" />
-              Download
-            </a>
+          <div>
+            <span className="text-[var(--lit-text-muted,#52677C)] font-mono font-bold uppercase block mb-1">
+              Official Document Files
+            </span>
+            <div className="flex flex-wrap gap-2 mt-1">
+              <button
+                type="button"
+                onClick={() => setShowPdfModal(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white font-medium text-xs transition-colors shadow-2xs"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>View Full PDF</span>
+              </button>
+              <a
+                href="/resources/website-development-checklist.pdf"
+                download="LIT_50_Point_Enterprise_Deployment_Checklist.pdf"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-[var(--lit-border-light,#DFE7EF)] hover:bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] font-medium text-xs transition-colors shadow-2xs"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download PDF</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Notice Banner */}
+        <div className="mt-8 p-4 rounded-2xl bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] text-xs text-[var(--lit-text-muted,#52677C)] leading-relaxed flex items-start gap-3">
+          <ShieldCheck className="w-4 h-4 text-[var(--lit-teal,#1FA9A2)] shrink-0 mt-0.5" />
+          <div>
+            <strong className="text-[var(--lit-navy,#0B2545)]">Client Requirements Exercise:</strong>{" "}
+            Review the 50 checkpoints across eight phases and select the areas relevant to your platform
+            or application. Selecting a checkpoint registers your project scope priority with our
+            engineering team. It does not certify that the platform already passes the checkpoint or
+            constitute a commercial contract.
           </div>
         </div>
       </div>
 
-      {/* 2. Submission Receipt Card (If Already Submitted) */}
-      {isAlreadySubmitted && submissionResult && (
-        <div className="rounded-3xl border border-emerald-200 bg-emerald-50/70 p-6 sm:p-8 relative overflow-hidden shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-emerald-200/80">
+      {/* Confirmation Box if Submitted */}
+      {submittedData && (
+        <div className="rounded-3xl border border-emerald-200 bg-emerald-50/70 p-6 sm:p-8 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-emerald-200/60 pb-6 mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-emerald-600 text-white">
-                <CheckCircle2 className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                <Check className="w-6 h-6 stroke-[3]" />
               </div>
               <div>
-                <h2 className="text-xl font-extrabold text-emerald-950 font-poppins">
-                  Checklist Selections Confirmed
+                <h2 className="font-poppins text-lg sm:text-xl font-bold text-[var(--lit-navy,#0B2545)]">
+                  Checklist Selections Confirmed & Recorded
                 </h2>
-                <p className="text-xs text-emerald-800">
-                  Your requirements selection has been recorded. Our technical team is reviewing your selected points.
+                <p className="text-xs text-emerald-800 font-medium">
+                  {submittedData.selectedCount} of 50 checkpoints selected · Committed to corporate engineering registry
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="px-3.5 py-1.5 rounded-xl bg-white border border-emerald-300 shadow-xs">
-                <span className="text-[10px] uppercase font-mono text-emerald-700 block">Confirmation Ref</span>
-                <span className="font-mono font-bold text-emerald-950 text-sm">
-                  {submissionResult.confirmationReference}
-                </span>
-              </div>
-              <button
-                onClick={() => window.print()}
-                className="px-3 py-2 rounded-xl bg-white border border-emerald-300 text-emerald-800 text-xs font-semibold flex items-center gap-1.5 hover:bg-emerald-100 transition shadow-xs"
-              >
-                <Printer className="w-3.5 h-3.5" />
-                Print Receipt
-              </button>
+            <div className="text-right sm:border-l sm:border-emerald-200 sm:pl-6">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-800 block">
+                Confirmation Reference
+              </span>
+              <span className="text-base sm:text-lg font-mono font-extrabold text-[var(--lit-navy,#0B2545)] block">
+                {submittedData.confirmationReference}
+              </span>
+              <span className="text-[11px] text-[var(--lit-text-muted,#52677C)] block">
+                {new Date(submittedData.submittedAt).toLocaleString("en-US", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+              </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 text-xs text-emerald-900">
-            <div>
-              <span className="font-semibold block text-emerald-950">Selected Checkpoints:</span>
-              <span className="text-sm font-bold">{submissionResult.selectedCount} of 50 Checkpoints</span>
-            </div>
-            <div>
-              <span className="font-semibold block text-emerald-950">Submitted On:</span>
-              <span>{new Date(submissionResult.submittedAt).toLocaleString()}</span>
-            </div>
-            <div>
-              <span className="font-semibold block text-emerald-950">Next Steps:</span>
-              <span>Engineering review & aligned proposal draft preparation.</span>
-            </div>
-          </div>
+          <p className="text-xs text-[var(--lit-text-muted,#52677C)] leading-relaxed">
+            Our principal engineering team is reviewing your selected points against our architectural baseline.
+            We will use these selections to prepare your tailored technical Statement of Work and commercial proposal.
+          </p>
         </div>
       )}
 
-      {/* 3. Navigation & Controls Bar */}
-      <div className="sticky top-20 z-20 rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white/95 backdrop-blur-md p-4 shadow-sm space-y-3">
+      {/* Phase Jump Navigation & Search Bar */}
+      <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-4 sm:p-6 shadow-xs space-y-4 sticky top-20 z-20 backdrop-blur-md bg-white/95">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          {/* Search Input */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--lit-text-muted,#52677C)]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search 50 checkpoints, requirements, evidence..."
-              className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--lit-blue,#1565C0)] focus:border-transparent transition"
+              placeholder="Search all 50 checkpoints (e.g., PostgreSQL, RAG, WebSockets, RLS, Vercel)..."
+              className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] focus:outline-none focus:border-[var(--lit-blue,#1565C0)] focus:ring-2 focus:ring-[#1565C0]/15"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--lit-text-muted,#52677C)] hover:text-black"
               >
-                <X className="w-3.5 h-3.5" />
+                Clear
               </button>
             )}
           </div>
 
-          {/* Selection Controls */}
-          <div className="flex items-center gap-3 justify-between md:justify-end">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-700">
-                Selected: <strong className="text-[var(--lit-blue,#1565C0)]">{selectedPoints.length}</strong> / 50
-              </span>
-              <div className="w-24 bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
-                <div
-                  className="bg-[var(--lit-blue,#1565C0)] h-full transition-all duration-300"
-                  style={{ width: `${(selectedPoints.length / 50) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            {!isAlreadySubmitted && !isExpired && (
-              <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
+            {!submittedData && (
+              <>
                 <button
-                  onClick={handleSelectAll}
-                  className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  type="button"
+                  onClick={selectAll}
+                  className="px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-xs font-semibold text-[var(--lit-navy,#0B2545)] transition-colors"
                 >
-                  Select All
+                  Select All 50
                 </button>
                 <button
-                  onClick={handleClearAll}
-                  className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  type="button"
+                  onClick={clearAll}
+                  className="px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-xs font-semibold text-[var(--lit-text-muted,#52677C)] transition-colors"
                 >
                   Clear
                 </button>
-              </div>
+              </>
             )}
 
-            <div className="flex items-center gap-1 border-l border-slate-200 pl-3">
-              <button
-                onClick={handleExpandAll}
-                className="px-2 py-1 text-[11px] font-medium text-slate-500 hover:text-slate-800 transition"
-              >
-                Expand
-              </button>
-              <button
-                onClick={handleCollapseAll}
-                className="px-2 py-1 text-[11px] font-medium text-slate-500 hover:text-slate-800 transition"
-              >
-                Collapse
-              </button>
+            <div className="px-3.5 py-1.5 rounded-lg bg-[var(--lit-navy,#0B2545)] text-white text-xs font-mono font-bold tracking-wider">
+              {selectedNumbers.size} / 50 Selected
             </div>
           </div>
         </div>
 
-        {/* Phase Filter Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
-          <button
-            onClick={() => setActivePhase(null)}
-            className={`px-3 py-1.5 rounded-xl font-medium shrink-0 transition ${
-              activePhase === null
-                ? "bg-[var(--lit-navy,#0B2545)] text-white shadow-xs"
-                : "bg-slate-50 text-slate-600 hover:bg-slate-100"
-            }`}
-          >
-            All Phases (50)
-          </button>
-          {phases.map((ph) => {
-            const countInPhase = checkpoints.filter((c) => c.phase === ph.phase).length;
-            const selectedInPhase = checkpoints.filter(
-              (c) => c.phase === ph.phase && selectedPoints.includes(c.number)
-            ).length;
-
-            return (
-              <button
-                key={ph.phase}
-                onClick={() => setActivePhase(ph.phase)}
-                className={`px-3 py-1.5 rounded-xl font-medium shrink-0 flex items-center gap-1.5 transition ${
-                  activePhase === ph.phase
-                    ? "bg-[var(--lit-navy,#0B2545)] text-white shadow-xs"
-                    : "bg-slate-50 text-slate-600 hover:bg-slate-100"
-                }`}
-              >
-                <span>Phase {ph.phase}</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    activePhase === ph.phase
-                      ? "bg-white/20 text-white"
-                      : "bg-slate-200 text-slate-700"
-                  }`}
-                >
-                  {selectedInPhase > 0 ? `${selectedInPhase}/` : ""}
-                  {countInPhase}
-                </span>
-              </button>
-            );
-          })}
+        {/* Phase Jump Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-[11px] font-mono">
+          {phases.map((p) => (
+            <a
+              key={p.phase}
+              href={`#phase-${p.phase}`}
+              className="px-2.5 py-1 rounded-md bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] hover:border-[var(--lit-blue,#1565C0)] hover:text-[var(--lit-blue,#1565C0)] text-[var(--lit-navy,#0B2545)] whitespace-nowrap transition-colors"
+            >
+              Phase {p.phase} ({p.range})
+            </a>
+          ))}
         </div>
       </div>
 
-      {/* 4. Checkpoint List Grouped By Phase */}
+      {/* 8 Phases with 50 Checkpoint Cards */}
       <div className="space-y-10">
-        {phases.map((ph) => {
-          const phasePoints = filteredCheckpoints.filter((c) => c.phase === ph.phase);
-          if (phasePoints.length === 0) return null;
-
-          const selectedInPhase = phasePoints.filter((c) => selectedPoints.includes(c.number)).length;
+        {phases.map((phase) => {
+          const phaseCheckpoints = phase.checkpoints.filter((c) =>
+            filteredNumbers.has(c.number)
+          );
+          if (phaseCheckpoints.length === 0) return null;
 
           return (
-            <section key={ph.phase} className="space-y-4">
-              {/* Phase Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b-2 border-slate-200">
+            <div
+              key={phase.phase}
+              id={`phase-${phase.phase}`}
+              className="scroll-mt-36 space-y-4"
+            >
+              {/* Phase Header Banner */}
+              <div className="flex items-center justify-between pb-3 border-b-2 border-[var(--lit-navy,#0B2545)]/15">
                 <div className="flex items-center gap-3">
-                  <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-[var(--lit-navy,#0B2545)] text-white font-mono font-bold text-xs">
-                    0{ph.phase}
+                  <span className="text-xs font-mono font-bold text-white bg-[var(--lit-navy,#0B2545)] px-3 py-1 rounded-lg">
+                    PHASE {String(phase.phase).padStart(2, "0")}
                   </span>
-                  <div>
-                    <h2 className="text-base sm:text-lg font-bold text-[var(--lit-navy,#0B2545)] font-poppins">
-                      {ph.title}
-                    </h2>
-                    <span className="text-xs font-mono text-slate-500">
-                      Points {ph.range}
-                    </span>
-                  </div>
+                  <h2 className="font-poppins text-lg sm:text-xl font-bold text-[var(--lit-navy,#0B2545)]">
+                    {phase.title}
+                  </h2>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-600">
-                    Phase Scope: <strong>{selectedInPhase}</strong> / {phasePoints.length}
-                  </span>
-                </div>
+                <span className="text-xs font-mono text-[var(--lit-text-muted,#52677C)]">
+                  Checkpoints {phase.range}
+                </span>
               </div>
 
-              {/* Checkpoints in Phase */}
+              {/* Checkpoints list */}
               <div className="space-y-3">
-                {phasePoints.map((cp) => {
-                  const isSelected = selectedPoints.includes(cp.number);
-                  const isExpanded = Boolean(expandedCards[cp.number]);
+                {phaseCheckpoints.map((cp) => {
+                  const isSelected = selectedNumbers.has(cp.number);
+                  const isExpanded = expandedCards.has(cp.number);
 
                   return (
-                    <article
+                    <div
                       key={cp.number}
-                      className={`rounded-2xl border transition-all duration-200 bg-white overflow-hidden ${
+                      className={`rounded-2xl border transition-all ${
                         isSelected
-                          ? "border-[var(--lit-blue,#1565C0)] shadow-sm bg-blue-50/10 ring-1 ring-[var(--lit-blue,#1565C0)]/20"
-                          : "border-[var(--lit-border-light,#DFE7EF)] hover:border-slate-300"
+                          ? "border-[#1565C0] bg-white shadow-xs"
+                          : "border-[var(--lit-border-light,#DFE7EF)] bg-white hover:border-slate-300 shadow-2xs"
                       }`}
                     >
-                      {/* Checkpoint Summary Bar */}
+                      {/* Checkpoint Header Row */}
                       <div className="p-4 sm:p-5 flex items-start gap-4">
-                        {/* Custom accessible Checkbox */}
-                        <div className="pt-0.5">
-                          <label className="relative flex items-center justify-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              disabled={isAlreadySubmitted || isExpired || isRevoked}
-                              onChange={() => handleTogglePoint(cp.number)}
-                              aria-label={`Select point ${cp.number}, ${cp.title}`}
-                              className="w-5 h-5 rounded-md border-slate-300 text-[var(--lit-blue,#1565C0)] focus:ring-[var(--lit-blue,#1565C0)] focus:ring-offset-0 disabled:opacity-60 cursor-pointer"
-                            />
-                          </label>
-                        </div>
+                        <label className="flex items-center gap-3 cursor-pointer shrink-0 mt-0.5">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            disabled={Boolean(submittedData)}
+                            onChange={() => toggleSelect(cp.number)}
+                            aria-label={`Select checkpoint ${cp.number}, ${cp.title}`}
+                            className="w-5 h-5 rounded-md text-[var(--lit-blue,#1565C0)] border-[var(--lit-border-light,#DFE7EF)] focus:ring-2 focus:ring-[#1565C0]/20 cursor-pointer disabled:opacity-50"
+                          />
+                        </label>
 
-                        {/* Title & Metadata */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2 mb-1">
-                            <span className="font-mono font-bold text-xs text-[var(--lit-blue,#1565C0)]">
-                              #{cp.number < 10 ? `0${cp.number}` : cp.number}
-                            </span>
-                            <h3 className="font-semibold text-slate-900 text-sm sm:text-base leading-snug">
-                              {cp.title}
-                            </h3>
-                            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
-                              PDF p.{cp.pdf_page}
-                            </span>
-                            {isSelected && (
-                              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-100 text-[var(--lit-blue,#1565C0)] border border-blue-200">
-                                Selected
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono font-bold text-xs text-[var(--lit-blue,#1565C0)] bg-[#E7F3FF] border border-[#B9DCFF] px-2 py-0.5 rounded">
+                                {String(cp.number).padStart(2, "0")}
                               </span>
-                            )}
+                              <h3 className="font-poppins font-bold text-sm sm:text-base text-[var(--lit-navy,#0B2545)]">
+                                {cp.title}
+                              </h3>
+                            </div>
+
+                            <div className="flex items-center gap-3 text-xs">
+                              <span className="text-[11px] font-mono text-[var(--lit-text-muted,#52677C)]">
+                                PDF Page {cp.pdf_page}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => toggleExpand(cp.number)}
+                                className="inline-flex items-center gap-1 text-[var(--lit-teal,#1FA9A2)] hover:underline font-medium text-xs"
+                              >
+                                {isExpanded ? (
+                                  <>
+                                    <span>Collapse</span>
+                                    <ChevronUp className="w-3.5 h-3.5" />
+                                  </>
+                                ) : (
+                                  <>
+                                    <span>Details</span>
+                                    <ChevronDown className="w-3.5 h-3.5" />
+                                  </>
+                                )}
+                              </button>
+                            </div>
                           </div>
 
-                          <p className="text-xs text-slate-600 line-clamp-2 mt-1">
+                          {/* Quick Requirement Summary */}
+                          <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-2 leading-relaxed">
                             {cp.engineering_requirement}
                           </p>
                         </div>
-
-                        {/* Expand / Collapse Button */}
-                        <button
-                          onClick={() => handleToggleCard(cp.number)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition shrink-0"
-                          aria-label={isExpanded ? "Collapse requirement details" : "Expand requirement details"}
-                        >
-                          {isExpanded ? (
-                            <ChevronUp className="w-4 h-4" />
-                          ) : (
-                            <ChevronDown className="w-4 h-4" />
-                          )}
-                        </button>
                       </div>
 
-                      {/* Expandable Details Section */}
+                      {/* Expandable Engineering Sections */}
                       {isExpanded && (
-                        <div className="px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/60 space-y-4 text-xs">
+                        <div className="px-5 pb-5 pt-2 border-t border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]/50 rounded-b-2xl space-y-3 text-xs">
                           <div>
-                            <span className="font-mono font-bold uppercase text-[10px] text-slate-400 block mb-1">
-                              Engineering Requirement
+                            <span className="font-mono font-bold text-[10px] uppercase tracking-wider text-[var(--lit-blue,#1565C0)] block mb-1">
+                              Engineering Requirement (Verbatim SOP)
                             </span>
-                            <p className="text-slate-800 leading-relaxed bg-white p-3 rounded-xl border border-slate-200">
+                            <p className="text-[var(--lit-navy,#0B2545)] leading-relaxed bg-white p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)]">
                               {cp.engineering_requirement}
                             </p>
                           </div>
 
                           <div>
-                            <span className="font-mono font-bold uppercase text-[10px] text-slate-400 block mb-1">
-                              Acceptance Criteria
+                            <span className="font-mono font-bold text-[10px] uppercase tracking-wider text-emerald-800 block mb-1">
+                              Acceptance Criteria (Acceptance Gate)
                             </span>
-                            <p className="text-slate-800 leading-relaxed bg-white p-3 rounded-xl border border-slate-200">
+                            <p className="text-[var(--lit-navy,#0B2545)] leading-relaxed bg-white p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)]">
                               {cp.acceptance_criteria}
                             </p>
                           </div>
 
                           <div>
-                            <span className="font-mono font-bold uppercase text-[10px] text-slate-400 block mb-1">
-                              Verification Evidence
+                            <span className="font-mono font-bold text-[10px] uppercase tracking-wider text-purple-800 block mb-1">
+                              Verification Evidence (Artifacts / Proof)
                             </span>
-                            <p className="text-slate-800 leading-relaxed bg-white p-3 rounded-xl border border-slate-200">
+                            <p className="text-[var(--lit-navy,#0B2545)] leading-relaxed bg-white p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)]">
                               {cp.verification_evidence}
                             </p>
                           </div>
                         </div>
                       )}
-                    </article>
+                    </div>
                   );
                 })}
               </div>
-            </section>
+            </div>
           );
         })}
       </div>
 
-      {/* 5. Sticky Bottom Action Bar (When points selected and not yet submitted) */}
-      {!isAlreadySubmitted && !isExpired && !isRevoked && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 w-full max-w-2xl px-4">
-          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white/95 backdrop-blur-md p-4 shadow-xl flex items-center justify-between gap-4">
+      {/* Sticky Bottom Summary Bar */}
+      {!submittedData && (
+        <div className="fixed bottom-0 left-0 right-0 z-30 p-4 bg-white/95 backdrop-blur-md border-t border-[var(--lit-border-light,#DFE7EF)] shadow-lg">
+          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[var(--lit-navy,#0B2545)] text-white flex items-center justify-center font-bold text-sm">
-                {selectedPoints.length}
+              <div className="w-10 h-10 rounded-xl bg-[var(--lit-blue,#1565C0)] text-white flex items-center justify-center font-mono font-bold text-sm">
+                {selectedNumbers.size}
               </div>
               <div>
-                <span className="font-bold text-slate-900 text-sm block">
-                  {selectedPoints.length} of 50 Checkpoints Selected
+                <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)] block">
+                  {selectedNumbers.size} of 50 Checkpoints Selected
                 </span>
-                <span className="text-xs text-slate-500 block">
-                  {selectedPoints.length === 0
-                    ? "Select checkpoints to include in your scope review."
-                    : "Ready to review and submit."}
+                <span className="text-[11px] text-[var(--lit-text-muted,#52677C)] block">
+                  {selectedNumbers.size === 0
+                    ? "Select checkpoints to register scope"
+                    : "Ready for technical review & proposal drafting"}
                 </span>
               </div>
             </div>
 
-            <button
-              onClick={() => setShowReviewModal(true)}
-              disabled={selectedPoints.length === 0}
-              className="px-5 py-2.5 rounded-xl bg-[var(--lit-blue,#1565C0)] hover:bg-[#1255A3] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold text-xs sm:text-sm flex items-center gap-2 transition shadow-sm"
-            >
-              Review & Submit
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 6. Review & Submission Modal */}
-      {showReviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
-            {/* Modal Header */}
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-              <div>
-                <h3 className="font-poppins text-lg font-bold text-[var(--lit-navy,#0B2545)]">
-                  Review Your Checklist Selections
-                </h3>
-                <p className="text-xs text-slate-500">
-                  {selectedPoints.length} checkpoints selected for technical scope alignment.
-                </p>
-              </div>
-              <button
-                onClick={() => setShowReviewModal(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-6 overflow-y-auto space-y-5 text-xs">
-              {submitError && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{submitError}</span>
-                </div>
-              )}
-
-              {/* Submitter Name */}
-              <div>
-                <label className="font-semibold text-slate-700 block mb-1">
-                  Submitted By (Name / Title):
-                </label>
-                <input
-                  type="text"
-                  value={submitterName}
-                  onChange={(e) => setSubmitterName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[var(--lit-blue,#1565C0)]"
-                  placeholder="e.g. Dr. Jane Doe, Chief Technology Officer"
-                />
-              </div>
-
-              {/* Notes / Special Focus */}
-              <div>
-                <label className="font-semibold text-slate-700 block mb-1">
-                  Additional Notes or Project Priorities (Optional):
-                </label>
-                <textarea
-                  value={clientNotes}
-                  onChange={(e) => setClientNotes(e.target.value)}
-                  rows={3}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[var(--lit-blue,#1565C0)]"
-                  placeholder="Specify key architectural constraints, integration milestones, or target deployment timelines..."
-                />
-              </div>
-
-              {/* Selected Points Preview */}
-              <div>
-                <span className="font-semibold text-slate-700 block mb-2">
-                  Selected Checkpoints ({selectedPoints.length}):
-                </span>
-                <div className="max-h-52 overflow-y-auto border border-slate-200 rounded-xl p-3 bg-slate-50 space-y-1.5">
-                  {selectedPoints.map((num) => {
-                    const pt = checkpoints.find((c) => c.number === num);
-                    if (!pt) return null;
-                    return (
-                      <div key={num} className="flex items-center justify-between text-[11px] py-1 border-b border-slate-200/60 last:border-none">
-                        <span className="font-medium text-slate-800">
-                          <strong>#{pt.number}:</strong> {pt.title}
-                        </span>
-                        <span className="text-slate-400 font-mono text-[10px]">Phase {pt.phase}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Legal Notice / Scope Disclaimer */}
-              <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] leading-relaxed">
-                <strong>Important Scope Notice:</strong> These selections identify technical requirements
-                for your project scope. They do not certify that controls have been tested or implemented,
-                nor do they constitute commercial contract acceptance. Upon submission, our technical team
-                will review the requirements and prepare an aligned proposal draft.
-              </div>
-            </div>
-
-            {/* Modal Actions */}
-            <div className="p-6 border-t border-slate-100 bg-slate-50 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
               <button
                 type="button"
-                onClick={() => setShowReviewModal(false)}
-                className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                onClick={() => setShowReviewModal(true)}
+                disabled={selectedNumbers.size === 0}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
               >
-                Back to Checklist
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmitSelections}
-                disabled={isSubmitting || selectedPoints.length === 0}
-                className="px-6 py-2.5 rounded-xl bg-[var(--lit-blue,#1565C0)] hover:bg-[#1255A3] disabled:bg-slate-300 text-white font-semibold text-xs flex items-center gap-2 transition shadow-sm"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  <>
-                    Confirm & Submit Selections
-                    <Check className="w-4 h-4" />
-                  </>
-                )}
+                <span>Review Selections & Submit</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 7. PDF Preview Modal */}
+      {/* PDF View Modal */}
       {showPdfModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-4xl w-full h-[85vh] flex flex-col overflow-hidden">
-            <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-[var(--lit-blue,#1565C0)]" />
-                <h3 className="font-poppins text-sm font-bold text-[var(--lit-navy,#0B2545)]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]">
+              <div>
+                <h3 className="font-poppins font-bold text-sm text-[var(--lit-navy,#0B2545)]">
                   The 50-Point Enterprise Deployment Checklist (21 Pages)
                 </h3>
+                <p className="text-[11px] font-mono text-[var(--lit-text-muted,#52677C)]">
+                  LIT_50_Point_Enterprise_Deployment_Checklist.pdf · Official Approved SOP
+                </p>
               </div>
+
               <div className="flex items-center gap-2">
                 <a
-                  href="/assets/docs/LIT_50_Point_Enterprise_Deployment_Checklist.pdf"
+                  href="/resources/website-development-checklist.pdf"
                   target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 flex items-center gap-1.5 hover:bg-slate-100"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] text-xs font-medium text-[var(--lit-navy,#0B2545)] hover:bg-white flex items-center gap-1"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
-                  Open in New Tab
+                  <span>Open in New Tab</span>
                 </a>
                 <button
                   onClick={() => setShowPdfModal(false)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200"
+                  className="p-1.5 rounded-lg text-slate-500 hover:text-black hover:bg-slate-200"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            <div className="flex-1 bg-slate-100 p-2">
+            <div className="flex-1 w-full bg-slate-100 relative">
               <iframe
-                src="/assets/docs/LIT_50_Point_Enterprise_Deployment_Checklist.pdf#toolbar=1"
-                className="w-full h-full rounded-xl border border-slate-200"
+                src="/resources/website-development-checklist.pdf#toolbar=1"
                 title="50-Point Enterprise Deployment Checklist PDF"
+                className="w-full h-full border-0"
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Review & Submit Modal */}
+      {showReviewModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]">
+              <div>
+                <h3 className="font-poppins font-bold text-base text-[var(--lit-navy,#0B2545)]">
+                  Review & Confirm Checkpoints
+                </h3>
+                <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
+                  {selectedNumbers.size} of 50 checkpoints selected for project scope
+                </p>
+              </div>
+              <button
+                onClick={() => setShowReviewModal(false)}
+                className="p-1.5 rounded-lg text-slate-500 hover:text-black hover:bg-slate-200"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
+              {/* Selected Points List */}
+              <div>
+                <span className="font-mono font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] block mb-2">
+                  Selected Scope Summary ({selectedList.length} Items):
+                </span>
+                <div className="max-h-48 overflow-y-auto rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] p-3 space-y-2">
+                  {selectedList.map((cp) => (
+                    <div key={cp.number} className="flex items-center justify-between text-xs">
+                      <span className="font-medium text-[var(--lit-navy,#0B2545)]">
+                        <strong>Point {String(cp.number).padStart(2, "0")}</strong>: {cp.title}
+                      </span>
+                      <span className="text-[11px] font-mono text-[var(--lit-text-muted,#52677C)]">
+                        Phase {cp.phase}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Client Notes / Special Requirements */}
+              <div>
+                <label className="font-mono font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] block mb-1.5">
+                  Optional Project Notes or Priorities:
+                </label>
+                <textarea
+                  value={clientNotes}
+                  onChange={(e) => setClientNotes(e.target.value)}
+                  placeholder="Share any specific requirements, target launch timelines, or third-party integrations..."
+                  rows={3}
+                  className="w-full p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] focus:outline-none focus:border-[var(--lit-blue,#1565C0)] focus:ring-2 focus:ring-[#1565C0]/15"
+                />
+              </div>
+
+              {/* Mandatory Disclaimer */}
+              <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/70 text-amber-950 text-xs space-y-2">
+                <div className="flex items-start gap-2.5">
+                  <input
+                    type="checkbox"
+                    id="disclaimer-check"
+                    checked={agreeDisclaimer}
+                    onChange={(e) => setAgreeDisclaimer(e.target.checked)}
+                    className="w-4 h-4 rounded text-[var(--lit-navy,#0B2545)] mt-0.5 cursor-pointer"
+                  />
+                  <label htmlFor="disclaimer-check" className="cursor-pointer leading-relaxed">
+                    <strong>Official Scope Acknowledgment:</strong> I understand that submitting these
+                    selections registers project requirements and requested scope with Logic Intelligence
+                    Technologies. It does not certify that the platform already passes these checkpoints
+                    or constitute a commercial contract.
+                  </label>
+                </div>
+              </div>
+
+              {submitError && (
+                <div className="p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 text-xs">
+                  {submitError}
+                </div>
+              )}
+            </div>
+
+            <div className="px-6 py-4 border-t border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowReviewModal(false)}
+                className="px-4 py-2.5 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-xs font-semibold text-[var(--lit-text-muted,#52677C)] hover:bg-slate-100"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={isSubmitting || !agreeDisclaimer}
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Submitting Selections…</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Confirm & Submit to Registry</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>

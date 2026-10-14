@@ -286,6 +286,7 @@ export default async function AdminCommandCenterPage() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
           { href: "/admin/leads", label: "CRM Leads Ledger" },
+          { href: "/admin/checklist-invitations", label: "Checklists & SOP" },
           { href: "/admin/invoices", label: "Invoices" },
           { href: "/admin/bookings", label: "Calendar Bookings" },
           { href: "/admin/proposals", label: "Proposals & SOWs" },
