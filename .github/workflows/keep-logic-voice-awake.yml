@@ -26,13 +26,13 @@ concurrency:
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     steps:
       - name: Ping /health
         env:
           URL: https://logicvoice-backend.onrender.com/health
         run: |
-          code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 90 --retry 2 --retry-delay 5 "$URL" || echo 000)
+          code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 60 --retry 1 --retry-delay 5 "$URL" || echo 000)
           echo "GET $URL -> $code"
           # A down backend is reported as a warning, not a failed run, so a
           # Render outage does not send a failure email every 10 minutes.
