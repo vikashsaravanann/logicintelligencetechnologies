@@ -472,6 +472,11 @@ CREATE TABLE IF NOT EXISTS public.payment_reconciliations (
 
 -- Compatibility columns if table already existed under alternative column names
 ALTER TABLE public.payment_reconciliations
+  ADD COLUMN IF NOT EXISTS bank_credit_reference text,
+  ADD COLUMN IF NOT EXISTS bank_credit_amount_paise bigint,
+  ADD COLUMN IF NOT EXISTS receiving_bank_account text DEFAULT 'YES BANK / PTYES',
+  ADD COLUMN IF NOT EXISTS verified_by uuid,
+  ADD COLUMN IF NOT EXISTS reconciliation_notes text,
   ADD COLUMN IF NOT EXISTS reconciliation_ref text,
   ADD COLUMN IF NOT EXISTS approver_id uuid,
   ADD COLUMN IF NOT EXISTS credited_amount_paise bigint,
