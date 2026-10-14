@@ -19,52 +19,100 @@ import CTASection from "@/components/ui/cta-section";
 const PHASES = [
   {
     id: "01",
-    title: "Strategic Discovery & Requirement Engineering",
+    title: "Phase 1: Architecture & Scope Validation",
     items: [
-      "Define the north-star business objective before code or interface design begins",
-      "Audience persona mapping — at least three realistic operational use cases",
-      "Competitor UX teardown (features, Core Web Vitals, user-journey friction)",
-      "Brand & aesthetic tokens locked (clinical surfaces, teal accents, fluid typography)",
+      "01. Architecture & Requirements Baseline — Documented system architecture covering frontend, backend, databases, auth, and external APIs with traceability matrix",
+      "02. GitHub Repository & Branch Protection — Main branch protection, required status checks, CODEOWNERS, and clean PR review workflows",
+      "03. Environment Separation (Dev / Staging / Prod) — Isolated environments with environment-scoped secrets and distinct data stores",
+      "04. Cloud Infrastructure & Account Provisioning — Cloud platform provisioning (Vercel, Render, Supabase) with billing limits and resource mappings",
+      "05. Technical Risk & Dependency Assessment — Register of external-service dependencies, operational risks, data sensitivity, and failure mitigations",
     ],
   },
   {
     id: "02",
-    title: "Information Architecture & Experience Design",
+    title: "Phase 2: Frontend Engineering & UX",
     items: [
-      "Sitemap and user-flow specifications for primary conversion funnels",
-      "Wireframes for mobile-first critical viewpoints down to 320px screen width",
-      "High-fidelity UI components built with production design tokens",
-      "Accessibility baseline (WCAG AAA contrast, keyboard focus rings, screen reader labels)",
+      "06. Next.js & React Production Architecture — Strict server/client boundary segregation, route error boundaries, metadata, and zero-defect builds",
+      "07. TypeScript & Component Architecture — Strict TypeScript with zero-any policy, reusable typed components, and boundary validation",
+      "08. Tailwind Design Tokens & Brand Consistency — Centralized design tokens for typography, spacing, accessible contrast, and visual states",
+      "09. Responsive & Cross-Browser Compatibility — Verified across modern mobile, tablet, and desktop viewports and major browser engines",
+      "10. Core Web Vitals & Frontend Performance — Sub-1.8s LCP, sub-100ms INP, zero CLS, image optimization, and bundle budgets under 120KB",
+      "11. Accessibility & Inclusive Interaction — WCAG 2.2 AA compliance, keyboard navigation, screen-reader semantics, and focus management",
+      "12. Forms, API Wiring & User Feedback — Input validation, authorized submission, idempotency guards, and truthful user feedback",
     ],
   },
   {
     id: "03",
-    title: "Full-Stack Engineering & Deterministic AI",
+    title: "Phase 3: Backend & Database Integrity",
     items: [
-      "Next.js App Router · React · TypeScript frontend with strict type contracts",
-      "FastAPI / Node microservices with parameterized data access and schema validation",
-      "PostgreSQL schemas with row-level security (RLS) and automatic migrations",
-      "Strict type-safe scaffolding around every probabilistic LLM call to prevent hallucinations",
+      "13. FastAPI Service Architecture & API Contracts — Typed request/response schemas, standardized status codes, and OpenAPI specifications",
+      "14. PostgreSQL Schema Design & Referential Integrity — Typed identifiers, primary/foreign keys, normalized tables, and versioned migrations",
+      "15. Supabase Row-Level Security & Tenant Isolation — Strict RLS policies on every exposed table enforcing least privilege and tenant separation",
+      "16. Connection Pooling & Resource Management — Connection pooling, connection lifecycle management, and transaction timeouts for serverless scale",
+      "17. Idempotent Operations & Duplicate Prevention — Idempotency keys, unique constraints, and transactional deduplication on critical mutations",
+      "18. Transaction Integrity, Backup & Recovery — ACID transaction boundaries, scheduled backups, and tested restoration procedures",
+      "19. Server-Side Validation & Auditability — Authoritative server-side validation and immutable audit events for privileged operations",
     ],
   },
   {
     id: "04",
-    title: "Quality Assurance & Production Hardening",
+    title: "Phase 4: AI & Data Pipeline Integration",
     items: [
-      "Cross-browser and responsive regression pass across mobile, tablet, and ultra-wide screens",
-      "Form submission, authentication, webhook, and email delivery smoke test suites",
-      "Performance budget enforcement (sub-2s LCP, sub-100ms INP, zero CLS)",
-      "Security hardening: secret sanitization, CORS restrictions, and input validation",
+      "20. AI Provider Selection & Credential Management — Model provider selection, credential isolation, regional requirements, and fallback handling",
+      "21. Knowledge Ingestion & Data Provenance — Document validation, source metadata, content checksums, duplicate detection, and deletion workflows",
+      "22. pgvector Semantic Search & Index Validation — Embedding generation validation, vector dimensions, index tuning, and recall benchmarking",
+      "23. Retrieval-Augmented Generation Architecture — Semantic chunking, retrieval ranking, permission filtering, and citation integrity",
+      "24. Prompt Injection & Tool-Use Protection — Trusted vs untrusted prompt separation, adversarial injection guards, and human-in-the-loop approval gates",
+      "25. AI Response Quality & Factual Verification — Evaluation datasets for factual accuracy, completeness, hallucination resistance, and source citations",
+      "26. AI Latency, Streaming & Resource Optimization — Time-to-first-token tracking, streaming response delivery, context window budgeting, and caching",
+      "27. AI Privacy, Memory & Retention Controls — Per-user isolation, conversation history retention policies, and zero-retention compliance verification",
     ],
   },
   {
     id: "05",
-    title: "Deployment, Handoff & Observability",
+    title: "Phase 5: Telephony & Real-Time WebSockets",
     items: [
-      "Production deployment with zero-downtime canary rollback posture",
-      "Real-time health monitoring, error telemetry, and automated backup routines",
-      "Comprehensive client handoff documentation and administrative ownership transfer",
-      "Post-launch warranty window and direct engineering escalation desk",
+      "28. Audio Capture, Sampling & Encoding Validation — Microphone capture, 16 kHz mono PCM sampling rate conversion, frame sizing, and audio validation",
+      "29. Non-Blocking Real-Time Audio Pipeline — Non-blocking I/O, bounded async queues, backpressure handling, and latency-optimized loops",
+      "30. WebSocket Session Lifecycle & Reliability — Authenticated session handshakes, heartbeat ping/pong, reconnect handling, and graceful teardown",
+      "31. STT → LLM → TTS Orchestration — Streaming transcription, LLM processing, speech synthesis, interruptibility, and error recovery",
+      "32. End-to-End Voice Latency & Quality — Real-time turnaround benchmarking, transcription accuracy, jitter mitigation, and acoustic clarity",
+    ],
+  },
+  {
+    id: "06",
+    title: "Phase 6: Security & Compliance",
+    items: [
+      "33. Authentication, Authorization & MFA — Secure login, role-based access control, session rotation, and server-side boundary enforcement",
+      "34. API Rate Limiting & Abuse Protection — Granular rate-limiting per IP/token, request size boundaries, and DDoS/brute-force mitigation",
+      "35. Secrets Management & Credential Rotation — Secrets held in approved environment vaults with automated secret scanning and zero leaks",
+      "36. TLS, DNS, Security Headers & Transport Protection — HTTPS enforcement, HSTS, Content Security Policy, X-Frame-Options, and secure cookies",
+      "37. Sensitive Data Protection & Encryption — End-to-end encryption in transit and at rest, access-controlled storage, and data minimization",
+      "38. Vulnerability & Compliance Review — Dependency vulnerability scanning, SAST checks, and privacy impact assessments (DPDP / GDPR / SOC 2)",
+    ],
+  },
+  {
+    id: "07",
+    title: "Phase 7: QA, Testing & Telemetry",
+    items: [
+      "39. Automated Unit & Integration Testing — Comprehensive unit tests, mocked external dependencies, and component test coverage",
+      "40. End-to-End User Journey Verification — Staging smoke tests validating auth, forms, account activation, and transactional workflows",
+      "41. Error Boundaries & Failure Recovery — Frontend error boundaries, backend exception handling, circuit breakers, and truthful failure states",
+      "42. Observability, Logging & Error Monitoring — Structured logs with correlation IDs, real-time error telemetry (Sentry), and incident alert routing",
+      "43. Performance, Load & Scalability Testing — Representative concurrency testing, throughput measurement, and latency under stress",
+      "44. Security Regression & Production-Readiness Testing — Access control regression tests, abuse prevention tests, and release gating criteria",
+    ],
+  },
+  {
+    id: "08",
+    title: "Phase 8: DevOps, CI/CD & Handoff",
+    items: [
+      "45. GitHub Actions CI/CD Pipeline Validation — Automated linting, type checking, security checks, and build validation gating deployment",
+      "46. Vercel Frontend Production Deployment — Production domain verification, environment variable sync, and post-deployment smoke validation",
+      "47. Render Backend Production Deployment — Service configuration, health check endpoints, background worker monitoring, and zero-downtime boots",
+      "48. DNS, Domains, CDN & Search Visibility — DNS records, canonical HTTPS redirects, sitemap.xml, robots.txt, and search engine console verification",
+      "49. Rollback & Operational Monitoring — Documented release identifiers, one-click rollback procedures, and post-launch telemetry dashboards",
+      "50. IP, Documentation & Client Handover — Complete source repository transfer, OpenAPI documentation, architecture specs, and 30-day warranty support",
     ],
   },
 ];
@@ -158,13 +206,13 @@ export default function ChecklistLeadMagnet() {
             Production Engineering Protocol
           </div>
           <h1 className="font-poppins text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[var(--lit-navy,#0B2545)] leading-tight mb-4">
-            Website & App{" "}
+            The 50-Point Enterprise{" "}
             <span className="text-[var(--lit-blue,#1565C0)]">
-              Development Checklist
+              Deployment Checklist
             </span>
           </h1>
           <p className="font-serif italic text-base sm:text-lg text-[var(--lit-teal,#1FA9A2)] mb-3">
-            Five comprehensive phases and 30+ production gates ensuring zero architectural technical debt.
+            Eight comprehensive phases and 50 production quality gates ensuring zero architectural technical debt.
           </p>
           <p className="text-sm sm:text-base text-[var(--lit-text-muted,#52677C)] leading-relaxed max-w-2xl mx-auto">
             From strategic discovery to zero-downtime canary deployment — our battle-tested engineering protocol for high-performance enterprise applications.
@@ -196,8 +244,8 @@ export default function ChecklistLeadMagnet() {
         {/* Metrics Bar */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-16">
           {[
-            { k: "5 Phases", v: "End-to-End Quality Gates" },
-            { k: "30+ Checkpoints", v: "Architecture Verification Rules" },
+            { k: "8 Phases", v: "End-to-End Quality Gates" },
+            { k: "50 Checkpoints", v: "Architecture Verification Rules" },
             { k: "Zero Debt", v: "Type-Safe Strict Scaffolding" },
           ].map((s) => (
             <div
@@ -214,7 +262,7 @@ export default function ChecklistLeadMagnet() {
           ))}
         </div>
 
-        {/* 5 Phases Detailed */}
+        {/* 8 Phases Detailed */}
         <div className="space-y-6 mb-16">
           {PHASES.map((phase) => (
             <div
@@ -253,13 +301,13 @@ export default function ChecklistLeadMagnet() {
                 <span>Executive Framework Dispatch</span>
               </div>
               <h2 className="font-poppins text-2xl sm:text-3xl font-extrabold text-[var(--lit-navy,#0B2545)] tracking-tight mb-3">
-                Get the Full Production QA Framework
+                Get the 50-Point Enterprise SOP Framework
               </h2>
               <p className="font-serif italic text-sm text-[var(--lit-teal,#1FA9A2)] mb-3">
-                Complete engineering protocol delivered to your inbox.
+                Official 21-page engineering protocol delivered directly to your inbox.
               </p>
               <p className="text-sm text-[var(--lit-text-muted,#52677C)] leading-relaxed">
-                A granular, production-ready specification of every architectural phase, automated test gate, and deployment checklist for engineering leaders and CTOs.
+                A granular, production-ready specification across 8 architectural phases, 50 automated test gates, and deployment checkpoints for engineering leaders and CTOs.
               </p>
             </div>
             <div>
@@ -270,7 +318,7 @@ export default function ChecklistLeadMagnet() {
                     Checklist Dispatched Successfully
                   </p>
                   <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
-                    Please check your email inbox for the complete engineering quality framework PDF.
+                    Please check your email inbox for the complete 50-point engineering quality framework PDF.
                   </p>
                 </div>
               ) : (
@@ -298,7 +346,7 @@ export default function ChecklistLeadMagnet() {
                       "Sending…"
                     ) : (
                       <>
-                        <span>Email Me the Complete Checklist</span>
+                        <span>Email Me the 50-Point Checklist PDF</span>
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
@@ -316,7 +364,7 @@ export default function ChecklistLeadMagnet() {
       {/* Enterprise CTA */}
       <CTASection
         title="Ready to Apply This Production Standard to Your Stack?"
-        subtitle="Schedule an architecture session with our engineering directors to benchmark your current deployment against our 30+ quality gates."
+        subtitle="Schedule an architecture session with our engineering directors to benchmark your current deployment against our 50 quality gates across 8 phases."
         primaryCta={{
           label: "Book Strategy Session",
           href: "/book-consultation",

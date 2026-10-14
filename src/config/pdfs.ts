@@ -232,6 +232,20 @@ export const PDF_RESOURCES: PdfResource[] = [
     publishedAt: "2026-10-05",
     accessType: "gated",
   },
+  {
+    id: "pdf-website-development-checklist",
+    slug: "website-development-checklist",
+    title: "50-Point Enterprise Deployment Checklist",
+    description:
+      "Standard Operating Procedure for Production-Grade AI Architectures across 8 SDLC phases and 50 testable checkpoints.",
+    category: "Engineering",
+    filename: "website-development-checklist.pdf",
+    publicPath: "/resources/website-development-checklist.pdf",
+    coverImage: "/images/checklist/checklist-business-readiness.webp",
+    version: "1.0",
+    publishedAt: "2026-10-14",
+    accessType: "gated",
+  },
 ];
 
 export function getPdfResourceBySlug(slug: string): PdfResource | undefined {

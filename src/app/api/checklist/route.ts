@@ -70,13 +70,32 @@ export async function POST(req: Request) {
     if (email) {
       try {
         const attachments: Array<{ filename: string; path: string }> = [];
+        let downloadUrl = "https://www.logicintelligencetechnologies.in/checklist";
+
         if (isLeadMagnet) {
-          const pdfPath = path.join(process.cwd(), "private", "resources", "website-development-checklist.pdf");
-          if (fs.existsSync(pdfPath)) {
+          const { resolveResourcePdfPath } = await import("@/lib/resources/pdf-resolver");
+          const resolvedPath =
+            resolveResourcePdfPath("website-development-checklist.pdf") ||
+            path.join(process.cwd(), "private", "resources", "website-development-checklist.pdf");
+
+          if (fs.existsSync(resolvedPath)) {
             attachments.push({
-              filename: "Website-Launch-Checklist.pdf",
-              path: pdfPath,
+              filename: "LIT-50-Point-Enterprise-Deployment-Checklist.pdf",
+              path: resolvedPath,
             });
+          }
+
+          try {
+            const { issueResourceAccessToken } = await import("@/lib/resources/access-token");
+            const tokenInfo = issueResourceAccessToken("website-development-checklist");
+            const siteUrl = (
+              process.env.NEXT_PUBLIC_SITE_URL || "https://www.logicintelligencetechnologies.in"
+            ).replace(/\/$/, "");
+            downloadUrl = `${siteUrl}/api/resources/website-development-checklist/download?token=${encodeURIComponent(
+              tokenInfo.token
+            )}`;
+          } catch (tErr) {
+            console.warn("[Checklist] Token issue failed, using default url:", tErr);
           }
         }
 
@@ -84,14 +103,17 @@ export async function POST(req: Request) {
           to: email,
           from: "noReply",
           subject: isLeadMagnet
-            ? "Your Website Launch Checklist"
+            ? "Your 50-Point Enterprise Deployment Checklist"
             : "We received your discovery responses",
           category: "transactional",
           eventType: isLeadMagnet ? "resource-delivery" : "discovery-confirmation",
           templateKey: isLeadMagnet ? "checklist-download-email" : "lead-confirmation-email",
           idempotencyKey: `${isLeadMagnet ? "resource" : "discovery"}:${idemBase}:customer`,
           react: isLeadMagnet
-            ? React.createElement(ChecklistDownloadEmail, { fullName: displayName })
+            ? React.createElement(ChecklistDownloadEmail, {
+                fullName: displayName,
+                downloadUrl,
+              })
             : React.createElement(LeadConfirmationEmail, {
                 fullName: displayName,
                 service: "Project Discovery Questionnaire",
@@ -114,7 +136,7 @@ export async function POST(req: Request) {
         from: "noReply",
         replyTo: email || undefined,
         subject: isLeadMagnet
-          ? `New checklist download: ${email}`
+          ? `New 50-point checklist download: ${email}`
           : `New discovery questionnaire: ${email || "Anonymous"}`,
         category: "transactional",
         eventType: isLeadMagnet ? "resource-internal" : "discovery-internal",
@@ -126,9 +148,9 @@ export async function POST(req: Request) {
               companyName: "—",
               email: email || "Not provided",
               phone: "—",
-              service: "Free Checklist Download",
+              service: "50-Point Enterprise Deployment Checklist",
               requirements:
-                "The visitor requested the Website Launch Checklist PDF from the /checklist page.",
+                "The visitor requested the 50-Point Enterprise Deployment Checklist PDF from the /checklist page.",
               submissionDate: new Date().toISOString(),
             })
           : React.createElement(ChecklistSubmissionEmail, {

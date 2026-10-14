@@ -21,17 +21,22 @@ export default function ChecklistDownloadEmail({
   downloadUrl = "https://www.logicintelligencetechnologies.in/checklist",
 }: Props) {
   return (
-    <EmailLayout preview="Your website checklist is ready">
+    <EmailLayout preview="Your 50-point enterprise deployment checklist is ready">
       <EmailHeader />
       <EmailContent>
-        <EmailTitle>Your checklist is ready</EmailTitle>
+        <EmailTitle>Your 50-Point Enterprise Deployment Checklist is Ready</EmailTitle>
         <EmailGreeting name={fullName} />
         <EmailBody>
-          Thanks for requesting the website checklist from Logic Intelligence
-          Technologies. Use the button below to access it.
+          Thank you for requesting the official 50-Point Enterprise Deployment Checklist (Standard Operating Procedure) from Logic Intelligence
+          Technologies.
         </EmailBody>
-        <EmailButton href={downloadUrl}>Download checklist</EmailButton>
-        <EmailMuted>Keep this email for easy access later.</EmailMuted>
+        <EmailBody>
+          We have attached the complete 21-page specification PDF directly to this email. You can also access or download the latest copy anytime using the secure button below:
+        </EmailBody>
+        <EmailButton href={downloadUrl}>Download Checklist PDF</EmailButton>
+        <EmailMuted>
+          This official SOP defines 50 testable checkpoints across 8 software-development lifecycle phases, from architecture and database integrity to AI/voice pipelines and zero-downtime release governance.
+        </EmailMuted>
       </EmailContent>
       <EmailFooter />
     </EmailLayout>
