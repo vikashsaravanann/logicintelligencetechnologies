@@ -320,7 +320,7 @@ export interface EngagementDocumentLink {
 export interface ClientIdentityChangeRequest {
   id: string;
   engagement_id: string | null;
-  client_id: string | null;
+  client_id?: string | null;
   target_field:
     | 'company_name'
     | 'registered_address'
@@ -338,5 +338,7 @@ export interface ClientIdentityChangeRequest {
   reviewed_by: string | null;
   reviewed_at: string | null;
   review_notes: string | null;
+  rejection_reason?: string | null;
+  supporting_doc_url?: string | null;
   created_at: string;
 }

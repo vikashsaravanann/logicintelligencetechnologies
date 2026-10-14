@@ -345,6 +345,7 @@ export async function listIdentityChangeRequests(engagementId?: string): Promise
     {
       id: 'req-sample-01',
       engagement_id: FALLBACK_SAMPLE_ENGAGEMENT.id,
+      client_id: null,
       target_field: 'company_name',
       current_value: 'Apex Meridian Technologies Pvt Ltd',
       proposed_value: 'Apex Meridian Healthcare Systems Private Limited',
@@ -354,6 +355,7 @@ export async function listIdentityChangeRequests(engagementId?: string): Promise
       requested_by: 'Dr. Rajesh Krishnan',
       reviewed_by: null,
       reviewed_at: null,
+      review_notes: null,
       rejection_reason: null,
       created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
     },
