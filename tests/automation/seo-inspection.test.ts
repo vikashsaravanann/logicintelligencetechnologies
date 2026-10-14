@@ -188,23 +188,43 @@ test("URL Inspection: rejects non-allowlisted cross-domain URLs", async () => {
 });
 
 test("URL Inspection: runs truthful Direct Edge Inspection on canonical route", async () => {
-  const result = await inspectUrl(
-    "LIT-CORP",
-    "https://www.logicintelligencetechnologies.in/"
-  );
+  const origFetch = globalThis.fetch;
+  globalThis.fetch = (async () => {
+    return new Response(
+      `<!DOCTYPE html><html><head>
+        <link rel="canonical" href="https://www.logicintelligencetechnologies.in/" />
+        <meta name="robots" content="index, follow" />
+        <meta name="google-site-verification" content="37m02DgA2U-ZJ40jbzGhSw3l4UluW2B-Y_0g5b069K8" />
+      </head><body><h1>Logic Intelligence Technologies</h1></body></html>`,
+      {
+        status: 200,
+        statusText: "OK",
+        headers: { "content-type": "text/html" },
+      }
+    );
+  }) as unknown as typeof globalThis.fetch;
 
-  assert.strictEqual(result.ok, true);
-  assert.strictEqual(result.result?.verdict, "PASS");
-  assert.strictEqual(result.result?.source, "DIRECT_EDGE_INSPECTION");
-  assert.strictEqual(result.result?.crawledAs, "EDGE_INSPECTOR");
-  assert.strictEqual(result.result?.indexingState, "INDEXING_ALLOWED");
-  assert.ok(result.result?.edgeDetails !== undefined);
-  assert.strictEqual(result.result?.edgeDetails?.httpStatus, 200);
-  assert.strictEqual(result.result?.edgeDetails?.isRobotsAllowed, true);
-  assert.strictEqual(result.result?.edgeDetails?.isCanonicalSelfReferential, true);
-  assert.strictEqual(
-    result.result?.edgeDetails?.googleSiteVerification,
-    "37m02DgA2U-ZJ40jbzGhSw3l4UluW2B-Y_0g5b069K8"
-  );
-  assert.strictEqual(result.result?.gscStatus?.configured, false);
+  try {
+    const result = await inspectUrl(
+      "LIT-CORP",
+      "https://www.logicintelligencetechnologies.in/"
+    );
+
+    assert.strictEqual(result.ok, true);
+    assert.strictEqual(result.result?.verdict, "PASS");
+    assert.strictEqual(result.result?.source, "DIRECT_EDGE_INSPECTION");
+    assert.strictEqual(result.result?.crawledAs, "EDGE_INSPECTOR");
+    assert.strictEqual(result.result?.indexingState, "INDEXING_ALLOWED");
+    assert.ok(result.result?.edgeDetails !== undefined);
+    assert.strictEqual(result.result?.edgeDetails?.httpStatus, 200);
+    assert.strictEqual(result.result?.edgeDetails?.isRobotsAllowed, true);
+    assert.strictEqual(result.result?.edgeDetails?.isCanonicalSelfReferential, true);
+    assert.strictEqual(
+      result.result?.edgeDetails?.googleSiteVerification,
+      "37m02DgA2U-ZJ40jbzGhSw3l4UluW2B-Y_0g5b069K8"
+    );
+    assert.strictEqual(result.result?.gscStatus?.configured, false);
+  } finally {
+    globalThis.fetch = origFetch;
+  }
 });

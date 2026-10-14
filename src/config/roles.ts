@@ -52,6 +52,9 @@ export const CAPABILITIES = [
   "documents.issue",
   "documents.download",
   "onboarding.manage",
+  "checklists.read",
+  "checklists.write",
+  "checklists.send",
   "automations.read",
   "automations.retry",
   "automations.sync",
@@ -88,6 +91,7 @@ const OPERATIONS: readonly Capability[] = [
   "contracts.read",
   "documents.read", "documents.upload", "documents.review", "documents.download",
   "onboarding.manage",
+  "checklists.read", "checklists.write", "checklists.send",
   "automations.read", "automations.retry", "automations.manage",
   "approvals.decide",
   "seo.read", "seo.manage",
@@ -102,6 +106,7 @@ const SUPPORT: readonly Capability[] = [
   "bookings.read",
   "clients.read",
   "documents.read",
+  "checklists.read",
   "status.read",
 ];
 
@@ -113,6 +118,7 @@ const DEVELOPER: readonly Capability[] = [
   "cdn.read", "cdn.manage",
   "clients.read",
   "documents.read",
+  "checklists.read",
 ];
 
 const VIEWER: readonly Capability[] = [
@@ -121,6 +127,7 @@ const VIEWER: readonly Capability[] = [
   "status.read",
   "proposals.read",
   "clients.read",
+  "checklists.read",
   "automations.read",
   "seo.read",
   "cdn.read",

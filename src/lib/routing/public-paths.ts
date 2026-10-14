@@ -59,6 +59,7 @@ export const PROTECTED_PREFIXES: readonly string[] = [
   "/cookie-policy",
   "/discovery",
   "/docs",
+  "/enterprise-checklist",
   "/expertise",
   "/free-demo",
   "/healthcare",

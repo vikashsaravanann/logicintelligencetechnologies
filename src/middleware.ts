@@ -39,6 +39,15 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
+  // Token-secured client invitation pages (/proposal/[token], /enterprise-checklist/[token])
+  // are validated server-side by cryptographically secure bearer tokens without requiring a staff session.
+  if (
+    (path.startsWith("/proposal/") && path.length > "/proposal/".length) ||
+    (path.startsWith("/enterprise-checklist/") && path.length > "/enterprise-checklist/".length)
+  ) {
+    return res;
+  }
+
   // Not a signed-in area: unknown paths fall through to the 404 page.
   if (!isProtectedPath(path)) return res;
 
