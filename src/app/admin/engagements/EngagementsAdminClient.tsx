@@ -2,7 +2,23 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import {
+  Copy,
+  Check,
+  Mail,
+  Send,
+  ExternalLink,
+  Plus,
+  Loader2,
+  ShieldCheck,
+  Layers,
+  ArrowRight,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react';
 import { ClientEngagement, ClientIdentityChangeRequest } from '@/lib/engagements/types';
+import { generatePortalEmailCopyText } from '@/lib/engagements/share';
+import { IssueEngagementModal } from './components/IssueEngagementModal';
 
 interface EngagementsAdminClientProps {
   initialEngagements: ClientEngagement[];
@@ -13,10 +29,16 @@ export default function EngagementsAdminClient({
   initialEngagements,
   initialIdentityRequests,
 }: EngagementsAdminClientProps) {
-  const [engagements] = useState<ClientEngagement[]>(initialEngagements);
+  const [engagements, setEngagements] = useState<ClientEngagement[]>(initialEngagements);
   const [identityRequests, setIdentityRequests] = useState<ClientIdentityChangeRequest[]>(initialIdentityRequests);
   const [searchQuery, setSearchQuery] = useState('');
   const [processingReqId, setProcessingReqId] = useState<string | null>(null);
+
+  // Per-engagement action feedback
+  const [copiedLinkRef, setCopiedLinkRef] = useState<string | null>(null);
+  const [copiedEmailRef, setCopiedEmailRef] = useState<string | null>(null);
+  const [sendingEmailRef, setSendingEmailRef] = useState<string | null>(null);
+  const [emailNotice, setEmailNotice] = useState<{ ref: string; message: string; success: boolean } | null>(null);
 
   const filteredEngagements = engagements.filter((e) => {
     const q = searchQuery.toLowerCase();
@@ -35,6 +57,62 @@ export default function EngagementsAdminClient({
       );
       setProcessingReqId(null);
     }, 600);
+  };
+
+  const handleCopyLink = (eng: ClientEngagement) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.logicintelligencetechnologies.in';
+    const portalUrl = `${origin}/engagement/${eng.engagement_ref}`;
+    navigator.clipboard.writeText(portalUrl);
+    setCopiedLinkRef(eng.engagement_ref);
+    setTimeout(() => setCopiedLinkRef(null), 2500);
+  };
+
+  const handleCopyEmail = (eng: ClientEngagement) => {
+    const text = generatePortalEmailCopyText(eng);
+    navigator.clipboard.writeText(text);
+    setCopiedEmailRef(eng.engagement_ref);
+    setTimeout(() => setCopiedEmailRef(null), 2500);
+  };
+
+  const handleSendEmail = async (eng: ClientEngagement) => {
+    setSendingEmailRef(eng.engagement_ref);
+    setEmailNotice(null);
+
+    try {
+      const res = await fetch(`/api/engagements/${eng.engagement_ref}/send-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+
+      const data = await res.json();
+      if (data.ok) {
+        setEmailNotice({
+          ref: eng.engagement_ref,
+          message: `Portal invitation sent to ${eng.contact_email}`,
+          success: true,
+        });
+      } else {
+        setEmailNotice({
+          ref: eng.engagement_ref,
+          message: `Failed: ${data.message || 'Error dispatching email'}`,
+          success: false,
+        });
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to trigger email';
+      setEmailNotice({
+        ref: eng.engagement_ref,
+        message: msg,
+        success: false,
+      });
+    } finally {
+      setSendingEmailRef(null);
+    }
+  };
+
+  const handleEngagementCreated = (newEng: ClientEngagement) => {
+    setEngagements((prev) => [newEng, ...prev.filter((e) => e.id !== newEng.id)]);
   };
 
   const pendingRequests = identityRequests.filter((r) => r.status === 'pending');
@@ -66,7 +144,7 @@ export default function EngagementsAdminClient({
         <div className="bg-white p-5 rounded-2xl border border-[#DFE7EF] shadow-xs">
           <span className="text-xs font-semibold text-[#52677C]">Manual UPI Verification</span>
           <div className="text-2xl font-bold text-emerald-600 mt-1">2 Milestones</div>
-          <span className="text-[11px] text-slate-500">Stages 06 & 11 (50% / 50%)</span>
+          <span className="text-[11px] text-slate-500">Stages 06 &amp; 11 (50% / 50%)</span>
         </div>
       </div>
 
@@ -152,99 +230,191 @@ export default function EngagementsAdminClient({
             </p>
           </div>
 
-          <div className="w-full sm:w-72">
-            <input
-              type="text"
-              placeholder="Search by company or ref..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-2 border border-[#DFE7EF] rounded-lg text-xs focus:ring-2 focus:ring-[#1565C0] outline-none"
-            />
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="w-full sm:w-64">
+              <input
+                type="text"
+                placeholder="Search by company or ref..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-3 py-2 border border-[#DFE7EF] rounded-xl text-xs focus:ring-2 focus:ring-[#1565C0] outline-none"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <IssueEngagementModal onCreated={handleEngagementCreated} />
+              <Link
+                href="/admin/engagements/new"
+                className="inline-flex items-center gap-1.5 px-3 py-2 border border-[#DFE7EF] hover:border-[#1565C0] text-xs font-semibold text-[#0B2545] rounded-xl transition-colors bg-white shadow-xs shrink-0"
+              >
+                <span>Full Form</span>
+              </Link>
+            </div>
           </div>
         </div>
 
+        {/* Global Notice if email was sent */}
+        {emailNotice && (
+          <div
+            className={`p-3 rounded-xl text-xs flex items-center justify-between gap-2 ${
+              emailNotice.success
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                : 'bg-rose-50 text-rose-800 border border-rose-200'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              {emailNotice.success ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              ) : (
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              )}
+              <span>
+                <strong>{emailNotice.ref}:</strong> {emailNotice.message}
+              </span>
+            </div>
+            <button
+              onClick={() => setEmailNotice(null)}
+              className="text-xs font-bold hover:underline shrink-0"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
         {/* Engagements List */}
         <div className="space-y-4">
-          {filteredEngagements.map((eng) => (
-            <div
-              key={eng.id}
-              className="border border-[#DFE7EF] rounded-xl p-5 hover:border-[#B9DCFF] transition-all bg-white space-y-4"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-[#1565C0] bg-[#E7F3FF] px-2.5 py-0.5 rounded">
-                      {eng.engagement_ref}
-                    </span>
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      {eng.status}
-                    </span>
+          {filteredEngagements.map((eng) => {
+            const isCopiedLink = copiedLinkRef === eng.engagement_ref;
+            const isCopiedEmail = copiedEmailRef === eng.engagement_ref;
+            const isSendingEmail = sendingEmailRef === eng.engagement_ref;
+
+            return (
+              <div
+                key={eng.id}
+                className="border border-[#DFE7EF] rounded-xl p-5 hover:border-[#B9DCFF] transition-all bg-white space-y-4"
+              >
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-[#1565C0] bg-[#E7F3FF] px-2.5 py-0.5 rounded">
+                        {eng.engagement_ref}
+                      </span>
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        {eng.status}
+                      </span>
+                    </div>
+                    <h4 className="text-base font-bold text-[#0B2545]">
+                      {eng.company_name}
+                    </h4>
+                    <p className="text-xs text-slate-600">
+                      {eng.project_title}
+                    </p>
                   </div>
-                  <h4 className="text-base font-bold text-[#0B2545]">
-                    {eng.company_name}
-                  </h4>
-                  <p className="text-xs text-slate-600">
-                    {eng.project_title}
-                  </p>
+
+                  {/* Action Toolbar */}
+                  <div className="flex flex-wrap items-center gap-2 self-start lg:self-center">
+                    {/* Copy Portal Link */}
+                    <button
+                      onClick={() => handleCopyLink(eng)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#DFE7EF] text-xs font-semibold text-[#0B2545] hover:border-[#1565C0] hover:text-[#1565C0] rounded-lg transition-colors bg-white shadow-2xs"
+                      title="Copy public client portal access link"
+                    >
+                      {isCopiedLink ? (
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5 text-slate-500" />
+                      )}
+                      <span>{isCopiedLink ? 'Link Copied!' : 'Copy Link'}</span>
+                    </button>
+
+                    {/* Copy Invitation Email */}
+                    <button
+                      onClick={() => handleCopyEmail(eng)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#DFE7EF] text-xs font-semibold text-[#0B2545] hover:border-[#1565C0] hover:text-[#1565C0] rounded-lg transition-colors bg-white shadow-2xs"
+                      title="Copy complete formatted client invitation email"
+                    >
+                      {isCopiedEmail ? (
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      ) : (
+                        <Mail className="w-3.5 h-3.5 text-slate-500" />
+                      )}
+                      <span>{isCopiedEmail ? 'Email Copied!' : 'Copy Email'}</span>
+                    </button>
+
+                    {/* Send / Resend Email */}
+                    <button
+                      onClick={() => handleSendEmail(eng)}
+                      disabled={isSendingEmail}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#B9DCFF] bg-[#E7F3FF] text-[#1565C0] hover:bg-[#d0e8ff] text-xs font-semibold rounded-lg transition-colors shadow-2xs disabled:opacity-50"
+                      title={`Send LIT Email v2 invitation to ${eng.contact_email}`}
+                    >
+                      {isSendingEmail ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Send className="w-3.5 h-3.5" />
+                      )}
+                      <span>{isSendingEmail ? 'Sending...' : 'Send Email'}</span>
+                    </button>
+
+                    {/* View Portal */}
+                    <Link
+                      href={`/engagement/${eng.engagement_ref}`}
+                      target="_blank"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#DFE7EF] text-xs font-semibold text-[#0B2545] hover:border-[#1565C0] hover:text-[#1565C0] rounded-lg transition-colors bg-white shadow-2xs"
+                    >
+                      <span>View Portal</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </Link>
+
+                    {/* Manage Lifecycle */}
+                    <Link
+                      href={`/admin/engagements/${eng.id}`}
+                      className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#1565C0] text-white text-xs font-semibold rounded-lg hover:bg-[#0B2545] transition-colors shadow-xs"
+                    >
+                      <span>Manage</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2 self-start sm:self-center">
-                  <Link
-                    href={`/engagement/${eng.engagement_ref}`}
-                    target="_blank"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#DFE7EF] text-xs font-semibold text-[#0B2545] hover:border-[#1565C0] hover:text-[#1565C0] rounded-lg transition-colors bg-white shadow-xs"
-                  >
-                    <span>View Client Portal</span>
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  </Link>
+                {/* Progress Bar & Details */}
+                <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-[#0B2545]">
+                      Lifecycle Milestone Progress
+                    </span>
+                    <span className="text-[#1565C0] font-bold">
+                      Stage 06 of 13 (46% Completed)
+                    </span>
+                  </div>
 
-                  <Link
-                    href={`/admin/engagements/${eng.id}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#1565C0] text-white text-xs font-semibold rounded-lg hover:bg-[#0B2545] transition-colors shadow-xs"
-                  >
-                    <span>Manage Lifecycle</span>
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
+                  {/* Progress bar */}
+                  <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-linear-to-r from-[#1565C0] to-[#1FA9A2] rounded-full transition-all duration-500 w-[46%]" />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1">
+                    <div>
+                      <span className="text-slate-500 block text-[11px]">Primary Contact:</span>
+                      <span className="font-medium text-[#0B2545]">{eng.contact_name}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block text-[11px]">Email / Phone:</span>
+                      <span className="font-medium text-[#0B2545]">
+                        {eng.contact_email} {eng.contact_phone ? `· ${eng.contact_phone}` : ''}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block text-[11px]">Contract Value:</span>
+                      <span className="font-medium text-emerald-700 font-mono">
+                        {(eng.metadata?.budget_range as string) || '₹21,24,000.00 (Total SOW)'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              {/* Progress Bar & Details */}
-              <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-4 space-y-3">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-[#0B2545]">
-                    Lifecycle Milestone Progress
-                  </span>
-                  <span className="text-[#1565C0] font-bold">
-                    Stage 06 of 13 (46% Completed)
-                  </span>
-                </div>
-
-                {/* Progress bar */}
-                <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
-                  <div className="h-full bg-linear-to-r from-[#1565C0] to-[#1FA9A2] rounded-full transition-all duration-500 w-[46%]" />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1">
-                  <div>
-                    <span className="text-slate-500 block text-[11px]">Primary Contact:</span>
-                    <span className="font-medium text-[#0B2545]">{eng.contact_name}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block text-[11px]">Email / Phone:</span>
-                    <span className="font-medium text-[#0B2545]">{eng.contact_email}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block text-[11px]">Contract Value:</span>
-                    <span className="font-medium text-emerald-700 font-mono">₹21,24,000.00 (Total SOW)</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

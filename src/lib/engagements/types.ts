@@ -342,3 +342,15 @@ export interface ClientIdentityChangeRequest {
   supporting_doc_url?: string | null;
   created_at: string;
 }
+
+export interface CreateEngagementInput {
+  companyName: string;
+  contactName: string;
+  contactEmail: string;
+  contactPhone?: string | null;
+  projectTitle?: string;
+  budgetRange?: string | null;
+  notes?: string | null;
+  sendEmailImmediately?: boolean;
+  customMessage?: string | null;
+}

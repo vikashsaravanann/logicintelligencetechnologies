@@ -8,7 +8,10 @@ import {
   StageStatus,
   CANONICAL_13_STAGES,
   ORDERED_STAGE_KEYS,
+  CreateEngagementInput,
 } from './types';
+import { sendEngagementInvitationEmail } from './invitations';
+
 
 // Canonical fallback sample engagement for demo and resilient client rendering
 export const FALLBACK_SAMPLE_ENGAGEMENT: ClientEngagement = {
@@ -389,3 +392,255 @@ export async function updateStageStatus(
   }
   return { success: true };
 }
+
+/**
+ * Generates a unique, URL-safe engagement reference (e.g. ENG-2026-X8K2M).
+ */
+export async function generateEngagementRef(): Promise<string> {
+  const year = new Date().getFullYear();
+  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+  let ref = '';
+  let unique = false;
+  let attempts = 0;
+
+  while (!unique && attempts < 10) {
+    attempts++;
+    let randomPart = '';
+    for (let i = 0; i < 5; i++) {
+      randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    ref = `ENG-${year}-${randomPart}`;
+
+    if (isAdminClientConfigured()) {
+      try {
+        const { data } = await supabaseAdmin
+          .from('client_engagements')
+          .select('id')
+          .eq('engagement_ref', ref)
+          .maybeSingle();
+        if (!data) {
+          unique = true;
+        }
+      } catch {
+        unique = true;
+      }
+    } else {
+      unique = true;
+    }
+  }
+
+  return ref || `ENG-${year}-${Date.now().toString(36).toUpperCase().slice(-5)}`;
+}
+
+/**
+ * Creates a new Client Engagement record, provisions all 13 canonical stages,
+ * seeds document links, and optionally dispatches the invitation email immediately.
+ */
+export async function createEngagement(input: CreateEngagementInput): Promise<{
+  success: boolean;
+  engagement?: ClientEngagement;
+  error?: string;
+  emailDispatched?: boolean;
+  emailMessage?: string;
+}> {
+  if (!input.companyName?.trim()) {
+    return { success: false, error: 'Organization / Company name is required.' };
+  }
+  if (!input.contactName?.trim()) {
+    return { success: false, error: 'Primary contact name is required.' };
+  }
+  if (!input.contactEmail?.trim()) {
+    return { success: false, error: 'Contact email address is required.' };
+  }
+
+  const engagementRef = await generateEngagementRef();
+  const now = new Date().toISOString();
+
+  const newEngagementRecord = {
+    engagement_ref: engagementRef,
+    company_name: input.companyName.trim(),
+    contact_name: input.contactName.trim(),
+    contact_email: input.contactEmail.trim().toLowerCase(),
+    contact_phone: input.contactPhone?.trim() || null,
+    project_title: input.projectTitle?.trim() || 'Enterprise Digital Platform & Cloud Architecture',
+    status: 'active' as const,
+    current_stage: 'checklist' as StageKey,
+    notes: input.notes?.trim() || null,
+    metadata: {
+      budget_range: input.budgetRange?.trim() || null,
+      created_via: 'admin_portal',
+      initial_custom_message: input.customMessage?.trim() || null,
+    },
+    created_at: now,
+    updated_at: now,
+  };
+
+  let createdEngagement: ClientEngagement | null = null;
+
+  if (isAdminClientConfigured()) {
+    try {
+      const { data: engData, error: engError } = await supabaseAdmin
+        .from('client_engagements')
+        .insert(newEngagementRecord)
+        .select('*')
+        .single();
+
+      if (engError) {
+        console.error('[createEngagement] DB insert failed:', engError);
+        return { success: false, error: engError.message };
+      }
+
+      createdEngagement = engData as ClientEngagement;
+
+      // Seed all 13 canonical stages
+      const stagesToInsert = ORDERED_STAGE_KEYS.map((key, idx) => {
+        const def = CANONICAL_13_STAGES[key];
+        const isFirst = idx === 0;
+        return {
+          engagement_id: createdEngagement!.id,
+          stage_key: key,
+          ordinal: def.ordinal,
+          title: def.title,
+          summary: def.description,
+          status: isFirst ? ('available' as const) : ('locked' as const),
+          assigned_owner: 'Logic Intelligence Technologies Staff',
+          notes: null,
+          prerequisite_stage_key: def.prerequisiteKey,
+          prerequisite_description: def.prerequisiteDesc,
+          document_master_ref: def.documentMasterRef,
+          snapshot: {},
+          unlocked_at: isFirst ? now : null,
+          completed_at: null,
+          approved_at: null,
+          created_at: now,
+          updated_at: now,
+        };
+      });
+
+      const { error: stagesError } = await supabaseAdmin
+        .from('engagement_stages')
+        .insert(stagesToInsert);
+
+      if (stagesError) {
+        console.warn('[createEngagement] Failed seeding stages:', stagesError);
+      }
+
+      // Seed standard document master links
+      const docsToInsert = [
+        {
+          engagement_id: createdEngagement!.id,
+          stage_key: 'checklist',
+          document_title: 'Official 50-Point Enterprise Deployment Checklist',
+          master_id: 'LIT-00',
+          version_label: 'v2.4',
+          file_url: '/assets/docs/LIT_50_Point_Enterprise_Deployment_Checklist.pdf',
+          file_size_bytes: 700198,
+          sha256_hash: '9a8d29b0f4c3...enterprise',
+          is_client_visible: true,
+          requires_signature: false,
+          signature_status: 'none',
+        },
+        {
+          engagement_id: createdEngagement!.id,
+          stage_key: 'sow',
+          document_title: 'Statement of Work & Master Service Agreement',
+          master_id: 'LIT-01',
+          version_label: 'v1.0',
+          file_url: '/assets/docs/masters/LIT-01-SOW-Service-Agreement.pdf',
+          file_size_bytes: 620485,
+          sha256_hash: 'a1b2c3d4...sow',
+          is_client_visible: true,
+          requires_signature: true,
+          signature_status: 'pending',
+        },
+        {
+          engagement_id: createdEngagement!.id,
+          stage_key: 'onboarding',
+          document_title: 'Client Technical Onboarding & Systems Guide',
+          master_id: 'LIT-03',
+          version_label: 'v1.0',
+          file_url: '/assets/docs/masters/LIT-03-Client-Onboarding-Guide.pdf',
+          file_size_bytes: 598441,
+          sha256_hash: 'b2c3d4e5...onb',
+          is_client_visible: true,
+          requires_signature: false,
+          signature_status: 'none',
+        },
+        {
+          engagement_id: createdEngagement!.id,
+          stage_key: 'technical-spec',
+          document_title: 'Production Technical & Architectural Specification',
+          master_id: 'LIT-04',
+          version_label: 'v1.0',
+          file_url: '/assets/docs/masters/LIT-04-Technical-Specification.pdf',
+          file_size_bytes: 616085,
+          sha256_hash: 'c3d4e5f6...tech',
+          is_client_visible: true,
+          requires_signature: false,
+          signature_status: 'none',
+        },
+        {
+          engagement_id: createdEngagement!.id,
+          stage_key: 'support',
+          document_title: 'Enterprise Maintenance & SLA Agreement',
+          master_id: 'LIT-07',
+          version_label: 'v1.0',
+          file_url: '/assets/docs/masters/LIT-07-Maintenance-Support-Agreement.pdf',
+          file_size_bytes: 602708,
+          sha256_hash: 'd4e5f6a7...sup',
+          is_client_visible: true,
+          requires_signature: true,
+          signature_status: 'none',
+        },
+      ];
+
+      const { error: docsError } = await supabaseAdmin
+        .from('engagement_document_links')
+        .insert(docsToInsert);
+
+      if (docsError) {
+        console.warn('[createEngagement] Failed seeding document links:', docsError);
+      }
+    } catch (dbErr: any) {
+      console.warn('[createEngagement] Exception during database write:', dbErr);
+      return { success: false, error: dbErr?.message || 'Database error' };
+    }
+  }
+
+  // In fallback/in-memory mode if DB is unconfigured
+  if (!createdEngagement) {
+    createdEngagement = {
+      id: `eng-mock-${Date.now()}`,
+      client_id: null,
+      proposal_id: null,
+      checklist_invitation_id: null,
+      ...newEngagementRecord,
+    };
+  }
+
+  // Handle immediate email dispatch
+  let emailDispatched = false;
+  let emailMessage = 'Email dispatch skipped by configuration.';
+
+  if (input.sendEmailImmediately !== false) {
+    try {
+      const emailRes = await sendEngagementInvitationEmail(
+        createdEngagement.id || createdEngagement.engagement_ref,
+        input.customMessage || undefined
+      );
+      emailDispatched = emailRes.ok;
+      emailMessage = emailRes.message;
+    } catch (mailErr: any) {
+      console.error('[createEngagement] Email sending failed:', mailErr);
+      emailMessage = mailErr?.message || 'Email dispatch failed';
+    }
+  }
+
+  return {
+    success: true,
+    engagement: createdEngagement,
+    emailDispatched,
+    emailMessage,
+  };
+}
+
