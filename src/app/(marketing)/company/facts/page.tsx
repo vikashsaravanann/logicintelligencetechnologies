@@ -90,6 +90,25 @@ export default function CompanyFactsPage() {
                 <Globe className="w-4 h-4" /> {COMPANY.websiteUrl}
               </a>
             </div>
+            <div className="bg-white p-4 rounded-xl border border-[#DFE7EF]">
+              <p className="text-xs text-[var(--lit-text-muted)] uppercase tracking-wider font-mono font-semibold">
+                MSME / Udyam Registration
+              </p>
+              <p className="text-base text-[var(--lit-ink)] font-bold mt-1 font-mono">
+                {COMPANY.registration?.msmeUdyamNumber || "UDYAM-TN-03-0345274"}
+              </p>
+              <p className="text-xs text-[#059669] font-medium mt-0.5">
+                {COMPANY.registration?.enterpriseType || "Micro Enterprise"} · {COMPANY.registration?.majorActivity || "Services"}
+              </p>
+            </div>
+            <div className="bg-white p-4 rounded-xl border border-[#DFE7EF]">
+              <p className="text-xs text-[var(--lit-text-muted)] uppercase tracking-wider font-mono font-semibold">
+                Registered Location
+              </p>
+              <p className="text-sm text-[var(--lit-ink)] font-medium mt-1">
+                {COMPANY.registration?.registeredAddress || COMPANY.address}
+              </p>
+            </div>
             <div className="sm:col-span-2 p-5 bg-white rounded-xl border border-[#DFE7EF]">
               <p className="text-xs text-[var(--lit-text-muted)] uppercase tracking-wider font-mono font-semibold">
                 Mission &amp; Core Focus
