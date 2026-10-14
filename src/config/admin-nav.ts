@@ -57,6 +57,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     label: "Clients",
     items: [
       { label: "Clients", href: "/admin/clients", capability: "clients.read", match: startsWith("/admin/clients") },
+      { label: "Engagements", href: "/admin/engagements", capability: "clients.read", match: startsWith("/admin/engagements") },
       { label: "Checklists", href: "/admin/checklist-invitations", capability: "checklists.read", match: startsWith("/admin/checklist-invitations") },
       { label: "Documents", href: "/admin/documents", capability: "documents.read", match: startsWith("/admin/documents") },
       { label: "Onboarding", href: "/admin/onboarding", capability: "onboarding.manage", match: startsWith("/admin/onboarding") },

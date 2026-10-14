@@ -600,3 +600,5 @@ export const ENTERPRISE_PHASES: EnterpriseChecklistPhase[] = [
     checkpoints: ENTERPRISE_CHECKPOINTS.filter((c) => c.phase === 8),
   },
 ];
+
+export const ENTERPRISE_CHECKLIST_PHASES = ENTERPRISE_PHASES;
