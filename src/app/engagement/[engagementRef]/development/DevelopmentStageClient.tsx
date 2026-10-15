@@ -314,114 +314,165 @@ export default function DevelopmentStageClient({
         </Link>
       </div>
 
-      {/* RFC Modal */}
+      {/* Proportional Enterprise RFC Modal */}
       {showRfcModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#DFE7EF] space-y-4">
-            <div className="flex items-center justify-between border-b border-[#DFE7EF] pb-3">
-              <h3 className="text-base font-bold text-[#0B2545]">
-                Submit Change Request (LIT-06)
-              </h3>
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
+          onClick={() => setShowRfcModal(false)}
+        >
+          <div
+            className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 my-auto flex flex-col max-h-[92vh] text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Top Decorative Header */}
+            <div className="relative bg-gradient-to-r from-[#0B2545] via-[#123663] to-[#1565C0] px-6 py-5 sm:px-7 sm:py-6 text-white shrink-0">
               <button
+                type="button"
                 onClick={() => setShowRfcModal(false)}
-                className="text-slate-400 hover:text-slate-600 text-lg font-bold"
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                aria-label="Close"
               >
-                ✕
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
+
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase bg-teal-400/20 text-teal-300 border border-teal-400/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+                  LIT-06 · Change Governance
+                </span>
+                <span className="text-[10px] font-mono font-semibold text-slate-200 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/15">
+                  Ref: {engagementRef}
+                </span>
+              </div>
+
+              <h3 className="text-xl font-bold font-poppins text-white tracking-tight">
+                Submit Request for Change (RFC)
+              </h3>
+              <p className="text-xs text-slate-200/90 mt-1 leading-relaxed">
+                Log technical change requests, architectural modifications, or feature adjustments into the immutable audit queue.
+              </p>
             </div>
 
-            {errorMessage && (
-              <div className="p-3 bg-red-50 text-red-700 rounded-xl text-xs">
-                {errorMessage}
-              </div>
-            )}
+            {/* Modal Body */}
+            <div className="p-6 sm:p-7 space-y-5 overflow-y-auto flex-1 text-xs">
+              {errorMessage && (
+                <div className="p-3.5 bg-red-50 border border-red-200 text-red-800 rounded-xl text-xs flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-red-500" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
 
-            {rfcSubmitted ? (
-              <div className="p-4 bg-emerald-50 text-emerald-800 rounded-xl text-xs text-center font-medium space-y-3">
-                <div>Change request logged! A technical lead will evaluate the scope impact within 24 hours.</div>
-                {rfcAuditHash && (
-                  <div className="font-mono text-[10px] text-emerald-900 break-all bg-emerald-100/70 p-2 rounded">
-                    Audit SHA-256: {rfcAuditHash}
+              {rfcSubmitted ? (
+                <div className="p-6 bg-emerald-50/80 border border-emerald-200/90 rounded-2xl text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-xs text-xl font-bold">
+                    ✓
                   </div>
-                )}
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowRfcModal(false);
-                      setRfcSubmitted(false);
-                      setRfcTitle('');
-                      setRfcDescription('');
-                    }}
-                    className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
-                  >
-                    Done / Close
-                  </button>
+                  <div className="space-y-1">
+                    <h4 className="text-base font-bold text-emerald-950 font-poppins">
+                      Change Request Successfully Logged
+                    </h4>
+                    <p className="text-xs text-emerald-800 leading-relaxed max-w-md mx-auto">
+                      Your change request has been recorded. Our technical leads will evaluate the architecture and scope impact within 24 hours.
+                    </p>
+                  </div>
+                  {rfcAuditHash && (
+                    <div className="font-mono text-[10px] text-emerald-900 break-all bg-emerald-100/70 p-2.5 rounded-xl border border-emerald-200">
+                      Audit Digest (SHA-256): {rfcAuditHash}
+                    </div>
+                  )}
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowRfcModal(false);
+                        setRfcSubmitted(false);
+                        setRfcTitle('');
+                        setRfcDescription('');
+                      }}
+                      className="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer"
+                    >
+                      Done / Close Window
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <form onSubmit={handleRfcSubmit} className="space-y-4 text-xs">
-                <div>
-                  <label className="block font-medium text-[#0B2545] mb-1">
-                    Change Request Title *
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Add additional SAML SSO Identity Provider"
-                    value={rfcTitle}
-                    onChange={(e) => setRfcTitle(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 border border-[#DFE7EF] rounded-lg text-xs focus:ring-2 focus:ring-[#1565C0] outline-none"
-                  />
-                </div>
+              ) : (
+                <form onSubmit={handleRfcSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-[#0B2545] mb-1.5">
+                      Change Request Title *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Add additional SAML SSO Identity Provider integration"
+                      value={rfcTitle}
+                      onChange={(e) => setRfcTitle(e.target.value)}
+                      required
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 font-medium focus:ring-2 focus:ring-[#1565C0]/20 focus:border-[#1565C0] outline-none transition-all shadow-2xs"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block font-medium text-[#0B2545] mb-1">
-                    Estimated Priority / Impact
-                  </label>
-                  <select
-                    value={rfcImpact}
-                    onChange={(e) => setRfcImpact(e.target.value as any)}
-                    className="w-full px-3 py-2 border border-[#DFE7EF] rounded-lg text-xs focus:ring-2 focus:ring-[#1565C0] outline-none bg-white"
-                  >
-                    <option value="low">Low Impact (Minor UX / copy modification)</option>
-                    <option value="medium">Medium Impact (New field / API endpoint addition)</option>
-                    <option value="high">High Impact (Architectural / Third-party integration)</option>
-                  </select>
-                </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#0B2545] mb-1.5 flex items-center justify-between">
+                      <span>Estimated Priority / Scope Impact *</span>
+                      <span className="text-[10px] font-mono text-slate-400 font-normal">Technical Classification</span>
+                    </label>
+                    <select
+                      value={rfcImpact}
+                      onChange={(e) => setRfcImpact(e.target.value as any)}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 font-medium focus:ring-2 focus:ring-[#1565C0]/20 focus:border-[#1565C0] outline-none transition-all cursor-pointer"
+                    >
+                      <option value="low">Low Impact — Minor UX/UI refinement or textual adjustments</option>
+                      <option value="medium">Medium Impact — Schema extension or new API integration</option>
+                      <option value="high">High Impact — Core architecture expansion or new third-party subsystem</option>
+                    </select>
+                  </div>
 
-                <div>
-                  <label className="block font-medium text-[#0B2545] mb-1">
-                    Detailed Specification & Rationale *
-                  </label>
-                  <textarea
-                    rows={4}
-                    placeholder="Explain the desired behavior, user story, and justification..."
-                    value={rfcDescription}
-                    onChange={(e) => setRfcDescription(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 border border-[#DFE7EF] rounded-lg text-xs focus:ring-2 focus:ring-[#1565C0] outline-none"
-                  />
-                </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#0B2545] mb-1.5 flex items-center justify-between">
+                      <span>Detailed Specification &amp; Business Rationale *</span>
+                      <span className="text-[10px] font-mono text-slate-400 font-normal">Technical Rationale</span>
+                    </label>
+                    <textarea
+                      rows={4}
+                      placeholder="Explain the desired behavior, user story, technical justification, and any relevant endpoints..."
+                      value={rfcDescription}
+                      onChange={(e) => setRfcDescription(e.target.value)}
+                      required
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-[#1565C0]/20 focus:border-[#1565C0] outline-none transition-all resize-none shadow-2xs leading-relaxed"
+                    />
+                  </div>
 
-                <div className="flex items-center justify-end gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowRfcModal(false)}
-                    className="px-4 py-2 border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-100 font-medium"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmittingRfc}
-                    className="px-5 py-2 bg-[#1565C0] text-white rounded-lg font-semibold hover:bg-[#0B2545] disabled:opacity-50"
-                  >
-                    {isSubmittingRfc ? 'Recording RFC...' : 'Submit RFC'}
-                  </button>
-                </div>
-              </form>
-            )}
+                  {/* Informative SLA Callout */}
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 flex items-center gap-2">
+                    <span className="font-mono text-xs text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-200 font-semibold">24h SLA</span>
+                    <span>All formal RFCs are evaluated by assigned engineering leads to calculate timeline and quotation impact.</span>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => setShowRfcModal(false)}
+                      disabled={isSubmittingRfc}
+                      className="px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmittingRfc || !rfcTitle.trim() || !rfcDescription.trim()}
+                      className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#0B2545] to-[#1565C0] hover:from-[#123663] hover:to-[#1976D2] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                    >
+                      {isSubmittingRfc ? 'Logging RFC...' : 'Submit Change Request'}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -282,122 +282,151 @@ export default function ClientChangeRequestsPage() {
         </div>
       )}
 
-      {/* New RFC Modal */}
+      {/* Proportional Enterprise RFC Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-lg rounded-3xl bg-white border border-[var(--lit-border-light,#DFE7EF)] shadow-xl p-6 sm:p-8 space-y-5 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--lit-border-light,#DFE7EF)]">
-              <div className="flex items-center gap-2">
-                <FileEdit className="w-5 h-5 text-teal-600" />
-                <h3 className="text-base font-bold text-[var(--lit-navy,#0B2545)] font-poppins">
-                  Submit Request for Change (RFC)
-                </h3>
-              </div>
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 my-auto flex flex-col max-h-[92vh] text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Top Decorative Banner */}
+            <div className="relative bg-gradient-to-r from-[#0B2545] via-[#123663] to-[#1565C0] px-6 py-5 sm:px-7 sm:py-6 text-white shrink-0">
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 transition-colors p-1"
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
+
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase bg-teal-400/20 text-teal-300 border border-teal-400/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+                  Engineering Governance · RFC
+                </span>
+                <span className="text-[10px] font-mono font-semibold text-slate-200 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/15">
+                  Change Protocol
+                </span>
+              </div>
+
+              <h3 className="text-xl font-bold font-poppins text-white tracking-tight">
+                Submit Request for Change (RFC)
+              </h3>
+              <p className="text-xs text-slate-200/90 mt-1 leading-relaxed">
+                Log technical change requests, architectural modifications, or feature adjustments into the immutable audit queue.
+              </p>
             </div>
 
-            {errorMsg && (
-              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
+            {/* Modal Body */}
+            <div className="p-6 sm:p-7 space-y-4 overflow-y-auto flex-1">
+              {errorMsg && (
+                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                  <span>{errorMsg}</span>
+                </div>
+              )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-[var(--lit-navy,#0B2545)] mb-1">
-                  Engagement Reference (optional)
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. LIT-2026-ENG-01"
-                  value={engagementRef}
-                  onChange={(e) => setEngagementRef(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] text-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none"
-                />
-              </div>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-[#0B2545] mb-1.5 flex items-center justify-between">
+                    <span>Engagement Reference (optional)</span>
+                    <span className="text-[10px] font-mono text-slate-400 font-normal">e.g. LIT-2026-ENG-01</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. LIT-2026-ENG-01"
+                    value={engagementRef}
+                    onChange={(e) => setEngagementRef(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 font-medium focus:ring-2 focus:ring-[#1565C0]/20 focus:border-[#1565C0] outline-none transition-all shadow-2xs"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-bold text-[var(--lit-navy,#0B2545)] mb-1">
-                  Change Title *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Add Razorpay payment gateway integration"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] text-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-bold text-[#0B2545] mb-1.5">
+                    Change Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Add Razorpay payment gateway integration"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 font-medium focus:ring-2 focus:ring-[#1565C0]/20 focus:border-[#1565C0] outline-none transition-all shadow-2xs"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-bold text-[var(--lit-navy,#0B2545)] mb-1">
-                  Category
-                </label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] text-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none bg-white"
-                >
-                  <option value="scope_expansion">Scope Expansion (New Feature)</option>
-                  <option value="architecture_change">Architecture Modification</option>
-                  <option value="integration">Third-Party Integration</option>
-                  <option value="timeline_amendment">Timeline / Schedule Shift</option>
-                  <option value="other">General Modification</option>
-                </select>
-              </div>
+                <div>
+                  <label className="block text-xs font-bold text-[#0B2545] mb-1.5 flex items-center justify-between">
+                    <span>Change Classification *</span>
+                    <span className="text-[10px] font-mono text-slate-400 font-normal">Impact Scope</span>
+                  </label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 font-medium focus:ring-2 focus:ring-[#1565C0]/20 focus:border-[#1565C0] outline-none transition-all cursor-pointer"
+                  >
+                    <option value="scope_expansion">Scope Expansion (New Feature Addition)</option>
+                    <option value="architecture_change">Architecture Modification (Core Logic / Database)</option>
+                    <option value="integration">Third-Party Integration (API / Webhooks / Gateway)</option>
+                    <option value="timeline_amendment">Timeline / Schedule Shift</option>
+                    <option value="other">General Operational Modification</option>
+                  </select>
+                </div>
 
-              <div>
-                <label className="block text-xs font-bold text-[var(--lit-navy,#0B2545)] mb-1">
-                  Detailed Description *
-                </label>
-                <textarea
-                  required
-                  rows={3}
-                  placeholder="Specify the required behavior, workflows, or data requirements..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] text-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-bold text-[#0B2545] mb-1.5 flex items-center justify-between">
+                    <span>Detailed Technical Description *</span>
+                    <span className="text-[10px] font-mono text-slate-400 font-normal">Specification</span>
+                  </label>
+                  <textarea
+                    required
+                    rows={3}
+                    placeholder="Specify the required behavior, workflows, or data requirements..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-[#1565C0]/20 focus:border-[#1565C0] outline-none transition-all resize-none shadow-2xs leading-relaxed"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-bold text-[var(--lit-navy,#0B2545)] mb-1">
-                  Business Justification (optional)
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="Why is this change necessary for your operations?"
-                  value={justification}
-                  onChange={(e) => setJustification(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] text-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-bold text-[#0B2545] mb-1.5 flex items-center justify-between">
+                    <span>Business Justification (optional)</span>
+                    <span className="text-[10px] font-mono text-slate-400 font-normal">Rationale</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Why is this change necessary for your business operations?"
+                    value={justification}
+                    onChange={(e) => setJustification(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-[#1565C0]/20 focus:border-[#1565C0] outline-none transition-all resize-none shadow-2xs leading-relaxed"
+                  />
+                </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--lit-border-light,#DFE7EF)]">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] text-xs font-semibold text-[var(--lit-text-muted,#52677C)] hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-navy,#0B2545)]/90 text-white text-xs font-semibold shadow-2xs transition-colors disabled:opacity-50"
-                >
-                  <Send className="w-3.5 h-3.5 text-cyan-300" />
-                  <span>{isSubmitting ? "Submitting..." : "Submit for Technical Review"}</span>
-                </button>
-              </div>
-            </form>
+                <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || !title.trim() || !description.trim()}
+                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#0B2545] to-[#1565C0] hover:from-[#123663] hover:to-[#1976D2] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer flex items-center gap-2"
+                  >
+                    <Send className="w-3.5 h-3.5 text-cyan-300" />
+                    <span>{isSubmitting ? "Submitting..." : "Submit for Technical Review"}</span>
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
