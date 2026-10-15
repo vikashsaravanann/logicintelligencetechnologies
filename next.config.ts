@@ -26,6 +26,19 @@ const nextConfig: NextConfig = {
       { source: '/engagement/:ref/architecture', destination: '/engagement/:ref/technical-spec', permanent: false },
       { source: '/engagement/:ref/uat', destination: '/engagement/:ref/delivery-acceptance', permanent: false },
       { source: '/engagement/:ref/sla-support', destination: '/engagement/:ref/support', permanent: false },
+      // Direct shortlink & gateway aliases
+      { source: '/booking', destination: '/book-consultation', permanent: true },
+      { source: '/company', destination: '/company/facts', permanent: true },
+      { source: '/docs', destination: '/docs/api', permanent: true },
+      { source: '/client', destination: '/client/workspace', permanent: false },
+      { source: '/auth', destination: '/login', permanent: false },
+      { source: '/enterprise-checklist', destination: '/engagement', permanent: false },
+      { source: '/proposal', destination: '/engagement', permanent: false },
+      { source: '/quotation', destination: '/admin/quotations', permanent: false },
+      { source: '/payment', destination: '/engagement', permanent: false },
+      { source: '/handover', destination: '/engagement', permanent: false },
+      { source: '/onboarding', destination: '/engagement', permanent: false },
+      { source: '/admin/contracts', destination: '/admin/proposals', permanent: false },
     ];
   },
 

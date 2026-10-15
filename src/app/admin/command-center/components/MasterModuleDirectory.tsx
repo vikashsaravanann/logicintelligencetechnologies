@@ -108,6 +108,9 @@ export const MODULE_CATEGORIES: ModuleCategory[] = [
       { href: "/admin/documents", label: "Document Vault", badge: "PDF Storage", desc: "Signed SOWs, Tax Invoices & Payment Receipts repository" },
       { href: "/onboard", label: "Self-Service Client Onboard", badge: "Client Flow", desc: "Public client self-service onboarding entry point", isExternalPreview: true },
       { href: "/checklist", label: "50-Point Scoping Demo", badge: "Interactive", desc: "Live interactive enterprise scoping checklist preview", isExternalPreview: true },
+      { href: "/enterprise-checklist", label: "Enterprise Checklist Gateway", badge: "Stage 1 Gate", desc: "Token gateway redirecting to engagement checklist milestone", isExternalPreview: true },
+      { href: "/onboarding", label: "Client Onboarding Gateway", badge: "Stage 7 Gate", desc: "Token gateway redirecting to engagement onboarding milestone", isExternalPreview: true },
+      { href: "/handover", label: "Project Handover Gateway", badge: "Stage 12 Gate", desc: "Token gateway redirecting to engagement handover milestone", isExternalPreview: true },
     ],
   },
   {
@@ -137,6 +140,10 @@ export const MODULE_CATEGORIES: ModuleCategory[] = [
       { href: "/admin/quotations/coupons", label: "Discount Coupons", badge: "Promotions", desc: "Commercial partner discount codes & percentage offsets" },
       { href: "/admin/proposals", label: "Proposals & SOWs", badge: "Contracts", desc: "Master commercial terms & binding SOW agreements" },
       { href: "/admin/proposals/new", label: "Draft Proposal", badge: "+ Action", desc: "50/50 milestone structure proposal generator" },
+      { href: "/admin/contracts", label: "Client Contracts & SOWs", badge: "Contracts", desc: "Admin contract register and legal execution console" },
+      { href: "/payment", label: "UPI Payment Portal Gateway", badge: "Stage 6/11", desc: "Token payment gate redirecting to active engagement payment milestone", isExternalPreview: true },
+      { href: "/proposal", label: "Commercial Proposal Gateway", badge: "Stage 4 Gate", desc: "Token gateway redirecting to engagement proposal milestone", isExternalPreview: true },
+      { href: "/quotation", label: "Commercial Quotation Gateway", badge: "Quote Gate", desc: "Token gateway redirecting to client quotation milestone", isExternalPreview: true },
     ],
   },
   {
@@ -291,6 +298,7 @@ export const MODULE_CATEGORIES: ModuleCategory[] = [
       { href: "/client/support", label: "Client Support Portal", badge: "Helpdesk", desc: "Client ticket submission & resolution status", isExternalPreview: true },
       { href: "/client/profile", label: "Client Organization Profile", badge: "Profile", desc: "Client company details, billing info & primary contacts", isExternalPreview: true },
       { href: "/client/login", label: "Client Portal Authentication", badge: "Auth Gate", desc: "Magic-link and authenticated login gate for clients", isExternalPreview: true },
+      { href: "/client", label: "Client Portal Gateway", badge: "Root Entry", desc: "Root client routing gateway redirecting to Workspace", isExternalPreview: true },
     ],
   },
   {
@@ -322,6 +330,8 @@ export const MODULE_CATEGORIES: ModuleCategory[] = [
       { href: "/reset-password", label: "Password Recovery", badge: "Credentials", desc: "Self-service staff password reset and token recovery", isExternalPreview: true },
       { href: "/profile", label: "Staff Profile & Settings", badge: "Account", desc: "Authenticated user settings and profile management", isExternalPreview: true },
       { href: "/unsubscribe", label: "Global Opt-Out & Unsubscribe", badge: "Statutory", desc: "Public unsubscribe handler and suppression registrar", isExternalPreview: true },
+      { href: "/admin", label: "Admin Root Gateway", badge: "Gateway", desc: "Canonical root operations gateway redirecting to Executive Command Center" },
+      { href: "/auth", label: "Authentication Routing Gateway", badge: "Auth Gateway", desc: "Canonical authentication gate redirecting to staff login", isExternalPreview: true },
     ],
   },
   {
@@ -387,6 +397,7 @@ export const MODULE_CATEGORIES: ModuleCategory[] = [
       { href: "/book-consultation", label: "Book Technical Consultation", badge: "Booking", desc: "Direct scheduling with Principal Architect Vikash Saravanan", isExternalPreview: true },
       { href: "/free-demo", label: "Request Architecture Demo", badge: "Live Demo", desc: "Interactive product walkthroughs & proof of concepts", isExternalPreview: true },
       { href: "/sales", label: "Enterprise Sales Inquiries", badge: "Sales", desc: "Custom procurement, RFPs & enterprise contract inquiries", isExternalPreview: true },
+      { href: "/booking", label: "Consultation Booking Shortlink", badge: "Shortlink", desc: "Shortlink route canonicalizing to /book-consultation", isExternalPreview: true },
     ],
   },
   {
@@ -426,6 +437,8 @@ export const MODULE_CATEGORIES: ModuleCategory[] = [
       { href: "/help-center", label: "Self-Service Help Center", badge: "Knowledge", desc: "Frequently asked questions, guides & troubleshooting steps", isExternalPreview: true },
       { href: "/support", label: "Public Support Helpdesk", badge: "Public", desc: "Public customer ticket creation & resolution tracking", isExternalPreview: true },
       { href: "/status", label: "Public Status Page", badge: "Public Uptime", desc: "Public service availability and real-time maintenance feed", isExternalPreview: true },
+      { href: "/company", label: "Company Overview Shortlink", badge: "Shortlink", desc: "Shortlink route canonicalizing to /company/facts", isExternalPreview: true },
+      { href: "/docs", label: "Documentation Portal Shortlink", badge: "Shortlink", desc: "Shortlink route canonicalizing to /docs/api", isExternalPreview: true },
     ],
   },
   {

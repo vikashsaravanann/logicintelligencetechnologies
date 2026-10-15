@@ -513,7 +513,7 @@ export default async function AdminCommandCenterPage() {
         </div>
       </div>
 
-      {/* Master Operations & Module Directory (All 162 Platform Modules, Pages, Tools & Portals) */}
+      {/* Master Operations & Module Directory (All 175 Platform Modules, Pages, Tools & Portals) */}
       <MasterModuleDirectory />
 
       {/* Recent Inbound Leads Section */}
