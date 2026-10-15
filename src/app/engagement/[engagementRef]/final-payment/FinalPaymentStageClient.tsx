@@ -70,7 +70,7 @@ export default function FinalPaymentStageClient({
 
   const mobileIntentApps = [
     { name: 'Google Pay', url: `tez://upi/pay?pa=${paymentData.beneficiaryVpa}&pn=S%20VIKASH&am=${paymentData.totalNumeric}&cu=INR&tr=${paymentData.requestRef}` },
-    { name: 'PhonePe', url: `phonepe://pay?pa=${paymentData.beneficiaryVpa}&pn=S%20VIKASH&am=${paymentData.totalNumeric}&cu=INR&tr=${paymentData.requestRef}` },
+    { name: 'PhonePe', url: `phonepe://upi/pay?pa=${paymentData.beneficiaryVpa}&pn=S%20VIKASH&am=${paymentData.totalNumeric}&cu=INR&tr=${paymentData.requestRef}` },
     { name: 'Paytm', url: `paytmmp://pay?pa=${paymentData.beneficiaryVpa}&pn=S%20VIKASH&am=${paymentData.totalNumeric}&cu=INR&tr=${paymentData.requestRef}` },
     { name: 'BHIM', url: `upi://pay?pa=${paymentData.beneficiaryVpa}&pn=S%20VIKASH&am=${paymentData.totalNumeric}&cu=INR&tr=${paymentData.requestRef}` },
   ];

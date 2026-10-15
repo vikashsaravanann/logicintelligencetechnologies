@@ -61,7 +61,7 @@ export function UpiAppButtons({
     {
       id: 'phonepe',
       name: 'PhonePe',
-      schemeUrl: `phonepe://pay?${standardQuery}`,
+      schemeUrl: `phonepe://upi/pay?${standardQuery}`,
       brandColor: '#5f259f',
       logoImgUrl: '/images/brand/phonepe-logo.png',
       iconImgUrl: '/images/brand/phonepe-icon.svg',
@@ -233,10 +233,8 @@ export function UpiAppButtons({
                 </button>
                 <a
                   href={selectedApp.schemeUrl}
-                  target="_top"
-                  rel="external"
                   onClick={() => {
-                    setTimeout(() => setSelectedApp(null), 1200);
+                    setTimeout(() => setSelectedApp(null), 1500);
                   }}
                   className="px-5 py-2.5 rounded-xl bg-[#0B2545] hover:bg-[#1565C0] text-white text-xs font-bold transition-all shadow-md flex items-center gap-2 cursor-pointer active:scale-95"
                 >

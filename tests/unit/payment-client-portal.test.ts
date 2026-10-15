@@ -274,7 +274,7 @@ describe("Payment Client Portal - Unit Tests", () => {
       const generic = links.find((l) => l.appId === "generic");
 
       assert.ok(gpay?.url.startsWith("gpay://upi/pay?pa=9342877474@ptyes"));
-      assert.ok(phonepe?.url.startsWith("phonepe://pay?pa=9342877474@ptyes"));
+      assert.ok(phonepe?.url.startsWith("phonepe://upi/pay?pa=9342877474@ptyes"));
       assert.ok(paytm?.url.startsWith("paytmmp://pay?pa=9342877474@ptyes"));
       assert.ok(bhim?.url.startsWith("bhim://pay?pa=9342877474@ptyes"));
       assert.equal(generic?.url, upiUri);

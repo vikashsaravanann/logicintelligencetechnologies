@@ -176,7 +176,7 @@ export function getMobileIntentLinks(upiUri: string): MobileIntentLink[] {
       appId: "phonepe",
       appName: "PhonePe",
       name: "PhonePe",
-      url: `phonepe://pay?${queryString}`,
+      url: `phonepe://upi/pay?${queryString}`,
       colorScheme: {
         bg: "bg-[#5F259F]",
         text: "text-[#FFFFFF]",
