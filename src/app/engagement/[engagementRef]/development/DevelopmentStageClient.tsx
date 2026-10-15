@@ -28,7 +28,7 @@ export default function DevelopmentStageClient({
   const [rfcAuditHash, setRfcAuditHash] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const sprints = [
+  const initialSprintData = [
     {
       sprintNumber: 1,
       title: 'Infrastructure & Baseline Scaffolding',
@@ -83,6 +83,72 @@ export default function DevelopmentStageClient({
     },
   ];
 
+  const [sprintList, setSprintList] = useState(
+    Array.isArray(initialData?.sprints) && initialData.sprints.length > 0
+      ? initialData.sprints
+      : initialSprintData
+  );
+  const [isPersistingSprint, setIsPersistingSprint] = useState<number | null>(null);
+  const [sprintActionNotice, setSprintActionNotice] = useState<string | null>(null);
+  const [stageStatus, setStageStatus] = useState<string>(initialStatus);
+
+  const completedCount = sprintList.filter((s: any) => s.status === 'Completed').length;
+  const sprintPercentage = Math.round((completedCount / sprintList.length) * 100);
+
+  const handleToggleSprintStatus = async (sprintNumber: number) => {
+    setIsPersistingSprint(sprintNumber);
+    setSprintActionNotice(null);
+    setErrorMessage(null);
+
+    const updatedList = sprintList.map((s: any) => {
+      if (s.sprintNumber === sprintNumber) {
+        const isCurrentlyCompleted = s.status === 'Completed';
+        return {
+          ...s,
+          status: isCurrentlyCompleted ? 'In Progress' : 'Completed',
+          completionDate: isCurrentlyCompleted ? undefined : new Date().toISOString().split('T')[0],
+        };
+      }
+      return s;
+    });
+
+    const allCompleted = updatedList.every((s: any) => s.status === 'Completed');
+
+    try {
+      const res = await fetch(`/api/engagements/${engagementRef}/stages/development`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: allCompleted ? 'complete_development' : 'advance_sprint',
+          payload: {
+            sprints: updatedList,
+            sprintNumber,
+            allCompleted,
+            updatedAt: new Date().toISOString(),
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to persist sprint milestone telemetry.');
+      }
+
+      setSprintList(updatedList);
+      if (allCompleted) {
+        setStageStatus('completed');
+        setSprintActionNotice('All engineering sprints completed! Stage 9 verified and Delivery & Acceptance unlocked.');
+      } else {
+        setSprintActionNotice(`Sprint #${sprintNumber} milestone updated and cryptographic audit hash recorded.`);
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to update sprint telemetry';
+      setErrorMessage(msg);
+    } finally {
+      setIsPersistingSprint(null);
+    }
+  };
+
   const handleRfcSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!rfcTitle.trim() || !rfcDescription.trim()) return;
@@ -113,14 +179,9 @@ export default function DevelopmentStageClient({
 
       setRfcAuditHash(data.auditHash);
       setRfcSubmitted(true);
-      setTimeout(() => {
-        setShowRfcModal(false);
-        setRfcSubmitted(false);
-        setRfcTitle('');
-        setRfcDescription('');
-      }, 2000);
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Error logging Change Request.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error logging Change Request.';
+      setErrorMessage(msg);
     } finally {
       setIsSubmittingRfc(false);
     }
@@ -142,7 +203,7 @@ export default function DevelopmentStageClient({
       <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="font-mono text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
-            Sprint Status: 4 of 4 Completed (100%)
+            Sprint Status: {completedCount} of {sprintList.length} Completed ({sprintPercentage}%)
           </span>
           <h3 className="text-base font-bold text-[#0B2545] mt-2">
             Engineering Milestones & Build Telemetry
@@ -163,49 +224,74 @@ export default function DevelopmentStageClient({
         </button>
       </div>
 
+      {/* Sprint Milestone Feedback Notice */}
+      {sprintActionNotice && (
+        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl text-xs flex items-center gap-2">
+          <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          <span>{sprintActionNotice}</span>
+        </div>
+      )}
+
       {/* Sprint Cards */}
       <div className="space-y-4">
-        {sprints.map((sprint) => (
-          <div
-            key={sprint.sprintNumber}
-            className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs hover:border-[#B9DCFF] transition-colors"
-          >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#DFE7EF] pb-3 mb-4">
-              <div className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full bg-[#1565C0] text-white flex items-center justify-center font-bold text-xs shrink-0">
-                  {sprint.sprintNumber}
-                </span>
-                <div>
-                  <h4 className="text-sm font-bold text-[#0B2545]">{sprint.title}</h4>
-                  <span className="text-[11px] text-slate-500">
-                    Completed: {sprint.completionDate} · Git Commit: <code className="bg-slate-100 px-1 py-0.5 rounded font-mono text-[10px]">{sprint.commitSha}</code>
+        {sprintList.map((sprint: any) => {
+          const isCompleted = sprint.status === 'Completed';
+          const isPersisting = isPersistingSprint === sprint.sprintNumber;
+
+          return (
+            <div
+              key={sprint.sprintNumber}
+              className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs hover:border-[#B9DCFF] transition-colors"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#DFE7EF] pb-3 mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="w-7 h-7 rounded-full bg-[#1565C0] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                    {sprint.sprintNumber}
+                  </span>
+                  <div>
+                    <h4 className="text-sm font-bold text-[#0B2545]">{sprint.title}</h4>
+                    <span className="text-[11px] text-slate-500">
+                      {isCompleted && sprint.completionDate ? `Completed: ${sprint.completionDate} · ` : 'Active Milestone · '}
+                      Git Commit: <code className="bg-slate-100 px-1 py-0.5 rounded font-mono text-[10px]">{sprint.commitSha}</code>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={isPersisting}
+                    onClick={() => handleToggleSprintStatus(sprint.sprintNumber)}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors ${
+                      isCompleted
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                        : 'bg-blue-50 text-[#1565C0] border-blue-200 hover:bg-blue-100'
+                    } disabled:opacity-50`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full ${isCompleted ? 'bg-emerald-500' : 'bg-blue-500'}`} />
+                    {isPersisting ? 'Updating...' : sprint.status}
+                  </button>
+                  <span className="text-[11px] font-mono text-slate-500 bg-slate-50 px-2 py-1 rounded border border-slate-200">
+                    {sprint.passRate}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  {sprint.status}
-                </span>
-                <span className="text-[11px] font-mono text-slate-500 bg-slate-50 px-2 py-1 rounded border border-slate-200">
-                  {sprint.passRate}
-                </span>
-              </div>
+              <ul className="space-y-2 text-xs text-slate-600">
+                {sprint.tasks.map((task: string, i: number) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <svg className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>{task}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-
-            <ul className="space-y-2 text-xs text-slate-600">
-              {sprint.tasks.map((task, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <svg className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>{task}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Stage Action Bar */}
@@ -251,13 +337,27 @@ export default function DevelopmentStageClient({
             )}
 
             {rfcSubmitted ? (
-              <div className="p-4 bg-emerald-50 text-emerald-800 rounded-xl text-xs text-center font-medium space-y-2">
+              <div className="p-4 bg-emerald-50 text-emerald-800 rounded-xl text-xs text-center font-medium space-y-3">
                 <div>Change request logged! A technical lead will evaluate the scope impact within 24 hours.</div>
                 {rfcAuditHash && (
-                  <div className="font-mono text-[10px] text-emerald-900">
+                  <div className="font-mono text-[10px] text-emerald-900 break-all bg-emerald-100/70 p-2 rounded">
                     Audit SHA-256: {rfcAuditHash}
                   </div>
                 )}
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowRfcModal(false);
+                      setRfcSubmitted(false);
+                      setRfcTitle('');
+                      setRfcDescription('');
+                    }}
+                    className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+                  >
+                    Done / Close
+                  </button>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleRfcSubmit} className="space-y-4 text-xs">

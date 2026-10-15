@@ -71,7 +71,7 @@ export default function EngagementDetailAdminClient({
 
     const bankCreditRef = window.prompt(
       'Enter Receiving Bank Credit Transaction Reference (UTR / IMPS / NEFT ref from bank statement):',
-      `BANK-CR-${Date.now()}`
+      'BANK-CR-MANUAL'
     );
     if (!bankCreditRef) return;
 

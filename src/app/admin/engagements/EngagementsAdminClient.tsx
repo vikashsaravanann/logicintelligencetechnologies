@@ -65,6 +65,14 @@ export default function EngagementsAdminClient({
         setIdentityRequests((prev) =>
           prev.map((r) => (r.id === requestId ? { ...r, status: action === 'approve' ? 'approved' : 'rejected' } : r))
         );
+        const req = identityRequests.find((r) => r.id === requestId);
+        if (action === 'approve' && req && req.engagement_id && req.target_field === 'company_name') {
+          setEngagements((prev) =>
+            prev.map((eng) =>
+              eng.id === req.engagement_id ? { ...eng, company_name: req.proposed_value } : eng
+            )
+          );
+        }
       } else {
         alert(data.error || 'Failed to update identity change request.');
       }
