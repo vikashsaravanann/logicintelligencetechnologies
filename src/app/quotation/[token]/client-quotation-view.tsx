@@ -33,6 +33,7 @@ import {
   X,
   Loader2,
   Sparkles,
+  Send,
 } from "lucide-react";
 
 interface ClientQuotationViewProps {
@@ -866,7 +867,7 @@ export function ClientQuotationView({
                   Proposal Governance · Scope Refinement
                 </span>
                 <span className="text-[10px] font-mono font-semibold text-slate-200 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/15">
-                  Quote: {quotation.quotation_number}
+                  Quote: {quotation.quotation_ref}
                 </span>
               </div>
 
@@ -896,7 +897,7 @@ export function ClientQuotationView({
                     </span>
                   </div>
                   <p className="text-sm font-bold text-[#0B2545] truncate mt-0.5">
-                    {quotation.title}
+                    {quotation.project_title}
                   </p>
                   <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
                     Our lead architect will review requested adjustments, update milestones and deliverables, and send an amended revision draft.
