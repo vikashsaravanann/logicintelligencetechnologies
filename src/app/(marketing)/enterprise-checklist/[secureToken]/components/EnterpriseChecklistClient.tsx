@@ -642,16 +642,29 @@ export default function EnterpriseChecklistClient({
 
       {/* PDF View Modal */}
       {showPdfModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden shadow-2xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]">
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+          onClick={() => setShowPdfModal(false)}
+        >
+          <div
+            className="bg-white rounded-3xl w-full max-w-5xl h-[88vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200/90 my-auto animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 sm:px-7 sm:py-5 bg-gradient-to-r from-[#0B2545] via-[#123663] to-[#1565C0] text-white shrink-0">
               <div>
-                <h3 className="font-poppins font-bold text-sm text-[var(--lit-navy,#0B2545)]">
-                  The 50-Point Enterprise Deployment Checklist (21 Pages)
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                    Approved SOP
+                  </span>
+                  <span className="text-[10px] font-mono font-semibold text-slate-200 bg-white/10 px-2 py-0.5 rounded-full border border-white/15">
+                    21 Pages · 50 Checkpoints
+                  </span>
+                </div>
+                <h3 className="font-poppins font-bold text-sm sm:text-base text-white">
+                  The 50-Point Enterprise Deployment Checklist
                 </h3>
-                <p className="text-[11px] font-mono text-[var(--lit-text-muted,#52677C)]">
-                  LIT_50_Point_Enterprise_Deployment_Checklist.pdf · Official Approved SOP
-                </p>
               </div>
 
               <div className="flex items-center gap-2">
@@ -659,14 +672,16 @@ export default function EnterpriseChecklistClient({
                   href="/resources/website-development-checklist.pdf"
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] text-xs font-medium text-[var(--lit-navy,#0B2545)] hover:bg-white flex items-center gap-1"
+                  className="px-3.5 py-1.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-xs font-semibold text-white flex items-center gap-1.5 transition-colors"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>Open in New Tab</span>
                 </a>
                 <button
+                  type="button"
                   onClick={() => setShowPdfModal(false)}
-                  className="p-1.5 rounded-lg text-slate-500 hover:text-black hover:bg-slate-200"
+                  className="p-1.5 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  aria-label="Close"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -686,38 +701,59 @@ export default function EnterpriseChecklistClient({
 
       {/* Review & Submit Modal */}
       {showReviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
-            <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]">
-              <div>
-                <h3 className="font-poppins font-bold text-base text-[var(--lit-navy,#0B2545)]">
-                  Review & Confirm Checkpoints
-                </h3>
-                <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
-                  {selectedNumbers.size} of 50 checkpoints selected for project scope
-                </p>
-              </div>
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto"
+          onClick={() => setShowReviewModal(false)}
+        >
+          <div
+            className="bg-white rounded-3xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200/90 my-auto text-left transform transition-all animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Top Decorative Banner */}
+            <div className="relative bg-gradient-to-r from-[#0B2545] via-[#123663] to-[#1565C0] px-6 py-5 sm:px-7 sm:py-6 text-white shrink-0">
               <button
+                type="button"
                 onClick={() => setShowReviewModal(false)}
-                className="p-1.5 rounded-lg text-slate-500 hover:text-black hover:bg-slate-200"
+                disabled={isSubmitting}
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
+
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Engineering Governance · Scope Confirmation
+                </span>
+                <span className="text-[10px] font-mono font-semibold text-slate-200 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/15">
+                  {selectedNumbers.size} of 50 Selected
+                </span>
+              </div>
+
+              <h3 className="text-xl font-bold font-poppins text-white tracking-tight">
+                Review &amp; Confirm Selected Scope
+              </h3>
+              <p className="text-xs text-slate-200/90 mt-1 leading-relaxed">
+                Verify target architectural checkpoints and register scope parameters into the official project registry.
+              </p>
             </div>
 
-            <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
+            <div className="p-6 sm:p-7 overflow-y-auto space-y-5 flex-1 text-xs">
               {/* Selected Points List */}
               <div>
-                <span className="font-mono font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] block mb-2">
+                <span className="font-mono font-bold uppercase tracking-wider text-[#0B2545] block mb-2 text-[11px]">
                   Selected Scope Summary ({selectedList.length} Items):
                 </span>
-                <div className="max-h-48 overflow-y-auto rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] p-3 space-y-2">
+                <div className="max-h-52 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50/70 p-3.5 space-y-2">
                   {selectedList.map((cp) => (
-                    <div key={cp.number} className="flex items-center justify-between text-xs">
-                      <span className="font-medium text-[var(--lit-navy,#0B2545)]">
-                        <strong>Point {String(cp.number).padStart(2, "0")}</strong>: {cp.title}
+                    <div key={cp.number} className="flex items-center justify-between text-xs py-1 border-b border-slate-200/60 last:border-0">
+                      <span className="font-medium text-[#0B2545]">
+                        <strong className="font-mono text-[#1565C0]">Point {String(cp.number).padStart(2, "0")}</strong>: {cp.title}
                       </span>
-                      <span className="text-[11px] font-mono text-[var(--lit-text-muted,#52677C)]">
+                      <span className="text-[10px] font-mono font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
                         Phase {cp.phase}
                       </span>
                     </div>
@@ -727,30 +763,30 @@ export default function EnterpriseChecklistClient({
 
               {/* Client Notes / Special Requirements */}
               <div>
-                <label className="font-mono font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] block mb-1.5">
-                  Optional Project Notes or Priorities:
+                <label className="font-bold text-[#0B2545] block mb-1.5 text-xs">
+                  Optional Project Notes or Priority Requirements:
                 </label>
                 <textarea
                   value={clientNotes}
                   onChange={(e) => setClientNotes(e.target.value)}
                   placeholder="Share any specific requirements, target launch timelines, or third-party integrations..."
                   rows={3}
-                  className="w-full p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] focus:outline-none focus:border-[var(--lit-blue,#1565C0)] focus:ring-2 focus:ring-[#1565C0]/15"
+                  className="w-full p-3.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#1565C0] focus:ring-2 focus:ring-[#1565C0]/20 text-slate-800 text-xs shadow-2xs resize-none"
                 />
               </div>
 
               {/* Mandatory Disclaimer */}
-              <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/70 text-amber-950 text-xs space-y-2">
-                <div className="flex items-start gap-2.5">
+              <div className="p-4 rounded-2xl border border-amber-200 bg-amber-50/70 text-amber-950 text-xs space-y-2">
+                <div className="flex items-start gap-3">
                   <input
                     type="checkbox"
                     id="disclaimer-check"
                     checked={agreeDisclaimer}
                     onChange={(e) => setAgreeDisclaimer(e.target.checked)}
-                    className="w-4 h-4 rounded text-[var(--lit-navy,#0B2545)] mt-0.5 cursor-pointer"
+                    className="w-4 h-4 rounded text-[#1565C0] mt-0.5 cursor-pointer shrink-0"
                   />
-                  <label htmlFor="disclaimer-check" className="cursor-pointer leading-relaxed">
-                    <strong>Official Scope Acknowledgment:</strong> I understand that submitting these
+                  <label htmlFor="disclaimer-check" className="cursor-pointer leading-relaxed text-[11px] text-amber-900">
+                    <strong className="font-bold text-amber-950">Official Scope Acknowledgment:</strong> I understand that submitting these
                     selections registers project requirements and requested scope with Logic Intelligence
                     Technologies. It does not certify that the platform already passes these checkpoints
                     or constitute a commercial contract.
@@ -759,25 +795,27 @@ export default function EnterpriseChecklistClient({
               </div>
 
               {submitError && (
-                <div className="p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 text-xs">
-                  {submitError}
+                <div className="p-3.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>{submitError}</span>
                 </div>
               )}
             </div>
 
-            <div className="px-6 py-4 border-t border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] flex items-center justify-end gap-3">
+            <div className="px-6 py-4 sm:px-7 sm:py-5 border-t border-slate-100 bg-slate-50/70 flex items-center justify-end gap-3 shrink-0">
               <button
                 type="button"
                 onClick={() => setShowReviewModal(false)}
-                className="px-4 py-2.5 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-xs font-semibold text-[var(--lit-text-muted,#52677C)] hover:bg-slate-100"
+                disabled={isSubmitting}
+                className="px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+                disabled={isSubmitting || !agreeDisclaimer}
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#0B2545] to-[#1565C0] hover:from-[#123663] hover:to-[#1976D2] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
               >
                 {isSubmitting ? (
                   <>
@@ -786,7 +824,7 @@ export default function EnterpriseChecklistClient({
                   </>
                 ) : (
                   <>
-                    <span>Confirm & Submit to Registry</span>
+                    <span>Confirm &amp; Submit to Registry</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
