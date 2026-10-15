@@ -838,110 +838,181 @@ export function ClientQuotationView({
 
       {/* Revision Request Modal */}
       {isRevisionModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-purple-600" />
-                <h2 className="text-lg font-bold text-[var(--lit-navy,#0B2545)]">
-                  Request Quotation Adjustments
-                </h2>
-              </div>
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto"
+          onClick={() => setIsRevisionModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 my-auto flex flex-col max-h-[92vh] text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Top Decorative Banner */}
+            <div className="relative bg-gradient-to-r from-[#0B2545] via-[#123663] to-[#1565C0] px-6 py-5 sm:px-7 sm:py-6 text-white shrink-0">
               <button
+                type="button"
                 onClick={() => setIsRevisionModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600"
+                disabled={isSubmittingRevision}
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
+
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Proposal Governance · Scope Refinement
+                </span>
+                <span className="text-[10px] font-mono font-semibold text-slate-200 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/15">
+                  Quote: {quotation.quotation_number}
+                </span>
+              </div>
+
+              <h3 className="text-xl font-bold font-poppins text-white tracking-tight">
+                Request Quotation Adjustments
+              </h3>
+              <p className="text-xs text-slate-200/90 mt-1 leading-relaxed">
+                Submit deliverable adjustments, timeline alterations, or technical scope notes directly to our solution architects.
+              </p>
             </div>
 
-            {revisionSuccess ? (
-              <div className="p-6 text-center space-y-4">
-                <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
-                  <CheckCircle2 className="w-6 h-6" />
+            {/* Modal Scrollable Body */}
+            <div className="p-6 sm:p-7 space-y-5 overflow-y-auto flex-1">
+              {/* Active Proposal Summary Pill */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-50 to-[#F0F7FF] border border-slate-200/80 flex items-start gap-3.5 shadow-2xs">
+                <div className="w-9 h-9 rounded-xl bg-[#0B2545] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                  <FileText className="w-5 h-5" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900">
-                  Feedback Submitted Successfully
-                </h3>
-                <p className="text-xs text-slate-600">
-                  Our engineering team has received your notes and will contact you with an updated quotation draft shortly.
-                </p>
-                <button
-                  onClick={() => setIsRevisionModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
-                >
-                  Close Window
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmitRevision} className="p-6 space-y-4">
-                {revisionError && (
-                  <div className="p-3 rounded-lg border border-rose-200 bg-rose-50 text-rose-800 text-xs">
-                    {revisionError}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
+                      Target Proposal Scope
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      <Clock className="w-3 h-3" />
+                      SLA: 2–4 Business Hours
+                    </span>
                   </div>
-                )}
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={revisionName}
-                    onChange={(e) => setRevisionName(e.target.value)}
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
+                  <p className="text-sm font-bold text-[#0B2545] truncate mt-0.5">
+                    {quotation.title}
+                  </p>
+                  <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                    Our lead architect will review requested adjustments, update milestones and deliverables, and send an amended revision draft.
+                  </p>
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Your Email
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={revisionEmail}
-                    onChange={(e) => setRevisionEmail(e.target.value)}
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
+              {revisionSuccess ? (
+                <div className="p-6 bg-emerald-50/80 border border-emerald-200/90 rounded-2xl text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto shadow-xs">
+                    <CheckCircle2 className="w-7 h-7" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-base font-bold text-emerald-950 font-poppins">
+                      Feedback Submitted Successfully
+                    </h4>
+                    <p className="text-xs text-emerald-800 leading-relaxed max-w-md mx-auto">
+                      Our engineering team has received your notes and will contact you with an updated quotation draft shortly.
+                    </p>
+                  </div>
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsRevisionModalOpen(false)}
+                      className="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer"
+                    >
+                      Close Window
+                    </button>
+                  </div>
                 </div>
+              ) : (
+                <form onSubmit={handleSubmitRevision} className="space-y-4">
+                  {revisionError && (
+                    <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                      <span>{revisionError}</span>
+                    </div>
+                  )}
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                    Requested Changes or Scope Feedback *
-                  </label>
-                  <textarea
-                    rows={4}
-                    required
-                    placeholder="Explain which deliverables to adjust, add, or remove..."
-                    value={revisionNotes}
-                    onChange={(e) => setRevisionNotes(e.target.value)}
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-[#0B2545] mb-1.5 flex items-center justify-between">
+                        <span>Your Full Name *</span>
+                        <span className="text-[10px] font-mono text-slate-400 font-normal">Authorized</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={revisionName}
+                        onChange={(e) => setRevisionName(e.target.value)}
+                        placeholder="e.g. Dr. Rajesh Krishnan"
+                        className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 font-medium focus:ring-2 focus:ring-[#1565C0]/20 focus:border-[#1565C0] outline-none transition-all shadow-2xs"
+                      />
+                    </div>
 
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => setIsRevisionModalOpen(false)}
-                    className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmittingRevision || !revisionNotes.trim()}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-purple-700 hover:bg-purple-800 rounded-lg shadow-xs transition-colors disabled:opacity-50"
-                  >
-                    {isSubmittingRevision ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" />
-                    ) : null}
-                    Submit Revision Request
-                  </button>
-                </div>
-              </form>
-            )}
+                    <div>
+                      <label className="block text-xs font-bold text-[#0B2545] mb-1.5 flex items-center justify-between">
+                        <span>Your Work Email *</span>
+                        <span className="text-[10px] font-mono text-slate-400 font-normal">Contact</span>
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={revisionEmail}
+                        onChange={(e) => setRevisionEmail(e.target.value)}
+                        placeholder="rajesh@company.com"
+                        className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 font-medium focus:ring-2 focus:ring-[#1565C0]/20 focus:border-[#1565C0] outline-none transition-all shadow-2xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#0B2545] mb-1.5 flex items-center justify-between">
+                      <span>Requested Scope or Deliverable Adjustments *</span>
+                      <span className="text-[10px] font-mono text-slate-400 font-normal">Detailed Notes</span>
+                    </label>
+                    <textarea
+                      rows={4}
+                      required
+                      placeholder="Specify exact milestones, tech stack preferences, timeline adjustments, or commercial considerations you would like adapted..."
+                      value={revisionNotes}
+                      onChange={(e) => setRevisionNotes(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-[#1565C0]/20 focus:border-[#1565C0] outline-none transition-all resize-none shadow-2xs leading-relaxed"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => setIsRevisionModalOpen(false)}
+                      disabled={isSubmittingRevision}
+                      className="px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmittingRevision || !revisionNotes.trim() || !revisionName.trim() || !revisionEmail.trim()}
+                      className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#0B2545] to-[#1565C0] hover:from-[#123663] hover:to-[#1976D2] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none flex items-center gap-2 cursor-pointer"
+                    >
+                      {isSubmittingRevision ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Submitting...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Submit Revision Request</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
           </div>
         </div>
       )}
