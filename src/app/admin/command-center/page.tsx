@@ -35,6 +35,7 @@ import { formatINR } from "@/lib/format/datetime";
 import { listAllEngagements } from "@/lib/engagements/db";
 import { IssueEngagementModal } from "@/app/admin/engagements/components/IssueEngagementModal";
 import { CANONICAL_13_STAGES, type StageKey } from "@/lib/engagements/types";
+import { MasterModuleDirectory } from "./components/MasterModuleDirectory";
 
 export const metadata: Metadata = {
   title: "Executive Command Center | Logic Intelligence Technologies",
@@ -158,6 +159,21 @@ export default async function AdminCommandCenterPage() {
             <span>Verify Payments</span>
           </Link>
           <Link
+            href="/admin/engagements"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs uppercase tracking-wider hover:bg-blue-700 transition-all shadow-2xs"
+          >
+            <ListChecks className="w-4 h-4" />
+            <span>Engagements</span>
+          </Link>
+          <Link
+            href="/engagement"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition-all shadow-2xs"
+            title="Client 13-Stage Portal Hub"
+          >
+            <ExternalLink className="w-4 h-4 text-[var(--lit-teal,#1FA9A2)]" />
+            <span>Portals Hub</span>
+          </Link>
+          <Link
             href="/admin/invoices/new"
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[var(--lit-navy,#0B2545)] text-white font-bold text-xs uppercase tracking-wider hover:bg-[var(--lit-navy,#0B2545)]/90 transition-all shadow-2xs"
           >
@@ -175,6 +191,24 @@ export default async function AdminCommandCenterPage() {
             className="px-3.5 py-2 rounded-xl bg-white border border-[var(--lit-border-light,#DFE7EF)] text-slate-700 font-bold text-xs uppercase tracking-wider hover:bg-[var(--lit-cloud,#F7F9FC)] hover:border-slate-300 transition-all shadow-2xs"
           >
             + New Quotation
+          </Link>
+          <Link
+            href="/admin/leads"
+            className="px-3.5 py-2 rounded-xl bg-white border border-[var(--lit-border-light,#DFE7EF)] text-teal-800 font-bold text-xs uppercase tracking-wider hover:bg-teal-50 hover:border-teal-300 transition-all shadow-2xs"
+          >
+            CRM Leads
+          </Link>
+          <Link
+            href="/admin/seo/url-inspection"
+            className="px-3.5 py-2 rounded-xl bg-white border border-[var(--lit-border-light,#DFE7EF)] text-cyan-800 font-bold text-xs uppercase tracking-wider hover:bg-cyan-50 hover:border-cyan-300 transition-all shadow-2xs"
+          >
+            SEO Inspect
+          </Link>
+          <Link
+            href="/admin/status"
+            className="px-3.5 py-2 rounded-xl bg-white border border-[var(--lit-border-light,#DFE7EF)] text-slate-700 font-bold text-xs uppercase tracking-wider hover:bg-[var(--lit-cloud,#F7F9FC)] hover:border-slate-300 transition-all shadow-2xs"
+          >
+            Status
           </Link>
         </div>
       </div>
@@ -479,393 +513,8 @@ export default async function AdminCommandCenterPage() {
         </div>
       </div>
 
-      {/* Master Operations & Module Directory (All Admin Pages & Actions) */}
-      <div className="space-y-6 pt-2">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[var(--lit-border-light,#DFE7EF)]">
-          <div>
-            <h2 className="text-lg font-bold text-[var(--lit-navy,#0B2545)] tracking-tight flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--lit-navy,#0B2545)]/10 text-[var(--lit-navy,#0B2545)]">
-                <Layers className="w-3.5 h-3.5" />
-              </span>
-              <span>Master Operations &amp; Module Directory</span>
-            </h2>
-            <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
-              Direct access to all 42+ administrative modules, portals, billing tools, and automated pipelines.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full border border-slate-200">
-              42 Admin Modules Connected
-            </span>
-          </div>
-        </div>
-
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {/* Module Category 1: Client Portals & 13-Stage Governance */}
-          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 shadow-2xs hover:border-[var(--lit-blue,#1565C0)]/40 transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-xl bg-blue-50 border border-blue-200 text-[#1565C0]">
-                    <ListChecks className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">1. Client Lifecycle</h3>
-                    <p className="text-[10px] text-slate-500 font-mono">13-Stage Governance &amp; Portals</p>
-                  </div>
-                </div>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-50 text-[#1565C0] border border-blue-200">
-                  8 Tools
-                </span>
-              </div>
-
-              <div className="mt-3.5 divide-y divide-slate-100">
-                {[
-                  { href: "/engagement", label: "Client Portals Hub", badge: "Live 13-Stage", desc: "Universal client milestone progression" },
-                  { href: "/admin/engagements", label: "Engagements Registry", badge: "Admin Core", desc: "Stage data inspection & approvals" },
-                  { href: "/admin/engagements/new", label: "Register New Client", badge: "Action", desc: "Provision tokens & 13 milestones" },
-                  { href: "/admin/clients", label: "Client Accounts", badge: "Profiles", desc: "Enterprise account records & contacts" },
-                  { href: "/admin/checklist-invitations", label: "Checklists & SOP", badge: "v2.4", desc: "Enterprise scoping invitations" },
-                  { href: "/admin/checklists", label: "Master Checklists", badge: "50 Checkpoints", desc: "Architecture baseline definitions" },
-                  { href: "/admin/onboarding", label: "Client Onboarding", badge: "Stage 7", desc: "Credential handoff & kickoff forms" },
-                  { href: "/admin/documents", label: "Document Vault", badge: "PDF Storage", desc: "Signed SOWs, Invoices & Receipts" },
-                ].map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="py-2.5 px-2 -mx-2 rounded-xl flex items-center justify-between gap-2 hover:bg-[var(--lit-cloud,#F7F9FC)] group transition-colors"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)] group-hover:text-[#1565C0] transition-colors truncate">
-                          {item.label}
-                        </span>
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200">
-                          {item.badge}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 truncate">{item.desc}</p>
-                    </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#1565C0] group-hover:translate-x-0.5 transition-all shrink-0" />
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100">
-              <Link
-                href="/admin/engagements"
-                className="w-full inline-flex items-center justify-center gap-1.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100/70 border border-blue-200 text-[#1565C0] font-bold text-xs transition-colors"
-              >
-                <span>Open Engagements Console →</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Module Category 2: Financial Operations & UPI Clearance */}
-          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 shadow-2xs hover:border-emerald-300 transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700">
-                    <Receipt className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">2. Financials &amp; Payments</h3>
-                    <p className="text-[10px] text-slate-500 font-mono">50/50 Milestones &amp; UPI Audit</p>
-                  </div>
-                </div>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  9 Tools
-                </span>
-              </div>
-
-              <div className="mt-3.5 divide-y divide-slate-100">
-                {[
-                  { href: "/admin/payments", label: "Bank Reconciliation", badge: "Super Admin", desc: "12-digit UTR bank statement audit" },
-                  { href: "/admin/invoices", label: "Invoices Ledger", badge: "Tax Invoices", desc: "18% GST statutory invoice journal" },
-                  { href: "/admin/invoices/new", label: "Issue New Invoice", badge: "+ Action", desc: "Single-page A4 PDF invoice generator" },
-                  { href: "/admin/quotations", label: "Quotation Engine", badge: "V6 Engine", desc: "Instant pricing, scope, & milestones" },
-                  { href: "/admin/quotations/new", label: "Draft New Quotation", badge: "+ Action", desc: "Dual milestones, PDF download" },
-                  { href: "/admin/quotations/catalog", label: "Quotation Catalog", badge: "Rate Card", desc: "Standard rate card & module deliverables" },
-                  { href: "/admin/quotations/coupons", label: "Discount Coupons", badge: "Promotions", desc: "Commercial partner discount codes" },
-                  { href: "/admin/proposals", label: "Proposals & SOWs", badge: "Contracts", desc: "Master commercial terms & agreements" },
-                  { href: "/admin/proposals/new", label: "Draft Proposal", badge: "+ Action", desc: "50/50 structure proposal generator" },
-                ].map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="py-2.5 px-2 -mx-2 rounded-xl flex items-center justify-between gap-2 hover:bg-[var(--lit-cloud,#F7F9FC)] group transition-colors"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)] group-hover:text-emerald-700 transition-colors truncate">
-                          {item.label}
-                        </span>
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200">
-                          {item.badge}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 truncate">{item.desc}</p>
-                    </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-700 group-hover:translate-x-0.5 transition-all shrink-0" />
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100">
-              <Link
-                href="/admin/payments"
-                className="w-full inline-flex items-center justify-center gap-1.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-200 text-emerald-800 font-bold text-xs transition-colors"
-              >
-                <span>Verify Pending Payments →</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Module Category 3: CRM Pipeline & Outreach Engine */}
-          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 shadow-2xs hover:border-[var(--lit-teal,#1FA9A2)]/40 transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-xl bg-teal-50 border border-teal-200 text-[var(--lit-teal,#1FA9A2)]">
-                    <Users className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">3. CRM Pipeline &amp; Outreach</h3>
-                    <p className="text-[10px] text-slate-500 font-mono">Inbound Inquiries &amp; Campaigns</p>
-                  </div>
-                </div>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-teal-50 text-[var(--lit-teal,#1FA9A2)] border border-teal-200">
-                  11 Tools
-                </span>
-              </div>
-
-              <div className="mt-3.5 divide-y divide-slate-100">
-                {[
-                  { href: "/admin/intake", label: "Intake Stream", badge: "Inbound", desc: "Real-time client contact submissions" },
-                  { href: "/admin/leads", label: "CRM Leads Ledger", badge: "Dossier", desc: "Scored leads & executive history" },
-                  { href: "/admin/ai-leads", label: "AI Leads Intelligence", badge: "AI Scored", desc: "Autonomous ICP classification" },
-                  { href: "/admin/bookings", label: "Consultation Bookings", badge: "Calendar", desc: "Google Meet consultations & slots" },
-                  { href: "/admin/outreach", label: "Outreach Campaign Hub", badge: "Outbound", desc: "Enterprise outbound campaign orchestration" },
-                  { href: "/admin/outreach/studio", label: "Outreach Studio", badge: "Sequences", desc: "Multi-touch cadence sequence designer" },
-                  { href: "/admin/outreach/queue", label: "Dispatch Queue", badge: "Execution", desc: "Scheduled email & message releases" },
-                  { href: "/admin/outreach/suppression", label: "Suppression Registry", badge: "Opt-Out", desc: "DND & statutory compliance filters" },
-                  { href: "/admin/outreach/analytics", label: "Outreach Analytics", badge: "Metrics", desc: "Open rates, replies & conversion data" },
-                  { href: "/admin/outreach/compliance", label: "Compliance & Jurisdictions", badge: "Legal", desc: "GDPR, CAN-SPAM, Indian DND guards" },
-                  { href: "/admin/outreach/playbook", label: "Message Playbook", badge: "Templates", desc: "Pre-approved corporate copy guidelines" },
-                ].map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="py-2.5 px-2 -mx-2 rounded-xl flex items-center justify-between gap-2 hover:bg-[var(--lit-cloud,#F7F9FC)] group transition-colors"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)] group-hover:text-[var(--lit-teal,#1FA9A2)] transition-colors truncate">
-                          {item.label}
-                        </span>
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200">
-                          {item.badge}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 truncate">{item.desc}</p>
-                    </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[var(--lit-teal,#1FA9A2)] group-hover:translate-x-0.5 transition-all shrink-0" />
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100">
-              <Link
-                href="/admin/leads"
-                className="w-full inline-flex items-center justify-center gap-1.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100/70 border border-teal-200 text-teal-800 font-bold text-xs transition-colors"
-              >
-                <span>View CRM Leads Ledger →</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Module Category 4: Communications & Support */}
-          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 shadow-2xs hover:border-purple-300 transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-xl bg-purple-50 border border-purple-200 text-purple-700">
-                    <Mail className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">4. Communications &amp; Support</h3>
-                    <p className="text-[10px] text-slate-500 font-mono">Transactional Emails &amp; Helpdesk</p>
-                  </div>
-                </div>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
-                  6 Tools
-                </span>
-              </div>
-
-              <div className="mt-3.5 divide-y divide-slate-100">
-                {[
-                  { href: "/admin/support", label: "Support Helpdesk", badge: "Tickets", desc: "Customer tickets, SLAs & resolution status" },
-                  { href: "/admin/emails", label: "Transactional Email Logs", badge: "Delivery", desc: "Receipt, alert & unlock email telemetry" },
-                  { href: "/admin/emails/new", label: "Compose Email", badge: "+ Action", desc: "Direct branded message dispatch" },
-                  { href: "/admin/emails/mailboxes", label: "Mailboxes Configuration", badge: "SMTP", desc: "Sender domains & DNS MX records" },
-                  { href: "/admin/emails/outbox", label: "Outbox Queue", badge: "Pending", desc: "Buffered dispatches & retry schedules" },
-                  { href: "/admin/email-preview", label: "Email Template Previews", badge: "LIT V2", desc: "Dual receipt, alert & unlock previews" },
-                ].map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="py-2.5 px-2 -mx-2 rounded-xl flex items-center justify-between gap-2 hover:bg-[var(--lit-cloud,#F7F9FC)] group transition-colors"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)] group-hover:text-purple-700 transition-colors truncate">
-                          {item.label}
-                        </span>
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200">
-                          {item.badge}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 truncate">{item.desc}</p>
-                    </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-700 group-hover:translate-x-0.5 transition-all shrink-0" />
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100">
-              <Link
-                href="/admin/emails"
-                className="w-full inline-flex items-center justify-center gap-1.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100/70 border border-purple-200 text-purple-800 font-bold text-xs transition-colors"
-              >
-                <span>Email Operations →</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Module Category 5: Automations, SEO & Edge Network */}
-          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 shadow-2xs hover:border-indigo-300 transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700">
-                    <Zap className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">5. Automations &amp; Edge SEO</h3>
-                    <p className="text-[10px] text-slate-500 font-mono">180 Workflows &amp; Indexing Engine</p>
-                  </div>
-                </div>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  13 Tools
-                </span>
-              </div>
-
-              <div className="mt-3.5 divide-y divide-slate-100">
-                {[
-                  { href: "/admin/automations", label: "Automations Hub", badge: "Four-Site", desc: "Centralized execution telemetry" },
-                  { href: "/admin/automations/catalog", label: "Workflow Catalog", badge: "180 Tasks", desc: "All 180 production background workflows" },
-                  { href: "/admin/automations/approvals", label: "Action Approvals", badge: "Safety Gate", desc: "Super Admin human-in-the-loop approvals" },
-                  { href: "/admin/automations/reports", label: "Reliability Reports", badge: "Audit", desc: "Uptime, error budgets & synthetic metrics" },
-                  { href: "/admin/automations/governance", label: "Governance & Runbooks", badge: "SOP", desc: "Operational runbooks & failover procedures" },
-                  { href: "/admin/automations/workflows", label: "Automated Workflows", badge: "Orchestration", desc: "Active task execution pipelines" },
-                  { href: "/admin/automations/schedules", label: "Job Schedules", badge: "Cron", desc: "Automated recurrence triggers" },
-                  { href: "/admin/automations/site-health", label: "Site Health Probes", badge: "Live Probes", desc: "Four-site synthetic edge monitors" },
-                  { href: "/admin/seo", label: "SEO Intelligence Console", badge: "Search", desc: "Crawling, indexing & rankings overview" },
-                  { href: "/admin/seo/url-inspection", label: "SEO URL Inspection", badge: "Edge Inspector", desc: "Real-time edge & GSC indexability" },
-                  { href: "/admin/seo/sitemaps", label: "Dynamic Sitemaps", badge: "XML", desc: "Authoritative sitemap verification" },
-                  { href: "/admin/command-center/visibility", label: "Visibility Engine", badge: "Rankings", desc: "Four-site organic search performance" },
-                  { href: "/admin/cdn", label: "Edge CDN Cache Purge", badge: "Fastly/Edge", desc: "Stale cache invalidation & TTL controls" },
-                ].map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="py-2.5 px-2 -mx-2 rounded-xl flex items-center justify-between gap-2 hover:bg-[var(--lit-cloud,#F7F9FC)] group transition-colors"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)] group-hover:text-indigo-700 transition-colors truncate">
-                          {item.label}
-                        </span>
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200">
-                          {item.badge}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 truncate">{item.desc}</p>
-                    </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-700 group-hover:translate-x-0.5 transition-all shrink-0" />
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100">
-              <Link
-                href="/admin/automations/catalog"
-                className="w-full inline-flex items-center justify-center gap-1.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100/70 border border-indigo-200 text-indigo-800 font-bold text-xs transition-colors"
-              >
-                <span>Browse 180 Automation Workflows →</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Module Category 6: Corporate Governance & System Status */}
-          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 shadow-2xs hover:border-slate-300 transition-all flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-xl bg-slate-100 border border-slate-300 text-slate-700">
-                    <Building className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">6. Corporate Governance</h3>
-                    <p className="text-[10px] text-slate-500 font-mono">MSME Credentials, Team &amp; Audit</p>
-                  </div>
-                </div>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-300">
-                  5 Tools
-                </span>
-              </div>
-
-              <div className="mt-3.5 divide-y divide-slate-100">
-                {[
-                  { href: "/admin/company", label: "Company & MSME Credentials", badge: "Verified", desc: "UDYAM-TN-03-0345274 & Coimbatore address" },
-                  { href: "/admin/status", label: "System Telemetry & Uptime", badge: "Status", desc: "Database, Redis, Storage & edge latency" },
-                  { href: "/admin/analytics", label: "Executive Analytics", badge: "KPIs", desc: "Paid revenue, pipeline velocity & cohorts" },
-                  { href: "/admin/team", label: "Team & Role Access", badge: "RBAC", desc: "Capability matrix & staff management" },
-                  { href: "/admin/audit", label: "Cryptographic Audit Log", badge: "SHA-256", desc: "Immutable trail of all admin actions" },
-                ].map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="py-2.5 px-2 -mx-2 rounded-xl flex items-center justify-between gap-2 hover:bg-[var(--lit-cloud,#F7F9FC)] group transition-colors"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)] group-hover:text-slate-900 transition-colors truncate">
-                          {item.label}
-                        </span>
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200">
-                          {item.badge}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 truncate">{item.desc}</p>
-                    </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-all shrink-0" />
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100">
-              <Link
-                href="/admin/company"
-                className="w-full inline-flex items-center justify-center gap-1.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-300 text-slate-800 font-bold text-xs transition-colors"
-              >
-                <span>View MSME Statutory Profile →</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Master Operations & Module Directory (All 162 Platform Modules, Pages, Tools & Portals) */}
+      <MasterModuleDirectory />
 
       {/* Recent Inbound Leads Section */}
       <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 shadow-2xs space-y-4">

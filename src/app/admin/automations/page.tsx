@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from "next/link";
 import { requireCapabilityPage } from "@/lib/auth/session";
 import { getAutomationsSnapshot, type AutomationsState } from "@/lib/automations/n8n-client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -34,6 +35,10 @@ import {
   ShieldCheck,
   ChevronRight,
   Sparkles,
+  CheckSquare,
+  ShieldAlert,
+  Settings,
+  Radio,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -297,6 +302,116 @@ export default async function AutomationsPage({
             <ImportButton />
           </div>
         )}
+      </div>
+
+      {/* Sub-Navigation Ribbon to All 13 Automation Sub-Modules */}
+      <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-3.5 shadow-2xs">
+        <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)]">
+              Automation Operations Console
+            </span>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+              13 Modules
+            </span>
+          </div>
+          <span className="text-[11px] text-[var(--lit-text-muted,#52677C)] hidden sm:inline">
+            Direct navigation across pipelines, dead-letter recovery &amp; governance
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/admin/automations/catalog"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <Layers className="w-3.5 h-3.5 text-blue-600" />
+            <span>Catalog</span>
+          </Link>
+          <Link
+            href="/admin/automations/approvals"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <CheckSquare className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Approvals</span>
+          </Link>
+          <Link
+            href="/admin/automations/workflows"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <Cpu className="w-3.5 h-3.5 text-indigo-600" />
+            <span>Workflows</span>
+          </Link>
+          <Link
+            href="/admin/automations/executions"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <Activity className="w-3.5 h-3.5 text-teal-600" />
+            <span>Executions</span>
+          </Link>
+          <Link
+            href="/admin/automations/schedules"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <Clock className="w-3.5 h-3.5 text-purple-600" />
+            <span>Schedules</span>
+          </Link>
+          <Link
+            href="/admin/automations/dead-letter"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-rose-200 bg-rose-50/60 text-rose-800 shadow-2xs hover:bg-rose-100 transition-colors"
+          >
+            <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
+            <span>Dead Letter DLQ</span>
+          </Link>
+          <Link
+            href="/admin/automations/site-health"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <Radio className="w-3.5 h-3.5 text-cyan-600" />
+            <span>Site Health</span>
+          </Link>
+          <Link
+            href="/admin/automations/reports"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <FileCheck2 className="w-3.5 h-3.5 text-amber-600" />
+            <span>Reports</span>
+          </Link>
+          <Link
+            href="/admin/automations/connectors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <Server className="w-3.5 h-3.5 text-sky-600" />
+            <span>Connectors</span>
+          </Link>
+          <Link
+            href="/admin/automations/deployments"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <Send className="w-3.5 h-3.5 text-emerald-700" />
+            <span>Deployments</span>
+          </Link>
+          <Link
+            href="/admin/automations/events"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <Zap className="w-3.5 h-3.5 text-amber-500" />
+            <span>Events Ledger</span>
+          </Link>
+          <Link
+            href="/admin/automations/n8n"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-violet-600" />
+            <span>n8n Flow</span>
+          </Link>
+          <Link
+            href="/admin/automations/governance"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-slate-700" />
+            <span>Governance</span>
+          </Link>
+        </div>
       </div>
 
       {/* 4-Site Scope Filter */}

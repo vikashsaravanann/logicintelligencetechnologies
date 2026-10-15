@@ -90,11 +90,39 @@ export default async function SeoOverviewPage() {
             <span>URL Inspection</span>
           </Link>
           <Link
+            href="/admin/seo/sitemaps"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <FileCode className="w-3.5 h-3.5 text-amber-600" />
+            <span>Sitemaps</span>
+          </Link>
+          <Link
+            href="/admin/seo/sites"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <Globe className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Sites Registry</span>
+          </Link>
+          <Link
             href="/admin/seo/schedules"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
           >
             <Calendar className="w-3.5 h-3.5 text-[var(--lit-blue,#1565C0)]" />
             <span>72h Scheduler</span>
+          </Link>
+          <Link
+            href="/admin/command-center/visibility"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <Sliders className="w-3.5 h-3.5 text-purple-600" />
+            <span>Visibility Engine</span>
+          </Link>
+          <Link
+            href="/admin/cdn"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-[var(--lit-navy,#0B2545)] shadow-2xs hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors"
+          >
+            <Clock className="w-3.5 h-3.5 text-indigo-600" />
+            <span>Edge CDN</span>
           </Link>
         </div>
       </div>

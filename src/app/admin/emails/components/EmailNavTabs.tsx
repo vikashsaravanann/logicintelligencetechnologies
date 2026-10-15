@@ -10,7 +10,8 @@ import {
   Activity, 
   CheckSquare, 
   ShieldAlert, 
-  TerminalSquare 
+  Send,
+  FileText
 } from "lucide-react";
 
 export function EmailNavTabs() {
@@ -18,14 +19,13 @@ export function EmailNavTabs() {
   
   const tabs = [
     { name: "Overview", href: "/admin/emails", icon: BarChart3 },
+    { name: "Compose", href: "/admin/emails/new", icon: Send },
     { name: "Mailboxes & Identity", href: "/admin/emails/mailboxes", icon: Mail },
     { name: "Outbox Queue", href: "/admin/emails/outbox", icon: Inbox },
-    { name: "Delivery Attempts", href: "/admin/emails/delivery", icon: Activity },
-    { name: "Approvals", href: "/admin/emails/approvals", icon: CheckSquare },
-    { name: "Incident Console", href: "/admin/emails/incidents", icon: ShieldAlert },
-    { name: "n8n Orchestration", href: "/admin/emails/n8n", icon: Settings },
-    { name: "Template Gallery", href: "/admin/email-preview", icon: Mail },
-    { name: "Live Test", href: "/admin/emails/test", icon: TerminalSquare },
+    { name: "Template Previews", href: "/admin/email-preview", icon: FileText },
+    { name: "Action Approvals", href: "/admin/automations/approvals", icon: CheckSquare },
+    { name: "Incidents & DLQ", href: "/admin/automations/dead-letter", icon: ShieldAlert },
+    { name: "n8n Flow Engine", href: "/admin/automations/n8n", icon: Settings },
   ];
 
   return (
