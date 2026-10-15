@@ -25,7 +25,9 @@ export default function ChecklistStageClient({
   const [notes, setNotes] = useState(initialNotes);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
-  const [submitted, setSubmitted] = useState(['submitted', 'completed', 'under_review'].includes(initialStatus));
+  const isFormSubmitted = ['submitted', 'completed', 'under_review', 'approved', 'verified', 'accepted'].includes(initialStatus || '');
+  const [submitted, setSubmitted] = useState(isFormSubmitted);
+  const [currentStatus, setCurrentStatus] = useState(initialStatus || 'available');
   const [auditHash, setAuditHash] = useState<string | null>(null);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -88,8 +90,8 @@ export default function ChecklistStageClient({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (selectedItems.length === 0) {
       setErrorMessage('Please select at least one enterprise checkpoint before submitting.');
       return;
@@ -120,8 +122,9 @@ export default function ChecklistStageClient({
       }
 
       setSubmitted(true);
+      setCurrentStatus('under_review');
       setAuditHash(data.auditHash);
-      setFeedbackMessage('Scope baseline formally submitted and Stage 2 Discovery unlocked.');
+      setFeedbackMessage('Scope baseline formally submitted. Dual receipt and alert emails dispatched.');
       router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error submitting checklist';
@@ -132,7 +135,7 @@ export default function ChecklistStageClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20">
       {/* Scope Selection Summary Banner */}
       <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
@@ -141,7 +144,7 @@ export default function ChecklistStageClient({
             Select the checkpoints required for your enterprise architecture and audit baseline.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="bg-[#E7F3FF] border border-[#B9DCFF] px-4 py-2 rounded-xl text-center">
             <span className="block text-lg font-mono font-bold text-[#1565C0]">
               {selectedItems.length} / 50
@@ -164,6 +167,26 @@ export default function ChecklistStageClient({
               Clear
             </button>
           </div>
+          {!submitted && (
+            <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-slate-200">
+              <button
+                type="button"
+                onClick={handleSaveDraft}
+                disabled={isSavingDraft || isSubmitting}
+                className="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs disabled:opacity-50 transition-colors cursor-pointer"
+              >
+                {isSavingDraft ? 'Saving...' : 'Save Draft'}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSubmit()}
+                disabled={isSubmitting || isSavingDraft || selectedItems.length === 0}
+                className="bg-[#0B2545] hover:bg-[#1565C0] text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-xs disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                {isSubmitting ? 'Submitting...' : `Submit (${selectedItems.length}) →`}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -284,29 +307,87 @@ export default function ChecklistStageClient({
 
       {/* Submission Form */}
       <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs">
-        {submitted ? (
-          <div className="bg-[#ECFDF5] border border-[#A7F3D0] rounded-xl p-5 text-xs text-[#065F46] space-y-3">
-            <h4 className="text-sm font-bold">✓ Checklist Scope Baseline Formally Submitted</h4>
-            <p>
-              Your selection of <strong>{selectedItems.length} points</strong> has been recorded to engagement reference{' '}
-              <strong className="font-mono">{engagementRef}</strong>.
-            </p>
+        {['approved', 'verified', 'completed', 'accepted'].includes(currentStatus) ? (
+          <div className="bg-[#ECFDF5] border border-[#A7F3D0] rounded-xl p-6 text-xs text-[#065F46] space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#D1FAE5] text-[#065F46] uppercase tracking-wider mb-2">
+                  ✓ Verified & Approved
+                </span>
+                <h4 className="text-base font-bold text-[#065F46]">
+                  Scope Baseline Formally Approved by LIT Engineering
+                </h4>
+                <p className="text-xs text-[#047857] mt-1">
+                  Your baseline of <strong>{selectedItems.length} checkpoints</strong> has been reviewed, ratified, and unlocked for Stage 2: Technical Discovery.
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="font-mono text-2xl font-black text-[#065F46]">{selectedItems.length}</span>
+                <span className="text-[11px] text-slate-500 block">/ 50 Approved</span>
+              </div>
+            </div>
+
             {auditHash && (
-              <p className="font-mono text-[11px] text-slate-600 bg-white/70 p-2 rounded border border-emerald-200">
+              <p className="font-mono text-[11px] text-slate-700 bg-white/80 p-3 rounded-lg border border-emerald-200">
                 Cryptographic Audit Digest: {auditHash}
               </p>
             )}
-            <div className="pt-2 flex items-center gap-3">
+
+            <div className="pt-2 flex flex-wrap items-center gap-3">
               <Link
                 href={`/engagement/${engagementRef}/discovery`}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#065F46] hover:bg-[#044e39] text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#065F46] hover:bg-[#044e39] text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
               >
                 <span>Proceed to Stage 2: Technical Discovery →</span>
               </Link>
               <button
                 type="button"
                 onClick={() => setSubmitted(false)}
-                className="text-xs text-slate-600 hover:text-slate-900 underline"
+                className="text-xs text-slate-600 hover:text-slate-900 underline ml-2"
+              >
+                Modify Scope Selection
+              </button>
+            </div>
+          </div>
+        ) : submitted ? (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-xs text-amber-900 space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 uppercase tracking-wider mb-2">
+                  ⏳ Under Review · Awaiting LIT Admin Approval
+                </span>
+                <h4 className="text-base font-bold text-amber-950">
+                  Checklist Scope Formally Submitted & Queued for Review
+                </h4>
+                <p className="text-xs text-amber-800 mt-1 leading-relaxed">
+                  Your selection of <strong>{selectedItems.length} checkpoints</strong> has been recorded to engagement reference{' '}
+                  <strong className="font-mono">{engagementRef}</strong>. Dual confirmation emails have been dispatched to your email and the LIT Engineering Admin Queue.
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="font-mono text-2xl font-black text-amber-900">{selectedItems.length}</span>
+                <span className="text-[11px] text-amber-700 block">/ 50 Selected</span>
+              </div>
+            </div>
+
+            <div className="bg-white/80 border border-amber-200 rounded-lg p-3 text-[11px] text-slate-700 space-y-1">
+              <p className="font-semibold text-amber-950">Gated Progression Policy:</p>
+              <p className="text-slate-600">
+                Per Section 3 of the LIT Master Delivery Standard, Stage 2 (Technical Discovery) will unlock immediately once a Principal Architect approves your scope baseline. You will receive an automated approval notification email with your direct access link upon sign-off.
+              </p>
+            </div>
+
+            {auditHash && (
+              <p className="font-mono text-[11px] text-slate-600 bg-white/70 p-2.5 rounded border border-amber-200">
+                Cryptographic Audit Digest: {auditHash}
+              </p>
+            )}
+
+            <div className="pt-2 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setSubmitted(false)}
+                className="px-4 py-2 rounded-lg border border-amber-300 bg-white hover:bg-amber-50 text-amber-900 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
               >
                 Modify Scope Selection
               </button>
@@ -352,6 +433,42 @@ export default function ChecklistStageClient({
           </form>
         )}
       </div>
+
+      {/* Sticky Bottom Floating Action Bar */}
+      {!submitted && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#DFE7EF] py-3.5 px-4 sm:px-8 shadow-xl">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#1565C0] animate-pulse" />
+              <span className="text-xs font-semibold text-[#0B2545]">
+                <strong className="font-mono text-sm text-[#1565C0]">{selectedItems.length}</strong> of 50 Checkpoints Selected
+              </span>
+              <span className="hidden md:inline text-xs text-slate-400">|</span>
+              <span className="hidden md:inline text-xs text-slate-500">
+                Phase breakdown: {ENTERPRISE_CHECKLIST_PHASES.map((p) => `${selectedItems.filter((num) => ENTERPRISE_CHECKPOINTS.find((c) => c.number === num)?.phase === p.phase).length} P${p.phase}`).join(' · ')}
+              </span>
+            </div>
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+              <button
+                type="button"
+                onClick={handleSaveDraft}
+                disabled={isSavingDraft || isSubmitting}
+                className="px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs disabled:opacity-50 transition-colors cursor-pointer"
+              >
+                {isSavingDraft ? 'Saving Draft...' : 'Save Draft'}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSubmit()}
+                disabled={isSubmitting || isSavingDraft || selectedItems.length === 0}
+                className="bg-[#0B2545] hover:bg-[#1565C0] text-white px-6 py-2 rounded-xl text-xs font-semibold shadow-xs disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-2"
+              >
+                {isSubmitting ? 'Submitting Scope...' : `Submit Scope (${selectedItems.length} Points) →`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

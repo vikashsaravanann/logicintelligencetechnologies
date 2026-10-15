@@ -40,6 +40,7 @@ import {
 } from '@/lib/engagements/types';
 import { generatePortalEmailCopyText, generatePortalWhatsAppText } from '@/lib/engagements/share';
 import { IssueEngagementModal } from '@/app/admin/engagements/components/IssueEngagementModal';
+import { SuperAdminInspectButton } from '@/components/shared/SuperAdminInspectButton';
 
 export type EngagementWithStages = ClientEngagement & {
   stages: EngagementStage[];
@@ -51,6 +52,7 @@ interface EngagementHubClientProps {
   initialEngagements: EngagementWithStages[];
   initialStatusFilter?: string;
   initialQuery?: string;
+  isSuperAdmin?: boolean;
 }
 
 const STAGE_STATUS_STYLES: Record<
@@ -195,6 +197,7 @@ export default function EngagementHubClient({
   initialEngagements,
   initialStatusFilter = '',
   initialQuery = '',
+  isSuperAdmin,
 }: EngagementHubClientProps) {
   const [engagements, setEngagements] = useState<EngagementWithStages[]>(initialEngagements);
   const [statusFilter, setStatusFilter] = useState(initialStatusFilter);
@@ -205,6 +208,7 @@ export default function EngagementHubClient({
   const [copiedEmailRef, setCopiedEmailRef] = useState<string | null>(null);
   const [copiedWhatsAppRef, setCopiedWhatsAppRef] = useState<string | null>(null);
   const [sendingEmailRef, setSendingEmailRef] = useState<string | null>(null);
+  const [sentRefs, setSentRefs] = useState<Set<string>>(new Set());
   const [emailNotice, setEmailNotice] = useState<{ ref: string; message: string; success: boolean } | null>(null);
 
   // When a new engagement is created via modal
@@ -279,6 +283,7 @@ export default function EngagementHubClient({
 
       const data = await res.json();
       if (data.ok) {
+        setSentRefs((prev) => new Set(prev).add(eng.engagement_ref));
         setEmailNotice({
           ref: eng.engagement_ref,
           message: `Official client portal access email successfully dispatched to ${eng.contact_email}`,
@@ -393,6 +398,11 @@ export default function EngagementHubClient({
 
         {/* Primary Action Toolbar */}
         <div className="flex flex-wrap items-center gap-2.5">
+          <SuperAdminInspectButton
+            href="/admin/engagements"
+            title="Inspect Client Engagements Administration"
+            initialIsSuperAdmin={isSuperAdmin}
+          />
           <IssueEngagementModal
             buttonLabel="Create Client Portal"
             buttonClassName="inline-flex items-center gap-2 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-all shadow-sm cursor-pointer"
@@ -719,91 +729,100 @@ export default function EngagementHubClient({
                       {/* Actions: Sharing & Navigation */}
                       <td className="py-3.5 px-4 text-right">
                         <div className="flex flex-col sm:items-end gap-2">
-                          {/* Top Row: Sharing Actions */}
+                          {/* Top Row: Primary Actions (Inspect, Dispatch, Portal) */}
+                          <div className="flex flex-wrap items-center justify-end gap-1.5">
+                            {/* Super Admin Inspect Button */}
+                            <SuperAdminInspectButton
+                              href={`/admin/engagements/${eng.id}`}
+                              title={`Inspect engagement lifecycle for ${eng.company_name}`}
+                              initialIsSuperAdmin={isSuperAdmin}
+                            />
+
+                            {/* Dispatch Button - EXACT Proposal Creation styling */}
+                            <button
+                              type="button"
+                              onClick={() => handleSendEmail(eng)}
+                              disabled={isSendingEmail || sentRefs.has(eng.engagement_ref)}
+                              className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all shadow-2xs ${
+                                sentRefs.has(eng.engagement_ref)
+                                  ? 'border border-emerald-200 bg-emerald-50 text-emerald-800'
+                                  : 'border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] hover:border-[var(--lit-teal,#1FA9A2)] disabled:opacity-50 cursor-pointer'
+                              }`}
+                              title={`Dispatch client portal invitation to ${eng.contact_email}`}
+                              aria-label={`Dispatch client portal email to ${eng.contact_email}`}
+                            >
+                              {isSendingEmail ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : sentRefs.has(eng.engagement_ref) ? (
+                                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                              ) : (
+                                <Send className="w-3 h-3 text-[var(--lit-blue,#1565C0)]" />
+                              )}
+                              <span>
+                                {isSendingEmail ? 'Sending…' : sentRefs.has(eng.engagement_ref) ? 'Dispatched' : 'Dispatch'}
+                              </span>
+                            </button>
+
+                            {/* Portal Public View Link */}
+                            <Link
+                              href={`/engagement/${eng.engagement_ref}`}
+                              target="_blank"
+                              className="inline-flex items-center gap-1 text-xs font-bold text-[var(--lit-teal,#1FA9A2)] hover:text-[var(--lit-navy,#0B2545)] transition-colors ml-1"
+                              title="Open Public Client View"
+                            >
+                              <span>Portal</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </Link>
+                          </div>
+
+                          {/* Middle Row: Copy Utilities */}
                           <div className="flex flex-wrap items-center justify-end gap-1.5">
                             {/* Copy Link */}
                             <button
                               type="button"
                               onClick={() => handleCopyLink(eng)}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[11px] font-semibold text-[var(--lit-navy,#0B2545)] transition-colors shadow-2xs cursor-pointer"
+                              className="inline-flex items-center gap-1 px-2 py-1 border border-[#DFE7EF] text-[10px] font-semibold text-[#0B2545] hover:border-[#1565C0] hover:text-[#1565C0] rounded-md transition-colors bg-white shadow-2xs cursor-pointer"
                               title="Copy client portal URL to clipboard"
                               aria-label={`Copy client portal link for ${eng.company_name}`}
                             >
                               {isCopiedLink ? (
-                                <>
-                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                  <span className="text-emerald-700 font-bold">Copied!</span>
-                                </>
+                                <Check className="w-3 h-3 text-emerald-600" />
                               ) : (
-                                <>
-                                  <Copy className="w-3.5 h-3.5 text-slate-500" />
-                                  <span>Copy Link</span>
-                                </>
+                                <Copy className="w-3 h-3 text-slate-500" />
                               )}
+                              <span>{isCopiedLink ? 'Copied' : 'Link'}</span>
                             </button>
 
                             {/* Copy Email */}
                             <button
                               type="button"
                               onClick={() => handleCopyEmail(eng)}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[11px] font-semibold text-[var(--lit-navy,#0B2545)] transition-colors shadow-2xs cursor-pointer"
-                              title="Copy formatted invitation email text"
+                              className="inline-flex items-center gap-1 px-2 py-1 border border-[#DFE7EF] text-[10px] font-semibold text-[#0B2545] hover:border-[#1565C0] hover:text-[#1565C0] rounded-md transition-colors bg-white shadow-2xs cursor-pointer"
+                              title="Copy complete formatted client invitation email"
                               aria-label={`Copy invitation email draft for ${eng.company_name}`}
                             >
                               {isCopiedEmail ? (
-                                <>
-                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                  <span className="text-emerald-700 font-bold">Copied!</span>
-                                </>
+                                <Check className="w-3 h-3 text-emerald-600" />
                               ) : (
-                                <>
-                                  <Mail className="w-3.5 h-3.5 text-[var(--lit-blue,#1565C0)]" />
-                                  <span>Copy Email</span>
-                                </>
+                                <Mail className="w-3 h-3 text-slate-500" />
                               )}
+                              <span>{isCopiedEmail ? 'Copied' : 'Email'}</span>
                             </button>
 
                             {/* Copy WhatsApp */}
                             <button
                               type="button"
                               onClick={() => handleCopyWhatsApp(eng)}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50/60 hover:bg-emerald-100/70 text-[11px] font-semibold text-emerald-800 transition-colors shadow-2xs cursor-pointer"
+                              className="inline-flex items-center gap-1 px-2 py-1 border border-emerald-200 bg-emerald-50/60 hover:bg-emerald-100/70 text-[10px] font-semibold text-emerald-800 rounded-md transition-colors shadow-2xs cursor-pointer"
                               title="Copy WhatsApp invitation text"
                               aria-label={`Copy WhatsApp invitation text for ${eng.company_name}`}
                             >
                               {isCopiedWhatsApp ? (
-                                <>
-                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
-                                  <span className="text-emerald-700 font-bold">Copied!</span>
-                                </>
+                                <Check className="w-3 h-3 text-emerald-600" />
                               ) : (
-                                <>
-                                  <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
-                                  <span>WhatsApp</span>
-                                </>
+                                <MessageCircle className="w-3 h-3 text-emerald-600" />
                               )}
-                            </button>
-
-                            {/* Send Email */}
-                            <button
-                              type="button"
-                              onClick={() => handleSendEmail(eng)}
-                              disabled={isSendingEmail}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--lit-blue,#1565C0)] hover:bg-[var(--lit-navy,#0B2545)] text-white text-[11px] font-bold transition-colors shadow-2xs disabled:opacity-50 cursor-pointer"
-                              title="Dispatch client portal invitation email now"
-                              aria-label={`Dispatch client portal email to ${eng.contact_email}`}
-                            >
-                              {isSendingEmail ? (
-                                <>
-                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                  <span>Sending…</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Send className="w-3.5 h-3.5" />
-                                  <span>Send Email</span>
-                                </>
-                              )}
+                              <span>{isCopiedWhatsApp ? 'Copied' : 'WhatsApp'}</span>
                             </button>
                           </div>
 
@@ -811,18 +830,18 @@ export default function EngagementHubClient({
                           <div className="flex flex-wrap items-center justify-end gap-1.5">
                             <Link
                               href={`/engagement/${eng.engagement_ref}/${stageDef.key}`}
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] font-semibold text-[11px] transition-colors shadow-2xs"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] font-semibold text-[10px] transition-colors shadow-2xs"
                               aria-label={`Go to current stage for ${eng.company_name}`}
                             >
                               Current Stage
                             </Link>
                             <Link
                               href={`/engagement/${eng.engagement_ref}`}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-blue,#1565C0)] text-white font-semibold text-[11px] transition-colors shadow-2xs"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-blue,#1565C0)] text-white font-semibold text-[10px] transition-colors shadow-2xs"
                               aria-label={`Visit full 13-stage portal for ${eng.company_name}`}
                             >
                               <span>Visit All</span>
-                              <ArrowRight className="w-3.5 h-3.5" />
+                              <ArrowRight className="w-3 h-3" />
                             </Link>
                           </div>
                         </div>

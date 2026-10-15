@@ -5,6 +5,7 @@ import {
   getStageByKey,
   getEngagementDocumentLinks,
 } from '@/lib/engagements/db';
+import { isCurrentUserSuperAdmin } from '@/lib/auth/is-super-admin';
 import StageHeader from '../components/StageHeader';
 import LockedStageCard from '../components/LockedStageCard';
 import TechnicalSpecStageClient from './TechnicalSpecStageClient';
@@ -18,11 +19,12 @@ export default async function TechnicalSpecStagePage({ params }: TechnicalSpecPa
   const engagement = await getEngagementByRef(engagementRef);
   if (!engagement) notFound();
 
+  const isSuperAdmin = await isCurrentUserSuperAdmin();
   const stage = await getStageByKey(engagement.id, 'technical-spec');
   if (stage?.status === 'locked') {
     return (
       <div className="space-y-6">
-        <StageHeader engagementRef={engagementRef} stageKey="technical-spec" status="locked" />
+        <StageHeader engagementRef={engagementRef} stageKey="technical-spec" status="locked" isSuperAdmin={isSuperAdmin} />
         <LockedStageCard engagementRef={engagementRef} stageKey="technical-spec" />
       </div>
     );
@@ -36,6 +38,7 @@ export default async function TechnicalSpecStagePage({ params }: TechnicalSpecPa
         engagementRef={engagementRef}
         stageKey="technical-spec"
         status={stage?.status || 'available'}
+        isSuperAdmin={isSuperAdmin}
       />
 
       <TechnicalSpecStageClient

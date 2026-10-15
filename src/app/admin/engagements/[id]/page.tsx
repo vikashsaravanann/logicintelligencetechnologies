@@ -23,10 +23,12 @@ export const dynamic = 'force-dynamic';
 
 interface AdminEngagementDetailPageProps {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ stage?: string }>;
 }
 
-export default async function AdminEngagementDetailPage({ params }: AdminEngagementDetailPageProps) {
+export default async function AdminEngagementDetailPage({ params, searchParams }: AdminEngagementDetailPageProps) {
   const { id } = await params;
+  const query = searchParams ? await searchParams : {};
   await requireCapabilityPage('clients.read', `/admin/engagements/${id}`);
 
   const engagement = await getEngagementByRef(id);
@@ -48,6 +50,7 @@ export default async function AdminEngagementDetailPage({ params }: AdminEngagem
         initialStages={stages}
         documents={documents}
         identityRequests={identityRequests}
+        initialActiveStageKey={query.stage as any}
       />
     </div>
   );

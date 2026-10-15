@@ -4,6 +4,8 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getEngagementByRef, getEngagementStages } from '@/lib/engagements/db';
 import { CANONICAL_13_STAGES, ORDERED_STAGE_KEYS } from '@/lib/engagements/types';
+import { isCurrentUserSuperAdmin } from '@/lib/auth/is-super-admin';
+import { SuperAdminInspectButton } from '@/components/shared/SuperAdminInspectButton';
 import IdentityCorrectionButton from './components/IdentityCorrectionButton';
 
 export const metadata = {
@@ -29,6 +31,7 @@ export default async function EngagementLayout({ children, params }: EngagementL
   }
 
   const stages = await getEngagementStages(engagement.id);
+  const isSuperAdmin = await isCurrentUserSuperAdmin();
 
   const completedCount = stages.filter((s) => ['completed', 'signed', 'verified', 'paid', 'accepted'].includes(s.status)).length;
   const progressPercent = Math.round((completedCount / 13) * 100);
@@ -72,8 +75,14 @@ export default async function EngagementLayout({ children, params }: EngagementL
               </div>
             </div>
 
-            {/* Actions: Visit All & Identity Correction */}
-            <div className="flex items-center gap-3">
+            {/* Actions: Super Admin Inspect, Visit All & Identity Correction */}
+            <div className="flex items-center gap-2.5">
+              <SuperAdminInspectButton
+                href={`/admin/engagements/${engagement?.id || engagementRef}`}
+                initialIsSuperAdmin={isSuperAdmin}
+                title="Super Admin: Inspect Engagement in Admin Lifecycle Controller"
+                showBadge
+              />
               <IdentityCorrectionButton
                 engagementId={engagement?.id || ''}
                 engagementRef={engagement?.engagement_ref || engagementRef}

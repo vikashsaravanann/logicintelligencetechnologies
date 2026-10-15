@@ -3,6 +3,8 @@ import { Metadata } from 'next';
 import { listAllEngagements, getEngagementStages } from '@/lib/engagements/db';
 import EngagementHubClient, { EngagementWithStages } from './EngagementHubClient';
 
+import { isCurrentUserSuperAdmin } from '@/lib/auth/is-super-admin';
+
 export const metadata: Metadata = {
   title: 'Client Lifecycle & Engagement Registry | Logic Intelligence Technologies',
   description:
@@ -24,7 +26,10 @@ export default async function EngagementHubPage({ searchParams }: PageProps) {
   const statusFilter = resolvedParams.status?.trim() || '';
   const query = resolvedParams.q?.trim().toLowerCase() || '';
 
-  const rawEngagements = await listAllEngagements();
+  const [rawEngagements, isSuperAdmin] = await Promise.all([
+    listAllEngagements(),
+    isCurrentUserSuperAdmin(),
+  ]);
 
   // Populate stage telemetry for each engagement
   const engagementsWithStages: EngagementWithStages[] = await Promise.all(
@@ -48,6 +53,7 @@ export default async function EngagementHubPage({ searchParams }: PageProps) {
         initialEngagements={engagementsWithStages}
         initialStatusFilter={statusFilter}
         initialQuery={query}
+        isSuperAdmin={isSuperAdmin}
       />
     </div>
   );

@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getEngagementByRef, getEngagementStages } from '@/lib/engagements/db';
 import { CANONICAL_13_STAGES, ORDERED_STAGE_KEYS, StageKey, StageStatus } from '@/lib/engagements/types';
+import { isCurrentUserSuperAdmin } from '@/lib/auth/is-super-admin';
+import { SuperAdminInspectButton } from '@/components/shared/SuperAdminInspectButton';
 import EngagementVisitAllClient from './EngagementVisitAllClient';
 
 interface EngagementPageProps {
@@ -18,6 +20,7 @@ export default async function EngagementVisitAllPage({ params }: EngagementPageP
   }
 
   const stages = await getEngagementStages(engagement.id);
+  const isSuperAdmin = await isCurrentUserSuperAdmin();
 
   // Map database stages into keyed map
   const stagesByKey: Record<string, (typeof stages)[0]> = {};
@@ -82,6 +85,13 @@ export default async function EngagementVisitAllPage({ params }: EngagementPageP
                 Active Engagement
               </span>
             </div>
+            <SuperAdminInspectButton
+              href={`/admin/engagements/${engagement.id}`}
+              initialIsSuperAdmin={isSuperAdmin}
+              className="w-full justify-center py-2"
+              title="Super Admin: Inspect full engagement record in Admin Control Center"
+              showBadge
+            />
           </div>
         </div>
       </div>

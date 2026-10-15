@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getEngagementByRef, getStageByKey } from '@/lib/engagements/db';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { buildUpiUri, generateUpiQrDataUrl, LIT_PAYEE_CONFIG } from '@/lib/payments/upi';
+import { isCurrentUserSuperAdmin } from '@/lib/auth/is-super-admin';
 import StageHeader from '../components/StageHeader';
 import LockedStageCard from '../components/LockedStageCard';
 import InitialInvoiceStageClient from './InitialInvoiceStageClient';
@@ -16,11 +17,12 @@ export default async function InitialInvoiceStagePage({ params }: InitialInvoice
   const engagement = await getEngagementByRef(engagementRef);
   if (!engagement) notFound();
 
+  const isSuperAdmin = await isCurrentUserSuperAdmin();
   const stage = await getStageByKey(engagement.id, 'initial-invoice');
   if (stage?.status === 'locked') {
     return (
       <div className="space-y-6">
-        <StageHeader engagementRef={engagementRef} stageKey="initial-invoice" status="locked" />
+        <StageHeader engagementRef={engagementRef} stageKey="initial-invoice" status="locked" isSuperAdmin={isSuperAdmin} />
         <LockedStageCard engagementRef={engagementRef} stageKey="initial-invoice" />
       </div>
     );
@@ -61,6 +63,7 @@ export default async function InitialInvoiceStagePage({ params }: InitialInvoice
         engagementRef={engagementRef}
         stageKey="initial-invoice"
         status={stage?.status || 'available'}
+        isSuperAdmin={isSuperAdmin}
       />
 
       <InitialInvoiceStageClient

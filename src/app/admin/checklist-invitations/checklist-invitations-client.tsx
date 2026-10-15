@@ -22,6 +22,7 @@ import {
   FileSignature,
   Loader2,
   X,
+  FileEdit,
 } from "lucide-react";
 import { formatIST } from "@/lib/format/datetime";
 
@@ -297,26 +298,47 @@ export default function ChecklistInvitationsClient({ initialInvitations }: Props
                         )}
                       </td>
                       <td className="py-3.5 px-4 text-right">
-                        <div className="inline-flex items-center gap-1.5 justify-end">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            href={`/admin/checklist-invitations/${inv.id}`}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] hover:border-[var(--lit-teal,#1FA9A2)] text-[11px] font-bold uppercase tracking-wider transition-all shadow-2xs"
+                            title="Inspect Checklist Details"
+                          >
+                            <FileEdit className="w-3 h-3 text-[var(--lit-teal,#1FA9A2)]" />
+                            <span>Inspect</span>
+                          </Link>
+
                           <button
+                            type="button"
                             onClick={() => handleSendEmail(inv.id)}
-                            disabled={sendingId === inv.id}
-                            className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition"
-                            title="Send invitation email"
+                            disabled={sendingId === inv.id || inv.sent_count > 0}
+                            className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all shadow-2xs ${
+                              inv.sent_count > 0
+                                ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
+                                : "border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] hover:border-[var(--lit-teal,#1FA9A2)] disabled:opacity-50"
+                            }`}
+                            title="Dispatch invitation email to client"
                           >
                             {sendingId === inv.id ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : inv.sent_count > 0 ? (
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                             ) : (
-                              <Send className="w-3.5 h-3.5 text-[var(--lit-blue,#1565C0)]" />
+                              <Send className="w-3 h-3 text-[var(--lit-blue,#1565C0)]" />
                             )}
+                            <span>
+                              {sendingId === inv.id ? "Sending…" : inv.sent_count > 0 ? "Dispatched" : "Dispatch"}
+                            </span>
                           </button>
 
                           <Link
-                            href={`/admin/checklist-invitations/${inv.id}`}
-                            className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition inline-flex items-center"
-                            title="Inspect details and review"
+                            href={`/enterprise-checklist/${inv.id}`}
+                            target="_blank"
+                            className="inline-flex items-center gap-1 text-xs font-bold text-[var(--lit-teal,#1FA9A2)] hover:text-[var(--lit-navy,#0B2545)] transition-colors ml-1"
+                            title="Open Public Client View"
                           >
-                            <ArrowRight className="w-3.5 h-3.5" />
+                            <span>Portal</span>
+                            <ExternalLink className="w-3 h-3" />
                           </Link>
                         </div>
                       </td>

@@ -35,6 +35,7 @@ import {
   ArrowRight,
   Eye,
   X,
+  Loader2,
 } from "lucide-react";
 
 interface QuotationDetailClientProps {
@@ -682,12 +683,29 @@ https://www.logicintelligencetechnologies.in`;
               <label className="text-xs font-semibold text-slate-700">2. Email Dispatch</label>
               <div className="flex flex-wrap items-center gap-2">
                 <button
+                  type="button"
                   onClick={handleSendEmail}
-                  disabled={isSendingEmail}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-navy,#0B2545)]/90 rounded-lg shadow-xs transition-colors"
+                  disabled={isSendingEmail || Boolean(emailStatus)}
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-2xs ${
+                    emailStatus
+                      ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
+                      : "border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] hover:border-[var(--lit-teal,#1FA9A2)] disabled:opacity-50"
+                  }`}
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>{isSendingEmail ? "Sending..." : `Send to ${quotation.recipient_email}`}</span>
+                  {isSendingEmail ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : emailStatus ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  ) : (
+                    <Send className="w-3.5 h-3.5 text-[var(--lit-blue,#1565C0)]" />
+                  )}
+                  <span>
+                    {isSendingEmail
+                      ? "Sending…"
+                      : emailStatus
+                      ? "Dispatched"
+                      : `Dispatch to ${quotation.recipient_email}`}
+                  </span>
                 </button>
 
                 <button

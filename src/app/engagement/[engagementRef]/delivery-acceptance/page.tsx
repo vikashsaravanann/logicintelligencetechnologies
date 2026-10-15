@@ -5,6 +5,7 @@ import {
   getStageByKey,
   getEngagementDocumentLinks,
 } from '@/lib/engagements/db';
+import { isCurrentUserSuperAdmin } from '@/lib/auth/is-super-admin';
 import StageHeader from '../components/StageHeader';
 import LockedStageCard from '../components/LockedStageCard';
 import DeliveryAcceptanceStageClient from './DeliveryAcceptanceStageClient';
@@ -18,11 +19,12 @@ export default async function DeliveryAcceptanceStagePage({ params }: DeliveryAc
   const engagement = await getEngagementByRef(engagementRef);
   if (!engagement) notFound();
 
+  const isSuperAdmin = await isCurrentUserSuperAdmin();
   const stage = await getStageByKey(engagement.id, 'delivery-acceptance');
   if (stage?.status === 'locked') {
     return (
       <div className="space-y-6">
-        <StageHeader engagementRef={engagementRef} stageKey="delivery-acceptance" status="locked" />
+        <StageHeader engagementRef={engagementRef} stageKey="delivery-acceptance" status="locked" isSuperAdmin={isSuperAdmin} />
         <LockedStageCard engagementRef={engagementRef} stageKey="delivery-acceptance" />
       </div>
     );
@@ -36,6 +38,7 @@ export default async function DeliveryAcceptanceStagePage({ params }: DeliveryAc
         engagementRef={engagementRef}
         stageKey="delivery-acceptance"
         status={stage?.status || 'available'}
+        isSuperAdmin={isSuperAdmin}
       />
 
       <DeliveryAcceptanceStageClient

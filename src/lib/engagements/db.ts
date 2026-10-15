@@ -12,6 +12,7 @@ import {
   CreateEngagementInput,
 } from './types';
 import { sendEngagementInvitationEmail } from './invitations';
+import { notifyStageSubmitted, notifyStageApproved } from './stage-notifications';
 
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -298,9 +299,11 @@ export async function submitStageAction(input: {
       ? ORDERED_STAGE_KEYS[currentIndex + 1]
       : null;
 
-  if (actorRole === 'admin' || action === 'admin_override_status' || action === 'verify_bank_credit') {
+  if (actorRole === 'admin' || action === 'admin_override_status' || action === 'admin_approve_stage' || action === 'approve_stage' || action === 'verify_bank_credit') {
     if (payload.status) {
       newStatus = payload.status as StageStatus;
+    } else if (action === 'admin_approve_stage' || action === 'approve_stage') {
+      newStatus = (stageKey === 'initial-invoice' || stageKey === 'final-payment') ? 'verified' : 'approved';
     }
     if (action === 'verify_bank_credit') {
       newStatus = 'verified';
@@ -309,7 +312,10 @@ export async function submitStageAction(input: {
       } else if (stageKey === 'final-payment') {
         nextStageToUnlock = 'handover';
       }
-    } else if (action === 'admin_override_status' && ['completed', 'approved', 'verified', 'accepted', 'signed'].includes(newStatus)) {
+    } else if (
+      (action === 'admin_override_status' || action === 'admin_approve_stage' || action === 'approve_stage' || actorRole === 'admin') &&
+      ['completed', 'approved', 'verified', 'accepted', 'signed'].includes(newStatus)
+    ) {
       if (nextKey && payload.unlockNext !== false) {
         nextStageToUnlock = nextKey;
       }
@@ -319,45 +325,49 @@ export async function submitStageAction(input: {
       case 'checklist':
         if (action === 'save_draft') {
           newStatus = 'in_progress';
+          nextStageToUnlock = null;
         } else {
-          newStatus = 'submitted';
-          nextStageToUnlock = 'discovery';
+          newStatus = 'under_review';
+          nextStageToUnlock = null;
         }
         break;
 
       case 'discovery':
         if (action === 'save_draft') {
           newStatus = 'in_progress';
+          nextStageToUnlock = null;
         } else {
           newStatus = 'under_review';
-          nextStageToUnlock = 'proposal';
+          nextStageToUnlock = null;
         }
         break;
 
       case 'proposal':
         if (action === 'request_revision') {
           newStatus = 'under_review';
+          nextStageToUnlock = null;
         } else {
-          newStatus = 'accepted';
-          nextStageToUnlock = 'acceptance';
+          newStatus = 'under_review';
+          nextStageToUnlock = null;
         }
         break;
 
       case 'acceptance':
-        newStatus = 'completed';
-        nextStageToUnlock = 'sow';
+        newStatus = 'under_review';
+        nextStageToUnlock = null;
         break;
 
       case 'sow':
-        newStatus = 'signed';
-        nextStageToUnlock = 'initial-invoice';
+        newStatus = 'under_review';
+        nextStageToUnlock = null;
         break;
 
       case 'initial-invoice':
-        // CRITICAL INVARIANT: UTR report only moves stage to 'under_review'.
+        // CRITICAL INVARIANT: UTR report moves stage to 'under_review'.
         // Next stage 'onboarding' remains locked until Super Admin bank reconciliation!
         if (action === 'submit_billing') {
           newStatus = 'in_progress';
+          nextStageToUnlock = null;
         } else if (action === 'report_utr') {
           newStatus = 'under_review';
           nextStageToUnlock = null;
@@ -365,27 +375,28 @@ export async function submitStageAction(input: {
         break;
 
       case 'onboarding':
-        newStatus = 'completed';
-        nextStageToUnlock = 'technical-spec';
+        newStatus = 'under_review';
+        nextStageToUnlock = null;
         break;
 
       case 'technical-spec':
-        newStatus = 'approved';
-        nextStageToUnlock = 'development';
+        newStatus = 'under_review';
+        nextStageToUnlock = null;
         break;
 
       case 'development':
         if (action === 'complete_development') {
-          newStatus = 'completed';
-          nextStageToUnlock = 'delivery-acceptance';
+          newStatus = 'under_review';
+          nextStageToUnlock = null;
         } else {
           newStatus = 'in_progress';
+          nextStageToUnlock = null;
         }
         break;
 
       case 'delivery-acceptance':
-        newStatus = 'accepted';
-        nextStageToUnlock = 'final-payment';
+        newStatus = 'under_review';
+        nextStageToUnlock = null;
         break;
 
       case 'final-payment':
@@ -393,6 +404,7 @@ export async function submitStageAction(input: {
         // Next stage 'handover' remains locked until Super Admin bank reconciliation!
         if (action === 'submit_billing') {
           newStatus = 'in_progress';
+          nextStageToUnlock = null;
         } else if (action === 'report_utr') {
           newStatus = 'under_review';
           nextStageToUnlock = null;
@@ -400,16 +412,18 @@ export async function submitStageAction(input: {
         break;
 
       case 'handover':
-        newStatus = 'completed';
-        nextStageToUnlock = 'support';
+        newStatus = 'under_review';
+        nextStageToUnlock = null;
         break;
 
       case 'support':
-        newStatus = 'completed';
+        newStatus = 'under_review';
+        nextStageToUnlock = null;
         break;
 
       default:
-        newStatus = 'completed';
+        newStatus = 'under_review';
+        nextStageToUnlock = null;
     }
   }
 
@@ -684,6 +698,30 @@ export async function submitStageAction(input: {
     });
   }
   const refreshedStage = refreshedStages.find((s) => s.stage_key === stageKey);
+
+  // Trigger transactional notifications asynchronously
+  if (actorRole === 'client' && action !== 'save_draft') {
+    notifyStageSubmitted({
+      engagement,
+      stageKey,
+      action,
+      payload,
+    }).catch((notifErr) => {
+      console.warn('[submitStageAction] Client submission notification error:', notifErr);
+    });
+  } else if (
+    (actorRole === 'admin' || action === 'admin_override_status' || action === 'admin_approve_stage' || action === 'verify_bank_credit' || action === 'approve_stage') &&
+    (newStatus === 'approved' || newStatus === 'verified' || newStatus === 'completed')
+  ) {
+    notifyStageApproved({
+      engagement,
+      approvedStageKey: stageKey,
+      nextStageKey: nextStageToUnlock,
+      adminNotes: payload?.notes,
+    }).catch((notifErr) => {
+      console.warn('[submitStageAction] Admin approval notification error:', notifErr);
+    });
+  }
 
   return {
     success: true,
@@ -1367,6 +1405,16 @@ export async function reconcileEngagementStagePayment(input: {
 
   const updatedStage = refreshedStages.find((s) => s.stage_key === stageKey);
   const updatedNextStage = refreshedStages.find((s) => s.stage_key === nextStageKey);
+
+  // Trigger client unlock email for bank credit verification
+  notifyStageApproved({
+    engagement,
+    approvedStageKey: stageKey,
+    nextStageKey,
+    adminNotes: reconciliationNotes || `Manual bank credit verified in receiving account. Ref: ${reconciliationData.transaction_ref}`,
+  }).catch((notifErr) => {
+    console.warn('[reconcileEngagementStagePayment] Bank approval notification error:', notifErr);
+  });
 
   return {
     success: true,

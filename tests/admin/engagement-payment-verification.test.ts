@@ -102,7 +102,7 @@ describe("Admin & Payment Workflows Verification", () => {
       assert.ok(lockedResult.error?.includes("Prerequisite stage"), "Error must mention prerequisite requirement");
     });
 
-    it("allows client submission on currently available stage (Stage 1: Checklist)", async () => {
+    it("allows client submission on currently available stage (Stage 1: Checklist) and queues for review", async () => {
       const result = await submitStageAction({
         engagementRef: "ENG-2026-LIT-SAMPLE",
         stageKey: "checklist",
@@ -115,9 +115,26 @@ describe("Admin & Payment Workflows Verification", () => {
       });
 
       assert.ok(result.success, "Available stage submission should succeed");
-      assert.equal(result.status, "submitted");
-      assert.equal(result.nextUnlockedStageKey, "discovery");
+      assert.equal(result.status, "under_review", "Client submission transitions to under_review");
+      assert.equal(result.nextUnlockedStageKey, null, "Downstream stage remains locked pending Admin approval");
       assert.ok(result.auditHash && result.auditHash.length === 64, "Must compute valid 64-char SHA256 audit hash");
+    });
+
+    it("allows Admin to review and approve Stage 1 Checklist to unlock Stage 2 Discovery", async () => {
+      const result = await submitStageAction({
+        engagementRef: "ENG-2026-LIT-SAMPLE",
+        stageKey: "checklist",
+        action: "admin_approve_stage",
+        payload: {
+          approvedBy: "Vikash Saravanan",
+          reviewNotes: "Scope baseline confirmed with 48 selected points",
+        },
+        actorRole: "admin",
+      });
+
+      assert.ok(result.success, "Admin approval should succeed");
+      assert.equal(result.status, "approved", "Stage status transitions to approved");
+      assert.equal(result.nextUnlockedStageKey, "discovery", "Admin approval unlocks discovery");
     });
 
     it("allows Super Admin to override stage status and unlock downstream stages", async () => {

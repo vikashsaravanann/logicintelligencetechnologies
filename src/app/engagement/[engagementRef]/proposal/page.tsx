@@ -1,6 +1,7 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { getEngagementByRef, getStageByKey, getEngagementDocumentLinks } from '@/lib/engagements/db';
+import { isCurrentUserSuperAdmin } from '@/lib/auth/is-super-admin';
 import StageHeader from '../components/StageHeader';
 import StageDocumentCard from '../components/StageDocumentCard';
 import LockedStageCard from '../components/LockedStageCard';
@@ -15,11 +16,12 @@ export default async function ProposalStagePage({ params }: ProposalPageProps) {
   const engagement = await getEngagementByRef(engagementRef);
   if (!engagement) notFound();
 
+  const isSuperAdmin = await isCurrentUserSuperAdmin();
   const stage = await getStageByKey(engagement.id, 'proposal');
   if (stage?.status === 'locked') {
     return (
       <div className="space-y-6">
-        <StageHeader engagementRef={engagementRef} stageKey="proposal" status="locked" />
+        <StageHeader engagementRef={engagementRef} stageKey="proposal" status="locked" isSuperAdmin={isSuperAdmin} />
         <LockedStageCard engagementRef={engagementRef} stageKey="proposal" />
       </div>
     );
@@ -34,6 +36,7 @@ export default async function ProposalStagePage({ params }: ProposalPageProps) {
         engagementRef={engagementRef}
         stageKey="proposal"
         status={stage?.status || 'available'}
+        isSuperAdmin={isSuperAdmin}
       />
 
       <StageDocumentCard

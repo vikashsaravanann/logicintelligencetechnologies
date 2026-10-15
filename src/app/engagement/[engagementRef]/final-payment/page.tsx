@@ -7,6 +7,7 @@ import {
 } from '@/lib/engagements/db';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { buildUpiUri, generateUpiQrDataUrl, LIT_PAYEE_CONFIG } from '@/lib/payments/upi';
+import { isCurrentUserSuperAdmin } from '@/lib/auth/is-super-admin';
 import StageHeader from '../components/StageHeader';
 import LockedStageCard from '../components/LockedStageCard';
 import FinalPaymentStageClient from './FinalPaymentStageClient';
@@ -20,11 +21,12 @@ export default async function FinalPaymentStagePage({ params }: FinalPaymentPage
   const engagement = await getEngagementByRef(engagementRef);
   if (!engagement) notFound();
 
+  const isSuperAdmin = await isCurrentUserSuperAdmin();
   const stage = await getStageByKey(engagement.id, 'final-payment');
   if (stage?.status === 'locked') {
     return (
       <div className="space-y-6">
-        <StageHeader engagementRef={engagementRef} stageKey="final-payment" status="locked" />
+        <StageHeader engagementRef={engagementRef} stageKey="final-payment" status="locked" isSuperAdmin={isSuperAdmin} />
         <LockedStageCard engagementRef={engagementRef} stageKey="final-payment" />
       </div>
     );
@@ -69,6 +71,7 @@ export default async function FinalPaymentStagePage({ params }: FinalPaymentPage
         engagementRef={engagementRef}
         stageKey="final-payment"
         status={stage?.status || 'available'}
+        isSuperAdmin={isSuperAdmin}
       />
 
       <FinalPaymentStageClient

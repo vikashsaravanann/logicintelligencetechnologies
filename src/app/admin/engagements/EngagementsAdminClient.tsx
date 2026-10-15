@@ -15,6 +15,7 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertCircle,
+  FileEdit,
 } from 'lucide-react';
 import { ClientEngagement, ClientIdentityChangeRequest } from '@/lib/engagements/types';
 import { generatePortalEmailCopyText } from '@/lib/engagements/share';
@@ -38,6 +39,7 @@ export default function EngagementsAdminClient({
   const [copiedLinkRef, setCopiedLinkRef] = useState<string | null>(null);
   const [copiedEmailRef, setCopiedEmailRef] = useState<string | null>(null);
   const [sendingEmailRef, setSendingEmailRef] = useState<string | null>(null);
+  const [sentRefs, setSentRefs] = useState<Set<string>>(new Set());
   const [emailNotice, setEmailNotice] = useState<{ ref: string; message: string; success: boolean } | null>(null);
 
   const filteredEngagements = engagements.filter((e) => {
@@ -111,9 +113,10 @@ export default function EngagementsAdminClient({
 
       const data = await res.json();
       if (data.ok) {
+        setSentRefs((prev) => new Set(prev).add(eng.engagement_ref));
         setEmailNotice({
           ref: eng.engagement_ref,
-          message: `Portal invitation sent to ${eng.contact_email}`,
+          message: `Portal invitation dispatched to ${eng.contact_email}`,
           success: true,
         });
       } else {
@@ -337,67 +340,78 @@ export default function EngagementsAdminClient({
 
                   {/* Action Toolbar */}
                   <div className="flex flex-wrap items-center gap-2 self-start lg:self-center">
-                    {/* Copy Portal Link */}
-                    <button
-                      onClick={() => handleCopyLink(eng)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#DFE7EF] text-xs font-semibold text-[#0B2545] hover:border-[#1565C0] hover:text-[#1565C0] rounded-lg transition-colors bg-white shadow-2xs"
-                      title="Copy public client portal access link"
+                    {/* Inspect Button - EXACTLY matching Proposal Creation */}
+                    <Link
+                      href={`/admin/engagements/${eng.id}`}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] hover:border-[var(--lit-teal,#1FA9A2)] text-[11px] font-bold uppercase tracking-wider transition-all shadow-2xs"
+                      title="Inspect Engagement Lifecycle & Milestones"
                     >
-                      {isCopiedLink ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5 text-slate-500" />
-                      )}
-                      <span>{isCopiedLink ? 'Link Copied!' : 'Copy Link'}</span>
-                    </button>
+                      <FileEdit className="w-3 h-3 text-[var(--lit-teal,#1FA9A2)]" />
+                      <span>Inspect</span>
+                    </Link>
 
-                    {/* Copy Invitation Email */}
+                    {/* Dispatch Button - EXACTLY matching Proposal Creation */}
                     <button
-                      onClick={() => handleCopyEmail(eng)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#DFE7EF] text-xs font-semibold text-[#0B2545] hover:border-[#1565C0] hover:text-[#1565C0] rounded-lg transition-colors bg-white shadow-2xs"
-                      title="Copy complete formatted client invitation email"
-                    >
-                      {isCopiedEmail ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                      ) : (
-                        <Mail className="w-3.5 h-3.5 text-slate-500" />
-                      )}
-                      <span>{isCopiedEmail ? 'Email Copied!' : 'Copy Email'}</span>
-                    </button>
-
-                    {/* Send / Resend Email */}
-                    <button
+                      type="button"
                       onClick={() => handleSendEmail(eng)}
-                      disabled={isSendingEmail}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#B9DCFF] bg-[#E7F3FF] text-[#1565C0] hover:bg-[#d0e8ff] text-xs font-semibold rounded-lg transition-colors shadow-2xs disabled:opacity-50"
-                      title={`Send LIT Email v2 invitation to ${eng.contact_email}`}
+                      disabled={isSendingEmail || sentRefs.has(eng.engagement_ref)}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all shadow-2xs ${
+                        sentRefs.has(eng.engagement_ref)
+                          ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
+                          : "border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] hover:border-[var(--lit-teal,#1FA9A2)] disabled:opacity-50"
+                      }`}
+                      title={`Dispatch client portal invitation to ${eng.contact_email}`}
                     >
                       {isSendingEmail ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : sentRefs.has(eng.engagement_ref) ? (
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                       ) : (
-                        <Send className="w-3.5 h-3.5" />
+                        <Send className="w-3 h-3 text-[var(--lit-blue,#1565C0)]" />
                       )}
-                      <span>{isSendingEmail ? 'Sending...' : 'Send Email'}</span>
+                      <span>
+                        {isSendingEmail ? "Sending…" : sentRefs.has(eng.engagement_ref) ? "Dispatched" : "Dispatch"}
+                      </span>
                     </button>
 
-                    {/* View Portal */}
+                    {/* Portal Public View Link */}
                     <Link
                       href={`/engagement/${eng.engagement_ref}`}
                       target="_blank"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#DFE7EF] text-xs font-semibold text-[#0B2545] hover:border-[#1565C0] hover:text-[#1565C0] rounded-lg transition-colors bg-white shadow-2xs"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-[var(--lit-teal,#1FA9A2)] hover:text-[var(--lit-navy,#0B2545)] transition-colors ml-1"
+                      title="Open Public Client View"
                     >
-                      <span>View Portal</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Portal</span>
+                      <ExternalLink className="w-3 h-3" />
                     </Link>
 
-                    {/* Manage Lifecycle */}
-                    <Link
-                      href={`/admin/engagements/${eng.id}`}
-                      className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#1565C0] text-white text-xs font-semibold rounded-lg hover:bg-[#0B2545] transition-colors shadow-xs"
+                    {/* Copy Link Utility */}
+                    <button
+                      onClick={() => handleCopyLink(eng)}
+                      className="inline-flex items-center gap-1 px-2 py-1.5 border border-[#DFE7EF] text-[11px] font-semibold text-[#0B2545] hover:border-[#1565C0] hover:text-[#1565C0] rounded-lg transition-colors bg-white shadow-2xs"
+                      title="Copy public client portal access link"
                     >
-                      <span>Manage</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
+                      {isCopiedLink ? (
+                        <Check className="w-3 h-3 text-emerald-600" />
+                      ) : (
+                        <Copy className="w-3 h-3 text-slate-500" />
+                      )}
+                      <span>{isCopiedLink ? 'Copied' : 'Link'}</span>
+                    </button>
+
+                    {/* Copy Email Utility */}
+                    <button
+                      onClick={() => handleCopyEmail(eng)}
+                      className="inline-flex items-center gap-1 px-2 py-1.5 border border-[#DFE7EF] text-[11px] font-semibold text-[#0B2545] hover:border-[#1565C0] hover:text-[#1565C0] rounded-lg transition-colors bg-white shadow-2xs"
+                      title="Copy complete formatted client invitation email"
+                    >
+                      {isCopiedEmail ? (
+                        <Check className="w-3 h-3 text-emerald-600" />
+                      ) : (
+                        <Mail className="w-3 h-3 text-slate-500" />
+                      )}
+                      <span>{isCopiedEmail ? 'Copied' : 'Email'}</span>
+                    </button>
                   </div>
                 </div>
 

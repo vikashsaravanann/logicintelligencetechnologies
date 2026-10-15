@@ -23,6 +23,9 @@ import {
   FileSpreadsheet,
   Share2,
   ArrowUpRight,
+  FileEdit,
+  Loader2,
+  Send,
 } from "lucide-react";
 
 interface QuotationRegistryClientProps {
@@ -38,6 +41,8 @@ export function QuotationRegistryClient({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [dispatchingId, setDispatchingId] = useState<string | null>(null);
+  const [dispatchedIds, setDispatchedIds] = useState<Set<string>>(new Set());
 
   // Filtered list
   const filteredQuotations = useMemo(() => {
@@ -106,6 +111,26 @@ export function QuotationRegistryClient({
       alert("Error duplicating quotation: " + err.message);
     } finally {
       setActionLoading(null);
+    }
+  };
+
+  const handleDispatchEmail = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDispatchingId(id);
+    try {
+      const res = await fetch(`/api/admin/quotations/${id}/send-email`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setDispatchedIds((prev) => new Set(prev).add(id));
+      } else {
+        alert(data.error || "Failed to dispatch quotation email");
+      }
+    } catch {
+      alert("Network error dispatching email");
+    } finally {
+      setDispatchingId(null);
     }
   };
 
@@ -390,7 +415,54 @@ export function QuotationRegistryClient({
 
                     {/* Actions */}
                     <td className="py-4 px-4 whitespace-nowrap text-right">
-                      <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                        {/* Inspect Button - EXACTLY matching Proposal Creation */}
+                        <Link
+                          href={`/admin/quotations/${q.id}`}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] hover:border-[var(--lit-teal,#1FA9A2)] text-[11px] font-bold uppercase tracking-wider transition-all shadow-2xs"
+                          title="Inspect Quotation Details"
+                        >
+                          <FileEdit className="w-3 h-3 text-[var(--lit-teal,#1FA9A2)]" />
+                          <span>Inspect</span>
+                        </Link>
+
+                        {/* Dispatch Button - EXACTLY matching Proposal Creation */}
+                        <button
+                          type="button"
+                          onClick={(e) => handleDispatchEmail(q.id, e)}
+                          disabled={dispatchingId === q.id || dispatchedIds.has(q.id)}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all shadow-2xs ${
+                            dispatchedIds.has(q.id)
+                              ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
+                              : "border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] hover:border-[var(--lit-teal,#1FA9A2)] disabled:opacity-50"
+                          }`}
+                          title="Dispatch quotation email to client"
+                        >
+                          {dispatchingId === q.id ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : dispatchedIds.has(q.id) ? (
+                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          ) : (
+                            <Send className="w-3 h-3 text-[var(--lit-blue,#1565C0)]" />
+                          )}
+                          <span>
+                            {dispatchingId === q.id ? "Sending…" : dispatchedIds.has(q.id) ? "Dispatched" : "Dispatch"}
+                          </span>
+                        </button>
+
+                        {/* Portal Public View Link */}
+                        {q.secure_token && (
+                          <Link
+                            href={`/quotation/${q.secure_token}`}
+                            target="_blank"
+                            className="inline-flex items-center gap-1 text-xs font-bold text-[var(--lit-teal,#1FA9A2)] hover:text-[var(--lit-navy,#0B2545)] transition-colors ml-1"
+                            title="Open Public Client View"
+                          >
+                            <span>Portal</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </Link>
+                        )}
+
                         {/* Copy Link Button */}
                         <button
                           onClick={(e) => handleCopyLink(q.secure_token || "", e)}
@@ -399,9 +471,9 @@ export function QuotationRegistryClient({
                           className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors disabled:opacity-40"
                         >
                           {copiedToken === q.secure_token ? (
-                            <Check className="w-4 h-4 text-emerald-600" />
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
                           ) : (
-                            <Copy className="w-4 h-4" />
+                            <Copy className="w-3.5 h-3.5" />
                           )}
                         </button>
 
@@ -414,27 +486,8 @@ export function QuotationRegistryClient({
                           title="Download Generated PDF"
                           className="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors"
                         >
-                          <Download className="w-4 h-4" />
+                          <Download className="w-3.5 h-3.5" />
                         </a>
-
-                        {/* Duplicate Button */}
-                        <button
-                          onClick={(e) => handleDuplicate(q.id, e)}
-                          disabled={actionLoading === q.id}
-                          title="Duplicate as New Draft"
-                          className="p-1.5 text-slate-500 hover:text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
-                        >
-                          <Share2 className="w-4 h-4" />
-                        </button>
-
-                        {/* View Link */}
-                        <Link
-                          href={`/admin/quotations/${q.id}`}
-                          className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors"
-                          title="Inspect Quotation"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </Link>
                       </div>
                     </td>
                   </tr>

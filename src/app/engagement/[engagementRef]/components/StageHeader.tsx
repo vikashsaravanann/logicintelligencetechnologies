@@ -1,14 +1,16 @@
 import React from 'react';
 import Link from 'next/link';
 import { StageKey, CANONICAL_13_STAGES, ORDERED_STAGE_KEYS, StageStatus } from '@/lib/engagements/types';
+import { SuperAdminInspectButton } from '@/components/shared/SuperAdminInspectButton';
 
 interface StageHeaderProps {
   engagementRef: string;
   stageKey: StageKey;
   status: StageStatus;
+  isSuperAdmin?: boolean;
 }
 
-export default function StageHeader({ engagementRef, stageKey, status }: StageHeaderProps) {
+export default function StageHeader({ engagementRef, stageKey, status, isSuperAdmin }: StageHeaderProps) {
   const currentDef = CANONICAL_13_STAGES[stageKey];
   const currentIndex = ORDERED_STAGE_KEYS.indexOf(stageKey);
 
@@ -79,8 +81,14 @@ export default function StageHeader({ engagementRef, stageKey, status }: StageHe
           </p>
         </div>
 
-        {/* Status Pill */}
-        <div className="shrink-0">
+        {/* Status Pill & Super Admin Inspect */}
+        <div className="shrink-0 flex items-center gap-2.5">
+          <SuperAdminInspectButton
+            href={`/admin/engagements/${engagementRef}?stage=${stageKey}`}
+            initialIsSuperAdmin={isSuperAdmin}
+            title={`Super Admin: Inspect Stage ${currentDef.ordinal} (${currentDef.title}) in Admin Lifecycle Controller`}
+            showBadge
+          />
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border bg-slate-50 text-slate-700 border-slate-200">
             <span className="w-2 h-2 rounded-full bg-[#1565C0]" />
             Status: <span className="capitalize">{status.replace(/_/g, ' ')}</span>
