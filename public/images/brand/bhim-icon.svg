@@ -1,12 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
-  <rect width="48" height="48" rx="12" fill="#00796B"/>
-  <!-- Official BHIM Dual Chevrons -->
-  <g transform="translate(6, 6) scale(0.75)">
-    <!-- Saffron Chevron -->
-    <path d="M 14 6 L 24 24 L 14 42 L 20 42 L 30 24 L 20 6 Z" fill="#F47920"/>
-    <!-- Green Chevron -->
-    <path d="M 24 6 L 34 24 L 24 42 L 30 42 L 40 24 L 30 6 Z" fill="#008C44"/>
-  </g>
-  <!-- BHIM Bold Wordmark -->
-  <text x="24" y="44" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="9" fill="#FFFFFF" letter-spacing="0.5">BHIM</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Official BHIM iOS App Icon White Background -->
+  <rect width="64" height="64" rx="15" fill="#FFFFFF"/>
+  <rect width="64" height="64" rx="15" fill="none" stroke="#E2E8F0" stroke-width="0.75"/>
+  <!-- Official NPCI Saffron Chevron -->
+  <path d="M 29.00 12.00 L 39.05 32.00 L 17.90 52.00 Z" fill="#F47920"/>
+  <!-- Official NPCI Green Chevron -->
+  <path d="M 36.05 12.00 L 46.11 32.00 L 24.96 52.00 Z" fill="#008C44"/>
 </svg>
