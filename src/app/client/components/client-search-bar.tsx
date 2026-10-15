@@ -8,11 +8,14 @@ import {
   X,
   Loader2,
   GitBranch,
+  Briefcase,
   CheckSquare,
   FileEdit,
   Calendar,
   FileText,
+  Receipt,
   HelpCircle,
+  ShieldCheck,
   ExternalLink,
 } from "lucide-react";
 import type { SearchResultItem } from "@/app/api/client/search/route";
@@ -86,10 +89,20 @@ export function ClientSearchBar() {
     switch (category) {
       case "engagement":
         return <GitBranch className="w-3.5 h-3.5 text-indigo-600" />;
+      case "project":
+        return <Briefcase className="w-3.5 h-3.5 text-blue-600" />;
       case "approval":
         return <CheckSquare className="w-3.5 h-3.5 text-teal-600" />;
       case "rfc":
         return <FileEdit className="w-3.5 h-3.5 text-amber-600" />;
+      case "decision":
+        return <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />;
+      case "document":
+        return <FileText className="w-3.5 h-3.5 text-emerald-600" />;
+      case "invoice":
+        return <Receipt className="w-3.5 h-3.5 text-orange-600" />;
+      case "ticket":
+        return <HelpCircle className="w-3.5 h-3.5 text-rose-600" />;
       case "meeting":
         return <Calendar className="w-3.5 h-3.5 text-cyan-600" />;
       default:
@@ -112,7 +125,7 @@ export function ClientSearchBar() {
             if (results.length > 0) setIsOpen(true);
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Search stages, tasks, RFCs..."
+          placeholder="Search projects, documents, tasks, RFCs, invoices..."
           className="w-full pl-8 pr-8 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]/70 text-xs text-[var(--lit-navy,#0B2545)] placeholder-slate-400 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-teal-500/20 focus:border-[var(--lit-teal,#1FA9A2)] transition-all font-sans"
         />
         {isLoading ? (

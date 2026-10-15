@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getEngagementByRef, getEngagementStages } from '@/lib/engagements/db';
 import { CANONICAL_13_STAGES, ORDERED_STAGE_KEYS, StageKey, StageStatus } from '@/lib/engagements/types';
-import VisitAllFilterClient from './components/VisitAllFilterClient';
+import EngagementVisitAllClient from './EngagementVisitAllClient';
 
 interface EngagementPageProps {
   params: Promise<{ engagementRef: string }>;
@@ -188,7 +188,7 @@ export default async function EngagementVisitAllPage({ params }: EngagementPageP
       </div>
 
       {/* Interactive 13-Stage Grid with Filter Component */}
-      <VisitAllFilterClient
+      <EngagementVisitAllClient
         engagementRef={engagementRef}
         stages={stages}
       />

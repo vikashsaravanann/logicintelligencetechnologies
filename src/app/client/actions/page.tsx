@@ -261,6 +261,15 @@ export default function ClientActionsPage() {
                     <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
                       {item.category}
                     </span>
+                    {item.assignedTo === "lit_team" ? (
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-50 text-[var(--lit-teal,#1FA9A2)] border border-teal-200 font-semibold">
+                        Assigned to LIT Squad
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-semibold">
+                        Client Action Required
+                      </span>
+                    )}
                   </div>
                   <h3 className="text-base font-bold text-[var(--lit-navy,#0B2545)] font-poppins">
                     {item.title}
@@ -298,6 +307,12 @@ export default function ClientActionsPage() {
                       <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                       <span>{updatingId === item.id ? "Saving..." : "Mark Done"}</span>
                     </button>
+                  )}
+                  {activeTab === "lit" && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-50 border border-teal-200 text-xs font-semibold text-[var(--lit-teal,#1FA9A2)] font-mono">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>Status: In Review</span>
+                    </span>
                   )}
                   {item.status === "completed" && (
                     <span className="inline-flex items-center gap-1.5 text-xs text-emerald-700 font-semibold font-mono">
