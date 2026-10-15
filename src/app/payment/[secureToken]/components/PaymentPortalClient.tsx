@@ -148,6 +148,27 @@ export function PaymentPortalClient({
 
   return (
     <div className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] font-sans">
+      <style>{`
+        @keyframes litQrLaserSweep {
+          0% {
+            top: 6px;
+            opacity: 0;
+          }
+          12% {
+            opacity: 1;
+          }
+          88% {
+            opacity: 1;
+          }
+          100% {
+            top: calc(100% - 8px);
+            opacity: 0;
+          }
+        }
+        .lit-qr-laser-line {
+          animation: litQrLaserSweep 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+      `}</style>
       {/* Top Brand & Security Header */}
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[var(--lit-border-light,#DFE7EF)] shadow-xs">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between">
@@ -727,13 +748,22 @@ export function PaymentPortalClient({
                 </p>
 
                 {qrDataUrl ? (
-                  <div className="mx-auto w-64 h-64 p-3 bg-white border-2 border-[var(--lit-navy,#0B2545)] rounded-2xl shadow-sm flex items-center justify-center relative group">
+                  <div className="mx-auto w-64 h-64 p-3 bg-white border-2 border-[var(--lit-navy,#0B2545)] rounded-2xl shadow-md flex items-center justify-center relative group overflow-hidden">
+                    {/* 4 Corner Targeting Viewfinder Brackets */}
+                    <span className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-[var(--lit-blue,#1565C0)] rounded-tl-sm pointer-events-none" />
+                    <span className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-[var(--lit-blue,#1565C0)] rounded-tr-sm pointer-events-none" />
+                    <span className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-[var(--lit-blue,#1565C0)] rounded-bl-sm pointer-events-none" />
+                    <span className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-[var(--lit-blue,#1565C0)] rounded-br-sm pointer-events-none" />
+
+                    {/* Sweeping Laser Scanline */}
+                    <div className="lit-qr-laser-line absolute left-3 right-3 h-[2px] bg-gradient-to-r from-transparent via-[#1FA9A2] to-transparent shadow-[0_0_12px_#1FA9A2,0_0_4px_#1565C0] pointer-events-none z-10" />
+
                     <Image
                       src={qrDataUrl}
                       alt="Dynamic UPI QR Code"
                       width={240}
                       height={240}
-                      className="rounded-xl object-contain"
+                      className="rounded-xl object-contain relative z-0"
                       unoptimized
                     />
                   </div>

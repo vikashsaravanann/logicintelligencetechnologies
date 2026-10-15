@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface InitialInvoiceStageClientProps {
   engagementRef: string;
@@ -28,6 +29,7 @@ export default function InitialInvoiceStageClient({
   initialStatus = 'available',
   initialData = {},
 }: InitialInvoiceStageClientProps) {
+  const router = useRouter();
   const [utrNumber, setUtrNumber] = useState(initialData?.utrNumber || '');
   const [paymentDate, setPaymentDate] = useState(initialData?.paymentDate || new Date().toISOString().split('T')[0]);
   const [remitterName, setRemitterName] = useState(initialData?.remitterName || contactName);
@@ -40,6 +42,7 @@ export default function InitialInvoiceStageClient({
   );
   const [auditHash, setAuditHash] = useState<string | null>(initialData?.last_audit_hash || null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const paymentData = {
     requestRef: transactionRef,
@@ -53,13 +56,20 @@ export default function InitialInvoiceStageClient({
     beneficiaryName: 'S VIKASH',
     msmeRegistration: 'UDYAM-TN-03-0345274',
     brandName: 'Logic Intelligence Technologies',
+    bankName: 'YES BANK / PTYES',
     upiDeepLink: upiDeepLink || `upi://pay?pa=9342877474@ptyes&pn=S%20VIKASH&am=1062000.00&cu=INR&tr=${transactionRef}&tn=Initial%20Deposit%2050`,
+  };
+
+  const handleCopy = (text: string, fieldKey: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(fieldKey);
+    setTimeout(() => setCopiedField(null), 2500);
   };
 
   const handleReportPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!utrNumber || !remitterName) {
-      setErrorMessage('Please provide both the UTR reference number and remitter account name.');
+      setErrorMessage('Please provide both the 12-digit UTR reference number and remitter account name.');
       return;
     }
 
@@ -95,6 +105,7 @@ export default function InitialInvoiceStageClient({
 
       setIsReported(true);
       setAuditHash(data.auditHash);
+      router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error reporting payment';
       setErrorMessage(msg);
@@ -103,269 +114,450 @@ export default function InitialInvoiceStageClient({
     }
   };
 
+  // UPI deep links for quick mobile app opening
+  const mobileIntentApps = [
+    { name: 'GPay', url: `gpay://upi/pay?pa=${paymentData.beneficiaryVpa}&pn=S%20VIKASH&am=${paymentData.totalNumeric}&cu=INR&tr=${paymentData.requestRef}` },
+    { name: 'PhonePe', url: `phonepe://pay?pa=${paymentData.beneficiaryVpa}&pn=S%20VIKASH&am=${paymentData.totalNumeric}&cu=INR&tr=${paymentData.requestRef}` },
+    { name: 'Paytm', url: `paytmmp://pay?pa=${paymentData.beneficiaryVpa}&pn=S%20VIKASH&am=${paymentData.totalNumeric}&cu=INR&tr=${paymentData.requestRef}` },
+    { name: 'BHIM', url: `upi://pay?pa=${paymentData.beneficiaryVpa}&pn=S%20VIKASH&am=${paymentData.totalNumeric}&cu=INR&tr=${paymentData.requestRef}` },
+  ];
+
   return (
     <div className="space-y-6">
-      {/* Financial Security Notice */}
-      <div className="bg-[#E7F3FF] border border-[#B9DCFF] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 text-xs text-[#0B2545]">
+      {/* Global CSS Animation for High-Tech Futuristic Laser Scanline */}
+      <style>{`
+        @keyframes litQrLaserSweep {
+          0% {
+            top: 6px;
+            opacity: 0;
+          }
+          12% {
+            opacity: 1;
+          }
+          88% {
+            opacity: 1;
+          }
+          100% {
+            top: calc(100% - 8px);
+            opacity: 0;
+          }
+        }
+        .lit-qr-laser-line {
+          animation: litQrLaserSweep 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+      `}</style>
+
+      {/* Financial Security & Compliance Notice */}
+      <div className="bg-[#E7F3FF] border border-[#B9DCFF] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 text-xs text-[#0B2545] shadow-2xs">
         <svg className="w-5 h-5 text-[#1565C0] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
         </svg>
         <div>
-          <span className="font-bold block">Zero Automated Payment Gateways · Manual Super-Admin Bank Verification</span>
-          <p className="mt-1 text-slate-600 leading-relaxed">
-            All enterprise settlements are cleared manually via direct UPI/NEFT transfer to the Founder receiving account. 
-            No third-party payment gateway or card aggregator has custody of your funds. 
-            Super Admin verifies receiving bank credit before issuing the Advance Payment Receipt / Tax Invoice.
+          <span className="font-bold text-sm block">Direct UPI Clearing · Zero Third-Party Gateways · Super Admin Bank Reconciliation</span>
+          <p className="mt-1 text-slate-600 leading-relaxed text-xs">
+            All enterprise settlements are executed via direct bank-grade UPI/NEFT transfer directly to the verified Founder receiving account. 
+            No aggregator holds custody of your project funds. Upon bank ledger reconciliation, the official Advance Tax Invoice and Receipt are issued.
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Payment Summary & Local Dynamic UPI QR */}
-        <div className="lg:col-span-5 bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs space-y-5">
-          <div>
-            <span className="font-mono text-xs font-bold text-[#1565C0] bg-[#E7F3FF] px-2.5 py-1 rounded">
-              {paymentData.requestRef}
-            </span>
-            <h3 className="text-base font-bold text-[#0B2545] mt-2">
-              {paymentData.milestone}
-            </h3>
-            <p className="text-xs text-[#52677C]">
-              Billed to: {companyName}
-            </p>
+      {/* Symmetrical 50/50 Balanced Grid Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+        {/* ── LEFT COLUMN (50%): Dynamic Animated UPI QR & Verified Payee Transparency ── */}
+        <div className="bg-white rounded-3xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs flex flex-col justify-between h-full space-y-6">
+          <div className="space-y-4">
+            {/* Stage & Invoice Identifier */}
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
+              <span className="font-mono text-xs font-bold text-[#1565C0] bg-[#E7F3FF] px-2.5 py-1 rounded-md border border-[#B9DCFF]">
+                {paymentData.requestRef}
+              </span>
+              <span className="text-[11px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                Stage 06 · Milestone 1
+              </span>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-bold text-[#0B2545] font-poppins">
+                {paymentData.milestone}
+              </h3>
+              <p className="text-xs text-[#52677C] mt-0.5">
+                Billed to: <strong className="text-slate-800">{companyName}</strong> ({contactEmail})
+              </p>
+            </div>
+
+            {/* Financial Amount Breakdown */}
+            <div className="bg-[#F8FAFC] border border-slate-200/80 rounded-2xl p-4 space-y-2 text-xs">
+              <div className="flex justify-between text-slate-600">
+                <span>Taxable Milestone Subtotal (50%):</span>
+                <span className="font-mono font-semibold text-slate-800">{paymentData.subtotal}</span>
+              </div>
+              <div className="flex justify-between text-slate-600">
+                <span>Central GST (CGST 9%):</span>
+                <span className="font-mono font-medium text-slate-700">{paymentData.cgst}</span>
+              </div>
+              <div className="flex justify-between text-slate-600">
+                <span>State GST (SGST 9%):</span>
+                <span className="font-mono font-medium text-slate-700">{paymentData.sgst}</span>
+              </div>
+              <div className="border-t border-slate-200 pt-2.5 flex justify-between items-center font-bold text-[#0B2545]">
+                <span className="text-xs font-bold uppercase tracking-wider">Total Payable Amount:</span>
+                <span className="font-mono text-lg font-extrabold text-[#1565C0]">{paymentData.totalPayable}</span>
+              </div>
+            </div>
+
+            {/* Dynamic Amount-Locked Animated UPI QR Card */}
+            <div className="bg-gradient-to-b from-[#F0F7FF] to-white border-2 border-dashed border-[#B9DCFF] rounded-3xl p-6 text-center space-y-4 shadow-2xs relative">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-mono font-bold text-[#1565C0] uppercase tracking-wider">
+                  Amount-Specific UPI QR
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  Locked: ₹10,62,000.00
+                </span>
+              </div>
+
+              {/* Viewfinder Target Container with Scanline Animation */}
+              <div className="relative mx-auto w-52 h-52 sm:w-56 sm:h-56 bg-white rounded-2xl p-3 border border-slate-200/90 shadow-md flex items-center justify-center overflow-hidden">
+                {/* 4 Corner Targeting Viewfinder Brackets */}
+                <span className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-[#1565C0] rounded-tl-sm pointer-events-none" />
+                <span className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-[#1565C0] rounded-tr-sm pointer-events-none" />
+                <span className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-[#1565C0] rounded-bl-sm pointer-events-none" />
+                <span className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-[#1565C0] rounded-br-sm pointer-events-none" />
+
+                {/* Sweeping Laser Scanline */}
+                <div className="lit-qr-laser-line absolute left-3 right-3 h-[2px] bg-gradient-to-r from-transparent via-[#1FA9A2] to-transparent shadow-[0_0_12px_#1FA9A2,0_0_4px_#1565C0] pointer-events-none z-10" />
+
+                {/* High-Resolution Dynamic QR Image */}
+                {qrDataUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={qrDataUrl}
+                    alt="LIT Dynamic Amount-Locked UPI QR Code"
+                    className="w-full h-full object-contain relative z-0"
+                  />
+                ) : (
+                  <div className="text-xs text-slate-400 font-mono flex flex-col items-center gap-2">
+                    <svg className="w-8 h-8 animate-spin text-[#1565C0]" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    <span>Generating verified QR…</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Exact Amount Copy Bar */}
+              <div className="flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={() => handleCopy(paymentData.totalNumeric, 'amount')}
+                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-mono font-semibold text-[#0B2545] shadow-2xs transition-colors cursor-pointer"
+                >
+                  {copiedField === 'amount' ? (
+                    <>
+                      <span className="text-emerald-600 font-bold">✓ Amount Copied (₹10,62,000.00)</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span>Copy Exact Amount: {paymentData.totalPayable}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Mobile UPI App Fast Launchers */}
+              <div className="pt-2 border-t border-blue-100">
+                <span className="text-[11px] font-semibold text-slate-500 block mb-2">
+                  Tap to Pay with Mobile UPI Apps:
+                </span>
+                <div className="grid grid-cols-4 gap-2">
+                  {mobileIntentApps.map((app) => (
+                    <a
+                      key={app.name}
+                      href={app.url}
+                      className="py-1.5 px-2 bg-white hover:bg-blue-50 border border-slate-200 hover:border-[#1565C0] text-[#0B2545] rounded-xl text-xs font-semibold text-center shadow-2xs transition-all"
+                    >
+                      {app.name}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Amount Breakdown Table */}
-          <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 space-y-2 text-xs">
-            <div className="flex justify-between text-slate-600">
-              <span>Taxable Subtotal (50%):</span>
-              <span className="font-mono font-medium">{paymentData.subtotal}</span>
+          {/* Verified Payee Credentials Block */}
+          <div className="bg-[#F8FAFC] border border-slate-200/90 rounded-2xl p-4 space-y-3 text-xs">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+              <span className="font-bold text-[#0B2545] flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Verified Payee Details
+              </span>
+              <span className="font-mono text-[10px] text-slate-500 uppercase">Statutory Micro Enterprise</span>
             </div>
-            <div className="flex justify-between text-slate-600">
-              <span>CGST (9%):</span>
-              <span className="font-mono font-medium">{paymentData.cgst}</span>
-            </div>
-            <div className="flex justify-between text-slate-600">
-              <span>SGST (9%):</span>
-              <span className="font-mono font-medium">{paymentData.sgst}</span>
-            </div>
-            <div className="border-t border-slate-200 pt-2 flex justify-between font-bold text-[#0B2545] text-sm">
-              <span>Total Payable Amount:</span>
-              <span className="font-mono text-base text-[#1565C0]">{paymentData.totalPayable}</span>
-            </div>
-          </div>
 
-          {/* Dynamic Amount-Specific UPI QR Code Generated Locally */}
-          <div className="bg-white border-2 border-dashed border-[#B9DCFF] rounded-2xl p-5 text-center space-y-3">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
-              Scan Exact Amount UPI QR Code
-            </span>
-            <div className="relative w-48 h-48 mx-auto bg-white rounded-xl overflow-hidden border border-slate-200 p-2 shadow-xs flex items-center justify-center">
-              {qrDataUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={qrDataUrl}
-                  alt="LIT Dynamic Local UPI QR Code"
-                  className="w-full h-full object-contain"
-                />
-              ) : (
-                <div className="text-xs text-slate-400">Loading verified QR...</div>
-              )}
-            </div>
-            <div className="space-y-1 text-xs">
-              <div className="font-bold font-mono text-[#0B2545] text-sm">
-                {paymentData.beneficiaryVpa}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div>
+                <span className="text-slate-500 text-[11px] block">Beneficiary Account Holder</span>
+                <strong className="text-slate-900 font-semibold">{paymentData.beneficiaryName}</strong> (Founder)
               </div>
-              <div className="text-slate-500 text-[11px]">
-                Payee: <strong>{paymentData.beneficiaryName}</strong> ({paymentData.brandName})
+              <div>
+                <span className="text-slate-500 text-[11px] block">Receiving Bank</span>
+                <strong className="text-slate-900 font-semibold">{paymentData.bankName}</strong>
               </div>
-              <div className="text-slate-400 text-[10px] font-mono">
-                MSME: {paymentData.msmeRegistration}
+              <div>
+                <span className="text-slate-500 text-[11px] block">Corporate Brand</span>
+                <strong className="text-slate-900 font-semibold">{paymentData.brandName}</strong>
+              </div>
+              <div>
+                <span className="text-slate-500 text-[11px] block">MSME Registration</span>
+                <strong className="font-mono text-slate-900">{paymentData.msmeRegistration}</strong>
               </div>
             </div>
 
-            {/* Copy UPI ID button */}
-            <div className="flex flex-col gap-2">
+            {/* Copy Verified UPI VPA Bar */}
+            <div className="pt-2 flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200">
+              <div>
+                <span className="text-[10px] text-slate-400 block font-mono">UPI ID / VPA</span>
+                <span className="font-mono font-bold text-sm text-[#0B2545]">{paymentData.beneficiaryVpa}</span>
+              </div>
               <button
                 type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(paymentData.beneficiaryVpa);
-                  alert('Beneficiary UPI ID copied: ' + paymentData.beneficiaryVpa);
-                }}
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                onClick={() => handleCopy(paymentData.beneficiaryVpa, 'upi')}
+                className="px-3 py-1.5 bg-[#E7F3FF] hover:bg-[#D0E7FF] text-[#1565C0] rounded-lg text-xs font-semibold transition-colors cursor-pointer"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                <span>Copy Verified UPI ID</span>
+                {copiedField === 'upi' ? '✓ Copied!' : 'Copy UPI ID'}
               </button>
+            </div>
 
-              <a
-                href={paymentData.upiDeepLink}
-                className="inline-block w-full py-2 bg-[#1565C0] text-white text-xs font-semibold rounded-lg hover:bg-[#0B2545] transition-colors shadow-xs"
-              >
-                Open in UPI App (GPay / PhonePe / Paytm)
-              </a>
-
-              {secureToken && (
+            {secureToken && (
+              <div className="pt-2">
                 <Link
                   href={`/payment/${secureToken}`}
-                  className="inline-flex items-center justify-center gap-1.5 w-full py-2 bg-[#0B2545] hover:bg-[#1565C0] text-white text-xs font-semibold rounded-lg transition-colors shadow-xs"
+                  className="inline-flex items-center justify-center gap-2 w-full py-2.5 bg-[#0B2545] hover:bg-[#1565C0] text-white text-xs font-semibold rounded-xl transition-colors shadow-2xs"
                 >
-                  <span>Open Dedicated Payment Gateway</span>
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <span>Open Dedicated Client Payment Gateway</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
                 </Link>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Right Column: Billing Information & UTR Submission */}
-        <div className="lg:col-span-7 bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6">
-          <div>
-            <h3 className="text-base font-bold text-[#0B2545]">Report Bank Transfer & Submit UTR Reference</h3>
-            <p className="text-xs text-[#52677C] mt-1">
-              After transferring funds from your banking app, submit your transaction reference (UTR) for Super Admin manual clearance.
-            </p>
-          </div>
-
-          {errorMessage && (
-            <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-medium">
-              {errorMessage}
+        {/* ── RIGHT COLUMN (50%): UTR Reference Submission & Bank Verification Form ── */}
+        <div className="bg-white rounded-3xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs flex flex-col justify-between h-full space-y-6">
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#1565C0]" />
+                <h3 className="text-lg font-bold text-[#0B2545] font-poppins">
+                  Report Bank Transfer & Submit UTR
+                </h3>
+              </div>
+              <p className="text-xs text-[#52677C] leading-relaxed">
+                After executing the UPI or IMPS/NEFT transfer, enter your 12-digit transaction reference (UTR) to log your payment into the Super Admin audit queue.
+              </p>
             </div>
-          )}
 
-          {isReported ? (
-            <div className="space-y-5">
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-xs text-amber-900 space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-sm">
-                    ⏳
-                  </span>
-                  <h4 className="text-base font-bold text-amber-950">Payment Reported · Under Bank Credit Verification</h4>
-                </div>
-                <p>
-                  UTR reference <strong className="font-mono text-slate-900">{utrNumber}</strong> has been logged into the Super Admin audit queue. 
-                  In accordance with LIT financial governance, credit must appear in our receiving bank ledger before status changes to Verified.
-                </p>
-                <div className="bg-white/80 border border-amber-200 rounded-xl p-3 font-mono text-[11px] text-slate-700 space-y-1">
-                  <div>Reported Remitter: <strong>{remitterName}</strong> ({remitterBank})</div>
-                  <div>Reported Date: {paymentDate}</div>
-                  <div>Amount Claimed: {paymentData.totalPayable}</div>
-                  {auditHash && (
-                    <div className="break-all">
-                      Audit Hash: <strong>{auditHash}</strong>
+            {errorMessage && (
+              <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs font-medium flex items-center gap-2">
+                <svg className="w-4 h-4 text-red-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
+            {isReported ? (
+              /* Verified / Under Audit State View */
+              <div className="space-y-5">
+                <div className="bg-gradient-to-b from-amber-50 to-orange-50/50 border border-amber-200 rounded-3xl p-6 text-xs text-amber-950 space-y-4 shadow-2xs">
+                  <div className="flex items-center gap-3">
+                    <span className="w-9 h-9 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                      ⏳
+                    </span>
+                    <div>
+                      <h4 className="text-base font-bold text-amber-950">
+                        Payment Reported · Under Super Admin Audit
+                      </h4>
+                      <span className="text-[11px] text-amber-800">
+                        Queued for YES Bank ledger reconciliation
+                      </span>
                     </div>
-                  )}
-                </div>
-              </div>
+                  </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs gap-3">
-                <span className="text-slate-600">
-                  Stage 07 (Onboarding) unlocks automatically upon Super Admin bank ledger reconciliation.
-                </span>
-                <Link
-                  href={`/engagement/${engagementRef}/onboarding`}
-                  className="w-full sm:w-auto text-center bg-[#0B2545] hover:bg-[#1565C0] text-white px-5 py-2 rounded-xl font-semibold shadow-xs transition-colors"
-                >
-                  View Stage 7 Status →
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleReportPayment} className="space-y-4 text-xs">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">
-                    UPI / Bank UTR Transaction ID <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={utrNumber}
-                    onChange={(e) => setUtrNumber(e.target.value)}
-                    placeholder="e.g. 428812345678"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 font-mono text-slate-800 focus:ring-2 focus:ring-[#1565C0] outline-none"
-                  />
-                  <span className="text-[10px] text-slate-500">12-digit UPI UTR or bank reference number</span>
+                  <p className="leading-relaxed text-amber-900">
+                    Your UTR reference <strong className="font-mono text-slate-950 px-1.5 py-0.5 bg-white rounded border border-amber-300">{utrNumber}</strong> has been logged into the financial clearing ledger.
+                    In strict accordance with LIT governance, funds must reflect in our receiving account before status transitions to verified.
+                  </p>
+
+                  <div className="bg-white/90 border border-amber-200 rounded-2xl p-4 font-mono text-xs text-slate-800 space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Reported Remitter:</span>
+                      <strong className="text-slate-900">{remitterName} ({remitterBank})</strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Transfer Date:</span>
+                      <span>{paymentDate}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Claimed Amount:</span>
+                      <span className="font-bold text-[#1565C0]">{paymentData.totalPayable}</span>
+                    </div>
+                    {auditHash && (
+                      <div className="pt-2 border-t border-slate-100 break-all text-[11px] text-slate-600">
+                        Audit Hash: <strong>{auditHash}</strong>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Transfer Date</label>
-                  <input
-                    type="date"
-                    required
-                    value={paymentDate}
-                    onChange={(e) => setPaymentDate(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-[#1565C0] outline-none"
-                  />
+                <div className="p-5 bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7] border border-[#86EFAC] rounded-2xl text-xs space-y-3 shadow-2xs">
+                  <div className="flex items-center gap-2 text-[#166534] font-bold text-sm">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Automated Next Step Activation</span>
+                  </div>
+                  <p className="text-[#166534] leading-relaxed">
+                    Upon Super Admin reconciliation, Stage 07 (Client Onboarding) and repository access provisioning will automatically activate.
+                  </p>
+                  <div className="pt-1">
+                    <Link
+                      href={`/engagement/${engagementRef}/onboarding`}
+                      className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 bg-[#15803D] hover:bg-[#166534] text-white rounded-xl font-semibold shadow-xs transition-colors"
+                    >
+                      <span>Check Stage 07 Status →</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
+            ) : (
+              /* Payment Submission Form */
+              <form onSubmit={handleReportPayment} className="space-y-4 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-semibold text-slate-800 mb-1">
+                      UPI / Bank UTR Reference <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={utrNumber}
+                      onChange={(e) => setUtrNumber(e.target.value)}
+                      placeholder="e.g. 428812345678"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 font-mono text-sm text-slate-900 focus:ring-2 focus:ring-[#1565C0] focus:bg-white outline-none transition-all"
+                    />
+                    <span className="text-[10px] text-slate-500 mt-1 block">12-digit UPI UTR or bank transaction reference</span>
+                  </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Payer / Remitter Account Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={remitterName}
-                    onChange={(e) => setRemitterName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-[#1565C0] outline-none"
-                  />
+                  <div>
+                    <label className="block font-semibold text-slate-800 mb-1">
+                      Transfer Date <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      required
+                      value={paymentDate}
+                      onChange={(e) => setPaymentDate(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm text-slate-900 focus:ring-2 focus:ring-[#1565C0] focus:bg-white outline-none transition-all"
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Remitting Bank Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={remitterBank}
-                    onChange={(e) => setRemitterBank(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-[#1565C0] outline-none"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-semibold text-slate-800 mb-1">
+                      Remitter / Payer Account Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={remitterName}
+                      onChange={(e) => setRemitterName(e.target.value)}
+                      placeholder="e.g. Acme Health Corp"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm text-slate-900 focus:ring-2 focus:ring-[#1565C0] focus:bg-white outline-none transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-slate-800 mb-1">
+                      Remitting Bank Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={remitterBank}
+                      onChange={(e) => setRemitterBank(e.target.value)}
+                      placeholder="e.g. HDFC Bank, ICICI, SBI"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm text-slate-900 focus:ring-2 focus:ring-[#1565C0] focus:bg-white outline-none transition-all"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Client GSTIN (If Claiming ITC)</label>
-                  <input
-                    type="text"
-                    value={gstin}
-                    onChange={(e) => setGstin(e.target.value)}
-                    placeholder="e.g. 33AAAAA0000A1Z5"
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-[#1565C0] outline-none"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-semibold text-slate-800 mb-1">
+                      Client GSTIN (For Input Tax Credit)
+                    </label>
+                    <input
+                      type="text"
+                      value={gstin}
+                      onChange={(e) => setGstin(e.target.value)}
+                      placeholder="33AAAAA0000A1Z5"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm font-mono text-slate-900 uppercase focus:ring-2 focus:ring-[#1565C0] focus:bg-white outline-none transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-slate-800 mb-1">
+                      Place of Supply (GST Destination)
+                    </label>
+                    <input
+                      type="text"
+                      value={placeOfSupply}
+                      onChange={(e) => setPlaceOfSupply(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm text-slate-900 focus:ring-2 focus:ring-[#1565C0] focus:bg-white outline-none transition-all"
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Tax Place of Supply</label>
-                  <input
-                    type="text"
-                    value={placeOfSupply}
-                    onChange={(e) => setPlaceOfSupply(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:ring-2 focus:ring-[#1565C0] outline-none"
-                  />
+                <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl text-[11px] text-slate-600 leading-relaxed">
+                  <strong>Statutory Notice:</strong> Submitting your reference records the transaction into the cryptographic audit log. It queues the payment for manual reconciliation against our YES Bank statement. The official Tax Invoice is issued upon verified credit.
                 </div>
-              </div>
 
-              <div className="p-3 bg-slate-50 rounded-xl text-[11px] text-slate-600">
-                Notice: Submitting a UTR reference records your submission in the audit queue. It does NOT automatically mark the invoice paid. Only Super Admin confirmation of funds received in the designated bank account will approve this milestone.
-              </div>
-
-              <div className="flex items-center justify-end pt-2">
-                <button
-                  type="submit"
-                  disabled={isSubmitting || !utrNumber}
-                  className="bg-[#0B2545] hover:bg-[#1565C0] text-white px-6 py-2.5 rounded-xl font-semibold shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
-                >
-                  {isSubmitting ? 'Recording UTR Submission...' : 'Submit Payment Reference for Audit →'}
-                </button>
-              </div>
-            </form>
-          )}
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || !utrNumber.trim()}
+                    className="w-full py-3.5 px-6 rounded-2xl bg-[#0B2545] hover:bg-[#1565C0] text-white font-semibold text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                        </svg>
+                        <span>Recording UTR in Audit Ledger…</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Submit Payment Reference for Super Admin Verification →</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
         </div>
       </div>
     </div>

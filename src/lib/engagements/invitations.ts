@@ -4,6 +4,8 @@ import { COMPANY } from '@/config/company';
 import { ClientEngagement } from './types';
 import EngagementPortalInvitationEmail from '../../../emails/engagement-portal-invitation-email';
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /**
  * Dispatches an enterprise client lifecycle portal invitation email to the primary contact.
  */
@@ -15,11 +17,13 @@ export async function sendEngagementInvitationEmail(
 
   if (isAdminClientConfigured()) {
     try {
-      const { data, error } = await supabaseAdmin
-        .from('client_engagements')
-        .select('*')
-        .or(`engagement_ref.eq.${engagementIdOrRef},id.eq.${engagementIdOrRef}`)
-        .maybeSingle();
+      let query = supabaseAdmin.from('client_engagements').select('*');
+      if (UUID_REGEX.test(engagementIdOrRef)) {
+        query = query.or(`engagement_ref.eq.${engagementIdOrRef},id.eq.${engagementIdOrRef}`);
+      } else {
+        query = query.eq('engagement_ref', engagementIdOrRef);
+      }
+      const { data, error } = await query.maybeSingle();
 
       if (!error && data) {
         engagement = data as ClientEngagement;
@@ -33,7 +37,7 @@ export async function sendEngagementInvitationEmail(
   if (!engagement) {
     if (engagementIdOrRef.toUpperCase() === 'ENG-2026-LIT-SAMPLE') {
       engagement = {
-        id: 'd9b0e1a2-3f4c-5a6b-7c8d-9e0f1a2b3c4d',
+        id: '8acad856-9840-4646-b42d-f8bf12ea47f8',
         engagement_ref: engagementIdOrRef.toUpperCase(),
         client_id: null,
         proposal_id: null,

@@ -14,9 +14,30 @@ import {
 import { sendEngagementInvitationEmail } from './invitations';
 
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export function isUuid(val: string): boolean {
+  return typeof val === 'string' && UUID_REGEX.test(val);
+}
+
+export const CANONICAL_STAGE_UUIDS: Record<StageKey, string> = {
+  'checklist': '3478510e-1296-4d90-8aa2-039940f29ab3',
+  'discovery': 'b4087f8a-1ba9-4035-be3c-451d2ef49780',
+  'proposal': 'a6ea78bd-8c6d-4603-a7b1-a3f8ca80f8ef',
+  'acceptance': 'b6034b0c-c834-44dc-8223-b3b9786cc044',
+  'sow': 'b251aff0-4b3c-4816-b966-8277f218c623',
+  'initial-invoice': 'a0c1842a-2c50-4e18-8d09-a8032db873ae',
+  'onboarding': 'ffa69d8b-fda1-4305-bb23-c2ce82a66583',
+  'technical-spec': 'a606b737-3821-449a-b6f4-31b48b541f61',
+  'development': 'e14789c8-24f7-4c4f-b536-31e6a451f2f1',
+  'delivery-acceptance': '194ac4ad-9236-44a2-8071-da58336db913',
+  'final-payment': 'd060dd57-6d7b-488d-87c1-c30ee336ba7b',
+  'handover': 'a69315b6-2beb-4d5d-bc52-5d16e63aaa90',
+  'support': '74b1e0dd-3dab-4357-bdf6-3d97ca193ca9',
+};
+
 // Canonical fallback sample engagement for demo and resilient client rendering
 export const FALLBACK_SAMPLE_ENGAGEMENT: ClientEngagement = {
-  id: 'd9b0e1a2-3f4c-5a6b-7c8d-9e0f1a2b3c4d',
+  id: '8acad856-9840-4646-b42d-f8bf12ea47f8',
   engagement_ref: 'ENG-2026-LIT-SAMPLE',
   client_id: null,
   proposal_id: null,
@@ -43,7 +64,7 @@ export const FALLBACK_SAMPLE_STAGES: EngagementStage[] = ORDERED_STAGE_KEYS.map(
   let status: StageStatus = 'locked';
   if (index === 0) status = 'available'; // checklist available
   return {
-    id: `stage-${def.ordinal}`,
+    id: CANONICAL_STAGE_UUIDS[key] || `3478510e-1296-4d90-8aa2-${String(def.ordinal).padStart(12, '0')}`,
     engagement_id: FALLBACK_SAMPLE_ENGAGEMENT.id,
     stage_key: key,
     ordinal: def.ordinal,
@@ -159,17 +180,23 @@ export const FALLBACK_SAMPLE_DOCS: EngagementDocumentLink[] = [
  */
 export async function getEngagementByRef(ref: string): Promise<ClientEngagement | null> {
   if (!ref) return null;
+  const cleanRef = ref.trim();
 
   if (isAdminClientConfigured()) {
     try {
-      const { data, error } = await supabaseAdmin
-        .from('client_engagements')
-        .select('*')
-        .or(`engagement_ref.eq.${ref},id.eq.${ref}`)
-        .maybeSingle();
+      let query = supabaseAdmin.from('client_engagements').select('*');
+      if (isUuid(cleanRef)) {
+        query = query.or(`engagement_ref.ilike.${cleanRef},id.eq.${cleanRef}`);
+      } else {
+        query = query.ilike('engagement_ref', cleanRef);
+      }
+      const { data, error } = await query.maybeSingle();
 
       if (!error && data) {
         return data as ClientEngagement;
+      }
+      if (error) {
+        console.warn('[getEngagementByRef] Supabase query returned error:', error);
       }
     } catch (err) {
       console.warn('[getEngagementByRef] DB query failed, using fallback:', err);
@@ -177,7 +204,7 @@ export async function getEngagementByRef(ref: string): Promise<ClientEngagement 
   }
 
   // Fallback match: Strictly ONLY the canonical sample engagement reference is supported
-  if (ref.toUpperCase() === 'ENG-2026-LIT-SAMPLE' || ref.toLowerCase() === 'sample') {
+  if (cleanRef.toUpperCase() === 'ENG-2026-LIT-SAMPLE' || cleanRef.toLowerCase() === 'sample') {
     return {
       ...FALLBACK_SAMPLE_ENGAGEMENT,
       engagement_ref: 'ENG-2026-LIT-SAMPLE',
@@ -245,7 +272,7 @@ export async function submitStageAction(input: {
       const prereqStage = stages.find((s) => s.stage_key === prereqKey);
       const isSatisfied =
         prereqStage &&
-        ['completed', 'signed', 'verified', 'approved', 'paid', 'accepted'].includes(prereqStage.status);
+        ['completed', 'signed', 'verified', 'approved', 'paid', 'accepted', 'submitted'].includes(prereqStage.status);
       if (!isSatisfied) {
         return {
           success: false,
@@ -408,8 +435,8 @@ export async function submitStageAction(input: {
 
   // Persist to Supabase if configured
   if (isAdminClientConfigured()) {
+    // 1. Record immutable audit event (isolated so logging failures never block stage mutations)
     try {
-      // 1. Record immutable audit event
       await supabaseAdmin.from('engagement_stage_events').insert({
         engagement_id: engagement.id,
         stage_key: stageKey,
@@ -426,48 +453,110 @@ export async function submitStageAction(input: {
           _timestamp: new Date().toISOString(),
         },
       });
+    } catch (auditErr) {
+      console.warn('[submitStageAction] Audit event logging skipped/failed:', auditErr);
+    }
 
-      // 2. Update current stage record
-      await supabaseAdmin
+    // 2. Upsert current stage record by (engagement_id, stage_key)
+    try {
+      const currentOrdinal = currentStage.ordinal || CANONICAL_13_STAGES[stageKey]?.ordinal || 1;
+      const currentTitle = currentStage.title || CANONICAL_13_STAGES[stageKey]?.title || stageKey;
+      const currentSummary = currentStage.summary || CANONICAL_13_STAGES[stageKey]?.description || null;
+
+      const { error: stageUpsertErr } = await supabaseAdmin
         .from('engagement_stages')
-        .update({
-          status: newStatus,
-          snapshot: updatedSnapshot,
-          completed_at: completedAt,
-          approved_at:
-            newStatus === 'verified' || newStatus === 'approved'
-              ? currentStage.approved_at || new Date().toISOString()
-              : currentStage.approved_at,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', currentStage.id);
+        .upsert(
+          {
+            engagement_id: engagement.id,
+            stage_key: stageKey,
+            ordinal: currentOrdinal,
+            title: currentTitle,
+            summary: currentSummary,
+            status: newStatus,
+            snapshot: updatedSnapshot,
+            completed_at: completedAt,
+            approved_at:
+              newStatus === 'verified' || newStatus === 'approved'
+                ? currentStage.approved_at || new Date().toISOString()
+                : currentStage.approved_at,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'engagement_id,stage_key' }
+        );
 
-      // 3. If next stage is unlocked, update next stage status from 'locked' to 'available'
+      if (stageUpsertErr) {
+        console.error('[submitStageAction] Stage upsert error:', stageUpsertErr);
+      }
+
+      // 3. If next stage is unlocked, upsert next stage status to 'available'
       if (nextStageToUnlock) {
         const nextStage = stages.find((s) => s.stage_key === nextStageToUnlock);
-        if (nextStage && nextStage.status === 'locked') {
-          await supabaseAdmin
-            .from('engagement_stages')
-            .update({
+        const nextOrdinal = nextStage?.ordinal || CANONICAL_13_STAGES[nextStageToUnlock]?.ordinal || 2;
+        const nextTitle = nextStage?.title || CANONICAL_13_STAGES[nextStageToUnlock]?.title || nextStageToUnlock;
+        const nextSummary = nextStage?.summary || CANONICAL_13_STAGES[nextStageToUnlock]?.description || null;
+
+        const { error: nextStageErr } = await supabaseAdmin
+          .from('engagement_stages')
+          .upsert(
+            {
+              engagement_id: engagement.id,
+              stage_key: nextStageToUnlock,
+              ordinal: nextOrdinal,
+              title: nextTitle,
+              summary: nextSummary,
               status: 'available',
               unlocked_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
-            })
-            .eq('id', nextStage.id);
+            },
+            { onConflict: 'engagement_id,stage_key' }
+          );
+
+        if (nextStageErr) {
+          console.error('[submitStageAction] Next stage unlock upsert error:', nextStageErr);
         }
       }
 
       // 4. Update engagement current_stage pointer
-      await supabaseAdmin
+      const { error: engUpdateErr } = await supabaseAdmin
         .from('client_engagements')
         .update({
           current_stage: nextStageToUnlock || stageKey,
           updated_at: new Date().toISOString(),
         })
         .eq('id', engagement.id);
+
+      if (engUpdateErr) {
+        console.error('[submitStageAction] Engagement current_stage update error:', engUpdateErr);
+      }
     } catch (err) {
       console.error('[submitStageAction] DB write error:', err);
     }
+  }
+
+  // Mutate in-memory fallback sample stages for seamless preview/testing
+  if (engagement.id === FALLBACK_SAMPLE_ENGAGEMENT.id) {
+    const idx = FALLBACK_SAMPLE_STAGES.findIndex((s) => s.stage_key === stageKey);
+    if (idx !== -1) {
+      FALLBACK_SAMPLE_STAGES[idx] = {
+        ...FALLBACK_SAMPLE_STAGES[idx],
+        status: newStatus,
+        snapshot: updatedSnapshot,
+        completed_at: completedAt,
+        updated_at: new Date().toISOString(),
+      };
+    }
+    if (nextStageToUnlock) {
+      const nextIdx = FALLBACK_SAMPLE_STAGES.findIndex((s) => s.stage_key === nextStageToUnlock);
+      if (nextIdx !== -1 && FALLBACK_SAMPLE_STAGES[nextIdx].status === 'locked') {
+        FALLBACK_SAMPLE_STAGES[nextIdx] = {
+          ...FALLBACK_SAMPLE_STAGES[nextIdx],
+          status: 'available',
+          unlocked_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+      }
+    }
+    FALLBACK_SAMPLE_ENGAGEMENT.current_stage = nextStageToUnlock || stageKey;
   }
 
   let refreshedStages: EngagementStage[] = [];

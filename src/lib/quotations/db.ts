@@ -23,6 +23,7 @@ import {
   validatePublishReadiness,
 } from "@/lib/quotations/pricing";
 import { CANONICAL_SERVICES_CATALOG } from "@/lib/quotations/catalog-seed-data";
+import { findSeedQuotation, findSeedLineItems } from "@/lib/quotations/seed-records";
 
 // ── Database Row Mappers ─────────────────────────────────────────────────────
 
@@ -360,68 +361,82 @@ export async function listQuotations(options?: {
 }
 
 export async function getQuotationById(id: string): Promise<QuotationRecord | null> {
-  if (!id || !isAdminClientConfigured()) return null;
+  const cleanId = (id || "").trim();
+  if (!cleanId) return null;
 
-  try {
-    const { data, error } = await supabaseAdmin
-      .from("quotations")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
+  if (isAdminClientConfigured()) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("quotations")
+        .select("*")
+        .eq("id", cleanId)
+        .maybeSingle();
 
-    if (error || !data) return null;
-    return mapDbRowToQuotation(data);
-  } catch (err) {
-    console.error("[quotations-db] getQuotationById error:", err);
-    return null;
+      if (!error && data) {
+        return mapDbRowToQuotation(data);
+      }
+    } catch (err) {
+      console.error("[quotations-db] getQuotationById error:", err);
+    }
   }
+
+  return findSeedQuotation(cleanId);
 }
 
 export async function getQuotationByToken(token: string): Promise<QuotationRecord | null> {
   const safeToken = (token || "").trim();
-  if (!safeToken || !isAdminClientConfigured()) return null;
+  if (!safeToken) return null;
 
-  try {
-    const { data, error } = await supabaseAdmin
-      .from("quotations")
-      .select("*")
-      .eq("secure_token", safeToken)
-      .maybeSingle();
+  if (isAdminClientConfigured()) {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from("quotations")
+        .select("*")
+        .eq("secure_token", safeToken)
+        .maybeSingle();
 
-    if (error || !data) return null;
-    return mapDbRowToQuotation(data);
-  } catch (err) {
-    console.error("[quotations-db] getQuotationByToken error:", err);
-    return null;
+      if (!error && data) {
+        return mapDbRowToQuotation(data);
+      }
+    } catch (err) {
+      console.error("[quotations-db] getQuotationByToken error:", err);
+    }
   }
+
+  return findSeedQuotation(safeToken);
 }
 
 export async function getQuotationLineItems(
   quotationId: string,
   versionId?: string
 ): Promise<QuotationLineItem[]> {
-  if (!quotationId || !isAdminClientConfigured()) return [];
+  const cleanId = (quotationId || "").trim();
+  if (!cleanId) return [];
 
-  try {
-    let query = supabaseAdmin
-      .from("quotation_line_items")
-      .select("*")
-      .eq("quotation_id", quotationId);
+  if (isAdminClientConfigured()) {
+    try {
+      let query = supabaseAdmin
+        .from("quotation_line_items")
+        .select("*")
+        .eq("quotation_id", cleanId);
 
-    if (versionId) {
-      query = query.eq("version_id", versionId);
-    } else {
-      // By default if versionId is not supplied, fetch all lines (or unversioned draft lines first)
-      query = query.order("sort_order", { ascending: true }).order("created_at", { ascending: true });
+      if (versionId) {
+        query = query.eq("version_id", versionId);
+      } else {
+        // By default if versionId is not supplied, fetch all lines (or unversioned draft lines first)
+        query = query.order("sort_order", { ascending: true }).order("created_at", { ascending: true });
+      }
+
+      const { data, error } = await query;
+      if (!error && data && data.length > 0) {
+        return data.map(mapDbRowToLineItem);
+      }
+    } catch (err) {
+      console.error("[quotations-db] getQuotationLineItems error:", err);
     }
-
-    const { data, error } = await query;
-    if (error || !data) return [];
-    return data.map(mapDbRowToLineItem);
-  } catch (err) {
-    console.error("[quotations-db] getQuotationLineItems error:", err);
-    return [];
   }
+
+  return findSeedLineItems(cleanId);
 }
 
 // ── 3. Draft Lifecycle & Mutation ────────────────────────────────────────────

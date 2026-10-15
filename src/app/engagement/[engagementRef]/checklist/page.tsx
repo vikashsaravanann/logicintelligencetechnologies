@@ -28,6 +28,15 @@ export default async function ChecklistStagePage({ params }: ChecklistPageProps)
   const docs = await getEngagementDocumentLinks(engagement.id, 'checklist');
   const mainDoc = docs[0];
 
+  const snapshot = (stage?.snapshot as Record<string, any>) || {};
+  const initialSelectedItems: number[] =
+    snapshot.selectedItems ||
+    snapshot.selected_items ||
+    snapshot.selectedPoints ||
+    snapshot.selected_points ||
+    [];
+  const initialNotes: string = snapshot.notes || snapshot.client_notes || '';
+
   return (
     <div className="space-y-6">
       <StageHeader
@@ -47,8 +56,8 @@ export default async function ChecklistStagePage({ params }: ChecklistPageProps)
 
       <ChecklistStageClient
         engagementRef={engagementRef}
-        initialSelectedItems={(stage?.snapshot as { selectedItems?: number[] })?.selectedItems || []}
-        initialNotes={(stage?.snapshot as { notes?: string })?.notes || ''}
+        initialSelectedItems={initialSelectedItems}
+        initialNotes={initialNotes}
         initialStatus={stage?.status}
       />
     </div>

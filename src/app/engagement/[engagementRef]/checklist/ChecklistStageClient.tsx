@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ENTERPRISE_CHECKPOINTS, ENTERPRISE_CHECKLIST_PHASES } from '@/data/enterpriseDeploymentChecklist';
 
 interface ChecklistStageClientProps {
@@ -17,6 +18,7 @@ export default function ChecklistStageClient({
   initialNotes = '',
   initialStatus = 'available',
 }: ChecklistStageClientProps) {
+  const router = useRouter();
   const [selectedPhase, setSelectedPhase] = useState<number | 'all'>('all');
   const [selectedItems, setSelectedItems] = useState<number[]>(initialSelectedItems);
   const [searchQuery, setSearchQuery] = useState('');
@@ -77,6 +79,7 @@ export default function ChecklistStageClient({
       }
       setAuditHash(data.auditHash);
       setFeedbackMessage('Draft saved successfully with verified cryptographic digest.');
+      router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error saving draft';
       setErrorMessage(msg);
@@ -119,6 +122,7 @@ export default function ChecklistStageClient({
       setSubmitted(true);
       setAuditHash(data.auditHash);
       setFeedbackMessage('Scope baseline formally submitted and Stage 2 Discovery unlocked.');
+      router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Error submitting checklist';
       setErrorMessage(msg);
