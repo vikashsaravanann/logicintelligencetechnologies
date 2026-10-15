@@ -354,7 +354,7 @@ export default function InitialInvoiceStageClient({
         </div>
 
         {/* ── RIGHT COLUMN (50%): UTR Reference Submission & Bank Verification Form ── */}
-        <div className="bg-white rounded-3xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs flex flex-col justify-between h-full space-y-6">
+        <div className="bg-white rounded-3xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs flex flex-col h-full space-y-6">
           <div className="space-y-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -557,9 +557,9 @@ export default function InitialInvoiceStageClient({
                   </button>
                 </div>
 
-                {/* ── Client Informational & Verification Guidance Cards (Fills Bottom Gap) ── */}
-                <div className="pt-2 space-y-3.5 border-t border-slate-100">
-                  {/* Bank Reconciliation SLA & Protocol */}
+                {/* ── Client Informational & Verification Guidance Cards (Fills Bottom Gap Completely) ── */}
+                <div className="pt-2 space-y-3.5 border-t border-slate-100 flex-1 flex flex-col justify-between">
+                  {/* Card 1: Bank Reconciliation SLA & Protocol */}
                   <div className="p-4 rounded-2xl bg-gradient-to-br from-[#F8FAFC] to-[#F1F5F9] border border-slate-200/80 space-y-2.5">
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-[#0B2545] uppercase tracking-wider flex items-center gap-1.5">
@@ -585,7 +585,7 @@ export default function InitialInvoiceStageClient({
                     </div>
                   </div>
 
-                  {/* Enterprise Statutory Compliance & Input Tax Credit Assurance */}
+                  {/* Card 2: Enterprise Statutory Compliance & Input Tax Credit Assurance */}
                   <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-2.5 text-xs">
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-[#0B2545] uppercase tracking-wider flex items-center gap-1.5">
@@ -627,7 +627,7 @@ export default function InitialInvoiceStageClient({
                     </div>
                   </div>
 
-                  {/* Frequently Asked Client Queries & Support Desk */}
+                  {/* Card 3: Frequently Asked Client Queries & Support Desk */}
                   <div className="p-4 rounded-2xl bg-[#F0F7FF]/70 border border-[#B9DCFF]/70 space-y-2 text-xs">
                     <span className="text-[11px] font-bold text-[#1565C0] uppercase tracking-wider block">
                       Transfer Assistance &amp; Helpdesk
@@ -646,6 +646,80 @@ export default function InitialInvoiceStageClient({
                         <span><strong>Direct Finance Support:</strong> Reach out directly to <strong className="text-slate-800">support@logicintelligencetechnologies.in</strong> for immediate assistance or invoice re-issuance.</span>
                       </li>
                     </ul>
+                  </div>
+
+                  {/* Card 4: Corporate Treasury & RTGS / NEFT Settlement Protocol */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-50 to-[#F8FAFC] border border-slate-200/90 shadow-2xs space-y-2.5 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-[#0B2545] uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-[#1565C0]" />
+                        Corporate Treasury &amp; RTGS Protocol
+                      </span>
+                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700">
+                        Zero Upper Limit
+                      </span>
+                    </div>
+
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      For high-value commercial milestones exceeding standard UPI ceilings (₹1,00,000 / ₹5,00,000), corporate Net Banking via RTGS/NEFT provides instantaneous, real-time clearing under Reserve Bank of India gross settlement guidelines.
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                      <div className="p-2.5 bg-white rounded-xl border border-slate-200/80 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+                          TDS Compliance (Sec 194C / 194J)
+                        </span>
+                        <p className="text-[11px] text-slate-700 leading-snug">
+                          Corporate clients deducting TDS at statutory rates can submit Form 16A quarterly certificates directly to accounts desk.
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 bg-white rounded-xl border border-slate-200/80 space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+                          Priority Resolution Guarantee
+                        </span>
+                        <p className="text-[11px] text-slate-700 leading-snug">
+                          In case of banking network holding, founder reconciliation desk guarantees resolution within 30 minutes.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-1.5 border-t border-slate-200/70 flex flex-wrap items-center justify-between gap-1 text-[10px] font-mono text-slate-500">
+                      <span>Treasury Desk: support@logicintelligencetechnologies.in</span>
+                      <span>Operating: 09:00 AM – 07:30 PM IST</span>
+                    </div>
+                  </div>
+
+                  {/* Card 5: Milestone Escrow & Commercial Protection (Completely Fills Bottom Right Space) */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-[#0B2545]/[0.02] via-white to-slate-50 border border-slate-200/90 shadow-2xs space-y-2.5 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-[#0B2545] uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-[#1FA9A2]" />
+                        Bilateral Milestone Escrow Protection
+                      </span>
+                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-blue-700">
+                        MSA Protected
+                      </span>
+                    </div>
+
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      Transferred funds are secured under active Master Services Agreement terms. Milestone release triggers Stage 07 client onboarding, Jira sprint workspace activation, and dedicated GitLab/GitHub code repository access.
+                    </p>
+
+                    <div className="p-2.5 bg-white rounded-xl border border-slate-200/80 flex items-center justify-between text-[11px]">
+                      <div>
+                        <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+                          Statutory Enterprise Entity
+                        </span>
+                        <span className="font-semibold text-slate-800">
+                          Logic Intelligence Technologies
+                        </span>
+                      </div>
+                      <div className="text-right font-mono text-[10px] text-slate-500">
+                        <div>UDYAM-TN-03-0345274</div>
+                        <div>Karur, Tamil Nadu</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </form>

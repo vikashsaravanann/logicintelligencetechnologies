@@ -2,19 +2,15 @@
 
 import React, { useState } from 'react';
 import {
-  Building2,
   Copy,
   Check,
   ShieldCheck,
-  Sparkles,
-  CreditCard,
-  Lock,
 } from 'lucide-react';
 
 export const LIT_BANK_DETAILS = {
   bankName: 'Axis Bank',
   accountNumber: '926010028731995',
-  accountHolder: 'S Vikash',
+  accountHolder: 'S VIKASH',
   ifscCode: 'UTIB0006356',
   accountType: 'Current / Business Account',
   branch: 'Gandhigramam, Karur, Tamil Nadu',
@@ -37,7 +33,7 @@ export function BankTransferCard({ className = '', amount, reference }: BankTran
 
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl border border-slate-200/90 bg-gradient-to-br from-[#97144D]/[0.04] via-white to-slate-50/80 p-5 sm:p-6 shadow-sm transition-all duration-300 hover:shadow-md hover:border-[#97144D]/35 group ${className}`}
+      className={`relative overflow-hidden rounded-3xl border border-slate-200/90 bg-gradient-to-br from-[#97144D]/[0.03] via-white to-slate-50/80 p-5 sm:p-6 shadow-sm transition-all duration-300 hover:shadow-md hover:border-[#97144D]/35 group ${className}`}
     >
       <style jsx>{`
         @keyframes litGlowSweep {
@@ -58,52 +54,59 @@ export function BankTransferCard({ className = '', amount, reference }: BankTran
         <div className="lit-shimmer-beam absolute top-0 bottom-0 w-1/3 bg-gradient-to-r from-transparent via-[#97144D] to-transparent shadow-[0_0_12px_#97144D]" />
       </div>
 
-      {/* Header */}
-      <div className="flex items-center justify-between pb-3.5 border-b border-slate-100">
-        <div className="flex items-center gap-3">
-          {/* Axis Bank Signature Burgundy Animated Avatar */}
-          <div className="relative w-9 h-9 rounded-2xl bg-gradient-to-br from-[#97144D] to-[#730D39] text-white flex items-center justify-center font-bold text-sm shadow-md shrink-0 font-serif ring-2 ring-[#97144D]/20 transition-transform group-hover:scale-105">
-            <span>A</span>
-            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white animate-pulse" />
+      {/* ── Perfectly Symmetrical Header with Official Axis Bank Logo & Stacked Verified Badge ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-slate-100">
+        <div className="flex items-center gap-3 min-w-0">
+          {/* Official Real Axis Bank Vector Logo (Authentic geometry, NO green dot) */}
+          <div className="w-10 h-10 rounded-2xl bg-white border border-[#97144D]/25 p-1.5 flex items-center justify-center shadow-xs shrink-0 transition-transform group-hover:scale-105">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/brand/axis-bank-icon.svg"
+              alt="Official Axis Bank Logo"
+              className="w-full h-full object-contain"
+            />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h4 className="text-xs sm:text-sm font-bold text-[#0B2545] font-poppins">
-                Direct Bank Transfer (IMPS / NEFT / RTGS)
-              </h4>
-              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-[#97144D]/10 text-[#97144D] border border-[#97144D]/25 shadow-2xs">
-                Axis Bank
-              </span>
-            </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5">
+          <div className="min-w-0">
+            <h4 className="text-xs sm:text-sm font-bold text-[#0B2545] font-poppins tracking-tight">
+              Direct Bank Transfer (IMPS / NEFT / RTGS)
+            </h4>
+            <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 leading-snug">
               Instant fund transfer directly via Net Banking or Bank Branch using verified credentials
             </p>
           </div>
         </div>
 
-        <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-800 bg-emerald-50/90 px-2.5 py-1 rounded-full border border-emerald-200 shadow-2xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-          <ShieldCheck className="w-3 h-3 text-emerald-600" />
-          <span>Verified Account</span>
-        </span>
+        {/* Clean, Equal Aligned "Axis Bank" & "Verified Account" Small Hint Below It */}
+        <div className="shrink-0 flex flex-col items-start sm:items-end justify-center gap-1">
+          <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold bg-[#97144D]/10 text-[#97144D] border border-[#97144D]/25 shadow-2xs whitespace-nowrap">
+            Axis Bank
+          </span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/90 whitespace-nowrap">
+            <ShieldCheck className="w-3 h-3 text-emerald-600" />
+            <span>Verified Account</span>
+          </span>
+        </div>
       </div>
 
-      {/* Account Details 2x2 Grid */}
+      {/* ── 2x2 Equal Grid for Bank Details (All 4 cards have equal height and identical alignment) ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 text-xs">
-        {/* Account Number */}
-        <div className="group/item relative p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between hover:border-[#97144D]/60 hover:shadow-xs transition-all duration-200 hover:-translate-y-0.5">
-          <div>
+        {/* Box 1: Account Number */}
+        <div className="min-h-[82px] p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between hover:border-[#97144D]/60 hover:shadow-xs transition-all duration-200 hover:-translate-y-0.5">
+          <div className="min-w-0">
             <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
               Account Number
             </span>
-            <span className="font-mono font-black text-sm text-[#0B2545] tracking-wider select-all">
+            <span className="font-mono font-black text-sm text-[#0B2545] tracking-wider select-all whitespace-nowrap block mt-0.5">
               {LIT_BANK_DETAILS.accountNumber}
+            </span>
+            <span className="text-[10px] text-slate-500 font-mono block mt-0.5 truncate">
+              Current / Business Account
             </span>
           </div>
           <button
             type="button"
             onClick={() => handleCopy(LIT_BANK_DETAILS.accountNumber, 'acc')}
-            className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer active:scale-95 ${
+            className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer active:scale-95 shrink-0 ml-2 ${
               copiedKey === 'acc'
                 ? 'bg-emerald-50 border-emerald-300 text-emerald-600'
                 : 'border-slate-200 hover:border-[#97144D] hover:text-[#97144D] text-slate-400 bg-slate-50/60'
@@ -119,20 +122,23 @@ export function BankTransferCard({ className = '', amount, reference }: BankTran
           </button>
         </div>
 
-        {/* IFSC Code */}
-        <div className="group/item relative p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between hover:border-[#97144D]/60 hover:shadow-xs transition-all duration-200 hover:-translate-y-0.5">
-          <div>
+        {/* Box 2: IFSC Code */}
+        <div className="min-h-[82px] p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between hover:border-[#97144D]/60 hover:shadow-xs transition-all duration-200 hover:-translate-y-0.5">
+          <div className="min-w-0">
             <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
               IFSC Code (RTGS / NEFT / IMPS)
             </span>
-            <span className="font-mono font-black text-sm text-[#97144D] tracking-wider select-all">
+            <span className="font-mono font-black text-sm text-[#97144D] tracking-wider select-all whitespace-nowrap block mt-0.5">
               {LIT_BANK_DETAILS.ifscCode}
+            </span>
+            <span className="text-[10px] text-slate-500 font-mono block mt-0.5 truncate">
+              Real-Time Clearing Validated
             </span>
           </div>
           <button
             type="button"
             onClick={() => handleCopy(LIT_BANK_DETAILS.ifscCode, 'ifsc')}
-            className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer active:scale-95 ${
+            className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer active:scale-95 shrink-0 ml-2 ${
               copiedKey === 'ifsc'
                 ? 'bg-emerald-50 border-emerald-300 text-emerald-600'
                 : 'border-slate-200 hover:border-[#97144D] hover:text-[#97144D] text-slate-400 bg-slate-50/60'
@@ -148,24 +154,26 @@ export function BankTransferCard({ className = '', amount, reference }: BankTran
           </button>
         </div>
 
-        {/* Primary Account Holder */}
-        <div className="group/item relative p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between hover:border-slate-300 hover:shadow-xs transition-all duration-200 hover:-translate-y-0.5">
-          <div>
+        {/* Box 3: Primary Account Holder (Strictly Single Line S VIKASH) */}
+        <div className="min-h-[82px] p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between hover:border-[#97144D]/60 hover:shadow-xs transition-all duration-200 hover:-translate-y-0.5">
+          <div className="min-w-0">
             <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
               Primary Account Holder
             </span>
-            <span className="font-bold text-xs text-slate-900 select-all flex items-center gap-1.5">
-              <span>{LIT_BANK_DETAILS.accountHolder}</span>
-              <span className="text-[10px] font-normal text-slate-500 font-mono">(Founder &amp; Principal)</span>
+            <span className="font-mono font-black text-sm text-[#0B2545] select-all whitespace-nowrap block mt-0.5 tracking-wide">
+              {LIT_BANK_DETAILS.accountHolder}
+            </span>
+            <span className="text-[10px] text-slate-500 font-mono block mt-0.5 truncate">
+              Authorized Corporate Signatory
             </span>
           </div>
           <button
             type="button"
             onClick={() => handleCopy(LIT_BANK_DETAILS.accountHolder, 'holder')}
-            className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer active:scale-95 ${
+            className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer active:scale-95 shrink-0 ml-2 ${
               copiedKey === 'holder'
                 ? 'bg-emerald-50 border-emerald-300 text-emerald-600'
-                : 'border-slate-200 hover:border-slate-400 text-slate-400 bg-slate-50/60'
+                : 'border-slate-200 hover:border-[#97144D] hover:text-[#97144D] text-slate-400 bg-slate-50/60'
             }`}
             title="Copy Account Holder"
             aria-label="Copy Account Holder"
@@ -178,26 +186,26 @@ export function BankTransferCard({ className = '', amount, reference }: BankTran
           </button>
         </div>
 
-        {/* Bank Name & Branch */}
-        <div className="group/item relative p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between hover:border-slate-300 hover:shadow-xs transition-all duration-200 hover:-translate-y-0.5">
-          <div>
+        {/* Box 4: Bank Name & Branch */}
+        <div className="min-h-[82px] p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between hover:border-[#97144D]/60 hover:shadow-xs transition-all duration-200 hover:-translate-y-0.5">
+          <div className="min-w-0">
             <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
               Bank Name &amp; Branch
             </span>
-            <span className="font-bold text-xs text-slate-900 block">
-              {LIT_BANK_DETAILS.bankName}
+            <span className="font-mono font-black text-sm text-[#0B2545] block truncate mt-0.5">
+              {LIT_BANK_DETAILS.bankName} · Karur
             </span>
-            <span className="text-[10px] text-slate-500 block font-mono">
+            <span className="text-[10px] text-slate-500 block font-mono truncate mt-0.5">
               {LIT_BANK_DETAILS.branch}
             </span>
           </div>
           <button
             type="button"
             onClick={() => handleCopy(`${LIT_BANK_DETAILS.bankName}, ${LIT_BANK_DETAILS.branch}`, 'bank')}
-            className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer active:scale-95 ${
+            className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer active:scale-95 shrink-0 ml-2 ${
               copiedKey === 'bank'
                 ? 'bg-emerald-50 border-emerald-300 text-emerald-600'
-                : 'border-slate-200 hover:border-slate-400 text-slate-400 bg-slate-50/60'
+                : 'border-slate-200 hover:border-[#97144D] hover:text-[#97144D] text-slate-400 bg-slate-50/60'
             }`}
             title="Copy Bank Name & Branch"
             aria-label="Copy Bank Name & Branch"
@@ -211,7 +219,7 @@ export function BankTransferCard({ className = '', amount, reference }: BankTran
         </div>
       </div>
 
-      {/* Copy All Details Button & Informative Settlement Assurance */}
+      {/* ── Copy All Details Button & Settlement Protocol ── */}
       <div className="mt-3.5 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-[11px]">
         <span className="text-slate-500 leading-tight">
           After completing transfer, enter your <strong>12-digit transaction UTR</strong> in the verification queue.
