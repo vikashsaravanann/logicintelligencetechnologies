@@ -32,11 +32,12 @@ export interface CreatedInvitation {
   token: string;
   url: string;
   expiresAt: string;
+  emailDispatched?: boolean;
 }
 
 /**
- * Mint a fresh secure enterprise checklist invitation.
- * The raw token is returned once for the admin to copy or dispatch.
+ * Mint a fresh secure enterprise checklist invitation and immediately dispatch the branded email.
+ * The raw token is returned once for the admin to copy or review.
  */
 export async function createChecklistInvitation(
   input: CreateInvitationInput
@@ -96,11 +97,48 @@ export async function createChecklistInvitation(
   }
 
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || COMPANY.websiteUrl).replace(/\/$/, "");
+  const inviteUrl = `${siteUrl}/enterprise-checklist/${token}`;
+
+  let emailDispatched = false;
+  try {
+    const emailRes = await sendEmail({
+      to: input.recipientEmail.trim().toLowerCase(),
+      from: "hello",
+      subject: `LIT | Your 50-Point Enterprise Deployment Checklist`,
+      category: "transactional",
+      eventType: "checklist-invitation",
+      templateKey: "enterprise-checklist-invitation-email",
+      react: EnterpriseChecklistInvitationEmail({
+        recipientName: input.recipientName.trim(),
+        company: input.recipientCompany?.trim() || undefined,
+        inviteUrl,
+        expiresAt,
+      }),
+    });
+
+    if (emailRes.success) {
+      emailDispatched = true;
+      await supabaseAdmin
+        .from("enterprise_checklist_invitations")
+        .update({
+          status: "sent",
+          sent_at: new Date().toISOString(),
+          sent_count: 1,
+        })
+        .eq("id", data.id);
+    } else {
+      console.warn("[Checklist] Automated invitation email skipped/failed:", emailRes.message);
+    }
+  } catch (mailErr) {
+    console.error("[Checklist] Automated invitation email exception:", mailErr);
+  }
+
   return {
     invitationId: data.id,
     token,
-    url: `${siteUrl}/enterprise-checklist/${token}`,
+    url: inviteUrl,
     expiresAt,
+    emailDispatched,
   };
 }
 

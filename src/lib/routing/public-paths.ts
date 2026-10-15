@@ -59,6 +59,7 @@ export const PUBLIC_MARKETING_PREFIXES: readonly string[] = [
   "/onboarding",
   "/payment",
   "/pricing",
+  "/quotation",
   "/security",
 ];
 

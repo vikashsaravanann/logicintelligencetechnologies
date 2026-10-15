@@ -32,9 +32,11 @@ CREATE INDEX IF NOT EXISTS idx_intake_events_customer_email ON public.intake_eve
 ALTER TABLE public.intake_events ENABLE ROW LEVEL SECURITY;
 
 -- Allow authenticated admins to view all intake events
+DROP POLICY IF EXISTS "Admins can view all intake events" ON public.intake_events;
 CREATE POLICY "Admins can view all intake events" ON public.intake_events
     FOR SELECT TO authenticated USING (true);
 
 -- Allow service role full management
+DROP POLICY IF EXISTS "Service role full intake management" ON public.intake_events;
 CREATE POLICY "Service role full intake management" ON public.intake_events
     FOR ALL TO service_role USING (true) WITH CHECK (true);

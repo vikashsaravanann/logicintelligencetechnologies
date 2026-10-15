@@ -106,6 +106,7 @@ export async function POST(req: NextRequest) {
       invitationId: created.invitationId,
       url: created.url,
       expiresAt: created.expiresAt,
+      emailDispatched: created.emailDispatched ?? false,
     });
   } catch (err) {
     console.error("[Admin Checklist API] Create error:", err);

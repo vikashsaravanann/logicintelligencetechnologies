@@ -4,6 +4,9 @@ import { v4 as uuidv4 } from "uuid";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { requireCapabilityApi } from "@/lib/auth/session";
 import { recordAdminAction } from "@/lib/admin/audit";
+import { sendEmail } from "@/lib/email/send-email";
+import ProposalSentEmail from "@/emails/proposal-sent-email";
+import { COMPANY } from "@/config/company";
 
 export const dynamic = "force-dynamic";
 
@@ -86,17 +89,53 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Request failed" }, { status: 500 });
     }
 
+    // Automatically dispatch proposal email to recipient
+    const proposalUrl = `${COMPANY.websiteUrl}/proposal/${proposal.secure_token}`;
+    let emailDispatched = false;
+    let emailStatus: string = "unattempted";
+
+    if (proposal.client_email) {
+      try {
+        const sendResult = await sendEmail({
+          to: proposal.client_email,
+          from: "hello",
+          replyTo: COMPANY.emails.hello,
+          subject: `Project Proposal: ${proposal.title} - ${COMPANY.displayName}`,
+          react: ProposalSentEmail({ fullName: proposal.client_name, proposalUrl }),
+          category: "transactional",
+          eventType: "proposal-sent",
+          templateKey: "proposal-sent-email",
+        });
+
+        emailStatus = sendResult.status;
+        if (sendResult.success && sendResult.status !== "skipped") {
+          emailDispatched = true;
+          const deliveredStatus = "Sent";
+          await supabaseAdmin
+            .from("proposals")
+            .update({
+              status: deliveredStatus,
+              sent_at: new Date().toISOString(),
+              sent_count: 1,
+            })
+            .eq("id", proposal.id);
+        }
+      } catch (sendErr) {
+        console.error("[proposals] Automated dispatch failed:", sendErr);
+      }
+    }
+
     await recordAdminAction({
       actor,
       action: "proposal.create",
       capability: "proposals.write",
       target: { type: "proposal", id: proposal.id },
       outcome: "succeeded",
-      metadata: { reference: proposal.reference },
+      metadata: { reference: proposal.reference, emailDispatched, emailStatus },
       request: req,
     });
 
-    return NextResponse.json({ success: true, proposal }, { status: 201 });
+    return NextResponse.json({ success: true, proposal, emailDispatched }, { status: 201 });
   } catch (err) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: "Validation failed", details: err.issues }, { status: 400 });

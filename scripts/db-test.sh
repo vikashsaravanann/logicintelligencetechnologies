@@ -66,7 +66,10 @@ for pass in 1 2; do
            "$ROOT"/supabase/migrations/20261009*.sql \
            "$ROOT"/supabase/migrations/20261010*.sql \
            "$ROOT"/supabase/migrations/20261011*.sql \
-           "$ROOT"/supabase/migrations/20261012*.sql; do
+           "$ROOT"/supabase/migrations/20261012*.sql \
+           "$ROOT"/supabase/migrations/20261013*.sql \
+           "$ROOT"/supabase/migrations/20261014*.sql \
+           "$ROOT"/supabase/migrations/20261015*.sql; do
     [ -e "$m" ] || continue
     EXEC_CMD "$m"
   done

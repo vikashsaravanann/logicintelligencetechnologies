@@ -28,6 +28,8 @@ export function IssueInvitationModal() {
     invitationId: string;
     url: string;
     expiresAt: string;
+    emailDispatched?: boolean;
+    recipientEmail?: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +63,8 @@ export function IssueInvitationModal() {
         invitationId: data.invitationId,
         url: data.url,
         expiresAt: data.expiresAt,
+        emailDispatched: data.emailDispatched ?? true,
+        recipientEmail: recipientEmail.trim(),
       });
       router.refresh();
     } catch (err: any) {
@@ -129,11 +133,12 @@ export function IssueInvitationModal() {
                   <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2">
                     <div className="flex items-center gap-2 font-bold text-sm text-emerald-950">
                       <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                      <span>Invitation Link Generated Successfully</span>
+                      <span>Invitation Link Generated & Email Dispatched</span>
                     </div>
                     <p className="text-xs text-emerald-800 leading-relaxed">
-                      Copy the private URL below. The raw token is displayed now and stored only as a
-                      cryptographic SHA-256 hash at rest.
+                      {createdResult.emailDispatched
+                        ? `The official 50-Point Enterprise Deployment Checklist invitation email has been sent automatically to ${createdResult.recipientEmail || "the recipient"}.`
+                        : "The invitation link was created. Email delivery is being queued."}
                     </p>
                   </div>
 
@@ -166,16 +171,24 @@ export function IssueInvitationModal() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-[var(--lit-border-light,#DFE7EF)]">
-                    <a
-                      href={createdResult.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs text-[var(--lit-blue,#1565C0)] hover:underline font-medium"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      <span>Preview Client Page</span>
-                    </a>
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-[var(--lit-border-light,#DFE7EF)]">
+                    <div className="flex items-center gap-3">
+                      <a
+                        href={`/admin/checklist-invitations/${createdResult.invitationId}`}
+                        className="inline-flex items-center gap-1.5 text-xs text-[var(--lit-navy,#0B2545)] hover:underline font-semibold"
+                      >
+                        <span>Open Admin Scope Detail →</span>
+                      </a>
+                      <a
+                        href={createdResult.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-[var(--lit-blue,#1565C0)] hover:underline font-medium"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Preview Client Page</span>
+                      </a>
+                    </div>
 
                     <button
                       onClick={handleReset}

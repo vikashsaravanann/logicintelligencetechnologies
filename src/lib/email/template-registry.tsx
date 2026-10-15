@@ -31,6 +31,8 @@ import ResourceDeliveryEmail from "@/emails/resource-delivery-email";
 import TestimonialRequestEmail from "@/emails/testimonial-request-email";
 import WeeklyRecognitionEmail from "@/emails/weekly-recognition-email";
 import WelcomeEmail from "@/emails/welcome-email";
+import OnboardingInvitationEmail from "@/emails/onboarding-invitation-email";
+import QuotationEmail from "@/emails/quotation-email";
 
 export interface TemplateDefinition {
   key: string;
@@ -164,6 +166,44 @@ export const EMAIL_TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
       <ProposalSentEmail
         fullName="Marcus Vance"
         proposalUrl="https://www.logicintelligencetechnologies.in/proposals/PRP-9021"
+      />
+    ),
+  },
+  "quotation": {
+    key: "quotation",
+    name: "Client Quotation Presentation",
+    category: "commercial",
+    description: "Presents formal itemized quotation with 50/50 payment milestone terms and secure sign-off link.",
+    defaultSender: "hello@logicintelligencetechnologies.in",
+    replyTo: "hello@logicintelligencetechnologies.in",
+    subject: "Quotation: Enterprise Next.js Engineering — Logic Intelligence Technologies",
+    getElement: () => (
+      <QuotationEmail
+        recipientName="Marcus Vance"
+        companyName="Apex Health Systems"
+        projectTitle="Enterprise Next.js 16 Web Architecture"
+        quotationRef="LIT-QT-2026-0001"
+        totalFormatted="₹50,000.00"
+        validUntil="November 15, 2026"
+        quotationUrl="https://www.logicintelligencetechnologies.in/quotation/sample-token"
+        selectedServicesCount={1}
+      />
+    ),
+  },
+  "onboarding-invitation": {
+    key: "onboarding-invitation",
+    name: "Client Technical Onboarding",
+    category: "lifecycle",
+    description: "Invites client technical leads to initialize production onboarding, repositories, and credentials.",
+    defaultSender: "hello@logicintelligencetechnologies.in",
+    replyTo: "hello@logicintelligencetechnologies.in",
+    subject: "LIT | Client Technical Onboarding & Systems Setup",
+    getElement: () => (
+      <OnboardingInvitationEmail
+        recipientName="Marcus Vance"
+        companyName="Apex Health Systems"
+        projectTitle="Enterprise Digital Architecture"
+        onboardingUrl="https://www.logicintelligencetechnologies.in/onboard?token=sample"
       />
     ),
   },

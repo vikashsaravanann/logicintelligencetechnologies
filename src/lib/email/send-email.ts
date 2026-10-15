@@ -376,8 +376,8 @@ export async function sendEmail({
       const fallbackSender: SenderKey = primary === "noReply" ? "hello" : "noReply";
       const canFallback =
         allowFallbackSender &&
-        classified.retryable &&
-        isSmtpConfigured(fallbackSender);
+        fallbackSender !== primary &&
+        hasSenderCredentials(fallbackSender);
 
       if (canFallback) {
         try {
