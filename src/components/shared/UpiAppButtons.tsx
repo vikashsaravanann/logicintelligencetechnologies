@@ -95,11 +95,12 @@ export function UpiAppButtons({
       accentBorder: 'border-[#521e8d]',
       textColor: 'text-white',
       icon: (
-        <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center shrink-0 shadow-2xs">
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="#5f259f">
-            <path d="M19.36 10.04C18.67 6.59 15.64 4 12 4 8.36 4 5.33 6.59 4.64 10.04 1.94 10.55 0 12.87 0 15.5 0 18.53 2.47 21 5.5 21h13c3.03 0 5.5-2.47 5.5-5.5 0-2.63-1.94-4.95-4.64-5.46zM11 17l-4-4h2.5V9h3v4H15l-4 4z" />
-          </svg>
-        </div>
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src="/images/brand/phonepe-icon.svg"
+          alt="PhonePe"
+          className="w-5 h-5 shrink-0 rounded-md object-contain shadow-2xs"
+        />
       ),
     },
     {
@@ -122,13 +123,16 @@ export function UpiAppButtons({
       name: 'BHIM UPI',
       schemeUrl: `upi://pay?${standardQuery}`,
       brandColor: '#00796B',
-      brandBg: 'bg-gradient-to-r from-[#00796B] to-[#004D40]',
-      accentBorder: 'border-[#004D40]',
-      textColor: 'text-white',
+      brandBg: 'bg-white',
+      accentBorder: 'border-slate-200 hover:border-[#00796B]',
+      textColor: 'text-slate-800',
       icon: (
-        <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center shrink-0">
-          <span className="text-[9px] font-black text-[#00796B]">₹</span>
-        </div>
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src="/images/brand/bhim-icon.svg"
+          alt="BHIM UPI"
+          className="w-5 h-5 shrink-0 object-contain"
+        />
       ),
     },
   ];

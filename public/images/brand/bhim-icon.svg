@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#FFFFFF"/>
+  <!-- Official BHIM Dual Triangle / Parallelogram Geometry -->
+  <g transform="translate(40, 40) scale(0.85)">
+    <!-- Left Green Chevron / Triangle representing Prosperity & Growth -->
+    <path fill="#00796B" d="M120 400L250 80h-90L30 400z"/>
+    <!-- Right Orange / Saffron Geometric Slanted Block -->
+    <path fill="#F37021" d="M290 80l130 320h-90L200 80z"/>
+    <!-- Indian Rupee Emblem Overlay in White -->
+    <circle cx="256" cy="245" r="95" fill="#0B2545" opacity="0.95"/>
+    <path fill="#FFFFFF" d="M225 195h62v14h-62zm0 28h62v14h-62zm16 42h22l28 42h-22l-26-38h-18v38h-18v-90h34c22 0 34 8 34 24 0 14-9 22-24 24zm0-36v22c10 0 16-4 16-11s-6-11-16-11z"/>
+  </g>
+</svg>

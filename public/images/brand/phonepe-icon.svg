@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Rounded Purple Brand Background -->
+  <rect width="512" height="512" rx="112" fill="#5F259F"/>
+  <!-- PhonePe Devanagari Pe Glyph with Dynamic Forward Diagonal Angle -->
+  <g transform="matrix(0.966 0 -0.259 0.966 85 30)">
+    <!-- Main Upright Stem and Loop -->
+    <path fill="#FFFFFF" d="M210 90h82c55 0 92 36 92 88 0 53-38 90-95 90h-79v160h-56V90h56zm0 126h26c26 0 42-16 42-38 0-21-16-36-42-36h-26v74z"/>
+    <!-- Angled Crossbar Characteristic of PhonePe Logo -->
+    <path fill="#FFFFFF" d="M110 240l145-145h62L172 240z"/>
+  </g>
+</svg>
