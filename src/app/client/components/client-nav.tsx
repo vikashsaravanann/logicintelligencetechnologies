@@ -10,14 +10,19 @@ import {
   MessageSquare,
   HelpCircle,
   User,
-  ShieldCheck,
   ChevronRight,
   GitBranch,
+  Bell,
+  CheckSquare,
+  FileEdit,
 } from "lucide-react";
 
 export const NAV_ITEMS = [
   { label: "Dashboard", href: "/client/dashboard", icon: LayoutDashboard },
   { label: "Lifecycle Stages", href: "/engagement", icon: GitBranch },
+  { label: "Approvals & Tasks", href: "/client/actions", icon: CheckSquare },
+  { label: "Notifications", href: "/client/notifications", icon: Bell },
+  { label: "Change Requests (RFC)", href: "/client/change-requests", icon: FileEdit },
   { label: "Projects", href: "/client/projects", icon: Briefcase },
   { label: "Documents Vault", href: "/client/documents", icon: FileText },
   { label: "Invoices & Billing", href: "/client/invoices", icon: Receipt },
@@ -30,7 +35,7 @@ export function ClientNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="space-y-1.5" aria-label="Client Portal Navigation">
+    <nav className="space-y-1" aria-label="Client Portal Navigation">
       {NAV_ITEMS.map((item) => {
         const Icon = item.icon;
         const isActive =
@@ -42,13 +47,13 @@ export function ClientNav() {
           <Link
             key={item.href}
             href={item.href}
-            className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
+            className={`group flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 ${
               isActive
                 ? "bg-[var(--lit-navy,#0B2545)] text-white shadow-xs"
                 : "text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-cloud,#F7F9FC)]"
             }`}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <Icon
                 className={`w-4 h-4 shrink-0 transition-colors ${
                   isActive
@@ -56,10 +61,10 @@ export function ClientNav() {
                     : "text-[var(--lit-text-muted,#52677C)] group-hover:text-[var(--lit-navy,#0B2545)]"
                 }`}
               />
-              <span>{item.label}</span>
+              <span className="truncate">{item.label}</span>
             </div>
             {isActive && (
-              <ChevronRight className="w-3.5 h-3.5 text-white/50" />
+              <ChevronRight className="w-3.5 h-3.5 text-white/50 shrink-0" />
             )}
           </Link>
         );

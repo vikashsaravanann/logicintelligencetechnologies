@@ -65,9 +65,62 @@ export default function ClientPortalLayout({
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-6 sm:p-10 overflow-y-auto bg-[var(--lit-cloud,#F7F9FC)]">
-        {children}
-      </main>
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        {/* Workspace Top Header Bar */}
+        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-xs border-b border-[var(--lit-border-light,#DFE7EF)] px-6 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)] font-mono uppercase tracking-wider">
+              Client Workspace
+            </span>
+            <span className="hidden sm:inline-block text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
+              V4 Production
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <Link
+              href="/engagement"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-[var(--lit-navy,#0B2545)] text-xs font-semibold transition-colors"
+              title="13-Stage Engagement Timeline"
+            >
+              <span>13 Stages</span>
+            </Link>
+
+            <Link
+              href="/client/actions"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-[var(--lit-navy,#0B2545)] text-xs font-semibold transition-colors"
+              title="Approvals & Tasks"
+            >
+              <span>Approvals</span>
+            </Link>
+
+            <Link
+              href="/client/notifications"
+              className="relative p-2 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] transition-colors"
+              title="Notifications"
+            >
+              <span className="sr-only">Notifications</span>
+              <svg
+                className="w-4 h-4 text-teal-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+                />
+              </svg>
+            </Link>
+          </div>
+        </header>
+
+        <main className="p-6 sm:p-10 bg-[var(--lit-cloud,#F7F9FC)] flex-1">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
