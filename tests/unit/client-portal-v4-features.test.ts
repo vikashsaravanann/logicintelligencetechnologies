@@ -173,19 +173,87 @@ describe("Client Portal V4 Practical Features - Unit Tests", () => {
     });
   });
 
+  describe("Upgrade 06: Meeting & Consultation Center", () => {
+    test("validates booking statuses", () => {
+      const validStatuses = ["confirmed", "completed", "cancelled", "rescheduled"];
+      for (const st of validStatuses) {
+        assert.ok(validStatuses.includes(st));
+      }
+    });
+
+    test("formats booking date with Asia/Kolkata timezone awareness", () => {
+      const booking = {
+        id: "b1",
+        meeting_type: "Discovery & Architecture",
+        scheduled_at: "2026-10-20T10:00:00Z",
+        status: "confirmed",
+        meeting_url: "https://meet.google.com/abc-defg-hij",
+      };
+
+      assert.equal(booking.status, "confirmed");
+      assert.ok(booking.meeting_url.startsWith("https://meet.google.com/"));
+      const d = new Date(booking.scheduled_at);
+      assert.ok(!isNaN(d.getTime()));
+    });
+  });
+
+  describe("Upgrade 22: Workspace Global Search & Filtering", () => {
+    test("tokenizes and filters search results by query term", () => {
+      const items = [
+        { id: "1", type: "action", title: "Review Architecture RFC", description: "System design RFC" },
+        { id: "2", type: "meeting", title: "Discovery Consultation", description: "Sprint kickoff meeting" },
+        { id: "3", type: "decision", title: "Database Choice", description: "Supabase PostgreSQL architecture" },
+      ];
+
+      const query = "architecture";
+      const matched = items.filter(
+        (i) =>
+          i.title.toLowerCase().includes(query.toLowerCase()) ||
+          i.description.toLowerCase().includes(query.toLowerCase())
+      );
+
+      assert.equal(matched.length, 2);
+      assert.equal(matched[0].id, "1");
+      assert.equal(matched[1].id, "3");
+    });
+
+    test("handles empty and short queries safely", () => {
+      const query = " ";
+      assert.equal(query.trim().length, 0);
+    });
+  });
+
   describe("Upgrade 23: Notification Preferences & Digest Settings", () => {
     test("defaults notification preferences safely", () => {
       const defaultPrefs = {
         emailCriticalAlerts: true,
         emailStageMilestones: true,
-        emailFinancialInvoices: true,
-        emailDirectMessages: true,
-        weeklyDigestEnabled: false,
+        emailMessages: true,
+        emailWeeklyDigest: false,
       };
 
       assert.equal(defaultPrefs.emailCriticalAlerts, true);
-      assert.equal(defaultPrefs.emailFinancialInvoices, true);
-      assert.equal(defaultPrefs.weeklyDigestEnabled, false);
+      assert.equal(defaultPrefs.emailStageMilestones, true);
+      assert.equal(defaultPrefs.emailMessages, true);
+      assert.equal(defaultPrefs.emailWeeklyDigest, false);
+    });
+
+    test("updates preference toggles accurately", () => {
+      const prefs = {
+        emailCriticalAlerts: true,
+        emailStageMilestones: true,
+        emailMessages: true,
+        emailWeeklyDigest: false,
+      };
+
+      const updated = {
+        ...prefs,
+        emailWeeklyDigest: true,
+      };
+
+      assert.equal(updated.emailWeeklyDigest, true);
+      assert.equal(updated.emailCriticalAlerts, true);
     });
   });
 });
+

@@ -15,6 +15,7 @@ import {
   Bell,
   CheckSquare,
   FileEdit,
+  Calendar,
 } from "lucide-react";
 
 export const NAV_ITEMS = [
@@ -23,6 +24,7 @@ export const NAV_ITEMS = [
   { label: "Approvals & Tasks", href: "/client/actions", icon: CheckSquare },
   { label: "Notifications", href: "/client/notifications", icon: Bell },
   { label: "Change Requests (RFC)", href: "/client/change-requests", icon: FileEdit },
+  { label: "Meetings & Scoping", href: "/client/meetings", icon: Calendar },
   { label: "Projects", href: "/client/projects", icon: Briefcase },
   { label: "Documents Vault", href: "/client/documents", icon: FileText },
   { label: "Invoices & Billing", href: "/client/invoices", icon: Receipt },

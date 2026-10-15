@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { COMPANY } from "@/config/company";
 import { ClientNav } from "./components/client-nav";
+import { ClientSearchBar } from "./components/client-search-bar";
 import { ShieldCheck, ExternalLink } from "lucide-react";
 
 export default function ClientPortalLayout({
@@ -68,16 +69,26 @@ export default function ClientPortalLayout({
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
         {/* Workspace Top Header Bar */}
         <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-xs border-b border-[var(--lit-border-light,#DFE7EF)] px-6 py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)] font-mono uppercase tracking-wider">
-              Client Workspace
-            </span>
-            <span className="hidden sm:inline-block text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
-              V4 Production
-            </span>
+          <div className="flex items-center gap-4 flex-1 max-w-md">
+            <div className="hidden lg:flex items-center gap-2 shrink-0">
+              <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)] font-mono uppercase tracking-wider">
+                Workspace
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
+                V4
+              </span>
+            </div>
+            <ClientSearchBar />
           </div>
 
           <div className="flex items-center gap-2.5">
+            <Link
+              href="/client/meetings"
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-[var(--lit-navy,#0B2545)] text-xs font-semibold transition-colors"
+              title="Meetings & Scoping"
+            >
+              <span>Meetings</span>
+            </Link>
             <Link
               href="/engagement"
               className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-[var(--lit-navy,#0B2545)] text-xs font-semibold transition-colors"

@@ -16,6 +16,11 @@ import {
   MessageSquare,
   ShieldAlert,
   Sparkles,
+  Sliders,
+  X,
+  Mail,
+  ShieldCheck,
+  Loader2,
 } from "lucide-react";
 
 interface NotificationItem {
@@ -32,6 +37,14 @@ interface NotificationItem {
   formattedDate: string;
 }
 
+interface NotificationPreferences {
+  emailCriticalAlerts: boolean;
+  emailStageMilestones: boolean;
+  emailMessages: boolean;
+  emailWeeklyDigest: boolean;
+  updatedAt?: string;
+}
+
 export default function ClientNotificationsPage() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
@@ -39,6 +52,18 @@ export default function ClientNotificationsPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isMarkingAll, setIsMarkingAll] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+
+  // Preferences modal state
+  const [isPrefsOpen, setIsPrefsOpen] = useState<boolean>(false);
+  const [prefs, setPrefs] = useState<NotificationPreferences>({
+    emailCriticalAlerts: true,
+    emailStageMilestones: true,
+    emailMessages: true,
+    emailWeeklyDigest: false,
+  });
+  const [isLoadingPrefs, setIsLoadingPrefs] = useState<boolean>(false);
+  const [isSavingPrefs, setIsSavingPrefs] = useState<boolean>(false);
+  const [prefsSuccess, setPrefsSuccess] = useState<string | null>(null);
 
   const fetchNotifications = async () => {
     try {
@@ -58,9 +83,60 @@ export default function ClientNotificationsPage() {
     }
   };
 
+  const fetchPreferences = async () => {
+    try {
+      setIsLoadingPrefs(true);
+      const res = await fetch("/api/client/notification-preferences");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.preferences) {
+          setPrefs({
+            emailCriticalAlerts: data.preferences.emailCriticalAlerts,
+            emailStageMilestones: data.preferences.emailStageMilestones,
+            emailMessages: data.preferences.emailMessages,
+            emailWeeklyDigest: data.preferences.emailWeeklyDigest,
+            updatedAt: data.preferences.updatedAt,
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to fetch notification preferences:", err);
+    } finally {
+      setIsLoadingPrefs(false);
+    }
+  };
+
+  const handleSavePreferences = async () => {
+    try {
+      setIsSavingPrefs(true);
+      setPrefsSuccess(null);
+      const res = await fetch("/api/client/notification-preferences", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(prefs),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setPrefsSuccess("Preferences successfully updated.");
+          setTimeout(() => setPrefsSuccess(null), 3000);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to save preferences:", err);
+    } finally {
+      setIsSavingPrefs(false);
+    }
+  };
+
   useEffect(() => {
     fetchNotifications();
   }, []);
+
+  const handleOpenPrefs = () => {
+    setIsPrefsOpen(true);
+    fetchPreferences();
+  };
 
   const handleMarkRead = async (id: string) => {
     try {
@@ -153,7 +229,14 @@ export default function ClientNotificationsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            onClick={handleOpenPrefs}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] text-xs font-semibold shadow-2xs transition-colors"
+          >
+            <Sliders className="w-3.5 h-3.5 text-[var(--lit-teal,#1FA9A2)]" />
+            <span>Preferences</span>
+          </button>
           {unreadCount > 0 && (
             <button
               onClick={handleMarkAllRead}
@@ -161,7 +244,7 @@ export default function ClientNotificationsPage() {
               className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] text-xs font-semibold shadow-2xs transition-colors disabled:opacity-50"
             >
               <CheckCheck className="w-3.5 h-3.5 text-teal-600" />
-              <span>{isMarkingAll ? "Updating..." : "Mark All as Read"}</span>
+              <span>{isMarkingAll ? "Updating..." : "Mark All Read"}</span>
             </button>
           )}
           <Link
@@ -169,7 +252,7 @@ export default function ClientNotificationsPage() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-navy,#0B2545)]/90 text-white text-xs font-semibold shadow-sm transition-colors"
           >
             <CheckCircle2 className="w-3.5 h-3.5 text-cyan-300" />
-            <span>View Tasks &amp; Approvals</span>
+            <span>Tasks &amp; Approvals</span>
           </Link>
         </div>
       </div>
@@ -289,6 +372,162 @@ export default function ClientNotificationsPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Preferences Slide-over / Modal */}
+      {isPrefsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-white rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-5 border-b border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-teal,#1FA9A2)]">
+                  <Sliders className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-[var(--lit-navy,#0B2545)] font-poppins">
+                    Notification Preferences
+                  </h3>
+                  <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
+                    Control which verified updates are delivered via email
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsPrefsOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-5">
+              {isLoadingPrefs ? (
+                <div className="py-8 text-center text-xs text-[var(--lit-text-muted,#52677C)]">
+                  <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-teal-600" />
+                  Loading settings...
+                </div>
+              ) : (
+                <>
+                  {prefsSuccess && (
+                    <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>{prefsSuccess}</span>
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                    {/* Item 1: Critical Alerts */}
+                    <div className="flex items-start justify-between gap-4 p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]/50">
+                      <div className="space-y-0.5">
+                        <label className="text-xs font-bold text-[var(--lit-navy,#0B2545)] block cursor-pointer">
+                          Critical Actions &amp; Blocker Alerts
+                        </label>
+                        <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] leading-snug">
+                          Immediate notifications when client approval is required to prevent project stall.
+                        </p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={prefs.emailCriticalAlerts}
+                        onChange={(e) =>
+                          setPrefs((prev) => ({ ...prev, emailCriticalAlerts: e.target.checked }))
+                        }
+                        className="w-4 h-4 mt-0.5 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer"
+                      />
+                    </div>
+
+                    {/* Item 2: Stage Milestones */}
+                    <div className="flex items-start justify-between gap-4 p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]/50">
+                      <div className="space-y-0.5">
+                        <label className="text-xs font-bold text-[var(--lit-navy,#0B2545)] block cursor-pointer">
+                          Lifecycle &amp; Milestone Advances
+                        </label>
+                        <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] leading-snug">
+                          Receive updates when engagement stages progress and deliverables are accepted.
+                        </p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={prefs.emailStageMilestones}
+                        onChange={(e) =>
+                          setPrefs((prev) => ({ ...prev, emailStageMilestones: e.target.checked }))
+                        }
+                        className="w-4 h-4 mt-0.5 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer"
+                      />
+                    </div>
+
+                    {/* Item 3: Messages */}
+                    <div className="flex items-start justify-between gap-4 p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]/50">
+                      <div className="space-y-0.5">
+                        <label className="text-xs font-bold text-[var(--lit-navy,#0B2545)] block cursor-pointer">
+                          Team Messages &amp; Clarifications
+                        </label>
+                        <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] leading-snug">
+                          Direct replies from LIT engineering and project leads on active conversations.
+                        </p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={prefs.emailMessages}
+                        onChange={(e) =>
+                          setPrefs((prev) => ({ ...prev, emailMessages: e.target.checked }))
+                        }
+                        className="w-4 h-4 mt-0.5 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer"
+                      />
+                    </div>
+
+                    {/* Item 4: Weekly Digest */}
+                    <div className="flex items-start justify-between gap-4 p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]/50">
+                      <div className="space-y-0.5">
+                        <label className="text-xs font-bold text-[var(--lit-navy,#0B2545)] block cursor-pointer">
+                          Weekly Workspace Digest
+                        </label>
+                        <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] leading-snug">
+                          Every Monday morning summary of project momentum, closed items, and target dates.
+                        </p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={prefs.emailWeeklyDigest}
+                        onChange={(e) =>
+                          setPrefs((prev) => ({ ...prev, emailWeeklyDigest: e.target.checked }))
+                        }
+                        className="w-4 h-4 mt-0.5 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-2 text-[11px] text-[var(--lit-text-muted,#52677C)] flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
+                    <span>Transactional receipts and legal notices are always delivered.</span>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-end gap-3 p-4 border-t border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]">
+              <button
+                type="button"
+                onClick={() => setIsPrefsOpen(false)}
+                className="px-4 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] text-xs font-semibold transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSavePreferences}
+                disabled={isSavingPrefs || isLoadingPrefs}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-navy,#0B2545)]/90 text-white text-xs font-semibold shadow-xs transition-colors disabled:opacity-50"
+              >
+                {isSavingPrefs && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                <span>{isSavingPrefs ? "Saving..." : "Save Preferences"}</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
