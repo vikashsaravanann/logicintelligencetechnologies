@@ -157,16 +157,17 @@ export default function FinalPaymentStageClient({
         status="active"
       />
 
-      {/* Financial Security Notice */}
+      {/* Financial Security & Direct Bank Transfer Notice */}
       <div className="bg-[#E7F3FF] border border-[#B9DCFF] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 text-xs text-[#0B2545] shadow-2xs">
         <svg className="w-5 h-5 text-[#1565C0] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
         </svg>
         <div>
-          <span className="font-bold text-sm block">Direct UPI Clearing · Zero Third-Party Gateways · Super Admin Bank Reconciliation</span>
+          <span className="font-bold text-sm block">
+            Direct UPI &amp; Bank Transfer Clearing · Zero Gateway Deductions · Super Admin Real-Time Reconciliation
+          </span>
           <p className="mt-1 text-slate-600 leading-relaxed text-xs">
-            Final settlement is cleared via direct bank-grade UPI/NEFT transfer directly to the verified Founder receiving account. 
-            No intermediary holds custody of your project funds. Upon bank ledger reconciliation by Super Admin, the final Tax Invoice and Receipt are issued, unlocking Stage 12 (Production Handover & IP Transfer).
+            Final enterprise settlement is executed via direct bank-grade UPI, IMPS, NEFT, or RTGS transfer directly to our verified accounts (Axis Bank Current A/C: <strong className="font-mono text-slate-900">926010028731995</strong> · IFSC: <strong className="font-mono text-slate-900">UTIB0006356</strong> / YES Bank UPI: <strong className="font-mono text-slate-900">9342877474@ptyes</strong>). No third-party aggregator holds custody of client project funds. Upon bank ledger reconciliation, the final Tax Invoice and Receipt are issued, unlocking Stage 12 (Production Handover &amp; IP Transfer).
           </p>
         </div>
       </div>
@@ -583,14 +584,14 @@ export default function FinalPaymentStageClient({
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-[#0B2545] uppercase tracking-wider flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full bg-[#1FA9A2]" />
-                        Final Settlement SLA & Handover Unlock
+                        Final Settlement SLA &amp; Handover Unlock
                       </span>
                       <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700">
                         15–45 Mins SLA
                       </span>
                     </div>
                     <p className="text-xs text-slate-600 leading-relaxed">
-                      Final payment UTR entries are queued for immediate priority verification by the Super Admin finance desk. Verification automatically unseals Stage 12 (Production IP & Repository Handover).
+                      Final payment UTR entries are queued for immediate priority verification by the Super Admin finance desk. Verification automatically unseals Stage 12 (Production IP &amp; Repository Handover).
                     </p>
                     <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
                       <div className="bg-white p-2 rounded-xl border border-slate-200/70">
@@ -604,15 +605,57 @@ export default function FinalPaymentStageClient({
                     </div>
                   </div>
 
+                  {/* Enterprise Statutory Compliance & Input Tax Credit Assurance */}
+                  <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-2.5 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-[#0B2545] uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-[#1565C0]" />
+                        Statutory Tax &amp; Audit Assurance
+                      </span>
+                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700">
+                        100% ITC Eligible
+                      </span>
+                    </div>
+
+                    <p className="text-[11px] text-slate-600 leading-relaxed">
+                      All settlements are legally documented under Indian corporate guidelines. Official GST Tax Invoice issued with SAC Code <strong>998314</strong> (Information Technology Design &amp; Development Services).
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px]">
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block font-mono">
+                          Input Tax Credit (ITC)
+                        </span>
+                        <p className="text-[11px] text-slate-700 leading-snug">
+                          Eligible for complete GST input tax credit with automated GSTR-1 return filing by the 11th of each month.
+                        </p>
+                      </div>
+
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block font-mono">
+                          Cryptographic Ledger
+                        </span>
+                        <p className="text-[11px] text-slate-700 leading-snug">
+                          Immutable SHA-256 audit digest generated for every UTR, preventing ledger discrepancies or duplicate entries.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-1.5 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-500">
+                      <span>MSME: UDYAM-TN-03-0345274</span>
+                      <span>Karur Jurisdiction, Tamil Nadu</span>
+                    </div>
+                  </div>
+
                   {/* Frequently Asked Client Queries */}
                   <div className="p-4 rounded-2xl bg-[#F0F7FF]/70 border border-[#B9DCFF]/70 space-y-2 text-xs">
                     <span className="text-[11px] font-bold text-[#1565C0] uppercase tracking-wider block">
-                      Transfer Assistance & Helpdesk
+                      Transfer Assistance &amp; Helpdesk
                     </span>
                     <ul className="space-y-1.5 text-slate-600 text-[11px] leading-relaxed">
                       <li className="flex items-start gap-1.5">
                         <span className="text-[#1565C0] font-bold">·</span>
-                        <span><strong>Need IMPS/NEFT Account details?</strong> Direct bank transfer is available via YES Bank VPA <code className="bg-white px-1 py-0.5 rounded text-[#0B2545] font-mono font-bold">9342877474@ptyes</code> or contact accounts desk.</span>
+                        <span><strong>Direct Axis Bank Transfer:</strong> Direct bank transfer is available via Axis Bank Current A/C <code className="bg-white px-1 py-0.5 rounded text-[#0B2545] font-mono font-bold">926010028731995</code> (IFSC: <code className="bg-white px-1 py-0.5 rounded text-[#0B2545] font-mono font-bold">UTIB0006356</code>).</span>
                       </li>
                       <li className="flex items-start gap-1.5">
                         <span className="text-[#1565C0] font-bold">·</span>

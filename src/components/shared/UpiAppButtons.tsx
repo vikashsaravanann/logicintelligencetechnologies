@@ -95,11 +95,6 @@ export function UpiAppButtons({
     setSelectedApp(app);
   };
 
-  const executeLaunch = () => {
-    if (!selectedApp) return;
-    window.location.href = selectedApp.schemeUrl;
-  };
-
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex items-center justify-between">
@@ -245,9 +240,13 @@ export function UpiAppButtons({
                 >
                   Cancel
                 </button>
-                <button
-                  type="button"
-                  onClick={executeLaunch}
+                <a
+                  href={selectedApp.schemeUrl}
+                  target="_top"
+                  rel="external"
+                  onClick={() => {
+                    setTimeout(() => setSelectedApp(null), 1200);
+                  }}
                   className="px-5 py-2.5 rounded-xl bg-[#0B2545] hover:bg-[#1565C0] text-white text-xs font-bold transition-all shadow-md flex items-center gap-2 cursor-pointer active:scale-95"
                 >
                   <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-2xs">
@@ -260,7 +259,7 @@ export function UpiAppButtons({
                   </span>
                   <span>Open {selectedApp.name}</span>
                   <ExternalLink className="w-3.5 h-3.5" />
-                </button>
+                </a>
               </div>
             </div>
           </div>
