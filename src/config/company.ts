@@ -47,7 +47,7 @@ export const COMPANY = {
   threadsUrl: 'https://www.threads.com/@logicintelligencetechnologies/',
   githubUrl: 'https://github.com/vikashsaravanann',
   websiteUrl: 'https://www.logicintelligencetechnologies.in',
-  logoIconPath: '/assets/logo-icon.jpg',
+  logoIconPath: '/apple-icon.png',
   logoFullPath: '/assets/logo.jpg',
   bannerPath: '/assets/og-banner.jpg',
   bannerPngPath: '/assets/og-banner.png',

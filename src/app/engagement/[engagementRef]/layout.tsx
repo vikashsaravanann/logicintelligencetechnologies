@@ -45,12 +45,12 @@ export default async function EngagementLayout({ children, params }: EngagementL
             {/* Brand Logo & Wordmark */}
             <div className="flex items-center gap-4">
               <Link href={`/engagement/${engagementRef}`} className="flex items-center gap-3 group">
-                <div className="relative w-11 h-11 rounded-xl overflow-hidden border border-[#DFE7EF] shadow-xs transition-transform group-hover:scale-105">
+                <div className="relative w-11 h-11 rounded-full overflow-hidden border border-[#DFE7EF] shadow-xs transition-transform group-hover:scale-105 bg-white p-0.5">
                   <Image
-                    src="/assets/logo-icon.jpg"
+                    src="/apple-icon.png"
                     alt="Logic Intelligence Technologies"
                     fill
-                    className="object-cover"
+                    className="object-cover rounded-full"
                     priority
                   />
                 </div>
@@ -125,8 +125,8 @@ export default async function EngagementLayout({ children, params }: EngagementL
       <footer className="bg-white border-t border-[#DFE7EF] py-8 text-xs text-[#52677C]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="relative w-6 h-6 rounded-md overflow-hidden border border-[#DFE7EF]">
-              <Image src="/assets/logo-icon.jpg" alt="LIT" fill className="object-cover" />
+            <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[#DFE7EF] bg-white p-0.5 shadow-2xs">
+              <Image src="/apple-icon.png" alt="LIT" fill className="object-cover rounded-full" />
             </div>
             <p className="font-medium text-[#0B2545]">
               Logic Intelligence Technologies · Confidential Client Workspace
