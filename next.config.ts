@@ -99,6 +99,9 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion', 'recharts'],
   },
+  outputFileTracingIncludes: {
+    '/api/**/*': ['./public/fonts/**/*', './src/lib/pdf/fonts/**/*'],
+  },
 };
 
 export default nextConfig;

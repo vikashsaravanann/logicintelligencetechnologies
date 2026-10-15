@@ -216,12 +216,26 @@ export function computeSha256(data: Uint8Array | Buffer): string {
   return crypto.createHash("sha256").update(data).digest("hex");
 }
 
+export function sanitizeWinAnsi(str: string): string {
+  if (!str) return "";
+  return str
+    .replace(/₹/g, "Rs. ")
+    .replace(/\u20B9/g, "Rs. ")
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/\u2014/g, "--")
+    .replace(/\u2013/g, "-")
+    .replace(/\u2022/g, "-");
+}
+
 /**
  * Word-wraps text within a maximum width given a font and size.
  */
 export function wrapText(text: string, maxWidth: number, font: any, fontSize: number): string[] {
   if (!text) return [];
-  const words = text.split(/\s+/);
+  const isStd = font?.name?.includes("Helvetica");
+  const sanitized = isStd ? sanitizeWinAnsi(text) : text;
+  const words = sanitized.split(/\s+/);
   const lines: string[] = [];
   let currentLine = "";
 
@@ -238,13 +252,16 @@ export function wrapText(text: string, maxWidth: number, font: any, fontSize: nu
   if (currentLine) {
     lines.push(currentLine);
   }
-  return lines.length > 0 ? lines : [text];
+  return lines.length > 0 ? lines : [sanitized];
 }
 
 function resolveAssetPath(relativePath: string): string | null {
+  const baseName = path.basename(relativePath);
   const candidates = [
     path.join(__dirname, relativePath),
     path.join(__dirname, "../pdf", relativePath),
+    path.join(process.cwd(), "public/fonts", baseName),
+    path.join(process.cwd(), "public", relativePath),
     path.join(process.cwd(), "src/lib/pdf", relativePath),
     path.join(process.cwd(), relativePath),
     path.join(process.cwd(), "logicintelligencetechnologies/src/lib/pdf", relativePath),
@@ -262,6 +279,7 @@ interface LoadedAssets {
   fontMedium: any;
   fontRegular: any;
   logoImage: any | null;
+  isStandardFont: boolean;
 }
 
 async function loadAssets(doc: PDFDocument): Promise<LoadedAssets> {
@@ -270,6 +288,7 @@ async function loadAssets(doc: PDFDocument): Promise<LoadedAssets> {
   let fontBold: any;
   let fontMedium: any;
   let fontRegular: any;
+  let isStandardFont = false;
 
   try {
     const boldPath = resolveAssetPath("fonts/Poppins-Bold.ttf") || resolveAssetPath("fonts/Poppins-Bold.ttf");
@@ -285,6 +304,7 @@ async function loadAssets(doc: PDFDocument): Promise<LoadedAssets> {
     }
   } catch (err) {
     console.warn("Falling back to standard fonts:", err);
+    isStandardFont = true;
     fontBold = await doc.embedFont(StandardFonts.HelveticaBold);
     fontMedium = await doc.embedFont(StandardFonts.Helvetica);
     fontRegular = await doc.embedFont(StandardFonts.Helvetica);
@@ -309,7 +329,7 @@ async function loadAssets(doc: PDFDocument): Promise<LoadedAssets> {
     console.warn("Could not embed logo image:", err);
   }
 
-  return { fontBold, fontMedium, fontRegular, logoImage };
+  return { fontBold, fontMedium, fontRegular, logoImage, isStandardFont };
 }
 
 /**
@@ -321,6 +341,12 @@ export async function generateTaxInvoicePdf(invoiceData: TaxInvoiceData): Promis
 
   // A4 dimensions: 595.28 pt x 841.89 pt
   const page = doc.addPage([595.28, 841.89]);
+  const origDrawText = page.drawText.bind(page);
+  page.drawText = (text: string, options?: any) => {
+    const isStd = assets.isStandardFont || options?.font?.name?.includes("Helvetica");
+    const clean = isStd ? sanitizeWinAnsi(text) : text;
+    return origDrawText(clean, options);
+  };
   const { width, height } = page.getSize();
 
   // Color Palette
@@ -828,6 +854,12 @@ export async function generatePaymentReceiptPdf(receiptData: PaymentReceiptData)
 
   // A4 dimensions: 595.28 pt x 841.89 pt
   const page = doc.addPage([595.28, 841.89]);
+  const origDrawText = page.drawText.bind(page);
+  page.drawText = (text: string, options?: any) => {
+    const isStd = assets.isStandardFont || options?.font?.name?.includes("Helvetica");
+    const clean = isStd ? sanitizeWinAnsi(text) : text;
+    return origDrawText(clean, options);
+  };
   const { width, height } = page.getSize();
 
   // Color Palette
