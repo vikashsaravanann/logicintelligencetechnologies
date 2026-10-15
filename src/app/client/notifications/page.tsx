@@ -377,56 +377,76 @@ export default function ClientNotificationsPage() {
 
       {/* Preferences Slide-over / Modal */}
       {isPrefsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="w-full max-w-lg bg-white rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-5 border-b border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-teal,#1FA9A2)]">
-                  <Sliders className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-[var(--lit-navy,#0B2545)] font-poppins">
-                    Notification Preferences
-                  </h3>
-                  <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
-                    Control which verified updates are delivered via email
-                  </p>
-                </div>
-              </div>
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto"
+          onClick={() => setIsPrefsOpen(false)}
+        >
+          <div
+            className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 my-auto flex flex-col max-h-[92vh] text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Top Decorative Banner */}
+            <div className="relative bg-gradient-to-r from-[#0B2545] via-[#123663] to-[#1565C0] px-6 py-5 sm:px-7 sm:py-6 text-white shrink-0">
               <button
+                type="button"
                 onClick={() => setIsPrefsOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 transition-colors"
+                disabled={isSavingPrefs}
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
+
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Communications Governance
+                </span>
+                <span className="text-[10px] font-mono font-semibold text-slate-200 bg-white/10 px-2.5 py-0.5 rounded-full border border-white/15">
+                  Client Alert Dispatch
+                </span>
+              </div>
+
+              <h3 className="text-xl font-bold font-poppins text-white tracking-tight">
+                Notification Preferences
+              </h3>
+              <p className="text-xs text-slate-200/90 mt-1 leading-relaxed">
+                Control verified email delivery channels for milestone advances, critical blocker alerts, and team communications.
+              </p>
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-5">
+            <div className="p-6 sm:p-7 space-y-4 overflow-y-auto flex-1">
               {isLoadingPrefs ? (
-                <div className="py-8 text-center text-xs text-[var(--lit-text-muted,#52677C)]">
-                  <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-teal-600" />
-                  Loading settings...
+                <div className="py-12 text-center text-xs text-slate-500">
+                  <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2.5 text-[#1565C0]" />
+                  Loading your workspace notification settings...
                 </div>
               ) : (
                 <>
                   {prefsSuccess && (
-                    <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2">
+                    <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2 animate-in fade-in duration-150">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>{prefsSuccess}</span>
                     </div>
                   )}
 
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {/* Item 1: Critical Alerts */}
-                    <div className="flex items-start justify-between gap-4 p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]/50">
-                      <div className="space-y-0.5">
-                        <label className="text-xs font-bold text-[var(--lit-navy,#0B2545)] block cursor-pointer">
-                          Critical Actions &amp; Blocker Alerts
-                        </label>
-                        <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] leading-snug">
-                          Immediate notifications when client approval is required to prevent project stall.
+                    <label className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-gradient-to-r from-slate-50 to-[#F0F7FF] hover:border-slate-300 transition-all cursor-pointer">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-[#0B2545]">
+                            Critical Actions &amp; Blocker Alerts
+                          </span>
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-rose-50 text-rose-700 border border-rose-200 font-semibold">
+                            High Priority
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          Immediate email notifications when client approval or signatory action is required to avoid project hold.
                         </p>
                       </div>
                       <input
@@ -435,18 +455,23 @@ export default function ClientNotificationsPage() {
                         onChange={(e) =>
                           setPrefs((prev) => ({ ...prev, emailCriticalAlerts: e.target.checked }))
                         }
-                        className="w-4 h-4 mt-0.5 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer"
+                        className="w-4 h-4 mt-1 text-[#1565C0] rounded border-slate-300 focus:ring-[#1565C0] cursor-pointer shrink-0"
                       />
-                    </div>
+                    </label>
 
                     {/* Item 2: Stage Milestones */}
-                    <div className="flex items-start justify-between gap-4 p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]/50">
-                      <div className="space-y-0.5">
-                        <label className="text-xs font-bold text-[var(--lit-navy,#0B2545)] block cursor-pointer">
-                          Lifecycle &amp; Milestone Advances
-                        </label>
-                        <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] leading-snug">
-                          Receive updates when engagement stages progress and deliverables are accepted.
+                    <label className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-gradient-to-r from-slate-50 to-[#F0F7FF] hover:border-slate-300 transition-all cursor-pointer">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-[#0B2545]">
+                            Lifecycle &amp; Milestone Advances
+                          </span>
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
+                            Automated
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          Receive verification emails when engagement stages complete, test runs finish, or deliverables are deployed.
                         </p>
                       </div>
                       <input
@@ -455,18 +480,18 @@ export default function ClientNotificationsPage() {
                         onChange={(e) =>
                           setPrefs((prev) => ({ ...prev, emailStageMilestones: e.target.checked }))
                         }
-                        className="w-4 h-4 mt-0.5 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer"
+                        className="w-4 h-4 mt-1 text-[#1565C0] rounded border-slate-300 focus:ring-[#1565C0] cursor-pointer shrink-0"
                       />
-                    </div>
+                    </label>
 
                     {/* Item 3: Messages */}
-                    <div className="flex items-start justify-between gap-4 p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]/50">
-                      <div className="space-y-0.5">
-                        <label className="text-xs font-bold text-[var(--lit-navy,#0B2545)] block cursor-pointer">
+                    <label className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-gradient-to-r from-slate-50 to-[#F0F7FF] hover:border-slate-300 transition-all cursor-pointer">
+                      <div className="space-y-1">
+                        <span className="text-xs font-bold text-[#0B2545] block">
                           Team Messages &amp; Clarifications
-                        </label>
-                        <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] leading-snug">
-                          Direct replies from LIT engineering and project leads on active conversations.
+                        </span>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          Direct replies from LIT lead engineers and project directors on active threads and revision requests.
                         </p>
                       </div>
                       <input
@@ -475,18 +500,18 @@ export default function ClientNotificationsPage() {
                         onChange={(e) =>
                           setPrefs((prev) => ({ ...prev, emailMessages: e.target.checked }))
                         }
-                        className="w-4 h-4 mt-0.5 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer"
+                        className="w-4 h-4 mt-1 text-[#1565C0] rounded border-slate-300 focus:ring-[#1565C0] cursor-pointer shrink-0"
                       />
-                    </div>
+                    </label>
 
                     {/* Item 4: Weekly Digest */}
-                    <div className="flex items-start justify-between gap-4 p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]/50">
-                      <div className="space-y-0.5">
-                        <label className="text-xs font-bold text-[var(--lit-navy,#0B2545)] block cursor-pointer">
+                    <label className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-gradient-to-r from-slate-50 to-[#F0F7FF] hover:border-slate-300 transition-all cursor-pointer">
+                      <div className="space-y-1">
+                        <span className="text-xs font-bold text-[#0B2545] block">
                           Weekly Workspace Digest
-                        </label>
-                        <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] leading-snug">
-                          Every Monday morning summary of project momentum, closed items, and target dates.
+                        </span>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          Every Monday 09:00 IST executive summary of project momentum, milestone targets, and velocity.
                         </p>
                       </div>
                       <input
@@ -495,25 +520,26 @@ export default function ClientNotificationsPage() {
                         onChange={(e) =>
                           setPrefs((prev) => ({ ...prev, emailWeeklyDigest: e.target.checked }))
                         }
-                        className="w-4 h-4 mt-0.5 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer"
+                        className="w-4 h-4 mt-1 text-[#1565C0] rounded border-slate-300 focus:ring-[#1565C0] cursor-pointer shrink-0"
                       />
-                    </div>
+                    </label>
                   </div>
 
-                  <div className="pt-2 text-[11px] text-[var(--lit-text-muted,#52677C)] flex items-center gap-1.5">
-                    <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
-                    <span>Transactional receipts and legal notices are always delivered.</span>
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-[#1565C0] shrink-0" />
+                    <span>Statutory legal contracts, GST tax invoices, and payment receipts are always delivered immediately.</span>
                   </div>
                 </>
               )}
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-end gap-3 p-4 border-t border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]">
+            <div className="flex items-center justify-end gap-3 p-4 sm:p-5 border-t border-slate-100 bg-slate-50/70">
               <button
                 type="button"
                 onClick={() => setIsPrefsOpen(false)}
-                className="px-4 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] text-xs font-semibold transition-colors"
+                disabled={isSavingPrefs}
+                className="px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -521,10 +547,10 @@ export default function ClientNotificationsPage() {
                 type="button"
                 onClick={handleSavePreferences}
                 disabled={isSavingPrefs || isLoadingPrefs}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-navy,#0B2545)]/90 text-white text-xs font-semibold shadow-xs transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#0B2545] to-[#1565C0] hover:from-[#123663] hover:to-[#1976D2] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
               >
                 {isSavingPrefs && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                <span>{isSavingPrefs ? "Saving..." : "Save Preferences"}</span>
+                <span>{isSavingPrefs ? "Saving Settings..." : "Save Preferences"}</span>
               </button>
             </div>
           </div>
