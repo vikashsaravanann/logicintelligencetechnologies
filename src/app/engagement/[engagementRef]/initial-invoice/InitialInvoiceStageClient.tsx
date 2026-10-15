@@ -286,6 +286,63 @@ export default function InitialInvoiceStageClient({
             </div>
           </div>
 
+          {/* Dynamic QR Clearance & Settlement Protocol - Occupies vertical gap with essential payment instructions */}
+          <div className="bg-[#F8FAFC] border border-slate-200/90 rounded-2xl p-4 space-y-3 text-xs">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+              <span className="font-bold text-[#0B2545] flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-[#1565C0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                Dynamic QR Clearance &amp; Verification Protocol
+              </span>
+              <span className="font-mono text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-semibold">
+                Zero Gateway Deductions
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] leading-relaxed">
+              <div className="bg-white p-2.5 rounded-xl border border-slate-200/80">
+                <div className="flex items-center gap-1.5 font-semibold text-slate-900 mb-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#1565C0]" />
+                  Amount-Locked Payload
+                </div>
+                <p className="text-slate-600">
+                  Exact billing amount (<strong className="text-slate-800 font-mono">{paymentData.totalPayable}</strong>) and VPA are pre-encoded in the QR to prevent manual entry errors.
+                </p>
+              </div>
+
+              <div className="bg-white p-2.5 rounded-xl border border-slate-200/80">
+                <div className="flex items-center gap-1.5 font-semibold text-slate-900 mb-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                  Universal UPI Scanner
+                </div>
+                <p className="text-slate-600">
+                  Scan via iOS Camera, Android Camera, or any UPI app (GPay, PhonePe, Paytm, BHIM, Cred, or bank apps).
+                </p>
+              </div>
+
+              <div className="bg-white p-2.5 rounded-xl border border-slate-200/80">
+                <div className="flex items-center gap-1.5 font-semibold text-slate-900 mb-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#1FA9A2]" />
+                  Direct Bank Settlement
+                </div>
+                <p className="text-slate-600">
+                  Settles directly into our primary reserve account via NPCI with 0% third-party gateway deductions.
+                </p>
+              </div>
+
+              <div className="bg-white p-2.5 rounded-xl border border-slate-200/80">
+                <div className="flex items-center gap-1.5 font-semibold text-slate-900 mb-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  12-Digit UTR Handshake
+                </div>
+                <p className="text-slate-600">
+                  Copy the 12-digit Bank Reference (UTR) from your payment confirmation and submit on the right for instant audit clearance.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Verified Payee Credentials Block */}
           <div className="bg-[#F8FAFC] border border-slate-200/90 rounded-2xl p-4 space-y-3 text-xs">
             <div className="flex items-center justify-between pb-2 border-b border-slate-200">
