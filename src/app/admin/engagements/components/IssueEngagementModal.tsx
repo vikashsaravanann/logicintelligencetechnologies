@@ -151,10 +151,11 @@ export function IssueEngagementModal({
   return (
     <>
       <button
+        type="button"
         onClick={() => setOpen(true)}
         className={
           buttonClassName ||
-          "inline-flex items-center gap-2 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#1565C0] px-4 py-2 text-xs font-bold uppercase tracking-wider text-white transition-all shadow-sm"
+          "inline-flex items-center gap-2 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-all shadow-sm cursor-pointer"
         }
       >
         <Plus className="w-4 h-4" />
@@ -163,9 +164,9 @@ export function IssueEngagementModal({
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+          <div className="bg-white rounded-3xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-[var(--lit-border-light,#DFE7EF)]">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]">
               <div className="flex items-center gap-2.5">
                 <span className="p-1 rounded-md bg-[#E7F3FF] border border-[#B9DCFF] text-[var(--lit-blue,#1565C0)]">
                   <Layers className="w-4 h-4" />
@@ -180,10 +181,11 @@ export function IssueEngagementModal({
                 </div>
               </div>
               <button
+                type="button"
                 onClick={handleReset}
-                className="p-1.5 rounded-lg text-slate-500 hover:text-black hover:bg-slate-200 transition-colors"
+                className="p-1.5 rounded-lg text-slate-500 hover:text-black hover:bg-slate-200 transition-colors cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -210,22 +212,22 @@ export function IssueEngagementModal({
 
                   {/* URL */}
                   <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-[var(--lit-navy,#0B2545)] block">
-                      Client Portal Link
+                    <label className="font-mono font-bold text-[10px] uppercase tracking-wider text-[var(--lit-text-muted,#52677C)] block mb-1">
+                      Private Client Portal URL
                     </label>
                     <div className="flex items-center gap-2">
                       <input
                         type="text"
                         readOnly
                         value={createdResult.portalUrl}
-                        className="w-full bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] rounded-xl px-3 py-2 text-xs font-mono text-slate-700 select-all"
+                        className="w-full bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] rounded-xl px-3 py-2.5 text-xs font-mono text-slate-700 select-all"
                       />
                       <button
                         onClick={handleCopyLink}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#1565C0] text-white text-xs font-bold transition-all shadow-xs shrink-0"
+                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-sm shrink-0 cursor-pointer"
                       >
                         {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5" />}
-                        <span>{copiedLink ? "Copied" : "Copy"}</span>
+                        <span>{copiedLink ? "Link Copied!" : "Copy Link"}</span>
                       </button>
                     </div>
                   </div>
@@ -234,7 +236,7 @@ export function IssueEngagementModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                     <button
                       onClick={handleCopyEmail}
-                      className="inline-flex items-center justify-center gap-2 p-2.5 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-xs font-bold text-[var(--lit-navy,#0B2545)] shadow-2xs"
+                      className="inline-flex items-center justify-center gap-2 p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-xs font-bold text-[var(--lit-navy,#0B2545)] shadow-2xs transition-all cursor-pointer"
                     >
                       {copiedEmail ? <Check className="w-4 h-4 text-emerald-600" /> : <Mail className="w-4 h-4 text-[#1565C0]" />}
                       <span>{copiedEmail ? "Email Copied!" : "Copy Email Draft"}</span>
@@ -242,17 +244,17 @@ export function IssueEngagementModal({
 
                     <button
                       onClick={handleCopyWhatsApp}
-                      className="inline-flex items-center justify-center gap-2 p-2.5 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-xs font-bold text-[var(--lit-navy,#0B2545)] shadow-2xs"
+                      className="inline-flex items-center justify-center gap-2 p-3 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-xs font-bold text-[var(--lit-navy,#0B2545)] shadow-2xs transition-all cursor-pointer"
                     >
                       {copiedWhatsApp ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4 text-emerald-600" />}
-                      <span>{copiedWhatsApp ? "WhatsApp Copied!" : "Copy WhatsApp Text"}</span>
+                      <span>{copiedWhatsApp ? "WhatsApp Copied!" : "WhatsApp"}</span>
                     </button>
                   </div>
 
                   <div className="pt-3 border-t border-[var(--lit-border-light,#DFE7EF)] flex items-center justify-between">
                     <button
                       onClick={handleReset}
-                      className="text-xs font-bold text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)]"
+                      className="text-xs font-bold text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] transition-colors cursor-pointer"
                     >
                       Close &amp; Refresh
                     </button>
@@ -260,9 +262,9 @@ export function IssueEngagementModal({
                       href={createdResult.portalUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1565C0] hover:bg-[#0B2545] text-white text-xs font-bold shadow-xs transition-colors"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1565C0] hover:bg-[var(--lit-navy,#0B2545)] text-white text-xs font-bold shadow-2xs transition-colors"
                     >
-                      <span>Open Portal</span>
+                      <span>Open Preview</span>
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   </div>
@@ -278,7 +280,7 @@ export function IssueEngagementModal({
                   <div className="space-y-3">
                     <div>
                       <label className="block text-[11px] font-bold text-[var(--lit-navy,#0B2545)] mb-1">
-                        Company / Organization Name <span className="text-rose-500">*</span>
+                        Organization / Company Name <span className="text-rose-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -307,7 +309,7 @@ export function IssueEngagementModal({
 
                       <div>
                         <label className="block text-[11px] font-bold text-[var(--lit-navy,#0B2545)] mb-1">
-                          Contact Email Address <span className="text-rose-500">*</span>
+                          Corporate Email <span className="text-rose-500">*</span>
                         </label>
                         <input
                           type="email"
@@ -323,7 +325,7 @@ export function IssueEngagementModal({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-[11px] font-bold text-[var(--lit-navy,#0B2545)] mb-1">
-                          Contact Phone / WhatsApp
+                          Contact Phone Number
                         </label>
                         <input
                           type="tel"
@@ -336,7 +338,7 @@ export function IssueEngagementModal({
 
                       <div>
                         <label className="block text-[11px] font-bold text-[var(--lit-navy,#0B2545)] mb-1">
-                          Budget Range
+                          Budget Range (Optional)
                         </label>
                         <input
                           type="text"
@@ -350,7 +352,7 @@ export function IssueEngagementModal({
 
                     <div>
                       <label className="block text-[11px] font-bold text-[var(--lit-navy,#0B2545)] mb-1">
-                        Project Scope / Title
+                        Project Title / Scope
                       </label>
                       <input
                         type="text"
@@ -360,16 +362,29 @@ export function IssueEngagementModal({
                       />
                     </div>
 
-                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <div>
+                      <label className="block text-[11px] font-bold text-[var(--lit-navy,#0B2545)] mb-1">
+                        Notes / Brief
+                      </label>
+                      <textarea
+                        rows={2}
+                        placeholder="Preliminary client notes, architectural focus, or intake brief…"
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0] resize-none"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)]">
                       <input
                         type="checkbox"
                         id="modalSendEmail"
                         checked={sendEmailImmediately}
                         onChange={(e) => setSendEmailImmediately(e.target.checked)}
-                        className="w-4 h-4 rounded text-[#1565C0] focus:ring-[#1565C0]"
+                        className="w-4 h-4 rounded text-[#1565C0] focus:ring-[#1565C0] cursor-pointer"
                       />
                       <label htmlFor="modalSendEmail" className="text-[11px] text-slate-700 font-semibold cursor-pointer select-none">
-                        Send portal access email automatically to client upon creation
+                        Send portal access email automatically to corporate contact upon creation
                       </label>
                     </div>
                   </div>
@@ -378,14 +393,14 @@ export function IssueEngagementModal({
                     <button
                       type="button"
                       onClick={handleReset}
-                      className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-black"
+                      className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-black cursor-pointer"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={loading}
-                      className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#1565C0] text-white text-xs font-bold transition-all shadow-xs disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-xs disabled:opacity-50 cursor-pointer"
                     >
                       {loading ? (
                         <>

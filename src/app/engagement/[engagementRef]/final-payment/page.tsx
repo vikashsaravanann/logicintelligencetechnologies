@@ -5,6 +5,7 @@ import {
   getStageByKey,
   getEngagementDocumentLinks,
 } from '@/lib/engagements/db';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { buildUpiUri, generateUpiQrDataUrl, LIT_PAYEE_CONFIG } from '@/lib/payments/upi';
 import StageHeader from '../components/StageHeader';
 import LockedStageCard from '../components/LockedStageCard';
@@ -27,6 +28,26 @@ export default async function FinalPaymentStagePage({ params }: FinalPaymentPage
         <LockedStageCard engagementRef={engagementRef} stageKey="final-payment" />
       </div>
     );
+  }
+
+  // Look up dedicated secureToken if available
+  let secureToken: string | null = (stage?.snapshot?.secure_token as string) || null;
+  if (!secureToken && engagement.proposal_id) {
+    try {
+      const { data: pr } = await supabaseAdmin
+        .from('engagement_payment_requests')
+        .select('secure_token')
+        .eq('proposal_id', engagement.proposal_id)
+        .eq('stage_number', 11)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (pr?.secure_token) {
+        secureToken = pr.secure_token;
+      }
+    } catch {
+      // ignore
+    }
   }
 
   const transactionRef = `LIT-PAY-${engagement.engagement_ref}-FINAL`;
@@ -58,6 +79,7 @@ export default async function FinalPaymentStagePage({ params }: FinalPaymentPage
         qrDataUrl={qrDataUrl}
         upiDeepLink={upiDeepLink}
         transactionRef={transactionRef}
+        secureToken={secureToken || undefined}
         initialStatus={stage?.status}
         initialData={stage?.snapshot}
         document={docs[0]}

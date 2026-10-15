@@ -20,6 +20,12 @@ const nextConfig: NextConfig = {
       { source: '/dashboard/finances', destination: '/admin/invoices', permanent: false },
       { source: '/dashboard', destination: '/admin/command-center', permanent: false },
       { source: '/dashboard/:path*', destination: '/admin/command-center', permanent: false },
+      // Engagement lifecycle stage route aliases
+      { source: '/engagement/:ref/initial-payment', destination: '/engagement/:ref/initial-invoice', permanent: false },
+      { source: '/engagement/:ref/technical-discovery', destination: '/engagement/:ref/discovery', permanent: false },
+      { source: '/engagement/:ref/architecture', destination: '/engagement/:ref/technical-spec', permanent: false },
+      { source: '/engagement/:ref/uat', destination: '/engagement/:ref/delivery-acceptance', permanent: false },
+      { source: '/engagement/:ref/sla-support', destination: '/engagement/:ref/support', permanent: false },
     ];
   },
 

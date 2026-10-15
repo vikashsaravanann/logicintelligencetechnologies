@@ -1,10 +1,13 @@
 import { Metadata } from "next";
 import { requireCapabilityPage } from "@/lib/auth/session";
 import Link from "next/link";
-import { DollarSign, Briefcase, Users, Calendar, Ticket, ArrowRight, Plus, FileText, AlertTriangle } from "lucide-react";
+import { DollarSign, Briefcase, Users, Calendar, Ticket, ArrowRight, Plus, FileText, AlertTriangle, ListChecks, ExternalLink } from "lucide-react";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { paidRevenue, outstandingRevenue, leadScoreLabel, type InvoiceAmountRow } from "@/lib/admin/kpis";
 import { formatINR } from "@/lib/format/datetime";
+import { listAllEngagements } from "@/lib/engagements/db";
+import { IssueEngagementModal } from "@/app/admin/engagements/components/IssueEngagementModal";
+import { CANONICAL_13_STAGES, type StageKey } from "@/lib/engagements/types";
 
 export const metadata: Metadata = {
   title: "Executive Command Center | Logic Intelligence Technologies",
@@ -24,7 +27,7 @@ export default async function AdminCommandCenterPage() {
   const nowIso = now.toISOString();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-  const [invoicesRes, projectsRes, leadsRes, bookingsRes, ticketsRes, newLeadsRes] = await Promise.all([
+  const [invoicesRes, projectsRes, leadsRes, bookingsRes, ticketsRes, newLeadsRes, engagements] = await Promise.all([
     supabaseAdmin.from("invoices").select("amount, status"),
     supabaseAdmin
       .from("projects")
@@ -38,6 +41,7 @@ export default async function AdminCommandCenterPage() {
       .eq("status", "Scheduled"),
     supabaseAdmin.from("support_tickets").select("*", { count: "exact", head: true }).eq("status", "Open"),
     supabaseAdmin.from("contact_leads").select("*", { count: "exact", head: true }).gte("created_at", sevenDaysAgo),
+    listAllEngagements().catch(() => []),
   ]);
 
   const anyError = Boolean(
@@ -114,6 +118,10 @@ export default async function AdminCommandCenterPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <IssueEngagementModal
+            buttonLabel="New Engagement"
+            buttonClassName="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--lit-teal,#1FA9A2)] text-white font-bold text-xs uppercase tracking-wider hover:bg-[var(--lit-teal,#1FA9A2)]/90 transition-all shadow-2xs cursor-pointer"
+          />
           <Link
             href="/admin/invoices/new"
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--lit-navy,#0B2545)] text-white font-bold text-xs uppercase tracking-wider hover:bg-[var(--lit-navy,#0B2545)]/90 transition-all shadow-2xs"
@@ -282,9 +290,159 @@ export default async function AdminCommandCenterPage() {
         </div>
       </div>
 
+      {/* Client Lifecycle Architecture & Health Telemetry */}
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-base font-bold text-[var(--lit-navy,#0B2545)] tracking-tight flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--lit-blue,#1565C0)]/10 text-[var(--lit-blue,#1565C0)]">
+                <ListChecks className="w-3.5 h-3.5" />
+              </span>
+              <span>Client Lifecycle Architecture &amp; Health Telemetry</span>
+            </h2>
+            <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
+              Universal 13-stage milestone governance, cryptographic portal access tokens, and bank UPI audit reconciliation.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/engagement"
+              className="text-xs font-bold text-[var(--lit-blue,#1565C0)] hover:underline flex items-center gap-1"
+            >
+              <span>Client Portal Hub</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <span className="text-slate-300">·</span>
+            <Link
+              href="/admin/engagements"
+              className="text-xs font-bold text-[var(--lit-teal,#1FA9A2)] hover:underline flex items-center gap-1"
+            >
+              <span>Engagements Registry</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+
+        {/* 4 Mini Telemetry Metrics */}
+        <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
+          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-4 shadow-2xs">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)] block mb-1">
+              Active Portfolios
+            </span>
+            <span className="text-2xl font-black font-mono text-[var(--lit-navy,#0B2545)]">
+              {engagements.filter((e) => e.status === "active").length}
+            </span>
+            <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1">In-flight client journeys</p>
+          </div>
+
+          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-4 shadow-2xs">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)] block mb-1">
+              13-Stage Governance
+            </span>
+            <span className="text-2xl font-black font-mono text-[var(--lit-blue,#1565C0)]">
+              100%
+            </span>
+            <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1">Cryptographic token security</p>
+          </div>
+
+          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-4 shadow-2xs">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)] block mb-1">
+              Payment Governance
+            </span>
+            <span className="text-2xl font-black font-mono text-emerald-700">
+              Zero-Gateway
+            </span>
+            <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1">Manual UPI &amp; Bank Audit</p>
+          </div>
+
+          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-4 shadow-2xs">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)] block mb-1">
+              Total Engagements
+            </span>
+            <span className="text-2xl font-black font-mono text-purple-700">
+              {engagements.length}
+            </span>
+            <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1">Registered enterprise clients</p>
+          </div>
+        </div>
+
+        {/* Recent Engagements Summary Card */}
+        <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 shadow-2xs">
+          <div className="flex items-center justify-between pb-3 border-b border-[var(--lit-border-light,#DFE7EF)] mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)] uppercase tracking-wider">
+                In-Flight Client Portals &amp; Active Stages
+              </span>
+            </div>
+            <Link
+              href="/admin/engagements/new"
+              className="text-xs font-bold text-[var(--lit-teal,#1FA9A2)] hover:underline flex items-center gap-1"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Register New Client</span>
+            </Link>
+          </div>
+
+          <div className="divide-y divide-[var(--lit-border-light,#DFE7EF)]">
+            {engagements.length === 0 ? (
+              <p className="text-xs text-[var(--lit-text-muted,#52677C)] py-6 text-center font-medium">
+                No active client engagements found.
+              </p>
+            ) : (
+              engagements.slice(0, 4).map((eng) => {
+                const currentKey = (eng.current_stage || "checklist") as StageKey;
+                const stageDef = CANONICAL_13_STAGES[currentKey] || CANONICAL_13_STAGES.checklist;
+                return (
+                  <div
+                    key={eng.id}
+                    className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs hover:bg-[var(--lit-cloud,#F7F9FC)]/50 rounded-xl px-2 transition-colors"
+                  >
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-[var(--lit-navy,#0B2545)] text-sm">
+                          {eng.company_name}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md font-mono text-[10px] font-bold bg-[#E7F3FF] text-[#1565C0] border border-[#B9DCFF]">
+                          {eng.engagement_ref}
+                        </span>
+                      </div>
+                      <p className="text-[var(--lit-text-muted,#52677C)] text-xs mt-0.5 truncate">
+                        {eng.project_title} · <span className="font-mono text-slate-600">{eng.contact_name} ({eng.contact_email})</span>
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2.5 shrink-0">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-slate-100 text-slate-800 border border-slate-200">
+                        <span className="w-2 h-2 rounded-full bg-[var(--lit-teal,#1FA9A2)]"></span>
+                        <span>S{stageDef.ordinal}: {stageDef.shortTitle}</span>
+                      </span>
+                      <Link
+                        href={`/engagement/${eng.engagement_ref}`}
+                        className="px-2.5 py-1 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-xs font-semibold text-[var(--lit-navy,#0B2545)] shadow-2xs transition-colors flex items-center gap-1"
+                        title="Open client-facing portal"
+                      >
+                        <span>Portal</span>
+                        <ExternalLink className="w-3 h-3 text-[#1565C0]" />
+                      </Link>
+                      <Link
+                        href={`/admin/engagements/${eng.id}`}
+                        className="px-2.5 py-1 rounded-lg bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white text-xs font-semibold shadow-2xs transition-colors"
+                      >
+                        Manage →
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Quick Launchpad Navigation */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
+          { href: "/engagement", label: "Client Portals (13-Stage)" },
+          { href: "/admin/engagements", label: "Lifecycle Admin Registry" },
           { href: "/admin/leads", label: "CRM Leads Ledger" },
           { href: "/admin/checklist-invitations", label: "Checklists & SOP" },
           { href: "/admin/invoices", label: "Invoices" },

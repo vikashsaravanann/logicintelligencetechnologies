@@ -353,13 +353,22 @@ export default function EngagementHubClient({
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--lit-border-light,#DFE7EF)]">
         <div>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Return to LIT Home</span>
-          </Link>
+          <div className="flex items-center gap-2 text-xs font-semibold text-[var(--lit-text-muted,#52677C)]">
+            <Link
+              href="/admin/command-center"
+              className="inline-flex items-center gap-1 hover:text-[var(--lit-navy,#0B2545)] transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Command Center</span>
+            </Link>
+            <span className="text-slate-300">/</span>
+            <Link
+              href="/"
+              className="hover:text-[var(--lit-navy,#0B2545)] transition-colors"
+            >
+              LIT Home
+            </Link>
+          </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-[#B9DCFF] bg-[#E7F3FF] text-[var(--lit-blue,#1565C0)] text-[10px] font-bold uppercase tracking-wider font-mono">
               <ListChecks className="w-3 h-3" />
@@ -386,6 +395,7 @@ export default function EngagementHubClient({
         <div className="flex flex-wrap items-center gap-2.5">
           <IssueEngagementModal
             buttonLabel="Create Client Portal"
+            buttonClassName="inline-flex items-center gap-2 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-all shadow-sm cursor-pointer"
             onCreated={handleEngagementCreated}
           />
           <Link
@@ -708,23 +718,25 @@ export default function EngagementHubClient({
 
                       {/* Actions: Sharing & Navigation */}
                       <td className="py-3.5 px-4 text-right">
-                        <div className="flex flex-col items-end gap-1.5">
+                        <div className="flex flex-col sm:items-end gap-2">
                           {/* Top Row: Sharing Actions */}
-                          <div className="inline-flex items-center gap-1.5">
+                          <div className="flex flex-wrap items-center justify-end gap-1.5">
                             {/* Copy Link */}
                             <button
+                              type="button"
                               onClick={() => handleCopyLink(eng)}
-                              className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[11px] font-semibold text-[#0B2545] transition-colors shadow-2xs"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[11px] font-semibold text-[var(--lit-navy,#0B2545)] transition-colors shadow-2xs cursor-pointer"
                               title="Copy client portal URL to clipboard"
+                              aria-label={`Copy client portal link for ${eng.company_name}`}
                             >
                               {isCopiedLink ? (
                                 <>
-                                  <Check className="w-3 h-3 text-emerald-600" />
-                                  <span className="text-emerald-700">Copied!</span>
+                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span className="text-emerald-700 font-bold">Copied!</span>
                                 </>
                               ) : (
                                 <>
-                                  <Copy className="w-3 h-3 text-slate-500" />
+                                  <Copy className="w-3.5 h-3.5 text-slate-500" />
                                   <span>Copy Link</span>
                                 </>
                               )}
@@ -732,18 +744,20 @@ export default function EngagementHubClient({
 
                             {/* Copy Email */}
                             <button
+                              type="button"
                               onClick={() => handleCopyEmail(eng)}
-                              className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[11px] font-semibold text-[#0B2545] transition-colors shadow-2xs"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[11px] font-semibold text-[var(--lit-navy,#0B2545)] transition-colors shadow-2xs cursor-pointer"
                               title="Copy formatted invitation email text"
+                              aria-label={`Copy invitation email draft for ${eng.company_name}`}
                             >
                               {isCopiedEmail ? (
                                 <>
-                                  <Check className="w-3 h-3 text-emerald-600" />
-                                  <span className="text-emerald-700">Copied!</span>
+                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span className="text-emerald-700 font-bold">Copied!</span>
                                 </>
                               ) : (
                                 <>
-                                  <Mail className="w-3 h-3 text-[#1565C0]" />
+                                  <Mail className="w-3.5 h-3.5 text-[var(--lit-blue,#1565C0)]" />
                                   <span>Copy Email</span>
                                 </>
                               )}
@@ -751,18 +765,20 @@ export default function EngagementHubClient({
 
                             {/* Copy WhatsApp */}
                             <button
+                              type="button"
                               onClick={() => handleCopyWhatsApp(eng)}
-                              className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[11px] font-semibold text-[#0B2545] transition-colors shadow-2xs"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50/60 hover:bg-emerald-100/70 text-[11px] font-semibold text-emerald-800 transition-colors shadow-2xs cursor-pointer"
                               title="Copy WhatsApp invitation text"
+                              aria-label={`Copy WhatsApp invitation text for ${eng.company_name}`}
                             >
                               {isCopiedWhatsApp ? (
                                 <>
-                                  <Check className="w-3 h-3 text-emerald-600" />
-                                  <span className="text-emerald-700">Copied!</span>
+                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span className="text-emerald-700 font-bold">Copied!</span>
                                 </>
                               ) : (
                                 <>
-                                  <MessageCircle className="w-3 h-3 text-emerald-600" />
+                                  <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
                                   <span>WhatsApp</span>
                                 </>
                               )}
@@ -770,19 +786,21 @@ export default function EngagementHubClient({
 
                             {/* Send Email */}
                             <button
+                              type="button"
                               onClick={() => handleSendEmail(eng)}
                               disabled={isSendingEmail}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#1565C0] hover:bg-[#0B2545] text-white text-[11px] font-bold transition-colors shadow-2xs disabled:opacity-50"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--lit-blue,#1565C0)] hover:bg-[var(--lit-navy,#0B2545)] text-white text-[11px] font-bold transition-colors shadow-2xs disabled:opacity-50 cursor-pointer"
                               title="Dispatch client portal invitation email now"
+                              aria-label={`Dispatch client portal email to ${eng.contact_email}`}
                             >
                               {isSendingEmail ? (
                                 <>
-                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                   <span>Sending…</span>
                                 </>
                               ) : (
                                 <>
-                                  <Send className="w-3 h-3" />
+                                  <Send className="w-3.5 h-3.5" />
                                   <span>Send Email</span>
                                 </>
                               )}
@@ -790,19 +808,21 @@ export default function EngagementHubClient({
                           </div>
 
                           {/* Bottom Row: Stage Navigation */}
-                          <div className="inline-flex items-center gap-1.5">
+                          <div className="flex flex-wrap items-center justify-end gap-1.5">
                             <Link
                               href={`/engagement/${eng.engagement_ref}/${stageDef.key}`}
-                              className="px-2.5 py-1 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] font-semibold text-[11px] transition-colors shadow-2xs"
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] font-semibold text-[11px] transition-colors shadow-2xs"
+                              aria-label={`Go to current stage for ${eng.company_name}`}
                             >
                               Current Stage
                             </Link>
                             <Link
                               href={`/engagement/${eng.engagement_ref}`}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-blue,#1565C0)] text-white font-semibold text-[11px] transition-colors shadow-2xs"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-blue,#1565C0)] text-white font-semibold text-[11px] transition-colors shadow-2xs"
+                              aria-label={`Visit full 13-stage portal for ${eng.company_name}`}
                             >
                               <span>Visit All</span>
-                              <ArrowRight className="w-3 h-3" />
+                              <ArrowRight className="w-3.5 h-3.5" />
                             </Link>
                           </div>
                         </div>
@@ -969,7 +989,7 @@ export default function EngagementHubClient({
 
             <div className="pt-4 mt-4 border-t border-slate-100">
               <Link
-                href="/engagement/ENG-2026-LIT-SAMPLE/initial-payment"
+                href="/engagement/ENG-2026-LIT-SAMPLE/initial-invoice"
                 className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-xs font-semibold text-[#0B2545] transition-colors"
               >
                 <span>Launch Phase 2</span>

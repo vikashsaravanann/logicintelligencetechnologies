@@ -1,6 +1,7 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { getEngagementByRef, getStageByKey } from '@/lib/engagements/db';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { buildUpiUri, generateUpiQrDataUrl, LIT_PAYEE_CONFIG } from '@/lib/payments/upi';
 import StageHeader from '../components/StageHeader';
 import LockedStageCard from '../components/LockedStageCard';
@@ -23,6 +24,23 @@ export default async function InitialInvoiceStagePage({ params }: InitialInvoice
         <LockedStageCard engagementRef={engagementRef} stageKey="initial-invoice" />
       </div>
     );
+  }
+
+  // Look up dedicated secureToken if available
+  let secureToken: string | null = (stage?.snapshot?.secure_token as string) || null;
+  if (!secureToken && engagement.proposal_id) {
+    try {
+      const { data: proposal } = await supabaseAdmin
+        .from('proposals')
+        .select('secure_token')
+        .eq('id', engagement.proposal_id)
+        .maybeSingle();
+      if (proposal?.secure_token) {
+        secureToken = proposal.secure_token;
+      }
+    } catch {
+      // ignore
+    }
   }
 
   const transactionRef = `LIT-PAY-${engagement.engagement_ref}-INIT`;
@@ -53,6 +71,7 @@ export default async function InitialInvoiceStagePage({ params }: InitialInvoice
         qrDataUrl={qrDataUrl}
         upiDeepLink={upiDeepLink}
         transactionRef={transactionRef}
+        secureToken={secureToken || undefined}
         initialStatus={stage?.status}
         initialData={stage?.snapshot}
       />

@@ -118,3 +118,66 @@ export async function POST(
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
+
+export async function PATCH(
+  req: NextRequest,
+  context: { params: Promise<{ ref: string; stageKey: string }> | { ref: string; stageKey: string } }
+) {
+  try {
+    const params = await context.params;
+    const ref = params?.ref;
+    const stageKey = params?.stageKey as StageKey;
+
+    if (!ref || !stageKey) {
+      return NextResponse.json(
+        { success: false, error: 'Engagement reference and stage key are required.' },
+        { status: 400 }
+      );
+    }
+
+    if (!ORDERED_STAGE_KEYS.includes(stageKey)) {
+      return NextResponse.json(
+        { success: false, error: `Invalid stage key: ${stageKey}` },
+        { status: 400 }
+      );
+    }
+
+    const body = await req.json().catch(() => ({}));
+    const { status, action = 'admin_override_status', notes, unlockNext = true, actorRole = 'admin', actorId } = body;
+
+    if (!status && !action) {
+      return NextResponse.json(
+        { success: false, error: 'Either status or action must be provided.' },
+        { status: 400 }
+      );
+    }
+
+    const result = await submitStageAction({
+      engagementRef: ref,
+      stageKey,
+      action,
+      payload: { status, notes, unlockNext },
+      actorRole,
+      actorId,
+    });
+
+    if (!result.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          stageKey,
+          status: result.status,
+          error: result.error || 'Failed to update stage status',
+        },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(result, { status: 200 });
+  } catch (err: unknown) {
+    console.error('[API PATCH /api/engagements/[ref]/stages/[stageKey]] Error:', err);
+    const message = err instanceof Error ? err.message : 'Internal server error while updating stage';
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
+  }
+}
+

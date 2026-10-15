@@ -27,46 +27,160 @@ export default function EngagementDetailAdminClient({
   const [updatingStageId, setUpdatingStageId] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const handleStatusChange = (stageId: string, newStatus: StageStatus) => {
+  const handleStatusChange = async (stageId: string, newStatus: StageStatus) => {
+    const stage = stages.find((s) => s.id === stageId);
+    if (!stage) return;
+
     setUpdatingStageId(stageId);
-    setTimeout(() => {
-      setStages((prev) =>
-        prev.map((s) => (s.id === stageId ? { ...s, status: newStatus, updated_at: new Date().toISOString() } : s))
-      );
+    try {
+      const res = await fetch(`/api/engagements/${engagement.engagement_ref}/stages/${stage.stage_key}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: newStatus,
+          action: 'admin_override_status',
+          notes: `Status changed to ${newStatus} by Super Admin`,
+          actorRole: 'admin',
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to update stage status');
+      }
+
+      if (data.stages && Array.isArray(data.stages)) {
+        setStages(data.stages);
+      } else {
+        setStages((prev) =>
+          prev.map((s) => (s.id === stageId ? { ...s, status: newStatus, updated_at: new Date().toISOString() } : s))
+        );
+      }
+      setSuccessMessage(`Stage status updated to "${newStatus}". Changes recorded in database audit ledger.`);
+      setTimeout(() => setSuccessMessage(null), 3500);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to update stage status';
+      alert(msg);
+    } finally {
       setUpdatingStageId(null);
-      setSuccessMessage(`Stage status updated to "${newStatus}". Changes recorded in audit ledger.`);
-      setTimeout(() => setSuccessMessage(null), 3000);
-    }, 500);
+    }
   };
 
-  const handleBankVerification = (stageKey: 'initial-invoice' | 'final-payment') => {
+  const handleBankVerification = async (stageKey: 'initial-invoice' | 'final-payment') => {
     const stage = stages.find((s) => s.stage_key === stageKey);
     if (!stage) return;
 
-    setUpdatingStageId(stage.id);
-    setTimeout(() => {
-      // Mark current stage verified and unlock next stage
-      const currentIndex = stages.findIndex((s) => s.stage_key === stageKey);
-      const nextStage = stages[currentIndex + 1];
+    const bankCreditRef = window.prompt(
+      'Enter Receiving Bank Credit Transaction Reference (UTR / IMPS / NEFT ref from bank statement):',
+      `BANK-CR-${Date.now()}`
+    );
+    if (!bankCreditRef) return;
 
-      setStages((prev) =>
-        prev.map((s, idx) => {
-          if (idx === currentIndex) {
-            return { ...s, status: 'verified', approved_at: new Date().toISOString() };
-          }
-          if (nextStage && idx === currentIndex + 1) {
-            return { ...s, status: 'available', unlocked_at: new Date().toISOString() };
-          }
-          return s;
-        })
-      );
-      setUpdatingStageId(null);
+    setUpdatingStageId(stage.id);
+    try {
+      const res = await fetch('/api/admin/payments/reconcile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          engagementRef: engagement.engagement_ref,
+          stageKey,
+          transactionRef: bankCreditRef,
+          actorName: 'Super Admin',
+          reconciliationNotes: `Manual receiving bank verification for ${stageKey}. Ref: ${bankCreditRef}`,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to verify bank credit');
+      }
+
+      if (data.stages && Array.isArray(data.stages)) {
+        setStages(data.stages);
+      } else {
+        const currentIndex = stages.findIndex((s) => s.stage_key === stageKey);
+        const nextStage = stages[currentIndex + 1];
+
+        setStages((prev) =>
+          prev.map((s, idx) => {
+            if (idx === currentIndex) {
+              return { ...s, status: 'verified', approved_at: new Date().toISOString() };
+            }
+            if (nextStage && idx === currentIndex + 1) {
+              return { ...s, status: 'available', unlocked_at: new Date().toISOString() };
+            }
+            return s;
+          })
+        );
+      }
+
       setSuccessMessage(
-        `Receiving bank credit verified! Payment marked verified, and Stage ${currentIndex + 2} (${nextStage?.title}) is unlocked.`
+        data.message ||
+          `Receiving bank credit verified! Payment marked verified, and downstream stage unlocked.`
       );
       setTimeout(() => setSuccessMessage(null), 4000);
-    }, 600);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to verify bank credit';
+      alert(msg);
+    } finally {
+      setUpdatingStageId(null);
+    }
   };
+
+  // Dynamically compute total contract commitment and payment terms from metadata, proposals, and milestones
+  const computeFinancials = () => {
+    const metadata = (engagement.metadata || {}) as Record<string, any>;
+    const proposalStage = stages.find((s) => s.stage_key === 'proposal');
+    const invoiceStage = stages.find((s) => s.stage_key === 'initial-invoice');
+    const finalStage = stages.find((s) => s.stage_key === 'final-payment');
+
+    const proposalSnap = (proposalStage?.snapshot || {}) as Record<string, any>;
+    const invoiceSnap = (invoiceStage?.snapshot || {}) as Record<string, any>;
+    const finalSnap = (finalStage?.snapshot || {}) as Record<string, any>;
+
+    let numericVal: number | null = null;
+    if (typeof metadata.contract_value === 'number') {
+      numericVal = metadata.contract_value;
+    } else if (typeof metadata.contract_value === 'string' && !isNaN(Number(metadata.contract_value))) {
+      numericVal = Number(metadata.contract_value);
+    } else if (typeof proposalSnap.totalPayable === 'number') {
+      numericVal = proposalSnap.totalPayable;
+    } else if (typeof proposalSnap.total_payable === 'number') {
+      numericVal = proposalSnap.total_payable;
+    } else if (typeof proposalSnap.pricing?.total === 'number') {
+      numericVal = proposalSnap.pricing.total;
+    } else if (typeof invoiceSnap.total_payable === 'number') {
+      numericVal = invoiceSnap.total_payable;
+    } else if (typeof invoiceSnap.amount === 'number' && typeof finalSnap.amount === 'number') {
+      numericVal = invoiceSnap.amount + finalSnap.amount;
+    } else if (typeof invoiceSnap.amount === 'number') {
+      numericVal = invoiceSnap.amount * 2;
+    }
+
+    const formatInr = (n: number) =>
+      new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 2,
+      }).format(n);
+
+    let totalDisplay = '₹21,24,000.00';
+    if (numericVal !== null && numericVal > 0) {
+      totalDisplay = formatInr(numericVal);
+    } else if (typeof metadata.contract_value === 'string' && metadata.contract_value.trim()) {
+      totalDisplay = metadata.contract_value;
+    } else if (typeof metadata.budget_range === 'string' && metadata.budget_range.trim()) {
+      totalDisplay = metadata.budget_range;
+    }
+
+    const termsDisplay =
+      proposalSnap.paymentTerms ||
+      proposalSnap.payment_terms ||
+      metadata.payment_terms ||
+      '50% Deposit / 50% Settlement';
+
+    return { totalDisplay, termsDisplay };
+  };
+
+  const { totalDisplay: contractValueDisplay, termsDisplay: paymentTermsDisplay } = computeFinancials();
 
   return (
     <div className="space-y-6">
@@ -118,11 +232,11 @@ export default function EngagementDetailAdminClient({
           </div>
           <div className="p-3 bg-slate-50 rounded-xl">
             <span className="text-slate-500 text-[11px] block">Total Contract Commitment:</span>
-            <span className="font-mono font-bold text-emerald-700">₹21,24,000.00</span>
+            <span className="font-mono font-bold text-emerald-700">{contractValueDisplay}</span>
           </div>
           <div className="p-3 bg-slate-50 rounded-xl">
             <span className="text-slate-500 text-[11px] block">Payment Terms:</span>
-            <span className="font-semibold text-[#1565C0]">50% Deposit / 50% Settlement</span>
+            <span className="font-semibold text-[#1565C0]">{paymentTermsDisplay}</span>
           </div>
         </div>
       </div>

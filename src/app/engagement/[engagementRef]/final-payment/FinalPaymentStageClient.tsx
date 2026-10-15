@@ -13,6 +13,7 @@ interface FinalPaymentStageClientProps {
   qrDataUrl?: string;
   upiDeepLink?: string;
   transactionRef?: string;
+  secureToken?: string;
   initialStatus?: string;
   initialData?: Record<string, any>;
   document?: any;
@@ -26,6 +27,7 @@ export default function FinalPaymentStageClient({
   qrDataUrl,
   upiDeepLink,
   transactionRef = `LIT-PAY-${engagementRef}-FINAL`,
+  secureToken,
   initialStatus = 'available',
   initialData = {},
   document,
@@ -209,6 +211,18 @@ export default function FinalPaymentStageClient({
             >
               Pay via UPI App (GPay / PhonePe / Paytm)
             </a>
+
+            {secureToken && (
+              <Link
+                href={`/payment/${secureToken}`}
+                className="inline-flex items-center justify-center gap-1.5 w-full py-2 bg-[#0B2545] hover:bg-[#1565C0] text-white text-xs font-semibold rounded-lg transition-colors shadow-xs"
+              >
+                <span>Open Dedicated Payment Gateway</span>
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </Link>
+            )}
           </div>
         </div>
 

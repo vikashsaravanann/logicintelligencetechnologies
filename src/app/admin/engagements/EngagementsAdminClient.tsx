@@ -49,14 +49,30 @@ export default function EngagementsAdminClient({
     );
   });
 
-  const handleIdentityAction = (requestId: string, action: 'approve' | 'reject') => {
+  const handleIdentityAction = async (requestId: string, action: 'approve' | 'reject') => {
     setProcessingReqId(requestId);
-    setTimeout(() => {
-      setIdentityRequests((prev) =>
-        prev.map((r) => (r.id === requestId ? { ...r, status: action === 'approve' ? 'approved' : 'rejected' } : r))
-      );
+    try {
+      const res = await fetch('/api/engagements/identity-correction', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requestId,
+          status: action === 'approve' ? 'approved' : 'rejected',
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIdentityRequests((prev) =>
+          prev.map((r) => (r.id === requestId ? { ...r, status: action === 'approve' ? 'approved' : 'rejected' } : r))
+        );
+      } else {
+        alert(data.error || 'Failed to update identity change request.');
+      }
+    } catch {
+      alert('Network error updating identity change request.');
+    } finally {
       setProcessingReqId(null);
-    }, 600);
+    }
   };
 
   const handleCopyLink = (eng: ClientEngagement) => {
