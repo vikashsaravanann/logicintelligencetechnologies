@@ -240,12 +240,12 @@ export function UpiAppButtons({
                   }}
                   className="px-5 py-2.5 rounded-xl bg-[#0B2545] hover:bg-[#1565C0] text-white text-xs font-bold transition-all shadow-md flex items-center gap-2 cursor-pointer active:scale-95"
                 >
-                  <span className="w-6 h-6 rounded-full bg-white flex items-center justify-center p-1 shadow-xs shrink-0 overflow-hidden">
+                  <span className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-xs shrink-0 overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={selectedApp.iconImgUrl}
+                      src={`${selectedApp.iconImgUrl}?v=20261016`}
                       alt={selectedApp.name}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-cover"
                     />
                   </span>
                   <span>Open {selectedApp.name}</span>
