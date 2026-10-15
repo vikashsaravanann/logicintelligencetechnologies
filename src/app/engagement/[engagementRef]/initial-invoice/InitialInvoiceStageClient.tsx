@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { UpiAppButtons } from '@/components/shared/UpiAppButtons';
+import { BankTransferCard } from '@/components/shared/BankTransferCard';
 
 interface InitialInvoiceStageClientProps {
   engagementRef: string;
@@ -328,6 +329,11 @@ export default function InitialInvoiceStageClient({
               >
                 {copiedField === 'upi' ? '✓ Copied!' : 'Copy UPI ID'}
               </button>
+            </div>
+
+            {/* Direct Axis Bank Transfer & IFSC Card */}
+            <div className="pt-2">
+              <BankTransferCard amount={paymentData.totalPayable} reference={paymentData.requestRef} />
             </div>
 
             {secureToken && (

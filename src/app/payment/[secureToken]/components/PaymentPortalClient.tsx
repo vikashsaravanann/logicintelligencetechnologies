@@ -31,6 +31,7 @@ import {
 import type { PaymentRequestWithDetails, CustomerType } from "@/types/payments";
 import { formatPaiseToRupees } from "@/lib/payments/calculations";
 import { getMobileIntentLinks, LIT_PAYEE_CONFIG } from "@/lib/payments/upi";
+import { BankTransferCard } from "@/components/shared/BankTransferCard";
 import {
   submitBillingFormAction,
   submitPaymentAttemptAction,
@@ -729,6 +730,12 @@ export function PaymentPortalClient({
                       UTR below for Super Admin ledger verification.
                     </span>
                   </div>
+
+                  {/* Direct Axis Bank Transfer (NEFT/RTGS/IMPS) */}
+                  <BankTransferCard
+                    amount={formatPaiseToRupees(request.total_payable_paise)}
+                    reference={token.slice(0, 16)}
+                  />
                 </div>
               </div>
 

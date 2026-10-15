@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import StageDocumentCard from '../components/StageDocumentCard';
 import { UpiAppButtons } from '@/components/shared/UpiAppButtons';
+import { BankTransferCard } from '@/components/shared/BankTransferCard';
 
 interface FinalPaymentStageClientProps {
   engagementRef: string;
@@ -349,6 +350,11 @@ export default function FinalPaymentStageClient({
               <div className="sm:col-span-2 pt-1 border-t border-slate-200/60 text-[11px] text-slate-500">
                 Registered Location: <span className="text-slate-700">Eachanari, Coimbatore, Tamil Nadu 641021, India</span>
               </div>
+            </div>
+
+            {/* Direct Axis Bank Transfer & IFSC Card */}
+            <div className="pt-2">
+              <BankTransferCard amount={paymentData.totalPayable} reference={paymentData.requestRef} />
             </div>
           </div>
         </div>
