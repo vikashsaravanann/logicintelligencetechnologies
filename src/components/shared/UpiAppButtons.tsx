@@ -3,16 +3,11 @@
 import React, { useState } from 'react';
 import {
   ShieldCheck,
-  Building2,
   Copy,
   Check,
   X,
   ExternalLink,
-  Lock,
-  ArrowRight,
   Info,
-  Smartphone,
-  AlertCircle,
 } from 'lucide-react';
 
 export interface UpiAppInfo {
@@ -20,10 +15,8 @@ export interface UpiAppInfo {
   name: string;
   schemeUrl: string;
   brandColor: string;
-  brandBg: string;
-  accentBorder: string;
-  textColor: string;
-  icon: React.ReactNode;
+  logoImgUrl: string;
+  iconImgUrl: string;
 }
 
 interface UpiAppButtonsProps {
@@ -55,85 +48,39 @@ export function UpiAppButtons({
   // Standard Universal UPI Query Parameters
   const standardQuery = `pa=${encPa}&pn=${encPn}&am=${encAm}&cu=INR&tr=${encTr}&tn=${encTn}`;
 
-  // Dedicated App URLs
+  // Complete Official Brand Images & Deep-Link Handshakes
   const apps: UpiAppInfo[] = [
     {
       id: 'gpay',
       name: 'Google Pay',
       schemeUrl: `gpay://upi/pay?${standardQuery}`,
       brandColor: '#4285F4',
-      brandBg: 'bg-white',
-      accentBorder: 'border-slate-200 hover:border-[#4285F4]',
-      textColor: 'text-slate-800',
-      icon: (
-        <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-          <path
-            fill="#4285F4"
-            d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.64v3h3.88c2.27-2.09 3.665-5.17 3.665-9.08z"
-          />
-          <path
-            fill="#34A853"
-            d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.26v3.1C3.26 21.36 7.33 24 12 24z"
-          />
-          <path
-            fill="#FBBC05"
-            d="M5.28 14.32c-.25-.72-.38-1.49-.38-2.32s.13-1.6.38-2.32V6.57H1.26C.46 8.16 0 9.98 0 12s.46 3.84 1.26 5.43l4.02-3.11z"
-          />
-          <path
-            fill="#EA4335"
-            d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.26 6.57l4.02 3.11c.95-2.83 3.6-4.93 6.72-4.93z"
-          />
-        </svg>
-      ),
+      logoImgUrl: '/images/brand/gpay-logo.png',
+      iconImgUrl: '/images/brand/gpay-logo.png',
     },
     {
       id: 'phonepe',
       name: 'PhonePe',
       schemeUrl: `phonepe://pay?${standardQuery}`,
       brandColor: '#5f259f',
-      brandBg: 'bg-[#5f259f]',
-      accentBorder: 'border-[#521e8d]',
-      textColor: 'text-white',
-      icon: (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src="/images/brand/phonepe-icon.svg"
-          alt="PhonePe"
-          className="w-5 h-5 shrink-0 rounded-md object-contain shadow-2xs"
-        />
-      ),
+      logoImgUrl: '/images/brand/phonepe-logo.png',
+      iconImgUrl: '/images/brand/phonepe-icon.svg',
     },
     {
       id: 'paytm',
       name: 'Paytm',
       schemeUrl: `paytmmp://pay?${standardQuery}`,
       brandColor: '#002e6e',
-      brandBg: 'bg-white',
-      accentBorder: 'border-slate-200 hover:border-[#002e6e]',
-      textColor: 'text-slate-800',
-      icon: (
-        <div className="flex items-center text-[13px] font-black tracking-tight leading-none">
-          <span className="text-[#002e6e]">Pay</span>
-          <span className="text-[#00b9f5]">tm</span>
-        </div>
-      ),
+      logoImgUrl: '/images/brand/paytm-logo.png',
+      iconImgUrl: '/images/brand/paytm-logo.png',
     },
     {
       id: 'bhim',
       name: 'BHIM UPI',
       schemeUrl: `upi://pay?${standardQuery}`,
       brandColor: '#00796B',
-      brandBg: 'bg-white',
-      accentBorder: 'border-slate-200 hover:border-[#00796B]',
-      textColor: 'text-slate-800',
-      icon: (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src="/images/brand/bhim-icon.svg"
-          alt="BHIM UPI"
-          className="w-5 h-5 shrink-0 object-contain"
-        />
-      ),
+      logoImgUrl: '/images/brand/bhim-logo.png',
+      iconImgUrl: '/images/brand/bhim-icon.svg',
     },
   ];
 
@@ -168,13 +115,16 @@ export function UpiAppButtons({
             key={app.id}
             type="button"
             onClick={() => handleOpenApp(app)}
-            className={`group relative flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl ${app.brandBg} ${app.accentBorder} ${app.textColor} border shadow-2xs hover:shadow-xs transition-all active:scale-95 cursor-pointer`}
+            className="group relative flex items-center justify-center h-12 px-3 rounded-2xl bg-white hover:bg-slate-50/90 border border-slate-200/90 hover:border-slate-400 shadow-2xs hover:shadow-xs transition-all active:scale-95 cursor-pointer"
             title={`Pay ₹${amount} with ${app.name}`}
+            aria-label={`Pay with ${app.name}`}
           >
-            {app.icon}
-            <span className="text-xs font-bold tracking-tight font-sans">
-              {app.name === 'Google Pay' ? 'GPay' : app.name === 'BHIM UPI' ? 'BHIM' : app.name}
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={app.logoImgUrl}
+              alt={app.name}
+              className="h-5 max-h-5 w-auto max-w-[88%] object-contain transition-transform group-hover:scale-105"
+            />
           </button>
         ))}
       </div>
@@ -202,7 +152,7 @@ export function UpiAppButtons({
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="flex items-center gap-2 mb-1.5">
+              <div className="flex items-center gap-2 mb-2">
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
                   <ShieldCheck className="w-3 h-3" />
                   Verified UPI Handshake
@@ -212,11 +162,27 @@ export function UpiAppButtons({
                 </span>
               </div>
 
-              <h3 className="text-lg font-extrabold tracking-tight font-poppins text-white flex items-center gap-2">
-                <span>Launch {selectedApp.name}</span>
-              </h3>
-              <p className="text-xs text-slate-200/80 mt-1">
-                You are initiating a direct verified transfer for <strong>₹{amount}</strong>
+              <div className="flex items-center gap-3 mt-1">
+                <div className="bg-white px-2.5 py-1.5 rounded-xl shadow-xs border border-white/20 flex items-center justify-center shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={selectedApp.logoImgUrl}
+                    alt={selectedApp.name}
+                    className="h-6 w-auto max-w-[110px] object-contain"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold tracking-tight font-poppins text-white">
+                    Pay via {selectedApp.name}
+                  </h3>
+                  <p className="text-[11px] text-slate-200/90 font-mono">
+                    Direct Deep-Link Handshake
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-200/80 mt-2.5">
+                Initiating payment transfer for <strong className="text-white">₹{amount}</strong>
               </p>
             </div>
 
@@ -282,8 +248,16 @@ export function UpiAppButtons({
                 <button
                   type="button"
                   onClick={executeLaunch}
-                  className="px-5 py-2.5 rounded-xl bg-[#0B2545] hover:bg-[#1565C0] text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-[#0B2545] hover:bg-[#1565C0] text-white text-xs font-bold transition-all shadow-md flex items-center gap-2 cursor-pointer active:scale-95"
                 >
+                  <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-2xs">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={selectedApp.iconImgUrl}
+                      alt=""
+                      className="w-3.5 h-3.5 object-contain"
+                    />
+                  </span>
                   <span>Open {selectedApp.name}</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </button>
