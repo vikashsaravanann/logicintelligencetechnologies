@@ -1,6 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="27.5 0 5 6.3" width="50" height="63">
-  <!-- Official NPCI BHIM Saffron Chevron -->
-  <path d="m0 0 4.462-8.881-9.392-8.88z" fill="#F47920" transform="matrix(.35277777 0 0 -.35277777 29.48358 .009974)"/>
-  <!-- Official NPCI BHIM Green Chevron -->
-  <path d="m0 0 4.466-8.881-9.388-8.88z" fill="#008C44" transform="matrix(.35277777 0 0 -.35277777 30.587739 .009974)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <rect width="48" height="48" rx="12" fill="#00796B"/>
+  <!-- Official BHIM Dual Chevrons -->
+  <g transform="translate(6, 6) scale(0.75)">
+    <!-- Saffron Chevron -->
+    <path d="M 14 6 L 24 24 L 14 42 L 20 42 L 30 24 L 20 6 Z" fill="#F47920"/>
+    <!-- Green Chevron -->
+    <path d="M 24 6 L 34 24 L 24 42 L 30 42 L 40 24 L 30 6 Z" fill="#008C44"/>
+  </g>
+  <!-- BHIM Bold Wordmark -->
+  <text x="24" y="44" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="9" fill="#FFFFFF" letter-spacing="0.5">BHIM</text>
 </svg>
