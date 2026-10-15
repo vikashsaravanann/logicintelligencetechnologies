@@ -70,9 +70,10 @@ export default function EnterpriseChecklistClient({
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [clientNotes, setClientNotes] = useState(initialResponse?.client_notes || "");
-  const [agreeDisclaimer, setAgreeDisclaimer] = useState(false);
+  const [agreeDisclaimer, setAgreeDisclaimer] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isEditingSubmitted, setIsEditingSubmitted] = useState(false);
   const [submittedData, setSubmittedData] = useState<{
     confirmationReference: string;
     selectedCount: number;
@@ -87,6 +88,8 @@ export default function EnterpriseChecklistClient({
       : null
   );
 
+  const isLocked = Boolean(submittedData && !isEditingSubmitted);
+
   // Record client view asynchronously on mount
   useEffect(() => {
     if (!isAlreadySubmitted) {
@@ -100,7 +103,7 @@ export default function EnterpriseChecklistClient({
   }, [token, isAlreadySubmitted]);
 
   const toggleSelect = (num: number) => {
-    if (submittedData) return;
+    if (isLocked) return;
     setSelectedNumbers((prev) => {
       const next = new Set(prev);
       if (next.has(num)) {
@@ -113,13 +116,28 @@ export default function EnterpriseChecklistClient({
   };
 
   const selectAll = () => {
-    if (submittedData) return;
+    if (isLocked) return;
     setSelectedNumbers(new Set(checkpoints.map((c) => c.number)));
   };
 
   const clearAll = () => {
-    if (submittedData) return;
+    if (isLocked) return;
     setSelectedNumbers(new Set());
+  };
+
+  const selectPhase = (phaseNum: number) => {
+    if (isLocked) return;
+    const phaseCps = checkpoints.filter((c) => c.phase === phaseNum).map((c) => c.number);
+    setSelectedNumbers((prev) => {
+      const next = new Set(prev);
+      const allSelected = phaseCps.every((n) => next.has(n));
+      if (allSelected) {
+        phaseCps.forEach((n) => next.delete(n));
+      } else {
+        phaseCps.forEach((n) => next.add(n));
+      }
+      return next;
+    });
   };
 
   const toggleExpand = (num: number) => {
@@ -187,6 +205,7 @@ export default function EnterpriseChecklistClient({
         selectedCount: data.selectedCount,
         submittedAt: data.submittedAt,
       });
+      setIsEditingSubmitted(false);
       setShowReviewModal(false);
     } catch (err: any) {
       setSubmitError(err?.message || "An unexpected error occurred.");
@@ -349,61 +368,76 @@ export default function EnterpriseChecklistClient({
               </span>
             </div>
           </div>
-
-          <p className="text-xs text-[var(--lit-text-muted,#52677C)] leading-relaxed">
-            Our principal engineering team is reviewing your selected points against our architectural baseline.
-            We will use these selections to prepare your tailored technical Statement of Work and commercial proposal.
-          </p>
-        </div>
-      )}
-
-      {/* Phase Jump Navigation & Search Bar */}
-      <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-4 sm:p-6 shadow-xs space-y-4 sticky top-20 z-20 backdrop-blur-md bg-white/95">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--lit-text-muted,#52677C)]" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search all 50 checkpoints (e.g., PostgreSQL, RAG, WebSockets, RLS, Vercel)..."
-              className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] focus:outline-none focus:border-[var(--lit-blue,#1565C0)] focus:ring-2 focus:ring-[#1565C0]/15"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--lit-text-muted,#52677C)] hover:text-black"
-              >
-                Clear
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            {!submittedData && (
-              <>
-                <button
-                  type="button"
-                  onClick={selectAll}
-                  className="px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-xs font-semibold text-[var(--lit-navy,#0B2545)] transition-colors"
-                >
-                  Select All 50
-                </button>
-                <button
-                  type="button"
-                  onClick={clearAll}
-                  className="px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-xs font-semibold text-[var(--lit-text-muted,#52677C)] transition-colors"
-                >
-                  Clear
-                </button>
-              </>
-            )}
-
-            <div className="px-3.5 py-1.5 rounded-lg bg-[var(--lit-navy,#0B2545)] text-white text-xs font-mono font-bold tracking-wider">
-              {selectedNumbers.size} / 50 Selected
-            </div>
-          </div>
-        </div>
+ 
+           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-emerald-200/60">
+             <p className="text-xs text-[var(--lit-text-muted,#52677C)] leading-relaxed">
+               Our principal engineering team is reviewing your selected points against our architectural baseline.
+               We will use these selections to prepare your tailored technical Statement of Work and commercial proposal.
+             </p>
+             {!isEditingSubmitted ? (
+               <button
+                 type="button"
+                 onClick={() => setIsEditingSubmitted(true)}
+                 className="shrink-0 px-3.5 py-1.5 rounded-xl border border-emerald-300 bg-white hover:bg-emerald-50 text-emerald-800 text-xs font-semibold shadow-2xs transition"
+               >
+                 Modify Scope Selections
+               </button>
+             ) : (
+               <span className="shrink-0 text-xs font-mono font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-lg">
+                 Editing Scope · Choose Checkpoints & Resubmit
+               </span>
+             )}
+           </div>
+         </div>
+       )}
+ 
+       {/* Phase Jump Navigation & Search Bar */}
+       <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-4 sm:p-6 shadow-xs space-y-4 sticky top-20 z-20 backdrop-blur-md bg-white/95">
+         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+           <div className="relative flex-1">
+             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--lit-text-muted,#52677C)]" />
+             <input
+               type="text"
+               value={searchQuery}
+               onChange={(e) => setSearchQuery(e.target.value)}
+               placeholder="Search all 50 checkpoints (e.g., PostgreSQL, RAG, WebSockets, RLS, Vercel)..."
+               className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] focus:outline-none focus:border-[var(--lit-blue,#1565C0)] focus:ring-2 focus:ring-[#1565C0]/15"
+             />
+             {searchQuery && (
+               <button
+                 onClick={() => setSearchQuery("")}
+                 className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--lit-text-muted,#52677C)] hover:text-black"
+               >
+                 Clear
+               </button>
+             )}
+           </div>
+ 
+           <div className="flex items-center gap-2 shrink-0">
+             {!isLocked && (
+               <>
+                 <button
+                   type="button"
+                   onClick={selectAll}
+                   className="px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-xs font-semibold text-[var(--lit-navy,#0B2545)] transition-colors cursor-pointer"
+                 >
+                   Select All 50
+                 </button>
+                 <button
+                   type="button"
+                   onClick={clearAll}
+                   className="px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-xs font-semibold text-[var(--lit-text-muted,#52677C)] transition-colors cursor-pointer"
+                 >
+                   Clear
+                 </button>
+               </>
+             )}
+ 
+             <div className="px-3.5 py-1.5 rounded-lg bg-[var(--lit-navy,#0B2545)] text-white text-xs font-mono font-bold tracking-wider">
+               {selectedNumbers.size} / 50 Selected
+             </div>
+           </div>
+         </div>
 
         {/* Phase Jump Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-[11px] font-mono">
@@ -434,7 +468,7 @@ export default function EnterpriseChecklistClient({
               className="scroll-mt-36 space-y-4"
             >
               {/* Phase Header Banner */}
-              <div className="flex items-center justify-between pb-3 border-b-2 border-[var(--lit-navy,#0B2545)]/15">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b-2 border-[var(--lit-navy,#0B2545)]/15">
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-mono font-bold text-white bg-[var(--lit-navy,#0B2545)] px-3 py-1 rounded-lg">
                     PHASE {String(phase.phase).padStart(2, "0")}
@@ -443,9 +477,20 @@ export default function EnterpriseChecklistClient({
                     {phase.title}
                   </h2>
                 </div>
-                <span className="text-xs font-mono text-[var(--lit-text-muted,#52677C)]">
-                  Checkpoints {phase.range}
-                </span>
+                <div className="flex items-center gap-3 text-xs font-mono">
+                  <span className="text-[var(--lit-text-muted,#52677C)]">
+                    Checkpoints {phase.range}
+                  </span>
+                  {!isLocked && (
+                    <button
+                      type="button"
+                      onClick={() => selectPhase(phase.phase)}
+                      className="px-2.5 py-1 rounded-md border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-[11px] font-sans font-semibold text-[var(--lit-navy,#0B2545)] transition"
+                    >
+                      Toggle Phase
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Checkpoints list */}
@@ -469,7 +514,7 @@ export default function EnterpriseChecklistClient({
                           <input
                             type="checkbox"
                             checked={isSelected}
-                            disabled={Boolean(submittedData)}
+                            disabled={isLocked}
                             onChange={() => toggleSelect(cp.number)}
                             aria-label={`Select checkpoint ${cp.number}, ${cp.title}`}
                             className="w-5 h-5 rounded-md text-[var(--lit-blue,#1565C0)] border-[var(--lit-border-light,#DFE7EF)] focus:ring-2 focus:ring-[#1565C0]/20 cursor-pointer disabled:opacity-50"
@@ -559,7 +604,7 @@ export default function EnterpriseChecklistClient({
       </div>
 
       {/* Sticky Bottom Summary Bar */}
-      {!submittedData && (
+      {!isLocked && (
         <div className="fixed bottom-0 left-0 right-0 z-30 p-4 bg-white/95 backdrop-blur-md border-t border-[var(--lit-border-light,#DFE7EF)] shadow-lg">
           <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -573,6 +618,8 @@ export default function EnterpriseChecklistClient({
                 <span className="text-[11px] text-[var(--lit-text-muted,#52677C)] block">
                   {selectedNumbers.size === 0
                     ? "Select checkpoints to register scope"
+                    : isEditingSubmitted
+                    ? "Modify scope and resubmit updated baseline"
                     : "Ready for technical review & proposal drafting"}
                 </span>
               </div>
@@ -583,9 +630,9 @@ export default function EnterpriseChecklistClient({
                 type="button"
                 onClick={() => setShowReviewModal(true)}
                 disabled={selectedNumbers.size === 0}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm cursor-pointer"
               >
-                <span>Review Selections & Submit</span>
+                <span>{isEditingSubmitted ? "Review Changes & Update Scope" : "Review Selections & Submit"}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -729,8 +776,8 @@ export default function EnterpriseChecklistClient({
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={isSubmitting || !agreeDisclaimer}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50"
+                disabled={isSubmitting}
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer shadow-sm"
               >
                 {isSubmitting ? (
                   <>

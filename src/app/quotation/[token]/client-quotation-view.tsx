@@ -230,6 +230,7 @@ export function ClientQuotationView({
         <div className="flex items-center gap-3">
           <a
             href={`/api/documents/quotation/${token}/pdf`}
+            download={`LIT_Quotation_${quotation.quotation_ref || token}.pdf`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-[var(--lit-navy,#0B2545)] bg-white hover:bg-slate-50 border border-slate-300 rounded-lg shadow-xs transition-colors"
@@ -265,6 +266,7 @@ export function ClientQuotationView({
                 </Link>
                 <a
                   href={`/api/documents/quotation/${token}/pdf`}
+                  download={`LIT_Quotation_${quotation.quotation_ref || token}.pdf`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-emerald-800 bg-white border border-emerald-200 hover:bg-emerald-50 rounded-lg transition-colors"

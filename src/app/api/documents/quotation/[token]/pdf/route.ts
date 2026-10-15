@@ -24,11 +24,13 @@ function formatDate(dateInput?: string | Date | null): string {
 }
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ token: string }> }
 ) {
   try {
     const { token } = await context.params;
+    const isInline = request.nextUrl.searchParams.get("inline") === "true";
+    const disposition = isInline ? "inline" : "attachment";
 
     if (!token || token.trim().length === 0) {
       return NextResponse.json({ error: "Missing quotation token or identifier" }, { status: 400 });
@@ -106,7 +108,7 @@ export async function GET(
         status: 200,
         headers: {
           "Content-Type": "application/pdf",
-          "Content-Disposition": `inline; filename="Quotation-Sample-FE-01.pdf"`,
+          "Content-Disposition": `${disposition}; filename="Quotation-Sample-FE-01.pdf"`,
           "Content-Length": res.bytes.length.toString(),
           "x-document-sha256": res.sha256,
           "X-Content-Sha256": res.sha256,
@@ -217,7 +219,7 @@ export async function GET(
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename="${safeFilename}"`,
+        "Content-Disposition": `${disposition}; filename="${safeFilename}"`,
         "Content-Length": pdfResult.bytes.length.toString(),
         "x-document-sha256": pdfResult.sha256,
         "X-Content-Sha256": pdfResult.sha256,

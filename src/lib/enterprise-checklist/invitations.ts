@@ -267,7 +267,7 @@ export async function submitChecklistSelections(
   const tokenHash = hashToken(input.rawToken);
   const { data: inv, error: invErr } = await supabaseAdmin
     .from("enterprise_checklist_invitations")
-    .select("id, version_id, recipient_name, recipient_email, recipient_company, status, expires_at, submitted_at, revoked_at")
+    .select("id, client_id, version_id, recipient_name, recipient_email, recipient_company, status, expires_at, submitted_at, revoked_at")
     .eq("token_hash", tokenHash)
     .maybeSingle();
 
@@ -282,52 +282,67 @@ export async function submitChecklistSelections(
   if (state === "revoked") {
     return { ok: false, message: "This invitation link has been revoked." };
   }
-  if (state === "submitted" || inv.submitted_at) {
-    // Return existing confirmation reference idempotently
-    const { data: existingResp } = await supabaseAdmin
-      .from("enterprise_checklist_responses")
-      .select("confirmation_reference, selected_count, submitted_at")
-      .eq("invitation_id", inv.id)
-      .maybeSingle();
-
-    if (existingResp) {
-      return {
-        ok: true,
-        message: "Checklist selections were already submitted.",
-        confirmationReference: existingResp.confirmation_reference,
-        selectedCount: existingResp.selected_count,
-        submittedAt: existingResp.submitted_at,
-      };
-    }
-  }
-
   const confirmationReference = generateConfirmationReference();
   const now = new Date().toISOString();
   const submitterName = input.submittedByName?.trim() || inv.recipient_name;
 
-  // Insert response
-  const { data: resp, error: respErr } = await supabaseAdmin
+  // Resilient response recording: Check if response already exists for this invitation
+  const { data: existingResp } = await supabaseAdmin
     .from("enterprise_checklist_responses")
-    .insert({
-      invitation_id: inv.id,
-      version_id: inv.version_id,
-      confirmation_reference: confirmationReference,
-      submitted_by_name: submitterName,
-      selected_count: points.length,
-      client_notes: input.clientNotes?.trim() || null,
-      submitted_at: now,
-    })
-    .select("id")
-    .single();
+    .select("id, confirmation_reference")
+    .eq("invitation_id", inv.id)
+    .maybeSingle();
 
-  if (respErr || !resp) {
-    console.error("[Checklist] Response insert failed:", respErr);
-    return { ok: false, message: "Could not save selections. Please try again." };
+  let responseId: string;
+  let finalRef = existingResp?.confirmation_reference || confirmationReference;
+
+  if (existingResp) {
+    responseId = existingResp.id;
+    const { error: updateErr } = await supabaseAdmin
+      .from("enterprise_checklist_responses")
+      .update({
+        submitted_by_name: submitterName,
+        selected_count: points.length,
+        client_notes: input.clientNotes?.trim() || null,
+        submitted_at: now,
+      })
+      .eq("id", existingResp.id);
+
+    if (updateErr) {
+      console.error("[Checklist] Response update failed:", updateErr);
+      return { ok: false, message: "Could not update selections. Please try again." };
+    }
+
+    // Clean out prior items before writing new set
+    await supabaseAdmin
+      .from("enterprise_checklist_response_items")
+      .delete()
+      .eq("response_id", existingResp.id);
+  } else {
+    const { data: resp, error: respErr } = await supabaseAdmin
+      .from("enterprise_checklist_responses")
+      .insert({
+        invitation_id: inv.id,
+        version_id: inv.version_id,
+        confirmation_reference: finalRef,
+        submitted_by_name: submitterName,
+        selected_count: points.length,
+        client_notes: input.clientNotes?.trim() || null,
+        submitted_at: now,
+      })
+      .select("id")
+      .single();
+
+    if (respErr || !resp) {
+      console.error("[Checklist] Response insert failed:", respErr);
+      return { ok: false, message: "Could not save selections. Please try again." };
+    }
+    responseId = resp.id;
   }
 
   // Insert response items
   const itemRows = points.map((p) => ({
-    response_id: resp.id,
+    response_id: responseId,
     version_id: inv.version_id,
     point_number: p,
   }));
@@ -349,6 +364,69 @@ export async function submitChecklistSelections(
     })
     .eq("id", inv.id);
 
+  // Synchronize with linked client engagements if any exist
+  try {
+    let engQuery = supabaseAdmin.from("client_engagements").select("id, engagement_ref, current_stage");
+    if (inv.client_id) {
+      engQuery = engQuery.eq("client_id", inv.client_id);
+    } else if (inv.recipient_email) {
+      engQuery = engQuery.eq("contact_email", inv.recipient_email.toLowerCase());
+    }
+
+    const { data: linkedEngagements } = await engQuery;
+    if (linkedEngagements && linkedEngagements.length > 0) {
+      for (const eng of linkedEngagements) {
+        // Mark checklist stage as submitted
+        await supabaseAdmin
+          .from("engagement_stages")
+          .upsert(
+            {
+              engagement_id: eng.id,
+              stage_key: "checklist",
+              ordinal: 1,
+              title: "Enterprise Architecture & SOP Checklist",
+              status: "submitted",
+              completed_at: now,
+              snapshot: {
+                selectedPoints: points,
+                selectedCount: points.length,
+                confirmationReference: finalRef,
+                submittedAt: now,
+                submittedByName: submitterName,
+              },
+              updated_at: now,
+            },
+            { onConflict: "engagement_id,stage_key" }
+          );
+
+        // Unlock discovery stage (Stage 2)
+        await supabaseAdmin
+          .from("engagement_stages")
+          .upsert(
+            {
+              engagement_id: eng.id,
+              stage_key: "discovery",
+              ordinal: 2,
+              title: "Discovery & Requirements Architecture",
+              status: "available",
+              unlocked_at: now,
+              updated_at: now,
+            },
+            { onConflict: "engagement_id,stage_key" }
+          );
+
+        if (eng.current_stage === "checklist") {
+          await supabaseAdmin
+            .from("client_engagements")
+            .update({ current_stage: "discovery", updated_at: now })
+            .eq("id", eng.id);
+        }
+      }
+    }
+  } catch (syncErr) {
+    console.error("[Checklist] Linked engagement sync warning:", syncErr);
+  }
+
   // Send client receipt email
   try {
     const selectedDetails = ENTERPRISE_CHECKPOINTS.filter((c) => points.includes(c.number)).map(
@@ -362,13 +440,13 @@ export async function submitChecklistSelections(
     await sendEmail({
       to: inv.recipient_email,
       from: "noReply",
-      subject: `LIT | Checklist Submission Receipt [${confirmationReference}]`,
+      subject: `LIT | Checklist Submission Receipt [${finalRef}]`,
       category: "transactional",
       eventType: "checklist-submission-receipt",
       templateKey: "enterprise-checklist-submission-receipt-email",
       react: EnterpriseChecklistSubmissionReceiptEmail({
         recipientName: submitterName,
-        confirmationReference,
+        confirmationReference: finalRef,
         selectedCount: points.length,
         selectedPoints: selectedDetails,
       }),
@@ -394,7 +472,7 @@ export async function submitChecklistSelections(
         recipientName: submitterName,
         recipientEmail: inv.recipient_email,
         company: inv.recipient_company || "—",
-        confirmationReference,
+        confirmationReference: finalRef,
         selectedCount: points.length,
         adminUrl: adminReviewUrl,
         clientNotes: input.clientNotes || "None",
@@ -407,7 +485,209 @@ export async function submitChecklistSelections(
   return {
     ok: true,
     message: "Checklist selections successfully submitted and recorded.",
-    confirmationReference,
+    confirmationReference: finalRef,
+    selectedCount: points.length,
+    submittedAt: now,
+  };
+}
+
+/**
+ * Record checklist scope directly by LIT Admin on behalf of client ("IF US SUBMITTED").
+ */
+export async function recordAdminChecklistIntake(
+  invitationId: string,
+  input: {
+    selectedPoints: number[];
+    submitterName?: string;
+    internalNotes?: string;
+    notifyClient?: boolean;
+  }
+): Promise<SubmitResult> {
+  const points = Array.from(new Set(input.selectedPoints))
+    .map((p) => Number(p))
+    .filter((p) => Number.isInteger(p) && p >= 1 && p <= 50)
+    .sort((a, b) => a - b);
+
+  if (points.length === 0) {
+    return { ok: false, message: "Please select at least 1 checkpoint to record." };
+  }
+
+  const { data: inv, error: invErr } = await supabaseAdmin
+    .from("enterprise_checklist_invitations")
+    .select("id, version_id, client_id, recipient_name, recipient_email, recipient_company, status")
+    .eq("id", invitationId)
+    .maybeSingle();
+
+  if (invErr || !inv) {
+    return { ok: false, message: "Invitation not found." };
+  }
+
+  const now = new Date().toISOString();
+  const confirmationReference = generateConfirmationReference();
+  const submitterName = input.submitterName?.trim() || `LIT Admin (on behalf of ${inv.recipient_name})`;
+
+  // Upsert response
+  const { data: existingResp } = await supabaseAdmin
+    .from("enterprise_checklist_responses")
+    .select("id, confirmation_reference")
+    .eq("invitation_id", inv.id)
+    .maybeSingle();
+
+  let responseId: string;
+  let finalRef = existingResp?.confirmation_reference || confirmationReference;
+
+  if (existingResp) {
+    responseId = existingResp.id;
+    await supabaseAdmin
+      .from("enterprise_checklist_responses")
+      .update({
+        submitted_by_name: submitterName,
+        selected_count: points.length,
+        client_notes: input.internalNotes?.trim() || null,
+        submitted_at: now,
+      })
+      .eq("id", existingResp.id);
+
+    await supabaseAdmin
+      .from("enterprise_checklist_response_items")
+      .delete()
+      .eq("response_id", existingResp.id);
+  } else {
+    const { data: resp, error: respErr } = await supabaseAdmin
+      .from("enterprise_checklist_responses")
+      .insert({
+        invitation_id: inv.id,
+        version_id: inv.version_id,
+        confirmation_reference: finalRef,
+        submitted_by_name: submitterName,
+        selected_count: points.length,
+        client_notes: input.internalNotes?.trim() || null,
+        submitted_at: now,
+      })
+      .select("id")
+      .single();
+
+    if (respErr || !resp) {
+      console.error("[Checklist Admin Intake] Response insert failed:", respErr);
+      return { ok: false, message: "Could not save selections." };
+    }
+    responseId = resp.id;
+  }
+
+  // Insert items
+  const itemRows = points.map((p) => ({
+    response_id: responseId,
+    version_id: inv.version_id,
+    point_number: p,
+  }));
+
+  await supabaseAdmin.from("enterprise_checklist_response_items").insert(itemRows);
+
+  // Update invitation status
+  await supabaseAdmin
+    .from("enterprise_checklist_invitations")
+    .update({
+      status: "submitted",
+      submitted_at: now,
+      internal_notes: input.internalNotes?.trim() || undefined,
+    })
+    .eq("id", inv.id);
+
+  // Sync linked engagements
+  try {
+    let engQuery = supabaseAdmin.from("client_engagements").select("id, current_stage");
+    if (inv.client_id) {
+      engQuery = engQuery.eq("client_id", inv.client_id);
+    } else if (inv.recipient_email) {
+      engQuery = engQuery.eq("contact_email", inv.recipient_email.toLowerCase());
+    }
+
+    const { data: linkedEngagements } = await engQuery;
+    if (linkedEngagements && linkedEngagements.length > 0) {
+      for (const eng of linkedEngagements) {
+        await supabaseAdmin
+          .from("engagement_stages")
+          .upsert(
+            {
+              engagement_id: eng.id,
+              stage_key: "checklist",
+              ordinal: 1,
+              title: "Enterprise Architecture & SOP Checklist",
+              status: "submitted",
+              completed_at: now,
+              snapshot: {
+                selectedPoints: points,
+                selectedCount: points.length,
+                confirmationReference: finalRef,
+                submittedAt: now,
+                intakeMode: "admin_intake",
+              },
+              updated_at: now,
+            },
+            { onConflict: "engagement_id,stage_key" }
+          );
+
+        await supabaseAdmin
+          .from("engagement_stages")
+          .upsert(
+            {
+              engagement_id: eng.id,
+              stage_key: "discovery",
+              ordinal: 2,
+              title: "Discovery & Requirements Architecture",
+              status: "available",
+              unlocked_at: now,
+              updated_at: now,
+            },
+            { onConflict: "engagement_id,stage_key" }
+          );
+
+        if (eng.current_stage === "checklist") {
+          await supabaseAdmin
+            .from("client_engagements")
+            .update({ current_stage: "discovery", updated_at: now })
+            .eq("id", eng.id);
+        }
+      }
+    }
+  } catch (engErr) {
+    console.error("[Checklist Admin Intake] Engagement sync warning:", engErr);
+  }
+
+  // Optionally send client receipt email
+  if (input.notifyClient !== false && inv.recipient_email) {
+    try {
+      const selectedDetails = ENTERPRISE_CHECKPOINTS.filter((c) => points.includes(c.number)).map(
+        (c) => ({
+          number: c.number,
+          title: c.title,
+          phase: c.phase_title,
+        })
+      );
+
+      await sendEmail({
+        to: inv.recipient_email,
+        from: "noReply",
+        subject: `LIT | Checklist Scope Intake Receipt [${finalRef}]`,
+        category: "transactional",
+        eventType: "checklist-submission-receipt",
+        templateKey: "enterprise-checklist-submission-receipt-email",
+        react: EnterpriseChecklistSubmissionReceiptEmail({
+          recipientName: inv.recipient_name,
+          confirmationReference: finalRef,
+          selectedCount: points.length,
+          selectedPoints: selectedDetails,
+        }),
+      });
+    } catch (emailErr) {
+      console.error("[Checklist Admin Intake] Email dispatch warning:", emailErr);
+    }
+  }
+
+  return {
+    ok: true,
+    message: "Scope intake recorded successfully by admin.",
+    confirmationReference: finalRef,
     selectedCount: points.length,
     submittedAt: now,
   };
@@ -427,19 +707,8 @@ export async function sendChecklistInvitationEmail(invitationId: string): Promis
 
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || COMPANY.websiteUrl).replace(/\/$/, "");
 
-  // Note: Since raw token is cryptographic and stored hashed, if we are resending without raw token,
-  // we issue a fresh token to guarantee link validity
+  // Issue a fresh cryptographic token for this dispatch
   const { token, tokenHash } = generateChecklistToken();
-  await supabaseAdmin
-    .from("enterprise_checklist_invitations")
-    .update({
-      token_hash: tokenHash,
-      sent_at: new Date().toISOString(),
-      sent_count: (inv.sent_count || 0) + 1,
-      status: inv.status === "draft" ? "sent" : inv.status,
-    })
-    .eq("id", inv.id);
-
   const inviteUrl = `${siteUrl}/enterprise-checklist/${token}`;
 
   const result = await sendEmail({
@@ -460,6 +729,16 @@ export async function sendChecklistInvitationEmail(invitationId: string): Promis
   if (!result.success) {
     return { ok: false, message: result.message || "Failed to send invitation email." };
   }
+
+  await supabaseAdmin
+    .from("enterprise_checklist_invitations")
+    .update({
+      token_hash: tokenHash,
+      sent_at: new Date().toISOString(),
+      sent_count: (inv.sent_count || 0) + 1,
+      status: "sent",
+    })
+    .eq("id", inv.id);
 
   return { ok: true, message: "Invitation email dispatched successfully." };
 }

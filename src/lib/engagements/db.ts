@@ -528,6 +528,100 @@ export async function submitStageAction(input: {
       if (engUpdateErr) {
         console.error('[submitStageAction] Engagement current_stage update error:', engUpdateErr);
       }
+
+      // 5. If checklist submission, synchronize with enterprise_checklist_invitations & enterprise_checklist_responses
+      if (stageKey === 'checklist' && (action === 'submit_checklist' || action === 'complete_stage')) {
+        try {
+          const selectedPoints = Array.isArray(payload.selectedItems)
+            ? payload.selectedItems
+                .map((p: any) => Number(p))
+                .filter((p: number) => Number.isInteger(p) && p >= 1 && p <= 50)
+            : [];
+
+          if (selectedPoints.length > 0) {
+            let invQuery = supabaseAdmin
+              .from('enterprise_checklist_invitations')
+              .select('id, version_id, recipient_name, recipient_company, client_id, status')
+              .order('created_at', { ascending: false });
+
+            if (engagement.checklist_invitation_id) {
+              invQuery = invQuery.eq('id', engagement.checklist_invitation_id);
+            } else if (engagement.client_id) {
+              invQuery = invQuery.eq('client_id', engagement.client_id);
+            } else if (engagement.contact_email) {
+              invQuery = invQuery.eq('recipient_email', engagement.contact_email.toLowerCase());
+            }
+
+            const { data: matchedInvs } = await invQuery.limit(1);
+            const matchedInv = matchedInvs && matchedInvs[0];
+
+            if (matchedInv) {
+              const nowIso = new Date().toISOString();
+              const { data: existingResp } = await supabaseAdmin
+                .from('enterprise_checklist_responses')
+                .select('id, confirmation_reference')
+                .eq('invitation_id', matchedInv.id)
+                .maybeSingle();
+
+              let responseId: string | undefined = existingResp?.id;
+              if (existingResp) {
+                await supabaseAdmin
+                  .from('enterprise_checklist_responses')
+                  .update({
+                    submitted_by_name: payload.submittedByName || engagement.contact_name || matchedInv.recipient_name,
+                    selected_count: selectedPoints.length,
+                    client_notes: payload.notes || null,
+                    submitted_at: nowIso,
+                  })
+                  .eq('id', existingResp.id);
+
+                await supabaseAdmin
+                  .from('enterprise_checklist_response_items')
+                  .delete()
+                  .eq('response_id', existingResp.id);
+              } else {
+                const confRef = `LIT-CHK-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+                const { data: newResp } = await supabaseAdmin
+                  .from('enterprise_checklist_responses')
+                  .insert({
+                    invitation_id: matchedInv.id,
+                    version_id: matchedInv.version_id,
+                    confirmation_reference: confRef,
+                    submitted_by_name: payload.submittedByName || engagement.contact_name || matchedInv.recipient_name,
+                    selected_count: selectedPoints.length,
+                    client_notes: payload.notes || null,
+                    submitted_at: nowIso,
+                  })
+                  .select('id')
+                  .single();
+
+                if (newResp) {
+                  responseId = newResp.id;
+                }
+              }
+
+              if (responseId) {
+                const itemRows = selectedPoints.map((p: number) => ({
+                  response_id: responseId,
+                  version_id: matchedInv.version_id,
+                  point_number: p,
+                }));
+                await supabaseAdmin.from('enterprise_checklist_response_items').insert(itemRows);
+              }
+
+              await supabaseAdmin
+                .from('enterprise_checklist_invitations')
+                .update({
+                  status: 'submitted',
+                  submitted_at: nowIso,
+                })
+                .eq('id', matchedInv.id);
+            }
+          }
+        } catch (syncErr) {
+          console.error('[submitStageAction] Checklist invitation sync error:', syncErr);
+        }
+      }
     } catch (err) {
       console.error('[submitStageAction] DB write error:', err);
     }

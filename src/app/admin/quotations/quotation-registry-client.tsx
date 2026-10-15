@@ -408,6 +408,7 @@ export function QuotationRegistryClient({
                         {/* Download PDF Button */}
                         <a
                           href={`/api/documents/quotation/${q.secure_token}/pdf`}
+                          download={`LIT_Quotation_${q.quotation_ref}.pdf`}
                           target="_blank"
                           rel="noreferrer"
                           title="Download Generated PDF"

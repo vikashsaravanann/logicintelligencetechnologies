@@ -20,10 +20,12 @@ function formatDate(dateInput?: string | Date | null): string {
 }
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ receiptId: string }> }
 ) {
   const { receiptId } = await context.params;
+  const isInline = request.nextUrl.searchParams.get("inline") === "true";
+  const disposition = isInline ? "inline" : "attachment";
 
   if (!receiptId || receiptId.trim().length === 0) {
     return NextResponse.json({ error: "Missing receipt identifier" }, { status: 400 });

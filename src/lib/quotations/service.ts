@@ -647,8 +647,8 @@ export async function createQuotation(
       }
     );
 
-    const shouldPublish = input.publishImmediately === true;
-    if (shouldPublish && !calc.isValidForPublish) {
+    const shouldPublish = input.publishImmediately === true || (input.publishImmediately !== false && calc.isValidForPublish);
+    if (input.publishImmediately === true && !calc.isValidForPublish) {
       return {
         ok: false,
         error: `Quotation is not ready for publishing: ${calc.validationErrors.join("; ")}`,

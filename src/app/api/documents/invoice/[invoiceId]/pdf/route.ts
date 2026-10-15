@@ -20,10 +20,12 @@ function formatDate(dateInput?: string | Date | null): string {
 }
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ invoiceId: string }> }
 ) {
   const { invoiceId } = await context.params;
+  const isInline = request.nextUrl.searchParams.get("inline") === "true";
+  const disposition = isInline ? "inline" : "attachment";
 
   if (!invoiceId || invoiceId.trim().length === 0) {
     return NextResponse.json({ error: "Missing invoice identifier" }, { status: 400 });
@@ -73,7 +75,7 @@ export async function GET(
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename="Invoice-${sampleInvoice.invoiceNumber}.pdf"`,
+        "Content-Disposition": `${disposition}; filename="Invoice-${sampleInvoice.invoiceNumber}.pdf"`,
         "Content-Length": res.bytes.length.toString(),
         "x-document-sha256": res.sha256,
         "X-Content-Sha256": res.sha256,
@@ -111,7 +113,7 @@ export async function GET(
             status: 200,
             headers: {
               "Content-Type": "application/pdf",
-              "Content-Disposition": `inline; filename="Invoice-${doc.document_number}.pdf"`,
+              "Content-Disposition": `${disposition}; filename="Invoice-${doc.document_number}.pdf"`,
               "Content-Length": buffer.length.toString(),
               "x-document-sha256": doc.sha256_hash,
               "X-Content-Sha256": doc.sha256_hash,
@@ -266,7 +268,7 @@ export async function GET(
           status: 200,
           headers: {
             "Content-Type": "application/pdf",
-            "Content-Disposition": `inline; filename="Invoice-${docNum}.pdf"`,
+            "Content-Disposition": `${disposition}; filename="Invoice-${docNum}.pdf"`,
             "Content-Length": res.bytes.length.toString(),
             "x-document-sha256": res.sha256,
             "X-Content-Sha256": res.sha256,

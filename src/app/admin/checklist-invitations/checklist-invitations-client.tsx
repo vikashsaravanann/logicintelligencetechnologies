@@ -116,14 +116,16 @@ export default function ChecklistInvitationsClient({ initialInvitations }: Props
 
       // Add fresh record to UI
       const created = data.invitation;
+      const emailSent = created?.emailDispatched === true;
       const newRow: ChecklistInvitationRow = {
         id: created.invitationId,
         recipient_name: newName.trim(),
         recipient_email: newEmail.trim(),
         recipient_company: newCompany.trim() || null,
-        status: "issued",
+        status: emailSent ? "sent" : "issued",
         expires_at: created.expiresAt,
-        sent_count: 0,
+        sent_count: emailSent ? 1 : 0,
+        sent_at: emailSent ? new Date().toISOString() : undefined,
         created_at: new Date().toISOString(),
       };
 

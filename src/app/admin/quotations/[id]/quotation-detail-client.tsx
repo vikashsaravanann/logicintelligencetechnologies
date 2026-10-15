@@ -256,6 +256,7 @@ https://www.logicintelligencetechnologies.in`;
 
             <a
               href={`/api/documents/quotation/${quotation.secure_token}/pdf`}
+              download={`LIT_Quotation_${quotation.quotation_ref}.pdf`}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-semibold transition-colors"
@@ -725,6 +726,7 @@ https://www.logicintelligencetechnologies.in`;
               <div>
                 <a
                   href={`/api/documents/quotation/${quotation.secure_token}/pdf`}
+                  download={`LIT_Quotation_${quotation.quotation_ref}.pdf`}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:underline font-medium"
