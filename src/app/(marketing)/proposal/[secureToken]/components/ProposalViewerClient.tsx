@@ -19,6 +19,7 @@ import {
 
 import { COMPANY } from "@/config/company";
 import { trackEvent } from "@/lib/analytics";
+import { StageApprovalModal } from "@/components/shared/StageApprovalModal";
 
 interface Props {
   proposal: any;
@@ -29,6 +30,7 @@ export default function ProposalViewerClient({ proposal }: Props) {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [status, setStatus] = useState<string>(proposal.status);
   const [loading, setLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Record the view once, client-side. Best-effort.
@@ -313,9 +315,9 @@ export default function ProposalViewerClient({ proposal }: Props) {
 
               <button
                 type="button"
-                onClick={handleApprove}
+                onClick={() => setShowConfirmModal(true)}
                 disabled={loading || !signerName.trim() || !agreeTerms}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white font-semibold text-xs uppercase tracking-wider transition-all shadow-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white font-semibold text-xs uppercase tracking-wider transition-all shadow-sm disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -333,6 +335,19 @@ export default function ProposalViewerClient({ proposal }: Props) {
           )}
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <StageApprovalModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleApprove}
+        title="Confirm Proposal Approval & Digital Signature"
+        stageName={proposal.title || "Commercial Proposal & Contract Terms"}
+        companyName={proposal.client_company || proposal.client_name || "Enterprise Client"}
+        defaultNotes={`Formally authorized and signed by ${signerName} on behalf of ${proposal.client_company || proposal.client_name}.`}
+        inputLabel="Signer Legal Assent Confirmation Notes *"
+        inputPlaceholder="Confirming authorized contract acceptance..."
+      />
     </div>
   );
 }

@@ -244,6 +244,22 @@ export const ORDERED_STAGE_KEYS: StageKey[] = [
   'support',
 ];
 
+export const CANONICAL_STAGE_UUIDS: Record<StageKey, string> = {
+  'checklist': '3478510e-1296-4d90-8aa2-039940f29ab3',
+  'discovery': 'b4087f8a-1ba9-4035-be3c-451d2ef49780',
+  'proposal': 'a6ea78bd-8c6d-4603-a7b1-a3f8ca80f8ef',
+  'acceptance': 'b6034b0c-c834-44dc-8223-b3b9786cc044',
+  'sow': 'b251aff0-4b3c-4816-b966-8277f218c623',
+  'initial-invoice': 'a0c1842a-2c50-4e18-8d09-a8032db873ae',
+  'onboarding': 'ffa69d8b-fda1-4305-bb23-c2ce82a66583',
+  'technical-spec': 'a606b737-3821-449a-b6f4-31b48b541f61',
+  'development': 'e14789c8-24f7-4c4f-b536-31e6a451f2f1',
+  'delivery-acceptance': '194ac4ad-9236-44a2-8071-da58336db913',
+  'final-payment': 'd060dd57-6d7b-488d-87c1-c30ee336ba7b',
+  'handover': 'a69315b6-2beb-4d5d-bc52-5d16e63aaa90',
+  'support': '74b1e0dd-3dab-4357-bdf6-3d97ca193ca9',
+};
+
 export interface ClientEngagement {
   id: string;
   engagement_ref: string;

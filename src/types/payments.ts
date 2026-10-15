@@ -260,8 +260,8 @@ export interface UpdateCompanyCredentialsInput {
 }
 
 export interface TaxCalculationInput {
-  subtotalPaise: number;
-  discountPaise?: number;
+  subtotalPaise: number | bigint;
+  discountPaise?: number | bigint;
   taxMode?: TaxMode;
   gstRateBps?: number;
   isInterstate?: boolean;

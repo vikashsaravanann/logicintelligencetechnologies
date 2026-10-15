@@ -34,6 +34,7 @@ import {
   CANONICAL_13_STAGES,
 } from '@/lib/engagements/types';
 import { ENTERPRISE_CHECKPOINTS, EnterpriseCheckpoint } from '@/data/enterpriseDeploymentChecklist';
+import { StageApprovalModal } from '@/components/shared/StageApprovalModal';
 
 interface EngagementDetailAdminClientProps {
   engagement: ClientEngagement;
@@ -57,6 +58,16 @@ export default function EngagementDetailAdminClient({
     initialActiveStageKey || (engagement.current_stage as StageKey) || 'checklist'
   );
   const [checklistSearch, setChecklistSearch] = useState<string>('');
+
+  // Animated Approval Modal State
+  const [approvalModal, setApprovalModal] = useState<{
+    isOpen: boolean;
+    stageKey: StageKey;
+    stageTitle: string;
+    stageOrdinal: number;
+    isPaymentStage: boolean;
+    defaultNotes: string;
+  } | null>(null);
 
   const currentStageRecord = stages.find((s) => s.stage_key === activeInspectorStageKey) || stages[0];
 
@@ -98,126 +109,113 @@ export default function EngagementDetailAdminClient({
     }
   };
 
-  const handleApproveStage = async (stageKey: StageKey) => {
+  const handleApproveStage = (stageKey: StageKey) => {
     const stage = stages.find((s) => s.stage_key === stageKey);
     if (!stage) return;
 
     const isPaymentStage = stageKey === 'initial-invoice' || stageKey === 'final-payment';
-    if (isPaymentStage) {
-      return handleBankVerification(stageKey);
-    }
-
+    const snapshot = (stage.snapshot || {}) as Record<string, any>;
+    const defaultUtr = snapshot.utr || snapshot.billingSubmission?.utr || 'BANK-CR-MANUAL';
     const defaultNote = `Approved and verified by Super Admin for ${stage.title}. Next milestone unlocked.`;
-    const adminNotes = window.prompt(
-      `Approve and unlock next stage for "${stage.title}". Enter verification notes:`,
-      defaultNote
-    );
-    if (adminNotes === null) return; // User cancelled prompt
 
-    setUpdatingStageId(stage.id);
-    try {
-      const res = await fetch(`/api/engagements/${engagement.engagement_ref}/stages/${stageKey}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          status: 'approved',
-          action: 'admin_approve_stage',
-          notes: adminNotes.trim() || defaultNote,
-          unlockNext: true,
-          actorRole: 'admin',
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to approve stage');
-      }
-
-      if (data.stages && Array.isArray(data.stages)) {
-        setStages(data.stages);
-      } else {
-        const currentIndex = stages.findIndex((s) => s.stage_key === stageKey);
-        setStages((prev) =>
-          prev.map((s, idx) => {
-            if (idx === currentIndex) {
-              return { ...s, status: 'approved', approved_at: new Date().toISOString() };
-            }
-            if (idx === currentIndex + 1) {
-              return { ...s, status: 'available', unlocked_at: new Date().toISOString() };
-            }
-            return s;
-          })
-        );
-      }
-      setSuccessMessage(
-        `✓ Stage "${stage.title}" approved! Downstream milestone unlocked, and notification email sent to client.`
-      );
-      setTimeout(() => setSuccessMessage(null), 4500);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to approve stage';
-      alert(msg);
-    } finally {
-      setUpdatingStageId(null);
-    }
+    setApprovalModal({
+      isOpen: true,
+      stageKey,
+      stageTitle: stage.title,
+      stageOrdinal: stage.ordinal,
+      isPaymentStage,
+      defaultNotes: isPaymentStage ? defaultUtr : defaultNote,
+    });
   };
 
-  const handleBankVerification = async (stageKey: 'initial-invoice' | 'final-payment') => {
+  const handleConfirmApproval = async (notesOrUtr: string) => {
+    if (!approvalModal) return;
+    const { stageKey, isPaymentStage } = approvalModal;
     const stage = stages.find((s) => s.stage_key === stageKey);
     if (!stage) return;
 
-    const snapshot = (stage.snapshot || {}) as Record<string, any>;
-    const defaultUtr = snapshot.utr || snapshot.billingSubmission?.utr || 'BANK-CR-MANUAL';
-
-    const bankCreditRef = window.prompt(
-      `Enter Receiving Bank Credit Transaction Reference (UTR / IMPS / NEFT ref from bank statement) to confirm payment for ${stage.title}:`,
-      defaultUtr
-    );
-    if (!bankCreditRef) return;
-
     setUpdatingStageId(stage.id);
+
     try {
-      const res = await fetch('/api/admin/payments/reconcile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          engagementRef: engagement.engagement_ref,
-          stageKey,
-          transactionRef: bankCreditRef.trim(),
-          actorName: 'Super Admin',
-          reconciliationNotes: `Manual receiving bank verification for ${stageKey}. Ref: ${bankCreditRef.trim()}`,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to verify bank credit');
-      }
+      if (isPaymentStage) {
+        const res = await fetch('/api/admin/payments/reconcile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            engagementRef: engagement.engagement_ref,
+            stageKey,
+            transactionRef: notesOrUtr.trim(),
+            actorName: 'Super Admin',
+            reconciliationNotes: `Manual receiving bank verification for ${stageKey}. Ref: ${notesOrUtr.trim()}`,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Failed to verify bank credit');
+        }
 
-      if (data.stages && Array.isArray(data.stages)) {
-        setStages(data.stages);
-      } else {
-        const currentIndex = stages.findIndex((s) => s.stage_key === stageKey);
-        const nextStage = stages[currentIndex + 1];
+        if (data.stages && Array.isArray(data.stages)) {
+          setStages(data.stages);
+        } else {
+          const currentIndex = stages.findIndex((s) => s.stage_key === stageKey);
+          const nextStage = stages[currentIndex + 1];
 
-        setStages((prev) =>
-          prev.map((s, idx) => {
-            if (idx === currentIndex) {
-              return { ...s, status: 'verified', approved_at: new Date().toISOString() };
-            }
-            if (nextStage && idx === currentIndex + 1) {
-              return { ...s, status: 'available', unlocked_at: new Date().toISOString() };
-            }
-            return s;
-          })
+          setStages((prev) =>
+            prev.map((s, idx) => {
+              if (idx === currentIndex) {
+                return { ...s, status: 'verified', approved_at: new Date().toISOString() };
+              }
+              if (nextStage && idx === currentIndex + 1) {
+                return { ...s, status: 'available', unlocked_at: new Date().toISOString() };
+              }
+              return s;
+            })
+          );
+        }
+
+        setSuccessMessage(
+          data.message ||
+            `Receiving bank credit verified! Payment marked verified, downstream stage unlocked, and Tax Invoice & Receipt issued.`
         );
-      }
+        setTimeout(() => setSuccessMessage(null), 4500);
+      } else {
+        const res = await fetch(`/api/engagements/${engagement.engagement_ref}/stages/${stageKey}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: 'approved',
+            action: 'admin_approve_stage',
+            notes: notesOrUtr.trim(),
+            unlockNext: true,
+            actorRole: 'admin',
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Failed to approve stage');
+        }
 
-      setSuccessMessage(
-        data.message ||
-          `Receiving bank credit verified! Payment marked verified, downstream stage unlocked, and Tax Invoice & Receipt issued.`
-      );
-      setTimeout(() => setSuccessMessage(null), 4500);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to verify bank credit';
-      alert(msg);
+        if (data.stages && Array.isArray(data.stages)) {
+          setStages(data.stages);
+        } else {
+          const currentIndex = stages.findIndex((s) => s.stage_key === stageKey);
+          setStages((prev) =>
+            prev.map((s, idx) => {
+              if (idx === currentIndex) {
+                return { ...s, status: 'approved', approved_at: new Date().toISOString() };
+              }
+              if (idx === currentIndex + 1) {
+                return { ...s, status: 'available', unlocked_at: new Date().toISOString() };
+              }
+              return s;
+            })
+          );
+        }
+        setSuccessMessage(
+          `✓ Stage "${stage.title}" approved! Downstream milestone unlocked, and notification email sent to client.`
+        );
+        setTimeout(() => setSuccessMessage(null), 4500);
+      }
     } finally {
       setUpdatingStageId(null);
     }
@@ -1285,7 +1283,7 @@ export default function EngagementDetailAdminClient({
                           {isPaymentStage && stage.status !== 'verified' && (
                             <button
                               type="button"
-                              onClick={() => handleBankVerification(stage.stage_key as any)}
+                              onClick={() => handleApproveStage(stage.stage_key)}
                               disabled={isUpdating}
                               className="px-2.5 py-1 text-[11px] bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors shadow-2xs cursor-pointer"
                             >
@@ -1365,6 +1363,25 @@ export default function EngagementDetailAdminClient({
           ))}
         </div>
       </div>
+
+      {/* Animated Super Admin Approval & Bank Verification Confirmation Modal */}
+      {approvalModal && (
+        <StageApprovalModal
+          isOpen={approvalModal.isOpen}
+          onClose={() => setApprovalModal(null)}
+          onConfirm={handleConfirmApproval}
+          title={
+            approvalModal.isPaymentStage
+              ? 'Verify Bank Statement & Clear Milestone'
+              : 'Approve & Unlock Stage Milestone'
+          }
+          stageName={approvalModal.stageTitle}
+          stageOrdinal={approvalModal.stageOrdinal}
+          companyName={engagement.company_name}
+          isPaymentStage={approvalModal.isPaymentStage}
+          defaultNotes={approvalModal.defaultNotes}
+        />
+      )}
     </div>
   );
 }

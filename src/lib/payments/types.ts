@@ -39,6 +39,7 @@ export interface UtrSubmissionInput {
 export interface MobileIntentLink {
   appId: "gpay" | "phonepe" | "paytm" | "bhim" | "generic";
   appName: string;
+  name?: string;
   url: string;
   colorScheme: {
     bg: string;

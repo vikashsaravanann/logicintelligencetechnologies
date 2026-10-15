@@ -28,6 +28,23 @@ export interface UpiPaymentParams {
   tn?: string; // Transaction Note
 }
 
+export type UpiPaymentInput =
+  | UpiPaymentParams
+  | {
+      pa?: string;
+      payeeVpa?: string;
+      pn?: string;
+      payeeName?: string;
+      am?: number;
+      amount?: number;
+      amountPaise?: number;
+      cu?: string;
+      tr?: string;
+      transactionRef?: string;
+      tn?: string;
+      transactionNote?: string;
+    };
+
 const upiParamsSchema = z.object({
   pa: z.string().trim().regex(/^[\w.-]+@[\w.-]+$/, "Invalid UPI VPA address"),
   pn: z.string().trim().min(1, "Payee name is required").max(100),
@@ -53,7 +70,23 @@ export function validateUpiParams(raw: unknown): UpiPaymentParams {
  * Example:
  * upi://pay?pa=9342877474@ptyes&pn=S%20VIKASH&am=59000.00&cu=INR&tr=LIT-PAY-2026-X8F9C2&tn=Milestone%20Deposit
  */
-export function buildUpiUri(params: UpiPaymentParams): string {
+export function buildUpiUri(input: UpiPaymentInput): string {
+  const raw = (input || {}) as Record<string, any>;
+  const params: UpiPaymentParams = {
+    pa: raw.pa || raw.payeeVpa || LIT_PAYEE_CONFIG.upiId,
+    pn: raw.pn || raw.payeeName || LIT_PAYEE_CONFIG.accountHolder,
+    am:
+      typeof raw.am === "number"
+        ? raw.am
+        : typeof raw.amount === "number"
+        ? raw.amount
+        : typeof raw.amountPaise === "number"
+        ? raw.amountPaise / 100
+        : 0,
+    cu: raw.cu || "INR",
+    tr: raw.tr || raw.transactionRef || `LIT-TXN-${Date.now()}`,
+    tn: raw.tn || raw.transactionNote,
+  };
   const validated = validateUpiParams(params);
   const formattedAmount = validated.am.toFixed(2);
   const currency = validated.cu || "INR";
@@ -131,6 +164,7 @@ export function getMobileIntentLinks(upiUri: string): MobileIntentLink[] {
     {
       appId: "gpay",
       appName: "Google Pay",
+      name: "Google Pay",
       url: `gpay://upi/pay?${queryString}`,
       colorScheme: {
         bg: "bg-[#FFFFFF]",
@@ -141,6 +175,7 @@ export function getMobileIntentLinks(upiUri: string): MobileIntentLink[] {
     {
       appId: "phonepe",
       appName: "PhonePe",
+      name: "PhonePe",
       url: `phonepe://pay?${queryString}`,
       colorScheme: {
         bg: "bg-[#5F259F]",
@@ -151,6 +186,7 @@ export function getMobileIntentLinks(upiUri: string): MobileIntentLink[] {
     {
       appId: "paytm",
       appName: "Paytm",
+      name: "Paytm",
       url: `paytmmp://pay?${queryString}`,
       colorScheme: {
         bg: "bg-[#002E6E]",
@@ -161,6 +197,7 @@ export function getMobileIntentLinks(upiUri: string): MobileIntentLink[] {
     {
       appId: "bhim",
       appName: "BHIM UPI",
+      name: "BHIM",
       url: `bhim://pay?${queryString}`,
       colorScheme: {
         bg: "bg-[#00796B]",
@@ -171,6 +208,7 @@ export function getMobileIntentLinks(upiUri: string): MobileIntentLink[] {
     {
       appId: "generic",
       appName: "Any UPI App",
+      name: "Default UPI App",
       url: upiUri,
       colorScheme: {
         bg: "bg-[#1565C0]",

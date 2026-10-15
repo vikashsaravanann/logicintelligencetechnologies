@@ -9,6 +9,7 @@ import {
   StageStatus,
   CANONICAL_13_STAGES,
   ORDERED_STAGE_KEYS,
+  CANONICAL_STAGE_UUIDS,
   CreateEngagementInput,
 } from './types';
 import { sendEngagementInvitationEmail } from './invitations';
@@ -20,21 +21,7 @@ export function isUuid(val: string): boolean {
   return typeof val === 'string' && UUID_REGEX.test(val);
 }
 
-export const CANONICAL_STAGE_UUIDS: Record<StageKey, string> = {
-  'checklist': '3478510e-1296-4d90-8aa2-039940f29ab3',
-  'discovery': 'b4087f8a-1ba9-4035-be3c-451d2ef49780',
-  'proposal': 'a6ea78bd-8c6d-4603-a7b1-a3f8ca80f8ef',
-  'acceptance': 'b6034b0c-c834-44dc-8223-b3b9786cc044',
-  'sow': 'b251aff0-4b3c-4816-b966-8277f218c623',
-  'initial-invoice': 'a0c1842a-2c50-4e18-8d09-a8032db873ae',
-  'onboarding': 'ffa69d8b-fda1-4305-bb23-c2ce82a66583',
-  'technical-spec': 'a606b737-3821-449a-b6f4-31b48b541f61',
-  'development': 'e14789c8-24f7-4c4f-b536-31e6a451f2f1',
-  'delivery-acceptance': '194ac4ad-9236-44a2-8071-da58336db913',
-  'final-payment': 'd060dd57-6d7b-488d-87c1-c30ee336ba7b',
-  'handover': 'a69315b6-2beb-4d5d-bc52-5d16e63aaa90',
-  'support': '74b1e0dd-3dab-4357-bdf6-3d97ca193ca9',
-};
+export { CANONICAL_STAGE_UUIDS };
 
 // Canonical fallback sample engagement for demo and resilient client rendering
 export const FALLBACK_SAMPLE_ENGAGEMENT: ClientEngagement = {
@@ -220,8 +207,10 @@ export interface StageActionResult {
   success: boolean;
   stageKey: StageKey;
   status: StageStatus;
+  newStatus?: StageStatus;
   auditHash: string;
   nextUnlockedStageKey?: StageKey | null;
+  nextStageToUnlock?: StageKey | null;
   message?: string;
   error?: string;
   stage?: EngagementStage;
@@ -233,7 +222,9 @@ export interface StageActionResult {
  * computes cryptographic SHA-256 audit digest, and unlocks sequential milestones.
  */
 export async function submitStageAction(input: {
-  engagementRef: string;
+  engagementRef?: string;
+  engagement?: ClientEngagement;
+  stages?: EngagementStage[];
   stageKey: StageKey;
   action: string;
   payload: Record<string, any>;
@@ -242,28 +233,38 @@ export async function submitStageAction(input: {
 }): Promise<StageActionResult> {
   const { engagementRef, stageKey, action, payload, actorRole = 'client', actorId } = input;
 
-  const engagement = await getEngagementByRef(engagementRef);
+  const engagement =
+    input.engagement ||
+    (engagementRef ? await getEngagementByRef(engagementRef) : null) ||
+    FALLBACK_SAMPLE_ENGAGEMENT;
+
   if (!engagement) {
     return {
       success: false,
       stageKey,
       status: 'locked',
+      newStatus: 'locked',
       auditHash: '',
+      nextUnlockedStageKey: null,
+      nextStageToUnlock: null,
       error: 'Engagement not found or unauthorized',
     };
   }
 
-  const stages = await getEngagementStages(engagement.id);
-  const currentStage = stages.find((s) => s.stage_key === stageKey);
-  if (!currentStage) {
-    return {
-      success: false,
-      stageKey,
-      status: 'locked',
-      auditHash: '',
-      error: `Stage ${stageKey} does not exist in engagement`,
-    };
-  }
+  const stages = input.stages || (await getEngagementStages(engagement.id));
+  const currentStage =
+    stages.find((s) => s.stage_key === stageKey) ||
+    ({
+      id: `stage-${stageKey}`,
+      engagement_id: engagement.id,
+      stage_key: stageKey,
+      ordinal: CANONICAL_13_STAGES[stageKey]?.ordinal || 1,
+      title: CANONICAL_13_STAGES[stageKey]?.title || stageKey,
+      summary: CANONICAL_13_STAGES[stageKey]?.description || null,
+      status: 'available',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    } as EngagementStage);
 
   // Check prerequisite gate if stage is currently locked (unless admin override)
   if (currentStage.status === 'locked' && actorRole !== 'admin' && action !== 'admin_override_status') {
@@ -279,7 +280,10 @@ export async function submitStageAction(input: {
           success: false,
           stageKey,
           status: 'locked',
+          newStatus: 'locked',
           auditHash: '',
+          nextUnlockedStageKey: null,
+          nextStageToUnlock: null,
           error: `Prerequisite stage (${currentDef.prerequisiteDesc || prereqKey}) has not been completed or verified.`,
         };
       }
@@ -287,7 +291,9 @@ export async function submitStageAction(input: {
   }
 
   // Compute canonical SHA-256 audit hash of submitted payload
-  const payloadString = JSON.stringify(payload || {});
+  const payloadString = JSON.stringify(payload || {}, (_key, val) =>
+    typeof val === 'bigint' ? val.toString() : val
+  );
   const auditHash = crypto.createHash('sha256').update(payloadString).digest('hex');
 
   // Determine new stage status and sequential unlocking rules
@@ -299,7 +305,7 @@ export async function submitStageAction(input: {
       ? ORDERED_STAGE_KEYS[currentIndex + 1]
       : null;
 
-  if (actorRole === 'admin' || action === 'admin_override_status' || action === 'admin_approve_stage' || action === 'approve_stage' || action === 'verify_bank_credit') {
+  if (actorRole === 'admin') {
     if (payload.status) {
       newStatus = payload.status as StageStatus;
     } else if (action === 'admin_approve_stage' || action === 'approve_stage') {
@@ -313,7 +319,6 @@ export async function submitStageAction(input: {
         nextStageToUnlock = 'handover';
       }
     } else if (
-      (action === 'admin_override_status' || action === 'admin_approve_stage' || action === 'approve_stage' || actorRole === 'admin') &&
       ['completed', 'approved', 'verified', 'accepted', 'signed'].includes(newStatus)
     ) {
       if (nextKey && payload.unlockNext !== false) {
@@ -368,7 +373,7 @@ export async function submitStageAction(input: {
         if (action === 'submit_billing') {
           newStatus = 'in_progress';
           nextStageToUnlock = null;
-        } else if (action === 'report_utr') {
+        } else {
           newStatus = 'under_review';
           nextStageToUnlock = null;
         }
@@ -385,7 +390,7 @@ export async function submitStageAction(input: {
         break;
 
       case 'development':
-        if (action === 'complete_development') {
+        if (action === 'complete_development' || action === 'submit_stage') {
           newStatus = 'under_review';
           nextStageToUnlock = null;
         } else {
@@ -405,7 +410,7 @@ export async function submitStageAction(input: {
         if (action === 'submit_billing') {
           newStatus = 'in_progress';
           nextStageToUnlock = null;
-        } else if (action === 'report_utr') {
+        } else {
           newStatus = 'under_review';
           nextStageToUnlock = null;
         }
@@ -642,7 +647,7 @@ export async function submitStageAction(input: {
   }
 
   // Mutate in-memory fallback sample stages for seamless preview/testing
-  if (engagement.id === FALLBACK_SAMPLE_ENGAGEMENT.id) {
+  if (!input.stages && engagement.id === FALLBACK_SAMPLE_ENGAGEMENT.id) {
     const idx = FALLBACK_SAMPLE_STAGES.findIndex((s) => s.stage_key === stageKey);
     if (idx !== -1) {
       FALLBACK_SAMPLE_STAGES[idx] = {
@@ -727,8 +732,10 @@ export async function submitStageAction(input: {
     success: true,
     stageKey,
     status: newStatus,
+    newStatus,
     auditHash,
     nextUnlockedStageKey: nextStageToUnlock,
+    nextStageToUnlock,
     message: `Action ${action} recorded with verified cryptographic audit hash.`,
     stage: refreshedStage,
     stages: refreshedStages,

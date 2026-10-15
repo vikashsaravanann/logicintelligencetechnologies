@@ -98,8 +98,10 @@ export function formatPaiseToRupees(paise: number): string {
  * Supports intrastate (CGST + SGST) and interstate (IGST).
  */
 export function calculateTaxAndTotals(input: TaxCalculationInput): TaxCalculationResult {
-  const subtotalPaise = Math.max(0, Math.round(input.subtotalPaise));
-  const discountPaise = Math.max(0, Math.min(subtotalPaise, Math.round(input.discountPaise ?? 0)));
+  const rawSubtotal = typeof input.subtotalPaise === "bigint" ? Number(input.subtotalPaise) : input.subtotalPaise;
+  const subtotalPaise = Math.max(0, Math.round(rawSubtotal));
+  const rawDiscount = typeof input.discountPaise === "bigint" ? Number(input.discountPaise) : (input.discountPaise ?? 0);
+  const discountPaise = Math.max(0, Math.min(subtotalPaise, Math.round(rawDiscount)));
   const taxMode = input.taxMode ?? "tax_exclusive";
   const gstRateBps = Math.max(0, Math.round(input.gstRateBps ?? 1800)); // Default 18% = 1800 bps
 

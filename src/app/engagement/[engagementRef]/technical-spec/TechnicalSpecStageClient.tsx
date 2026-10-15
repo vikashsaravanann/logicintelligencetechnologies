@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import StageDocumentCard from '../components/StageDocumentCard';
+import { StageApprovalModal } from '@/components/shared/StageApprovalModal';
 
 interface TechnicalSpecStageClientProps {
   engagementRef: string;
@@ -24,10 +25,11 @@ export default function TechnicalSpecStageClient({
   );
   const [activeTab, setActiveTab] = useState<'architecture' | 'security' | 'api' | 'database'>('architecture');
   const [isApproving, setIsApproving] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [auditHash, setAuditHash] = useState<string | null>(initialData?.last_audit_hash || null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleApproveSpec = async () => {
+  const handleApproveSpec = async (remarks: string) => {
     setIsApproving(true);
     setErrorMessage(null);
 
@@ -41,6 +43,7 @@ export default function TechnicalSpecStageClient({
             specificationVersion: 'v3.1 (Approved Engineering Baseline)',
             approvedByCompany: companyName,
             approvedAt: new Date().toISOString(),
+            clientRemarks: remarks.trim() || undefined,
           },
         }),
       });
@@ -54,6 +57,7 @@ export default function TechnicalSpecStageClient({
       setHasConfirmedArchitecture(true);
     } catch (err: any) {
       setErrorMessage(err.message || 'Network error occurred while confirming architecture.');
+      throw err;
     } finally {
       setIsApproving(false);
     }
@@ -333,24 +337,33 @@ export default function TechnicalSpecStageClient({
             </div>
           ) : (
             <button
-              onClick={handleApproveSpec}
+              type="button"
+              onClick={() => setShowConfirmModal(true)}
               disabled={isApproving}
-              className="w-full sm:w-auto px-6 py-2.5 bg-[#1565C0] text-white text-xs font-semibold rounded-lg hover:bg-[#0B2545] transition-colors shadow-xs flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-6 py-2.5 bg-[#1565C0] text-white text-xs font-semibold rounded-lg hover:bg-[#0B2545] transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
-              {isApproving ? (
-                <span>Recording Technical Assent...</span>
-              ) : (
-                <>
-                  <span>Confirm Architecture Specification Baseline</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </>
-              )}
+              <span>Confirm Architecture Specification Baseline</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
             </button>
           )}
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <StageApprovalModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleApproveSpec}
+        title="Confirm Architecture Specification Baseline"
+        stageName="Stage 08: Technical Architecture & System Specification"
+        stageOrdinal={8}
+        companyName={companyName}
+        defaultNotes="Verified technical architecture, database schemas, and microservice topologies."
+        inputLabel="Client Sign-Off Remarks / Architecture Acceptance Notes *"
+        inputPlaceholder="Confirming architecture baseline for sprint planning..."
+      />
     </div>
   );
 }

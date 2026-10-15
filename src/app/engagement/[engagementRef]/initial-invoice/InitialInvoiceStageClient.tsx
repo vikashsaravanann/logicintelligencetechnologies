@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { UpiAppButtons } from '@/components/shared/UpiAppButtons';
 
 interface InitialInvoiceStageClientProps {
   engagementRef: string;
@@ -270,22 +271,15 @@ export default function InitialInvoiceStageClient({
                 </button>
               </div>
 
-              {/* Mobile UPI App Fast Launchers */}
+              {/* Mobile UPI App Fast Launchers with Authentic Brand Buttons */}
               <div className="pt-2 border-t border-blue-100">
-                <span className="text-[11px] font-semibold text-slate-500 block mb-2">
-                  Tap to Pay with Mobile UPI Apps:
-                </span>
-                <div className="grid grid-cols-4 gap-2">
-                  {mobileIntentApps.map((app) => (
-                    <a
-                      key={app.name}
-                      href={app.url}
-                      className="py-1.5 px-2 bg-white hover:bg-blue-50 border border-slate-200 hover:border-[#1565C0] text-[#0B2545] rounded-xl text-xs font-semibold text-center shadow-2xs transition-all"
-                    >
-                      {app.name}
-                    </a>
-                  ))}
-                </div>
+                <UpiAppButtons
+                  beneficiaryVpa={paymentData.beneficiaryVpa}
+                  payeeName={paymentData.beneficiaryName}
+                  amount={paymentData.totalNumeric}
+                  transactionRef={paymentData.requestRef}
+                  transactionNote="LIT Initial Deposit 50%"
+                />
               </div>
             </div>
           </div>
@@ -554,6 +548,56 @@ export default function InitialInvoiceStageClient({
                       </>
                     )}
                   </button>
+                </div>
+
+                {/* ── Client Informational & Verification Guidance Cards (Fills Bottom Gap) ── */}
+                <div className="pt-2 space-y-3.5 border-t border-slate-100">
+                  {/* Bank Reconciliation SLA & Protocol */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-[#F8FAFC] to-[#F1F5F9] border border-slate-200/80 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-[#0B2545] uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-[#1FA9A2]" />
+                        Verification Timeline & SLA
+                      </span>
+                      <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700">
+                        15–45 Mins SLA
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      UTR submissions are instantly routed to our Super Admin audit ledger. Our finance desk matches incoming credits directly against our YES Bank clearing feed during banking hours (9:00 AM – 7:30 PM IST).
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
+                      <div className="bg-white p-2 rounded-xl border border-slate-200/70">
+                        <span className="text-slate-400 block text-[10px]">Tax Invoice Issuance</span>
+                        <span className="font-semibold text-slate-800">GST Rule 46 Compliant</span>
+                      </div>
+                      <div className="bg-white p-2 rounded-xl border border-slate-200/70">
+                        <span className="text-slate-400 block text-[10px]">Next Milestone Unlock</span>
+                        <span className="font-semibold text-[#1565C0]">Stage 07 (Onboarding)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Frequently Asked Client Queries */}
+                  <div className="p-4 rounded-2xl bg-[#F0F7FF]/70 border border-[#B9DCFF]/70 space-y-2 text-xs">
+                    <span className="text-[11px] font-bold text-[#1565C0] uppercase tracking-wider block">
+                      Transfer Assistance & Helpdesk
+                    </span>
+                    <ul className="space-y-1.5 text-slate-600 text-[11px] leading-relaxed">
+                      <li className="flex items-start gap-1.5">
+                        <span className="text-[#1565C0] font-bold">·</span>
+                        <span><strong>Need IMPS/NEFT Account details?</strong> Account transfer is available via YES Bank VPA <code className="bg-white px-1 py-0.5 rounded text-[#0B2545] font-mono font-bold">9342877474@ptyes</code> or contact accounts desk.</span>
+                      </li>
+                      <li className="flex items-start gap-1.5">
+                        <span className="text-[#1565C0] font-bold">·</span>
+                        <span><strong>Instant Receipt & PDF:</strong> After Super Admin reconciliation, your digitally-stamped Payment Receipt (LIT-06) will be automatically downloadable from your Client Documents portal.</span>
+                      </li>
+                      <li className="flex items-start gap-1.5">
+                        <span className="text-[#1565C0] font-bold">·</span>
+                        <span><strong>Direct Finance Support:</strong> Reach out directly to <strong className="text-slate-800">support@logicintelligencetechnologies.in</strong> for immediate assistance or invoice re-issuance.</span>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </form>
             )}
