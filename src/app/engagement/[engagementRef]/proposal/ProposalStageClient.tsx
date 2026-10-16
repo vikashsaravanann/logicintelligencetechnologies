@@ -27,7 +27,6 @@ export default function ProposalStageClient({
   initialSnapshot,
 }: ProposalStageClientProps) {
   const router = useRouter();
-  const [activeSection, setActiveSection] = useState<string>('exec-summary');
   const [showClarificationModal, setShowClarificationModal] = useState(false);
   const [clarificationTopic, setClarificationTopic] = useState('Scope & Deliverables');
   const [clarificationNotes, setClarificationNotes] = useState('');
@@ -39,12 +38,15 @@ export default function ProposalStageClient({
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Read bespoke proposal customization prepared by Super Admin for this specific client
+  const customProposal = ((metadata?.proposal_data || initialSnapshot?.customProposal) || {}) as Record<string, any>;
+
   // Authoritative Commercial Quotation Data (LIT-02 Master Specification)
   const proposalMeta = {
-    reference: 'LIT-PROP-2026-084',
+    reference: customProposal.proposalRef || 'LIT-PROP-2026-084',
     version: 'v1.0 (LIT-Approved Baseline)',
     issueDate: '14 October 2026',
-    validUntil: '14 November 2026',
+    validUntil: customProposal.validUntil || '14 November 2026',
     classification: 'Client Confidential · Commercial in Confidence',
     preparedBy: 'Vikash Saravanan',
     designation: 'Principal Systems Architect & Founder',
@@ -52,7 +54,7 @@ export default function ProposalStageClient({
     clientContact: contactName,
   };
 
-  const deliverables = [
+  const defaultDeliverables = [
     {
       id: 'D-01',
       title: '50-Point Enterprise Architectural Audit & Compliance Alignment',
@@ -109,8 +111,65 @@ export default function ProposalStageClient({
     },
   ];
 
+  const deliverables = (customProposal.deliverables && customProposal.deliverables.length > 0)
+    ? customProposal.deliverables
+    : defaultDeliverables;
+
+  const defaultPhases = [
+    {
+      phase: 'Phase 1 · Weeks 1–2',
+      title: 'Architecture Audit, Wireframing & Scope Baselining',
+      desc: 'Formalize 50-point checklist scope, conduct technical discovery session, finalize schema models, and set up GitHub repository structure.',
+      gate: 'Gate 1: Statement of Work (Stage 5) & Initial Payment (Stage 6) cleared.',
+    },
+    {
+      phase: 'Phase 2 · Weeks 3–4',
+      title: 'Supabase PostgreSQL Migration & Core Domain Engine',
+      desc: 'Implement relational database tables, enforce 100% Row-Level Security, configure auth sessions, and scaffold Next.js App Router layout.',
+      gate: 'Gate 2: Technical Specification (Stage 8) approved by client.',
+    },
+    {
+      phase: 'Phase 3 · Weeks 5–6',
+      title: 'Client Engagement Portal & PDF Document Generation Engine',
+      desc: 'Build 13-stage progression workflows, A4 Tax Invoice / Receipt single-page generators, and interactive checklist interfaces.',
+      gate: 'Gate 3: Mid-sprint progress review and demo deployment.',
+    },
+    {
+      phase: 'Phase 4 · Weeks 7–8',
+      title: 'Direct UPI Payment Engine & AI Assistant Integration',
+      desc: 'Implement dynamic UPI QR code generator, UTR duplicate prevention, Super Admin reconciliation portal, and Groq LPU RAG assistant.',
+      gate: 'Gate 4: Integration testing and compliance audit complete.',
+    },
+    {
+      phase: 'Phase 5 · Weeks 9–10',
+      title: 'End-to-End QA, Security Audit & Production Launch',
+      desc: 'Execute full automated test suite, mobile responsive verification, Lighthouse latency tuning, and formal handover to production.',
+      gate: 'Gate 5: Delivery Acceptance (Stage 10) and Final Settlement (Stage 11).',
+    },
+  ];
+
+  const roadmapPhases = (customProposal.phases && customProposal.phases.length > 0)
+    ? customProposal.phases
+    : defaultPhases;
+
+  const challengesList = (customProposal.challenges && Array.isArray(customProposal.challenges) && customProposal.challenges.length === 4)
+    ? customProposal.challenges
+    : [
+        'Existing digital workflows rely on disparate tools with no unified database, leading to data synchronization bottlenecks, slow response times, and poor multi-device usability.',
+        'Need for strict credential-free delegated access, database-enforced Row Level Security (RLS), and zero-unauthenticated exposure of sensitive client or proprietary records.',
+        'Third-party payment gateways incur high transaction surcharges (2–3%), unpredictable settlement holds, and account freeze risks. A direct, bank-verified UPI settlement architecture is needed.',
+        `Customers require immediate, accurate answers to technical and operational queries without exposing ${companyName}'s private internal documentation to public AI training loops.`,
+      ];
+
+  const execSummaryText = customProposal.executiveSummary ||
+    `Logic Intelligence Technologies (LIT) is pleased to submit this comprehensive Project Proposal and Commercial Quotation to ${companyName}. Following our review of your Stage 1 Enterprise Deployment Checklist and Stage 2 Discovery inputs, this document formalizes our architectural approach, work breakdown structure, technology stack, and commercial terms.`;
+
+  const engagementVisionText = customProposal.engagementVision ||
+    `Our mandate is to deliver an enterprise-grade, high-performance web platform built on modern Next.js 15, PostgreSQL (Supabase) with Row-Level Security, an audited direct UPI payment settlement system, and domain-isolated artificial intelligence capabilities for ${companyName}. This proposal represents an approved commercial quotation, milestone-governed engineering commitment with transparent statutory taxation and zero hidden fees.`;
+
   // Dynamic Commercial Quotation calculation
   const candidateSubtotal =
+    customProposal?.subtotal ||
     initialSnapshot?.subtotal ||
     (initialSnapshot?.pricing as Record<string, unknown> | undefined)?.subtotal ||
     metadata?.contract_subtotal ||
@@ -195,6 +254,13 @@ export default function ProposalStageClient({
     }
   };
 
+  const scrollToChapter = (chapterId: string) => {
+    const el = document.getElementById(chapterId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Document Control Header */}
@@ -213,7 +279,7 @@ export default function ProposalStageClient({
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-black text-[#0B2545]">
-              Project Proposal & Commercial Quotation
+              Project Proposal &amp; Commercial Quotation
             </h1>
             <p className="text-xs text-[#52677C]">
               Bespoke Enterprise Systems Engineering Proposal for <strong className="text-slate-800">{companyName}</strong> (Attn: {contactName})
@@ -233,31 +299,35 @@ export default function ProposalStageClient({
           </div>
         </div>
 
-        {/* Chapter Navigation Bar */}
-        <div className="overflow-x-auto pb-2 scrollbar-none">
-          <div className="flex items-center gap-2 text-xs font-semibold whitespace-nowrap min-w-max">
+        {/* Continuous Vertical Document Jump Bar */}
+        <div className="border-t border-slate-100 pt-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500">
+              Complete Document Outline (Continuous Vertical Scroll)
+            </span>
+            <span className="text-[11px] font-semibold text-[#1565C0] hidden sm:inline">
+              Scroll down or click any chapter to jump
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
             {[
-              { id: 'exec-summary', label: '01 Exec Summary' },
-              { id: 'challenge', label: '02 Client Challenge' },
-              { id: 'solution', label: '03 LIT Solution' },
-              { id: 'architecture', label: '04 Architecture' },
-              { id: 'features', label: '05 Capabilities' },
-              { id: 'deliverables', label: '06 Deliverables' },
-              { id: 'tech-stack', label: '07 Tech Stack' },
-              { id: 'roadmap', label: '08 Plan & 09 Timeline' },
-              { id: 'commercial', label: '10 Commercial Quote' },
-              { id: 'milestones', label: '11 Milestones' },
-              { id: 'assumptions', label: '12 Assumptions & 13 Add-ons' },
-              { id: 'next-steps', label: '14 Next Steps' },
+              { id: 'chapter-01', label: '01 Summary & Vision' },
+              { id: 'chapter-02', label: '02 Client Challenge' },
+              { id: 'chapter-03', label: '03 & 04 Architecture' },
+              { id: 'chapter-05', label: '05 Capabilities' },
+              { id: 'chapter-06', label: '06 Deliverables' },
+              { id: 'chapter-07', label: '07 Tech Stack' },
+              { id: 'chapter-08', label: '08 & 09 Roadmap' },
+              { id: 'chapter-10', label: '10 Commercial Quote' },
+              { id: 'chapter-11', label: '11 Milestones' },
+              { id: 'chapter-12', label: '12 Assumptions & 13 Add-ons' },
+              { id: 'chapter-14', label: '14 Acceptance & Next Steps' },
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveSection(tab.id)}
-                className={`px-3.5 py-2 rounded-xl transition-all ${
-                  activeSection === tab.id
-                    ? 'bg-[#0B2545] text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70 hover:text-slate-900'
-                }`}
+                type="button"
+                onClick={() => scrollToChapter(tab.id)}
+                className="px-3 py-1.5 bg-slate-100 hover:bg-[#0B2545] hover:text-white text-slate-700 font-semibold rounded-lg transition-all whitespace-nowrap cursor-pointer text-[11px]"
               >
                 {tab.label}
               </button>
@@ -266,708 +336,645 @@ export default function ProposalStageClient({
         </div>
       </div>
 
-      {/* Chapter 01: Executive Summary */}
-      {(activeSection === 'exec-summary' || activeSection === 'all') && (
-        <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 01</span>
-              <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Executive Summary & Engagement Vision</h2>
-            </div>
-            <span className="text-xs font-semibold text-slate-400">LIT-02 pp. 1–2</span>
+      {/* Chapter 01: Executive Summary & Vision */}
+      <div id="chapter-01" className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6 scroll-mt-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 01</span>
+            <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Executive Summary &amp; Engagement Vision</h2>
           </div>
+          <span className="text-xs font-semibold text-slate-400">LIT-02 pp. 1–2</span>
+        </div>
 
-          <div className="prose prose-slate max-w-none text-xs leading-relaxed text-slate-700 space-y-3">
-            <p>
-              Logic Intelligence Technologies (LIT) is pleased to submit this comprehensive Project Proposal and Commercial Quotation to <strong>{companyName}</strong>. Following our review of your Stage 1 Enterprise Deployment Checklist and Stage 2 Discovery inputs, this document formalizes our architectural approach, work breakdown structure, technology stack, and commercial terms.
-            </p>
-            <p>
-              Our mandate is to deliver an enterprise-grade, high-performance web platform built on modern Next.js 15, PostgreSQL (Supabase) with Row-Level Security, an audited direct UPI payment settlement system, and domain-isolated artificial intelligence capabilities. This proposal represents an approved commercial quotation, milestone-governed engineering commitment with transparent statutory taxation and zero hidden fees.
-            </p>
+        <div className="prose prose-slate max-w-none text-xs leading-relaxed text-slate-700 space-y-3">
+          <p>{execSummaryText}</p>
+          <p>{engagementVisionText}</p>
+        </div>
+
+        {/* At a Glance Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
+            <span className="text-[11px] font-bold text-slate-500 uppercase block">Solution Overview</span>
+            <span className="text-xs font-bold text-[#0B2545] block">Next.js 15 + Supabase RLS + AI Assistant</span>
+            <span className="text-[11px] text-slate-600">Enterprise Multi-Site Architecture</span>
           </div>
-
-          {/* At a Glance Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
-              <span className="text-[11px] font-bold text-slate-500 uppercase block">Solution Overview</span>
-              <span className="text-xs font-bold text-[#0B2545] block">Next.js 15 + Supabase RLS + AI Assistant</span>
-              <span className="text-[11px] text-slate-600">Enterprise Multi-Site Architecture</span>
-            </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
-              <span className="text-[11px] font-bold text-slate-500 uppercase block">Delivery Timeline</span>
-              <span className="text-xs font-bold text-[#0B2545] block">10 Weeks (5 Phases)</span>
-              <span className="text-[11px] text-slate-600">From Stage 6 Initial Settlement</span>
-            </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
-              <span className="text-[11px] font-bold text-slate-500 uppercase block">Total Investment</span>
-              <span className="text-xs font-bold text-[#0B2545] block">{formatINR(totalPayablePaise)}</span>
-              <span className="text-[11px] text-slate-600">Incl. 18% GST (Two 50% Milestones)</span>
-            </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
-              <span className="text-[11px] font-bold text-slate-500 uppercase block">Proposal Expiration</span>
-              <span className="text-xs font-bold text-[#0B2545] block">{proposalMeta.validUntil}</span>
-              <span className="text-[11px] text-emerald-700 font-semibold">Price Guaranteed 30 Days</span>
-            </div>
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
+            <span className="text-[11px] font-bold text-slate-500 uppercase block">Delivery Timeline</span>
+            <span className="text-xs font-bold text-[#0B2545] block">10 Weeks (5 Phases)</span>
+            <span className="text-[11px] text-slate-600">From Stage 6 Initial Settlement</span>
+          </div>
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
+            <span className="text-[11px] font-bold text-slate-500 uppercase block">Total Investment</span>
+            <span className="text-xs font-bold text-[#0B2545] block">{formatINR(totalPayablePaise)}</span>
+            <span className="text-[11px] text-slate-600">Incl. 18% GST (Two 50% Milestones)</span>
+          </div>
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
+            <span className="text-[11px] font-bold text-slate-500 uppercase block">Proposal Expiration</span>
+            <span className="text-xs font-bold text-[#0B2545] block">{proposalMeta.validUntil}</span>
+            <span className="text-[11px] text-emerald-700 font-semibold">Price Guaranteed 30 Days</span>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Chapter 02: Client Challenge */}
-      {(activeSection === 'challenge' || activeSection === 'all') && (
-        <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 02</span>
-              <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">The Client Challenge & Operational Needs</h2>
-            </div>
-            <button
-              onClick={() => setShowClarificationModal(true)}
-              className="text-xs font-semibold text-[#1565C0] hover:underline"
-            >
-              Request Clarification →
-            </button>
+      {/* Chapter 02: Client Challenge & Operational Needs */}
+      <div id="chapter-02" className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6 scroll-mt-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 02</span>
+            <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">The Client Challenge &amp; Operational Needs</h2>
           </div>
+          <button
+            type="button"
+            onClick={() => setShowClarificationModal(true)}
+            className="text-xs font-semibold text-[#1565C0] hover:underline cursor-pointer"
+          >
+            Request Clarification →
+          </button>
+        </div>
 
-          <p className="text-xs leading-relaxed text-slate-700">
-            Based on our technical intake and requirements analysis with {contactName}, {companyName} requires a robust, scalable digital platform that resolves four core business bottlenecks:
-          </p>
+        <p className="text-xs leading-relaxed text-slate-700">
+          Based on our technical intake and discovery analysis with {contactName}, {companyName} requires a robust, scalable digital platform that resolves four core operational bottlenecks:
+        </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-1.5">
-              <span className="font-bold text-[#0B2545] block">1. Legacy Fragmentation & Latency</span>
-              <p className="text-slate-600 leading-relaxed">
-                Existing digital workflows rely on disparate tools with no unified database, leading to data synchronization bottlenecks, slow response times, and poor multi-device usability.
-              </p>
-            </div>
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-1.5">
-              <span className="font-bold text-[#0B2545] block">2. Security & Compliance Deficits</span>
-              <p className="text-slate-600 leading-relaxed">
-                Need for strict credential-free delegated access, database-enforced Row Level Security (RLS), and zero-unauthenticated exposure of sensitive client or patient records.
-              </p>
-            </div>
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-1.5">
-              <span className="font-bold text-[#0B2545] block">3. Opaque Payment Gateway Intermediaries</span>
-              <p className="text-slate-600 leading-relaxed">
-                Third-party payment gateways incur high transaction surcharges (2–3%), unpredictable settlement holds, and account freeze risks. A direct, bank-verified UPI settlement architecture is needed.
-              </p>
-            </div>
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-1.5">
-              <span className="font-bold text-[#0B2545] block">4. Demand for AI-Driven Intelligent Support</span>
-              <p className="text-slate-600 leading-relaxed">
-                Customers require immediate, accurate answers to technical and operational queries without exposing private internal documentation or patient data to public AI training loops.
-              </p>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-1.5">
+            <span className="font-bold text-[#0B2545] block">1. Legacy Fragmentation &amp; Latency</span>
+            <p className="text-slate-600 leading-relaxed">{challengesList[0]}</p>
+          </div>
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-1.5">
+            <span className="font-bold text-[#0B2545] block">2. Security &amp; Compliance Deficits</span>
+            <p className="text-slate-600 leading-relaxed">{challengesList[1]}</p>
+          </div>
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-1.5">
+            <span className="font-bold text-[#0B2545] block">3. Opaque Payment Gateway Intermediaries</span>
+            <p className="text-slate-600 leading-relaxed">{challengesList[2]}</p>
+          </div>
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-1.5">
+            <span className="font-bold text-[#0B2545] block">4. Demand for AI-Driven Intelligent Support</span>
+            <p className="text-slate-600 leading-relaxed">{challengesList[3]}</p>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Chapter 03 & 04: Solution & Architecture */}
-      {(activeSection === 'solution' || activeSection === 'architecture' || activeSection === 'all') && (
-        <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 03 & 04</span>
-              <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Proposed LIT Solution & System Architecture</h2>
-            </div>
-            <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-              ● Approved Architecture Baseline
-            </span>
+      <div id="chapter-03" className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6 scroll-mt-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 03 &amp; 04</span>
+            <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Proposed LIT Solution &amp; System Architecture</h2>
           </div>
+          <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+            ● Approved Architecture Baseline
+          </span>
+        </div>
 
-          <p className="text-xs leading-relaxed text-slate-700">
-            LIT proposes an enterprise full-stack web architecture designed for ultra-low latency, bank-grade data security, and verifiable operational audit trails:
-          </p>
+        <p className="text-xs leading-relaxed text-slate-700">
+          LIT proposes an enterprise full-stack web architecture engineered specifically for {companyName}, designed for ultra-low latency, bank-grade data security, and verifiable operational audit trails:
+        </p>
 
-          {/* Architecture Topology Card */}
-          <div className="bg-[#0B2545] text-white rounded-xl p-6 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-4">
-              <div>
-                <span className="text-[10px] font-mono tracking-wider uppercase text-[#1FA9A2]">
-                  LIT Production Architecture Specification
-                </span>
-                <h3 className="text-base font-bold text-white mt-0.5">
-                  Multi-Tier Distributed Topology (Next.js 15 · Supabase · Vercel Edge)
-                </h3>
-              </div>
-              <span className="text-xs font-mono bg-white/10 px-2.5 py-1 rounded text-slate-300">
-                SSL/TLS 1.3 · HTTP/3 Active
+        {/* Architecture Topology Card */}
+        <div className="bg-[#0B2545] text-white rounded-xl p-6 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-4">
+            <div>
+              <span className="text-[10px] font-mono tracking-wider uppercase text-[#1FA9A2]">
+                LIT Production Architecture Specification
               </span>
+              <h3 className="text-base font-bold text-white mt-0.5">
+                Multi-Tier Distributed Topology (Next.js 15 · Supabase · Vercel Edge)
+              </h3>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
-                <div className="flex items-center gap-2 text-[#1FA9A2] font-bold">
-                  <span className="w-2 h-2 rounded-full bg-[#1FA9A2]" />
-                  Edge & Application Tier
-                </div>
-                <ul className="text-slate-300 space-y-1 text-[11px]">
-                  <li>• Vercel Global Anycast Edge CDN</li>
-                  <li>• Next.js 15 App Router & React Server Components</li>
-                  <li>• Route Handlers & Server Actions</li>
-                  <li>• Brotli Compression & Security Headers</li>
-                </ul>
-              </div>
-
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
-                <div className="flex items-center gap-2 text-[#1565C0] font-bold">
-                  <span className="w-2 h-2 rounded-full bg-[#1565C0]" />
-                  Database & Auth Tier
-                </div>
-                <ul className="text-slate-300 space-y-1 text-[11px]">
-                  <li>• Supabase PostgreSQL 15 Engine</li>
-                  <li>• 100% Strict Row Level Security (RLS)</li>
-                  <li>• Multi-Tenant Isolation & Role Policies</li>
-                  <li>• Automated Daily Backups with PITR</li>
-                </ul>
-              </div>
-
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
-                <div className="flex items-center gap-2 text-emerald-400 font-bold">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  AI & Financial Tier
-                </div>
-                <ul className="text-slate-300 space-y-1 text-[11px]">
-                  <li>• Groq LPU Ultra-Low Latency Inference</li>
-                  <li>• FastEmbed bge-small-en-v1.5 Embeddings</li>
-                  <li>• Direct Manual UPI Clearance (9342877474@ptyes)</li>
-                  <li>• Cryptographic SHA-256 Audit Digests</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Chapter 05: Features & Capabilities */}
-      {(activeSection === 'features' || activeSection === 'all') && (
-        <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 05</span>
-              <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Features & Capabilities Matrix</h2>
-            </div>
-            <span className="text-xs text-slate-500">6 Core Engineering Modules</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
-              <span className="font-bold text-[#0B2545] block">1. 13-Stage Client Engagement Portal</span>
-              <p className="text-slate-600 leading-relaxed text-[11px]">
-                <strong>What it does for you:</strong> Guides your team seamlessly from initial scoping to production handover with automated draft saving, milestone locks, and bilateral digital execution.
-              </p>
-              <div className="text-[10px] font-mono text-[#1565C0]">Acceptance: Sequential stage gating with SHA-256 integrity</div>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
-              <span className="font-bold text-[#0B2545] block">2. Direct Audited UPI Payment Portal</span>
-              <p className="text-slate-600 leading-relaxed text-[11px]">
-                <strong>What it does for you:</strong> Eliminates payment gateway transaction charges via dynamic UPI QR generation, UTR reference tracking, and Super Admin bank-credit verification.
-              </p>
-              <div className="text-[10px] font-mono text-[#1565C0]">Acceptance: Zero-PSP fraud prevention and UTR unique constraint</div>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
-              <span className="font-bold text-[#0B2545] block">3. Dual-Document Tax Invoice & Receipt Engine</span>
-              <p className="text-slate-600 leading-relaxed text-[11px]">
-                <strong>What it does for you:</strong> Automatically issues single-page clean A4 Tax Invoices and Payment Receipts matching statutory GST and MSME Udyam (UDYAM-TN-03-0345274) standards.
-              </p>
-              <div className="text-[10px] font-mono text-[#1565C0]">Acceptance: Single-page geometry with cryptographic PDF checksum</div>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
-              <span className="font-bold text-[#0B2545] block">4. Multi-Corpus Knowledge Base & AI Assistant</span>
-              <p className="text-slate-600 leading-relaxed text-[11px]">
-                <strong>What it does for you:</strong> Ingests company documentation into high-speed vector indices, delivering instant technical answers with zero hallucination and zero PHI risk.
-              </p>
-              <div className="text-[10px] font-mono text-[#1565C0]">Acceptance: 100% eval suite pass rate across 155+ test cases</div>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
-              <span className="font-bold text-[#0B2545] block">5. PostgreSQL Row-Level Security & Multi-Tenancy</span>
-              <p className="text-slate-600 leading-relaxed text-[11px]">
-                <strong>What it does for you:</strong> Enforces data isolation directly at the database engine tier, ensuring clients and staff can only access authorized resources.
-              </p>
-              <div className="text-[10px] font-mono text-[#1565C0]">Acceptance: 100% test pass on public anon query rejection</div>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
-              <span className="font-bold text-[#0B2545] block">6. Automated CI/CD & Production Handover Package</span>
-              <p className="text-slate-600 leading-relaxed text-[11px]">
-                <strong>What it does for you:</strong> Full GitHub repository transfer, Vercel team delegation, operational runbooks, and a 90-day comprehensive post-launch warranty.
-              </p>
-              <div className="text-[10px] font-mono text-[#1565C0]">Acceptance: Formal IP assignment and bilateral sign-off</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Chapter 06: Deliverables */}
-      {(activeSection === 'deliverables' || activeSection === 'all') && (
-        <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 06</span>
-              <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Agreed Contractual Deliverables (D-01 to D-06)</h2>
-            </div>
-            <span className="text-xs text-slate-500">Traceable to Statement of Work</span>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead>
-                <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
-                  <th className="py-3 px-3 w-16">ID</th>
-                  <th className="py-3 px-3">Deliverable & Description</th>
-                  <th className="py-3 px-3">Format / Artifact</th>
-                  <th className="py-3 px-3">Acceptance Criteria</th>
-                  <th className="py-3 px-3 w-28">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {deliverables.map((d) => (
-                  <tr key={d.id} className="hover:bg-slate-50/80">
-                    <td className="py-3 px-3 font-mono font-bold text-[#1565C0] align-top">{d.id}</td>
-                    <td className="py-3 px-3 space-y-1 align-top">
-                      <div className="font-bold text-[#0B2545]">{d.title}</div>
-                      <div className="text-slate-600 text-[11px] leading-relaxed">{d.description}</div>
-                    </td>
-                    <td className="py-3 px-3 text-slate-700 font-medium text-[11px] align-top">{d.format}</td>
-                    <td className="py-3 px-3 text-slate-600 text-[11px] align-top">{d.acceptance}</td>
-                    <td className="py-3 px-3 align-top">
-                      <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-[#1565C0] border border-blue-200">
-                        {d.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Chapter 07: Tech Stack */}
-      {(activeSection === 'tech-stack' || activeSection === 'all') && (
-        <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 07</span>
-              <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Enterprise Technology Stack</h2>
-            </div>
-            <span className="text-xs text-slate-500">Production-Grade Infrastructure</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
-              <span className="font-bold text-[#0B2545] block">Frontend Framework</span>
-              <div className="text-slate-700 space-y-1 text-[11px]">
-                <div className="font-semibold text-slate-900">• Next.js 15 (App Router)</div>
-                <div>• React 19 Server Components</div>
-                <div>• TypeScript (Strict Mode)</div>
-                <div>• Tailwind CSS & Mobile Responsive</div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
-              <span className="font-bold text-[#0B2545] block">Backend & API Layer</span>
-              <div className="text-slate-700 space-y-1 text-[11px]">
-                <div className="font-semibold text-slate-900">• Node.js 22 LTS & Vercel Edge Runtime</div>
-                <div>• Next.js Server Actions & Route Handlers</div>
-                <div>• Zod Schema Validation</div>
-                <div>• Cryptographic SHA-256 Digest Engine</div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
-              <span className="font-bold text-[#0B2545] block">Database & Security</span>
-              <div className="text-slate-700 space-y-1 text-[11px]">
-                <div className="font-semibold text-slate-900">• Supabase PostgreSQL 15</div>
-                <div>• Row-Level Security (RLS) Policies</div>
-                <div>• Automated Daily Point-in-Time Recovery</div>
-                <div>• Append-Only Audit Logs</div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
-              <span className="font-bold text-[#0B2545] block">Hosting & CDN</span>
-              <div className="text-slate-700 space-y-1 text-[11px]">
-                <div className="font-semibold text-slate-900">• Vercel Global Edge Network</div>
-                <div>• Cloudflare Enterprise DNS & WAF</div>
-                <div>• HTTP/3 & TLS 1.3 Strict HTTPS</div>
-                <div>• Automated Deploy Previews</div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
-              <span className="font-bold text-[#0B2545] block">AI & Intelligence</span>
-              <div className="text-slate-700 space-y-1 text-[11px]">
-                <div className="font-semibold text-slate-900">• Groq LPU High-Speed Inference</div>
-                <div>• FastEmbed bge-small-en-v1.5 Vectors</div>
-                <div>• Domain-Isolated SQLite Corpus</div>
-                <div>• Zero-PHI Privacy Enforcement</div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
-              <span className="font-bold text-[#0B2545] block">CI/CD & Code Quality</span>
-              <div className="text-slate-700 space-y-1 text-[11px]">
-                <div className="font-semibold text-slate-900">• GitHub Actions Automated Pipeline</div>
-                <div>• Vitest Unit & Integration Tests</div>
-                <div>• ESLint & TypeScript Compilation Gates</div>
-                <div>• Dependabot Security Vulnerability Scanning</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Chapter 08 & 09: Implementation Plan & Timeline */}
-      {(activeSection === 'roadmap' || activeSection === 'all') && (
-        <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 08 & 09</span>
-              <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Implementation Plan & 10-Week Delivery Roadmap</h2>
-            </div>
-            <span className="text-xs font-semibold text-slate-500">5 Structured Phases</span>
-          </div>
-
-          <div className="space-y-3">
-            {[
-              {
-                phase: 'Phase 1 · Weeks 1–2',
-                title: 'Architecture Audit, Wireframing & Scope Baselining',
-                desc: 'Formalize 50-point checklist scope, conduct technical discovery session, finalize schema models, and set up GitHub repository structure.',
-                gate: 'Gate 1: Statement of Work (Stage 5) & Initial Payment (Stage 6) cleared.',
-              },
-              {
-                phase: 'Phase 2 · Weeks 3–4',
-                title: 'Supabase PostgreSQL Migration & Core Domain Engine',
-                desc: 'Implement relational database tables, enforce 100% Row-Level Security, configure auth sessions, and scaffold Next.js App Router layout.',
-                gate: 'Gate 2: Technical Specification (Stage 8) approved by client.',
-              },
-              {
-                phase: 'Phase 3 · Weeks 5–6',
-                title: 'Client Engagement Portal & PDF Document Generation Engine',
-                desc: 'Build 13-stage progression workflows, A4 Tax Invoice / Receipt single-page generators, and interactive checklist interfaces.',
-                gate: 'Gate 3: Mid-sprint progress review and demo deployment.',
-              },
-              {
-                phase: 'Phase 4 · Weeks 7–8',
-                title: 'Direct UPI Payment Engine & AI Assistant Integration',
-                desc: 'Implement dynamic UPI QR code generator, UTR duplicate prevention, Super Admin reconciliation portal, and Groq LPU RAG assistant.',
-                gate: 'Gate 4: Integration testing and compliance audit complete.',
-              },
-              {
-                phase: 'Phase 5 · Weeks 9–10',
-                title: 'End-to-End QA, Security Audit & Production Launch',
-                desc: 'Execute full automated test suite, mobile responsive verification, Lighthouse latency tuning, and formal handover to production.',
-                gate: 'Gate 5: Delivery Acceptance (Stage 10) and Final Settlement (Stage 11).',
-              },
-            ].map((p, idx) => (
-              <div key={idx} className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 flex flex-col md:flex-row md:items-start justify-between gap-3 text-xs">
-                <div className="space-y-1">
-                  <span className="font-mono text-[11px] font-bold text-[#1565C0] block">{p.phase}</span>
-                  <div className="font-bold text-[#0B2545] text-sm">{p.title}</div>
-                  <p className="text-slate-600 leading-relaxed text-[11px]">{p.desc}</p>
-                </div>
-                <div className="md:w-64 shrink-0 bg-white border border-slate-200 rounded-lg p-2.5 text-[10px] text-slate-700">
-                  <span className="font-bold text-slate-900 block mb-0.5">Prerequisite Gate:</span>
-                  {p.gate}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Chapter 10: Commercial Proposal */}
-      {(activeSection === 'commercial' || activeSection === 'all') && (
-        <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 10</span>
-              <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Commercial Quotation & Financial Breakdown</h2>
-            </div>
-            <span className="text-xs font-semibold text-slate-500">Commercial Quotation &amp; Scope Breakdown</span>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead>
-                <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
-                  <th className="py-3 px-3">Scope Item &amp; Description</th>
-                  <th className="py-3 px-3 text-center w-16">Qty</th>
-                  <th className="py-3 px-3 text-right w-36">Rate (INR)</th>
-                  <th className="py-3 px-3 text-right w-36">Amount (INR)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {commercialItems.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50">
-                    <td className="py-3 px-3 space-y-0.5">
-                      <div className="font-bold text-[#0B2545]">{item.item}</div>
-                      <div className="text-slate-600 text-[11px]">{item.description}</div>
-                    </td>
-                    <td className="py-3 px-3 text-center text-slate-700 font-medium">{item.qty}</td>
-                    <td className="py-3 px-3 text-right font-mono text-slate-800">{formatINR(item.unitPrice)}</td>
-                    <td className="py-3 px-3 text-right font-mono font-bold text-[#0B2545]">{formatINR(item.unitPrice)}</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="border-t border-slate-200 bg-slate-50 font-medium text-slate-700">
-                  <td colSpan={3} className="py-2.5 px-3 text-right">Subtotal Base Amount:</td>
-                  <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">{formatINR(subtotalPaise)}</td>
-                </tr>
-                {couponApplied && (
-                  <tr className="bg-emerald-50/50 font-medium text-emerald-800">
-                    <td colSpan={3} className="py-2.5 px-3 text-right">
-                      Promotional Discount ({couponCode}):
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-700">- {formatINR(discountPaise)}</td>
-                  </tr>
-                )}
-                <tr className="font-medium text-slate-700">
-                  <td colSpan={3} className="py-2 px-3 text-right">Central GST (CGST @ 9%):</td>
-                  <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">{formatINR(cgstPaise)}</td>
-                </tr>
-                <tr className="font-medium text-slate-700">
-                  <td colSpan={3} className="py-2 px-3 text-right">State GST (SGST @ 9%):</td>
-                  <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">{formatINR(sgstPaise)}</td>
-                </tr>
-                <tr className="font-medium text-slate-700 bg-slate-50/60">
-                  <td colSpan={3} className="py-2.5 px-3 text-right">Total Statutory GST (18%):</td>
-                  <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">{formatINR(gstPaise)}</td>
-                </tr>
-                <tr className="border-t-2 border-slate-300 bg-slate-100 font-bold text-slate-900">
-                  <td colSpan={3} className="py-3 px-3 text-right text-sm">Total Contract Commitment (INR):</td>
-                  <td className="py-3 px-3 text-right font-mono text-base font-black text-[#0B2545]">{formatINR(totalPayablePaise)}</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-
-          {/* Coupon Input Form */}
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-0.5">
-              <span className="text-xs font-bold text-[#0B2545] block">Promotional Launch Coupon</span>
-              <p className="text-[11px] text-slate-600">
-                Have an authorized LIT founder promo code or enterprise partnership voucher?
-              </p>
-            </div>
-            <form onSubmit={handleApplyCoupon} className="flex items-center gap-2">
-              <input
-                type="text"
-                placeholder="Enter coupon code"
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                disabled={couponApplied}
-                className="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 uppercase font-mono tracking-wider focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
-              />
-              <button
-                type="submit"
-                disabled={couponApplied || !couponCode.trim()}
-                className="bg-[#0B2545] hover:bg-[#1565C0] disabled:bg-slate-300 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-              >
-                {couponApplied ? 'Applied' : 'Apply'}
-              </button>
-            </form>
-          </div>
-          {couponMessage && (
-            <div className={`p-3 rounded-xl text-xs font-medium ${couponApplied ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200'}`}>
-              {couponMessage}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Chapter 11: Payment Milestones */}
-      {(activeSection === 'milestones' || activeSection === 'all') && (
-        <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 11</span>
-              <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Milestone Payment Schedule (Strictly Two 50% Milestones)</h2>
-            </div>
-            <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
-              50% Initial · 50% Final
+            <span className="text-xs font-mono bg-white/10 px-2.5 py-1 rounded text-slate-300">
+              SSL/TLS 1.3 · HTTP/3 Active
             </span>
           </div>
 
-          <div className="bg-[#E7F3FF] border border-[#B9DCFF] rounded-xl p-4 text-xs text-[#0B2545] space-y-1">
-            <span className="font-bold block">Policy Notice: Exact Two-Milestone Schedule</span>
-            <p className="text-slate-600 leading-relaxed text-[11px]">
-              In accordance with LIT corporate billing policy, all enterprise projects are structured into strictly two 50% installments. Stage 3 does <strong>not</strong> contain an early payment button. Payments are processed exclusively at <strong>Stage 6</strong> (Initial Payment) and <strong>Stage 11</strong> (Final Settlement) upon verified prerequisite execution.
-            </p>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead>
-                <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
-                  <th className="py-3 px-3">Milestone</th>
-                  <th className="py-3 px-3">Share</th>
-                  <th className="py-3 px-3">Amount (INR)</th>
-                  <th className="py-3 px-3">Execution Trigger Event</th>
-                  <th className="py-3 px-3">Associated Portal Stage</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                <tr className="hover:bg-slate-50">
-                  <td className="py-3 px-3 font-bold text-[#0B2545]">Milestone 1: Initial Deposit</td>
-                  <td className="py-3 px-3 font-semibold text-[#1565C0]">50.0%</td>
-                  <td className="py-3 px-3 font-mono font-bold text-slate-900">{formatINR(milestoneAmountPaise)}</td>
-                  <td className="py-3 px-3 text-slate-600">Execution of Statement of Work (Stage 5)</td>
-                  <td className="py-3 px-3">
-                    <span className="px-2 py-0.5 rounded font-mono text-[11px] bg-slate-100 text-slate-700">
-                      Stage 6: Initial Payment
-                    </span>
-                  </td>
-                </tr>
-                <tr className="hover:bg-slate-50">
-                  <td className="py-3 px-3 font-bold text-[#0B2545]">Milestone 2: Final Settlement</td>
-                  <td className="py-3 px-3 font-semibold text-[#1565C0]">50.0%</td>
-                  <td className="py-3 px-3 font-mono font-bold text-slate-900">{formatINR(milestoneAmountPaise)}</td>
-                  <td className="py-3 px-3 text-slate-600">Delivery Acceptance Sign-off & QA Verification (Stage 10)</td>
-                  <td className="py-3 px-3">
-                    <span className="px-2 py-0.5 rounded font-mono text-[11px] bg-slate-100 text-slate-700">
-                      Stage 11: Final Payment
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Chapter 12 & 13: Assumptions & Add-ons */}
-      {(activeSection === 'assumptions' || activeSection === 'all') && (
-        <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 12 & 13</span>
-              <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Assumptions, Boundaries & Optional Add-ons</h2>
-            </div>
-            <span className="text-xs text-slate-500">Scope Clarity</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-            <div className="space-y-3">
-              <h3 className="font-bold text-[#0B2545]">Contractual Assumptions & Exclusions</h3>
-              <ul className="space-y-2 text-slate-600 text-[11px]">
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 font-bold">✓</span>
-                  Client provides timely review feedback within 3 business days of milestone releases.
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 font-bold">✓</span>
-                  Third-party provider hosting fees (e.g. Vercel team seat, Supabase DB tier) are billed directly to client.
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 font-bold">✓</span>
-                  All changes to scoped deliverables (D-01 to D-06) must be governed via Stage 9 Change Request (LIT-06).
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold">✗</span>
-                  Excludes uncontracted native mobile app development unless commissioned via separate work order.
-                </li>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
+              <div className="flex items-center gap-2 text-[#1FA9A2] font-bold">
+                <span className="w-2 h-2 rounded-full bg-[#1FA9A2]" />
+                Edge &amp; Application Tier
+              </div>
+              <ul className="text-slate-300 space-y-1 text-[11px]">
+                <li>• Vercel Global Anycast Edge CDN</li>
+                <li>• Next.js 15 App Router &amp; React Server Components</li>
+                <li>• Route Handlers &amp; Server Actions</li>
+                <li>• Brotli Compression &amp; Security Headers</li>
               </ul>
             </div>
 
-            <div className="space-y-3">
-              <h3 className="font-bold text-[#0B2545]">Optional Enterprise Add-ons (Not Included in Base)</h3>
-              <div className="space-y-2 text-[11px]">
-                <div className="p-3 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-between">
-                  <div>
-                    <span className="font-bold text-[#0B2545] block">24/7 Dedicated Emergency On-Call SLA</span>
-                    <span className="text-slate-500">15-minute response target for critical incidents</span>
-                  </div>
-                  <span className="font-mono font-bold text-slate-800">₹45,000 / mo</span>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
+              <div className="flex items-center gap-2 text-[#1565C0] font-bold">
+                <span className="w-2 h-2 rounded-full bg-[#1565C0]" />
+                Database &amp; Auth Tier
+              </div>
+              <ul className="text-slate-300 space-y-1 text-[11px]">
+                <li>• Supabase PostgreSQL 15 Engine</li>
+                <li>• 100% Strict Row Level Security (RLS)</li>
+                <li>• Multi-Tenant Isolation &amp; Role Policies</li>
+                <li>• Automated Daily Backups with PITR</li>
+              </ul>
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
+              <div className="flex items-center gap-2 text-emerald-400 font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                AI &amp; Financial Tier
+              </div>
+              <ul className="text-slate-300 space-y-1 text-[11px]">
+                <li>• Groq LPU Ultra-Low Latency Inference</li>
+                <li>• FastEmbed bge-small-en-v1.5 Embeddings</li>
+                <li>• Direct Manual UPI Clearance (9342877474@ptyes)</li>
+                <li>• Cryptographic SHA-256 Audit Digests</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chapter 05: Features & Capabilities */}
+      <div id="chapter-05" className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6 scroll-mt-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 05</span>
+            <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Features &amp; Capabilities Matrix</h2>
+          </div>
+          <span className="text-xs text-slate-500">6 Core Engineering Modules</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+            <span className="font-bold text-[#0B2545] block">1. 13-Stage Client Engagement Portal</span>
+            <p className="text-slate-600 leading-relaxed text-[11px]">
+              <strong>What it does for you:</strong> Guides {companyName}&apos;s team seamlessly from initial scoping to production handover with automated draft saving, milestone locks, and bilateral digital execution.
+            </p>
+            <div className="text-[10px] font-mono text-[#1565C0]">Acceptance: Sequential stage gating with SHA-256 integrity</div>
+          </div>
+
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+            <span className="font-bold text-[#0B2545] block">2. Direct Audited UPI Payment Portal</span>
+            <p className="text-slate-600 leading-relaxed text-[11px]">
+              <strong>What it does for you:</strong> Eliminates payment gateway transaction charges via dynamic UPI QR generation, UTR reference tracking, and Super Admin bank-credit verification.
+            </p>
+            <div className="text-[10px] font-mono text-[#1565C0]">Acceptance: Zero-PSP fraud prevention and UTR unique constraint</div>
+          </div>
+
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+            <span className="font-bold text-[#0B2545] block">3. Dual-Document Tax Invoice &amp; Receipt Engine</span>
+            <p className="text-slate-600 leading-relaxed text-[11px]">
+              <strong>What it does for you:</strong> Automatically issues single-page clean A4 Tax Invoices and Payment Receipts matching statutory GST and MSME Udyam (UDYAM-TN-03-0345274) standards.
+            </p>
+            <div className="text-[10px] font-mono text-[#1565C0]">Acceptance: Single-page geometry with cryptographic PDF checksum</div>
+          </div>
+
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+            <span className="font-bold text-[#0B2545] block">4. Multi-Corpus Knowledge Base &amp; AI Assistant</span>
+            <p className="text-slate-600 leading-relaxed text-[11px]">
+              <strong>What it does for you:</strong> Ingests company documentation into high-speed vector indices, delivering instant technical answers with zero hallucination and zero proprietary data risk.
+            </p>
+            <div className="text-[10px] font-mono text-[#1565C0]">Acceptance: 100% eval suite pass rate across 155+ test cases</div>
+          </div>
+
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+            <span className="font-bold text-[#0B2545] block">5. PostgreSQL Row-Level Security &amp; Multi-Tenancy</span>
+            <p className="text-slate-600 leading-relaxed text-[11px]">
+              <strong>What it does for you:</strong> Enforces data isolation directly at the database engine tier, ensuring clients and staff can only access authorized resources.
+            </p>
+            <div className="text-[10px] font-mono text-[#1565C0]">Acceptance: 100% test pass on public anon query rejection</div>
+          </div>
+
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+            <span className="font-bold text-[#0B2545] block">6. Automated CI/CD &amp; Production Handover Package</span>
+            <p className="text-slate-600 leading-relaxed text-[11px]">
+              <strong>What it does for you:</strong> Full GitHub repository transfer, Vercel team delegation, operational runbooks, and a 90-day comprehensive post-launch warranty.
+            </p>
+            <div className="text-[10px] font-mono text-[#1565C0]">Acceptance: Formal IP assignment and bilateral sign-off</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chapter 06: Agreed Deliverables */}
+      <div id="chapter-06" className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6 scroll-mt-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 06</span>
+            <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Agreed Contractual Deliverables (D-01 to D-06)</h2>
+          </div>
+          <span className="text-xs text-slate-500">Traceable to Statement of Work</span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs text-left">
+            <thead>
+              <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                <th className="py-3 px-3 w-16">ID</th>
+                <th className="py-3 px-3">Deliverable &amp; Description</th>
+                <th className="py-3 px-3">Format / Artifact</th>
+                <th className="py-3 px-3">Acceptance Criteria</th>
+                <th className="py-3 px-3 w-28">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {deliverables.map((d: any) => (
+                <tr key={d.id} className="hover:bg-slate-50/80">
+                  <td className="py-3 px-3 font-mono font-bold text-[#1565C0] align-top">{d.id}</td>
+                  <td className="py-3 px-3 space-y-1 align-top">
+                    <div className="font-bold text-[#0B2545]">{d.title}</div>
+                    <div className="text-slate-600 text-[11px] leading-relaxed">{d.description}</div>
+                  </td>
+                  <td className="py-3 px-3 text-slate-700 font-medium text-[11px] align-top">{d.format}</td>
+                  <td className="py-3 px-3 text-slate-600 text-[11px] align-top">{d.acceptance}</td>
+                  <td className="py-3 px-3 align-top">
+                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-[#1565C0] border border-blue-200">
+                      {d.status || 'Ready for Review'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Chapter 07: Enterprise Tech Stack */}
+      <div id="chapter-07" className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6 scroll-mt-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 07</span>
+            <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Enterprise Technology Stack</h2>
+          </div>
+          <span className="text-xs text-slate-500">Production-Grade Infrastructure</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+            <span className="font-bold text-[#0B2545] block">Frontend Framework</span>
+            <div className="text-slate-700 space-y-1 text-[11px]">
+              <div className="font-semibold text-slate-900">• Next.js 15 (App Router)</div>
+              <div>• React 19 Server Components</div>
+              <div>• TypeScript (Strict Mode)</div>
+              <div>• Tailwind CSS &amp; Mobile Responsive</div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+            <span className="font-bold text-[#0B2545] block">Backend &amp; API Layer</span>
+            <div className="text-slate-700 space-y-1 text-[11px]">
+              <div className="font-semibold text-slate-900">• Node.js 22 LTS &amp; Vercel Edge Runtime</div>
+              <div>• Next.js Server Actions &amp; Route Handlers</div>
+              <div>• Zod Schema Validation</div>
+              <div>• Cryptographic SHA-256 Digest Engine</div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+            <span className="font-bold text-[#0B2545] block">Database &amp; Security</span>
+            <div className="text-slate-700 space-y-1 text-[11px]">
+              <div className="font-semibold text-slate-900">• Supabase PostgreSQL 15</div>
+              <div>• Row-Level Security (RLS) Policies</div>
+              <div>• Automated Daily Point-in-Time Recovery</div>
+              <div>• Append-Only Audit Logs</div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+            <span className="font-bold text-[#0B2545] block">Hosting &amp; CDN</span>
+            <div className="text-slate-700 space-y-1 text-[11px]">
+              <div className="font-semibold text-slate-900">• Vercel Global Edge Network</div>
+              <div>• Cloudflare Enterprise DNS &amp; WAF</div>
+              <div>• HTTP/3 &amp; TLS 1.3 Strict HTTPS</div>
+              <div>• Automated Deploy Previews</div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+            <span className="font-bold text-[#0B2545] block">AI &amp; Intelligence</span>
+            <div className="text-slate-700 space-y-1 text-[11px]">
+              <div className="font-semibold text-slate-900">• Groq LPU High-Speed Inference</div>
+              <div>• FastEmbed bge-small-en-v1.5 Vectors</div>
+              <div>• Domain-Isolated SQLite Corpus</div>
+              <div>• Zero-PHI Privacy Enforcement</div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+            <span className="font-bold text-[#0B2545] block">CI/CD &amp; Code Quality</span>
+            <div className="text-slate-700 space-y-1 text-[11px]">
+              <div className="font-semibold text-slate-900">• GitHub Actions Automated Pipeline</div>
+              <div>• Vitest Unit &amp; Integration Tests</div>
+              <div>• ESLint &amp; TypeScript Compilation Gates</div>
+              <div>• Dependabot Security Vulnerability Scanning</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chapter 08 & 09: Implementation Plan & Timeline */}
+      <div id="chapter-08" className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6 scroll-mt-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 08 &amp; 09</span>
+            <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Implementation Plan &amp; 10-Week Delivery Roadmap</h2>
+          </div>
+          <span className="text-xs font-semibold text-slate-500">5 Structured Phases</span>
+        </div>
+
+        <div className="space-y-3">
+          {roadmapPhases.map((p: any, idx: number) => (
+            <div key={idx} className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 flex flex-col md:flex-row md:items-start justify-between gap-3 text-xs">
+              <div className="space-y-1">
+                <span className="font-mono text-[11px] font-bold text-[#1565C0] block">{p.phase}</span>
+                <div className="font-bold text-[#0B2545] text-sm">{p.title}</div>
+                <p className="text-slate-600 leading-relaxed text-[11px]">{p.desc}</p>
+              </div>
+              <div className="md:w-64 shrink-0 bg-white border border-slate-200 rounded-lg p-2.5 text-[10px] text-slate-700">
+                <span className="font-bold text-slate-900 block mb-0.5">Prerequisite Gate:</span>
+                {p.gate}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Chapter 10: Commercial Quotation */}
+      <div id="chapter-10" className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6 scroll-mt-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 10</span>
+            <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Commercial Quotation &amp; Financial Breakdown</h2>
+          </div>
+          <span className="text-xs font-semibold text-slate-500">Commercial Quotation &amp; Scope Breakdown</span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs text-left">
+            <thead>
+              <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                <th className="py-3 px-3">Scope Item &amp; Description</th>
+                <th className="py-3 px-3 text-center w-16">Qty</th>
+                <th className="py-3 px-3 text-right w-36">Rate (INR)</th>
+                <th className="py-3 px-3 text-right w-36">Amount (INR)</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {commercialItems.map((item, idx) => (
+                <tr key={idx} className="hover:bg-slate-50">
+                  <td className="py-3 px-3 space-y-0.5">
+                    <div className="font-bold text-[#0B2545]">{item.item}</div>
+                    <div className="text-slate-600 text-[11px]">{item.description}</div>
+                  </td>
+                  <td className="py-3 px-3 text-center text-slate-700 font-medium">{item.qty}</td>
+                  <td className="py-3 px-3 text-right font-mono text-slate-800">{formatINR(item.unitPrice)}</td>
+                  <td className="py-3 px-3 text-right font-mono font-bold text-[#0B2545]">{formatINR(item.unitPrice)}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="border-t border-slate-200 bg-slate-50 font-medium text-slate-700">
+                <td colSpan={3} className="py-2.5 px-3 text-right">Subtotal Base Amount:</td>
+                <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">{formatINR(subtotalPaise)}</td>
+              </tr>
+              {couponApplied && (
+                <tr className="bg-emerald-50/50 font-medium text-emerald-800">
+                  <td colSpan={3} className="py-2.5 px-3 text-right">
+                    Promotional Discount ({couponCode}):
+                  </td>
+                  <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-700">- {formatINR(discountPaise)}</td>
+                </tr>
+              )}
+              <tr className="font-medium text-slate-700">
+                <td colSpan={3} className="py-2 px-3 text-right">Central GST (CGST @ 9%):</td>
+                <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">{formatINR(cgstPaise)}</td>
+              </tr>
+              <tr className="font-medium text-slate-700">
+                <td colSpan={3} className="py-2 px-3 text-right">State GST (SGST @ 9%):</td>
+                <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">{formatINR(sgstPaise)}</td>
+              </tr>
+              <tr className="font-medium text-slate-700 bg-slate-50/60">
+                <td colSpan={3} className="py-2.5 px-3 text-right">Total Statutory GST (18%):</td>
+                <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">{formatINR(gstPaise)}</td>
+              </tr>
+              <tr className="border-t-2 border-slate-300 bg-slate-100 font-bold text-slate-900">
+                <td colSpan={3} className="py-3 px-3 text-right text-sm">Total Contract Commitment (INR):</td>
+                <td className="py-3 px-3 text-right font-mono text-base font-black text-[#0B2545]">{formatINR(totalPayablePaise)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        {/* Coupon Input Form */}
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-0.5">
+            <span className="text-xs font-bold text-[#0B2545] block">Promotional Launch Coupon</span>
+            <p className="text-[11px] text-slate-600">
+              Have an authorized LIT founder promo code or enterprise partnership voucher?
+            </p>
+          </div>
+          <form onSubmit={handleApplyCoupon} className="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Enter coupon code"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
+              disabled={couponApplied}
+              className="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 uppercase font-mono tracking-wider focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+            />
+            <button
+              type="submit"
+              disabled={couponApplied || !couponCode.trim()}
+              className="bg-[#0B2545] hover:bg-[#1565C0] disabled:bg-slate-300 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+            >
+              {couponApplied ? 'Applied' : 'Apply'}
+            </button>
+          </form>
+        </div>
+        {couponMessage && (
+          <div className={`p-3 rounded-xl text-xs font-medium ${couponApplied ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200'}`}>
+            {couponMessage}
+          </div>
+        )}
+      </div>
+
+      {/* Chapter 11: Payment Milestones */}
+      <div id="chapter-11" className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6 scroll-mt-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 11</span>
+            <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Milestone Payment Schedule (Strictly Two 50% Milestones)</h2>
+          </div>
+          <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+            50% Initial · 50% Final
+          </span>
+        </div>
+
+        <div className="bg-[#E7F3FF] border border-[#B9DCFF] rounded-xl p-4 text-xs text-[#0B2545] space-y-1">
+          <span className="font-bold block">Policy Notice: Exact Two-Milestone Schedule</span>
+          <p className="text-slate-600 leading-relaxed text-[11px]">
+            In accordance with LIT corporate billing policy, all enterprise projects are structured into strictly two 50% installments. Stage 3 does <strong>not</strong> contain an early payment button. Payments are processed exclusively at <strong>Stage 6</strong> (Initial Payment) and <strong>Stage 11</strong> (Final Settlement) upon verified prerequisite execution.
+          </p>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs text-left">
+            <thead>
+              <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                <th className="py-3 px-3">Milestone</th>
+                <th className="py-3 px-3">Share</th>
+                <th className="py-3 px-3">Amount (INR)</th>
+                <th className="py-3 px-3">Execution Trigger Event</th>
+                <th className="py-3 px-3">Associated Portal Stage</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              <tr className="hover:bg-slate-50">
+                <td className="py-3 px-3 font-bold text-[#0B2545]">Milestone 1: Initial Deposit</td>
+                <td className="py-3 px-3 font-semibold text-[#1565C0]">50.0%</td>
+                <td className="py-3 px-3 font-mono font-bold text-slate-900">{formatINR(milestoneAmountPaise)}</td>
+                <td className="py-3 px-3 text-slate-600">Execution of Statement of Work (Stage 5)</td>
+                <td className="py-3 px-3">
+                  <span className="px-2 py-0.5 rounded font-mono text-[11px] bg-slate-100 text-slate-700">
+                    Stage 6: Initial Payment
+                  </span>
+                </td>
+              </tr>
+              <tr className="hover:bg-slate-50">
+                <td className="py-3 px-3 font-bold text-[#0B2545]">Milestone 2: Final Settlement</td>
+                <td className="py-3 px-3 font-semibold text-[#1565C0]">50.0%</td>
+                <td className="py-3 px-3 font-mono font-bold text-slate-900">{formatINR(milestoneAmountPaise)}</td>
+                <td className="py-3 px-3 text-slate-600">Delivery Acceptance Sign-off &amp; QA Verification (Stage 10)</td>
+                <td className="py-3 px-3">
+                  <span className="px-2 py-0.5 rounded font-mono text-[11px] bg-slate-100 text-slate-700">
+                    Stage 11: Final Payment
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Chapter 12 & 13: Assumptions & Optional Add-ons */}
+      <div id="chapter-12" className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6 scroll-mt-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 12 &amp; 13</span>
+            <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Assumptions, Boundaries &amp; Optional Add-ons</h2>
+          </div>
+          <span className="text-xs text-slate-500">Scope Clarity</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+          <div className="space-y-3">
+            <h3 className="font-bold text-[#0B2545]">Contractual Assumptions &amp; Exclusions</h3>
+            <ul className="space-y-2 text-slate-600 text-[11px]">
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-600 font-bold">✓</span>
+                Client provides timely review feedback within 3 business days of milestone releases.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-600 font-bold">✓</span>
+                Third-party provider hosting fees (e.g. Vercel team seat, Supabase DB tier) are billed directly to client.
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-emerald-600 font-bold">✓</span>
+                All changes to scoped deliverables (D-01 to D-06) must be governed via Stage 9 Change Request (LIT-06).
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-rose-500 font-bold">✗</span>
+                Excludes uncontracted native mobile app development unless commissioned via separate work order.
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="font-bold text-[#0B2545]">Optional Enterprise Add-ons (Not Included in Base)</h3>
+            <div className="space-y-2 text-[11px]">
+              <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between">
+                <div>
+                  <span className="font-bold text-[#0B2545] block">24/7 Dedicated Emergency On-Call SLA</span>
+                  <span className="text-slate-500">15-minute response target for critical incidents</span>
                 </div>
-                <div className="p-3 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-between">
-                  <div>
-                    <span className="font-bold text-[#0B2545] block">Multi-Region Read Replica Database Clones</span>
-                    <span className="text-slate-500">Global latency optimization for US / EU regions</span>
-                  </div>
-                  <span className="font-mono font-bold text-slate-800">₹75,000 / one-time</span>
+                <span className="font-mono font-bold text-slate-800 text-xs">₹5,000 / mo</span>
+              </div>
+              <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between">
+                <div>
+                  <span className="font-bold text-[#0B2545] block">Multi-Region Read Replica Database Clones</span>
+                  <span className="text-slate-500">Global latency optimization &amp; automatic disaster failover</span>
                 </div>
+                <span className="font-mono font-bold text-slate-800 text-xs">$10,000 / mo (₹10,000 / mo)</span>
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Chapter 14: Next Steps & Navigation Action */}
-      {(activeSection === 'next-steps' || activeSection === 'all') && (
-        <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 14</span>
-              <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Next Steps & Engagement Progression</h2>
-            </div>
-            <span className="text-xs font-semibold text-slate-400">Roadmap to Execution</span>
+      {/* Chapter 14: Next Steps & Acceptance Gate */}
+      <div id="chapter-14" className="bg-white rounded-2xl border border-[#DFE7EF] p-6 sm:p-8 shadow-xs space-y-6 scroll-mt-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 14</span>
+            <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Next Steps &amp; Engagement Progression</h2>
           </div>
+          <span className="text-xs font-semibold text-slate-400">Roadmap to Execution</span>
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-            <div className="p-3.5 rounded-xl border-2 border-[#1565C0] bg-blue-50/50 space-y-1">
-              <span className="font-mono text-[10px] font-bold text-[#1565C0]">STEP 1 (CURRENT)</span>
-              <span className="font-bold text-[#0B2545] block">Review Proposal</span>
-              <p className="text-slate-600 text-[11px]">Thoroughly examine scope, tech stack, and commercial breakdown.</p>
-            </div>
-            <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
-              <span className="font-mono text-[10px] font-bold text-slate-400">STEP 2 (STAGE 4)</span>
-              <span className="font-bold text-slate-700 block">Formal Acceptance</span>
-              <p className="text-slate-500 text-[11px]">Sign proposal assent or request formal scope adjustments.</p>
-            </div>
-            <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
-              <span className="font-mono text-[10px] font-bold text-slate-400">STEP 3 (STAGE 5)</span>
-              <span className="font-bold text-slate-700 block">Execute SOW</span>
-              <p className="text-slate-500 text-[11px]">Digitally sign the 23-chapter legal Statement of Work.</p>
-            </div>
-            <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
-              <span className="font-mono text-[10px] font-bold text-slate-400">STEP 4 (STAGE 6)</span>
-              <span className="font-bold text-slate-700 block">Initial 50% Payment</span>
-              <p className="text-slate-500 text-[11px]">Pay initial deposit via dynamic UPI QR code.</p>
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+          <div className="p-3.5 rounded-xl border-2 border-[#1565C0] bg-blue-50/50 space-y-1">
+            <span className="font-mono text-[10px] font-bold text-[#1565C0]">STEP 1 (COMPLETED)</span>
+            <span className="font-bold text-[#0B2545] block">Review Proposal</span>
+            <p className="text-slate-600 text-[11px]">Thoroughly examine scope, tech stack, and commercial breakdown.</p>
           </div>
-
-          {statusMessage && (
-            <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs font-medium">
-              {statusMessage}
-            </div>
-          )}
-
-          {errorMessage && (
-            <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-medium">
-              {errorMessage}
-            </div>
-          )}
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
-            <button
-              onClick={() => setShowClarificationModal(true)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl text-xs font-semibold transition-colors"
-            >
-              <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              <span>Request Clarification or Modification</span>
-            </button>
-
-            <Link
-              href={`/engagement/${engagementRef}/acceptance`}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#0B2545] hover:bg-[#1565C0] text-white px-6 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition-colors"
-            >
-              <span>Proceed to Formal Proposal Acceptance (Stage 4)</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </Link>
+          <div className="p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-50/50 space-y-1">
+            <span className="font-mono text-[10px] font-bold text-emerald-700">STEP 2 (NEXT STAGE 4)</span>
+            <span className="font-bold text-[#0B2545] block">Formal Acceptance</span>
+            <p className="text-slate-600 text-[11px]">Provide authorized signatory name and accept proposal terms.</p>
+          </div>
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
+            <span className="font-mono text-[10px] font-bold text-slate-400">STEP 3 (STAGE 5)</span>
+            <span className="font-bold text-slate-700 block">Execute SOW</span>
+            <p className="text-slate-500 text-[11px]">Digitally sign the 23-chapter legal Statement of Work.</p>
+          </div>
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-1">
+            <span className="font-mono text-[10px] font-bold text-slate-400">STEP 4 (STAGE 6)</span>
+            <span className="font-bold text-slate-700 block">Initial 50% Payment</span>
+            <p className="text-slate-500 text-[11px]">Pay initial deposit via dynamic UPI QR code.</p>
           </div>
         </div>
-      )}
+
+        {statusMessage && (
+          <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs font-medium">
+            {statusMessage}
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-medium">
+            {errorMessage}
+          </div>
+        )}
+
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-slate-100">
+          <button
+            type="button"
+            onClick={() => setShowClarificationModal(true)}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+          >
+            <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <span>Request Clarification or Modification</span>
+          </button>
+
+          <Link
+            href={`/engagement/${engagementRef}/acceptance`}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-[#0B2545] hover:bg-[#1565C0] text-white px-7 py-3 rounded-xl text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer"
+          >
+            <span>Proceed to Formal Proposal Acceptance (Stage 4)</span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </Link>
+        </div>
+      </div>
 
       {/* Clarification Request Modal */}
       {showClarificationModal && (
@@ -976,8 +983,9 @@ export default function ProposalStageClient({
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-base font-bold text-[#0B2545]">Request Proposal Clarification</h3>
               <button
+                type="button"
                 onClick={() => setShowClarificationModal(false)}
-                className="text-slate-400 hover:text-slate-700 text-lg leading-none"
+                className="text-slate-400 hover:text-slate-700 text-lg leading-none cursor-pointer"
               >
                 ✕
               </button>
@@ -990,48 +998,45 @@ export default function ProposalStageClient({
             ) : (
               <form onSubmit={handleSubmitClarification} className="space-y-4 text-xs">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Topic / Area of Question</label>
+                  <label className="font-bold text-slate-700 block mb-1">Topic / Chapter</label>
                   <select
                     value={clarificationTopic}
                     onChange={(e) => setClarificationTopic(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-[#0B2545] font-medium focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
-                    style={{ color: '#0B2545', WebkitTextFillColor: '#0B2545' }}
+                    className="w-full p-2 border border-slate-300 rounded-lg text-slate-800"
                   >
-                    <option value="Scope & Deliverables" className="text-[#0B2545] bg-white">Scope & Deliverables</option>
-                    <option value="Commercial Terms & Pricing" className="text-[#0B2545] bg-white">Commercial Terms & Pricing</option>
-                    <option value="Architecture & Technology" className="text-[#0B2545] bg-white">Architecture & Technology</option>
-                    <option value="Timeline & Milestones" className="text-[#0B2545] bg-white">Timeline & Milestones</option>
-                    <option value="Other Inquiries" className="text-[#0B2545] bg-white">Other Inquiries</option>
+                    <option value="Scope & Deliverables">Scope &amp; Deliverables (D-01 to D-06)</option>
+                    <option value="Architecture & Technology">Architecture &amp; Technology Stack</option>
+                    <option value="Timeline & Milestones">Timeline &amp; Delivery Milestones</option>
+                    <option value="Commercial Terms & Pricing">Commercial Terms &amp; Pricing</option>
+                    <option value="Other">Other Specific Question</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Your Question or Adjustment Request</label>
+                  <label className="font-bold text-slate-700 block mb-1">Your Question or Scope Adjustment</label>
                   <textarea
                     rows={4}
-                    required
                     value={clarificationNotes}
                     onChange={(e) => setClarificationNotes(e.target.value)}
-                    placeholder="Specify any adjustments to line items, deliverables, or questions..."
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-[#0B2545] font-medium focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
-                    style={{ color: '#0B2545', WebkitTextFillColor: '#0B2545' }}
+                    placeholder="Provide details about your question or proposed scope modification..."
+                    className="w-full p-3 border border-slate-300 rounded-lg text-slate-800 leading-relaxed"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-2">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => setShowClarificationModal(false)}
-                    className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-semibold text-xs"
+                    className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmittingClarification || !clarificationNotes.trim()}
-                    className="bg-[#0B2545] hover:bg-[#1565C0] disabled:bg-slate-300 text-white px-5 py-2 rounded-lg font-semibold text-xs transition-colors"
+                    className="px-4 py-2 bg-[#0B2545] text-white rounded-lg hover:bg-[#1565C0] disabled:bg-slate-300 transition-colors cursor-pointer"
                   >
-                    {isSubmittingClarification ? 'Submitting...' : 'Send to LIT Architects'}
+                    {isSubmittingClarification ? 'Submitting...' : 'Submit Request'}
                   </button>
                 </div>
               </form>

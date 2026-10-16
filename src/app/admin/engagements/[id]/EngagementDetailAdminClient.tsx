@@ -38,6 +38,7 @@ import { ENTERPRISE_CHECKPOINTS, EnterpriseCheckpoint } from '@/data/enterpriseD
 import { StageApprovalModal } from '@/components/shared/StageApprovalModal';
 import { SendNotificationModal } from '../components/SendNotificationModal';
 import { ManagePricingModal } from '../components/ManagePricingModal';
+import { ProposalBuilderModal } from '../components/ProposalBuilderModal';
 import { getFinancialsForEngagement, calculateEngagementFinancials } from '@/lib/engagements/financials';
 
 interface EngagementDetailAdminClientProps {
@@ -65,6 +66,7 @@ export default function EngagementDetailAdminClient({
   const [checklistSearch, setChecklistSearch] = useState<string>('');
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
+  const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
 
   // Animated Approval Modal State
   const [approvalModal, setApprovalModal] = useState<{
@@ -510,6 +512,26 @@ export default function EngagementDetailAdminClient({
                 <p className="text-slate-600 font-sans italic leading-relaxed whitespace-pre-wrap">{customNote}</p>
               </div>
             )}
+
+            {/* Proposal Builder Callout in Discovery Stage */}
+            <div className="p-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-0.5">
+                <span className="text-xs font-bold text-[#0B2545] flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Prepare Client Proposal &amp; Commercial Quotation</span>
+                </span>
+                <p className="text-[11px] text-slate-600">
+                  Craft executive summary, scope deliverables, set contract value, and release Stage 03 to {engagement.company_name}.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsProposalModalOpen(true)}
+                className="px-3.5 py-1.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-bold rounded-lg shadow-sm transition-all cursor-pointer whitespace-nowrap self-start sm:self-center"
+              >
+                ✏️ Prepare Proposal (LIT-02)
+              </button>
+            </div>
           </div>
         );
       }
@@ -559,16 +581,38 @@ export default function EngagementDetailAdminClient({
               </div>
             </div>
 
-            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-slate-700 block">Payment Terms &amp; Milestones:</span>
+            {/* Full Proposal Builder & Quick Pricing Actions */}
+            <div className="p-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-0.5">
+                <span className="text-xs font-bold text-[#0B2545] flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Bespoke Client Proposal &amp; Quotation</span>
+                </span>
+                <p className="text-[11px] text-slate-600">
+                  Edit bespoke executive summary, client challenges, architecture, and commercial breakdown for this client.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 self-start sm:self-center">
                 <button
                   type="button"
                   onClick={() => setIsPricingModalOpen(true)}
-                  className="text-xs font-bold text-[#1565C0] hover:underline cursor-pointer"
+                  className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-lg shadow-2xs transition-all cursor-pointer whitespace-nowrap"
                 >
-                  Edit Quotation &amp; Rates
+                  Quick Pricing
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setIsProposalModalOpen(true)}
+                  className="px-3.5 py-1.5 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-bold rounded-lg shadow-sm transition-all cursor-pointer whitespace-nowrap"
+                >
+                  ✏️ Edit Full Proposal (LIT-02)
+                </button>
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-700 block">Payment Terms &amp; Milestones:</span>
               </div>
               <p className="text-slate-600">
                 Milestone 1: 50% Initial Deposit ({financials.depositFormatted}) · Milestone 2: 50% Final Settlement ({financials.settlementFormatted})
@@ -1436,6 +1480,18 @@ export default function EngagementDetailAdminClient({
         onUpdated={(updatedEngagement) => {
           setEngagement(updatedEngagement);
           setSuccessMessage("✓ Commercial quotation & rates updated successfully!");
+          setTimeout(() => setSuccessMessage(null), 4500);
+        }}
+      />
+
+      {/* Prepare & Release Client Proposal Modal */}
+      <ProposalBuilderModal
+        engagement={engagement}
+        isOpen={isProposalModalOpen}
+        onClose={() => setIsProposalModalOpen(false)}
+        onUpdated={(updatedEngagement) => {
+          setEngagement(updatedEngagement);
+          setSuccessMessage("✓ Client proposal and quotation updated successfully!");
           setTimeout(() => setSuccessMessage(null), 4500);
         }}
       />
