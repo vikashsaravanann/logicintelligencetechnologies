@@ -13,7 +13,7 @@ export interface BrandLoadingScreenProps {
  * Can be used as a Server Component in Next.js `loading.tsx` or as a Client Component.
  */
 export default function BrandLoadingScreen({
-  isFixed = true,
+  isFixed = false,
   className = "",
 }: BrandLoadingScreenProps) {
   return (

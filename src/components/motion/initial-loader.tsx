@@ -18,17 +18,19 @@ export default function InitialLoader() {
   const [visible, setVisible] = useState(true);
   const pathname = usePathname();
   const isFirstMount = useRef(true);
+  const isNavigatingRef = useRef(false);
+  const navStartTimeRef = useRef(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const safetyTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const triggerLoader = (duration = 550) => {
+  const triggerSingleLoader = (duration = 450) => {
     if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setVisible(false);
       return;
     }
 
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (safetyTimerRef.current) clearTimeout(safetyTimerRef.current);
 
     setVisible(true);
     timerRef.current = setTimeout(() => {
@@ -36,23 +38,73 @@ export default function InitialLoader() {
     }, duration);
   };
 
-  // Trigger on initial page mount
+  const startNavigationLoader = () => {
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setVisible(false);
+      return;
+    }
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    if (safetyTimerRef.current) {
+      clearTimeout(safetyTimerRef.current);
+      safetyTimerRef.current = null;
+    }
+
+    isNavigatingRef.current = true;
+    navStartTimeRef.current = Date.now();
+    setVisible(true);
+
+    // Safety timeout to dismiss loader in case navigation hangs
+    safetyTimerRef.current = setTimeout(() => {
+      setVisible(false);
+      isNavigatingRef.current = false;
+    }, 3500);
+  };
+
+  // Trigger on initial page mount (plays once when opening the site)
   useEffect(() => {
-    triggerLoader(600);
+    triggerSingleLoader(550);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (safetyTimerRef.current) clearTimeout(safetyTimerRef.current);
     };
   }, []);
 
-  // Trigger on every route transition / pathname change
+  // Listen for route transition completion: dismiss navigation loader cleanly
   useEffect(() => {
+    // Skip initial mount (handled by mount effect)
     if (isFirstMount.current) {
       isFirstMount.current = false;
       return;
     }
 
-    triggerLoader(480);
+    if (isNavigatingRef.current) {
+      // Navigation completed! Ensure a smooth minimum duration so fast loads don't flash, then dismiss.
+      const elapsed = Date.now() - navStartTimeRef.current;
+      const minDuration = 320;
+      const remaining = Math.max(0, minDuration - elapsed);
+
+      if (safetyTimerRef.current) {
+        clearTimeout(safetyTimerRef.current);
+        safetyTimerRef.current = null;
+      }
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      timerRef.current = setTimeout(() => {
+        setVisible(false);
+        isNavigatingRef.current = false;
+      }, remaining);
+    } else {
+      // Navigation happened without link click (e.g. browser history back/forward or router.push)
+      // Run single brief transition
+      triggerSingleLoader(380);
+    }
   }, [pathname]);
 
   // Proactive link click listener: trigger immediately when user clicks internal navigation links
@@ -61,12 +113,18 @@ export default function InitialLoader() {
       const target = (e.target as HTMLElement).closest("a");
       if (!target || !target.href) return;
 
-      // Ignore external links, mailto, tel, hash anchors, new tabs, and downloads
+      // Ignore modifier clicks (open in new tab / window) or non-left clicks
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0) {
+        return;
+      }
+
+      // Ignore external links, mailto, tel, downloads, or target="_blank"
       if (
         target.target === "_blank" ||
         target.hasAttribute("download") ||
         target.href.startsWith("mailto:") ||
-        target.href.startsWith("tel:")
+        target.href.startsWith("tel:") ||
+        target.getAttribute("rel")?.includes("external")
       ) {
         return;
       }
@@ -75,14 +133,18 @@ export default function InitialLoader() {
         const url = new URL(target.href);
         const currentUrl = new URL(window.location.href);
 
-        // Same domain, different pathname or query
-        if (
-          url.origin === currentUrl.origin &&
-          (url.pathname !== currentUrl.pathname || url.search !== currentUrl.search) &&
-          !url.hash
-        ) {
-          triggerLoader(500);
+        // Must be same origin (domain)
+        if (url.origin !== currentUrl.origin) {
+          return;
         }
+
+        // Ignore clicks to the exact same page and query
+        if (url.pathname === currentUrl.pathname && url.search === currentUrl.search) {
+          return;
+        }
+
+        // Start single navigation load transition
+        startNavigationLoader();
       } catch {
         // Safe fallback
       }
