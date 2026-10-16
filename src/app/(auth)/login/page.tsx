@@ -49,9 +49,14 @@ function friendlyAuthError(message: string) {
 function safeNextPath(): string | null {
   if (typeof window === "undefined") return null;
   try {
-    const n = new URLSearchParams(window.location.search).get("next");
+    const params = new URLSearchParams(window.location.search);
+    const n = params.get("next");
     if (n && n.startsWith("/") && !n.startsWith("//") && !n.includes("\\") && !n.includes("://")) {
       return n;
+    }
+    const ref = params.get("ref");
+    if (ref && /^[a-zA-Z0-9_-]+$/.test(ref)) {
+      return `/client/dashboard?ref=${encodeURIComponent(ref)}`;
     }
   } catch {
     /* ignore */

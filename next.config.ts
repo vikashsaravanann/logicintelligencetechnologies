@@ -9,7 +9,6 @@ const nextConfig: NextConfig = {
       { source: '/vikash-portfolio', destination: '/about', permanent: true },
       { source: '/vikash-portfolio/:path*', destination: '/about', permanent: true },
       { source: '/client/profile', destination: '/profile', permanent: true },
-      { source: '/client/login', destination: '/login', permanent: true },
       { source: '/omni', destination: '/voice-shield', permanent: true },
       { source: '/omni/:path*', destination: '/voice-shield', permanent: true },
       { source: '/products/omni-publisher', destination: '/voice-shield', permanent: true },

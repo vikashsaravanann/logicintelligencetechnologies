@@ -66,6 +66,7 @@ export function isPublicPath(path: string): boolean {
   const p = path.split("?")[0];
   if (p === "/") return true;
   if (p === "/login" || p.startsWith("/login/")) return true;
+  if (p === "/client/login" || p.startsWith("/client/login/")) return true;
   if (p === "/reset-password" || p.startsWith("/reset-password/")) return true;
   if (p.startsWith("/auth/")) return true;
   if (p.startsWith("/api/")) return true;
@@ -120,6 +121,10 @@ function matchesPrefix(path: string, prefixes: readonly string[]): boolean {
 }
 
 export function isProtectedPath(path: string): boolean {
+  const normalized = normalizePath(path.split("?")[0]);
+  if (normalized === "/client/login" || normalized?.startsWith("/client/login/")) {
+    return false;
+  }
   return matchesPrefix(path, PROTECTED_PREFIXES);
 }
 

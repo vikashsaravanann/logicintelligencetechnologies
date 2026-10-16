@@ -33,7 +33,10 @@ type Props = {
 
 export default async function ClientDashboardPage({ searchParams }: Props) {
   const sp = searchParams ? await searchParams : {};
-  const portal = await getPortalContext("/client/dashboard");
+  const currentPath = sp.ref
+    ? `/client/dashboard?ref=${encodeURIComponent(sp.ref)}`
+    : "/client/dashboard";
+  const portal = await getPortalContext(currentPath);
 
   // Ensure client receives official welcome email upon entering their workspace
   if (portal.user?.email) {
@@ -63,12 +66,24 @@ export default async function ClientDashboardPage({ searchParams }: Props) {
 
   let primaryEngagement: ClientEngagement | null = userEngagements[0] || null;
 
-  // Strict tenant verification: only load requested ref if it belongs to this client
+  // Strict tenant verification: load requested ref if it belongs to this client or if staff is previewing
   if (sp.ref) {
     const requested = await getEngagementByRef(sp.ref);
+    const isStaff =
+      portal.user.email &&
+      [
+        "createwithvikash@gmail.com",
+        "vikash@logicintelligencetechnologies.in",
+        "founder@logicintelligencetechnologies.in",
+        "admin@logicintelligencetechnologies.in",
+        "hello@logicintelligencetechnologies.in",
+        "platform_owner@healthcare.lit",
+      ].includes(portal.user.email.toLowerCase());
+
     if (
       requested &&
-      (requested.contact_email?.toLowerCase() === portal.user.email?.toLowerCase() ||
+      (isStaff ||
+        requested.contact_email?.toLowerCase() === portal.user.email?.toLowerCase() ||
         userEngagements.some((e) => e.id === requested.id))
     ) {
       primaryEngagement = requested;

@@ -16,10 +16,10 @@ export default async function ClientPortalLayout({
   return (
     <div className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] flex flex-col md:flex-row antialiased">
       {/* Sidebar Navigation */}
-      <aside className="w-full md:w-64 border-r border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 flex flex-col justify-between shrink-0 shadow-2xs">
+      <aside className="w-full md:w-64 border-r border-[var(--lit-border-light,#DFE7EF)] bg-white p-4 sm:p-6 flex flex-col justify-between shrink-0 shadow-2xs">
         <div>
           {/* Brand header */}
-          <Link href="/" className="flex items-center gap-3 mb-8 group">
+          <Link href="/" className="flex items-center gap-3 mb-5 md:mb-8 group">
             <span className="relative block w-10 h-10 rounded-xl overflow-hidden border border-[var(--lit-border-light,#DFE7EF)] bg-white shrink-0 shadow-2xs group-hover:border-[var(--lit-teal,#1FA9A2)] transition-colors">
               <Image
                 src={COMPANY.logoIconPath}

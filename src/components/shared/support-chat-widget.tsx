@@ -477,7 +477,7 @@ export default function SupportChatWidget() {
                         placeholder="Your Full Name"
                         value={handoffName}
                         onChange={(e) => setHandoffName(e.target.value)}
-                        className="w-full bg-[#050C1B] border border-cyan-500/30 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-400 focus:outline-none focus:border-cyan-400 text-xs"
+                        className="w-full bg-[#050C1B] border border-cyan-500/30 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-400 focus:outline-none focus:border-cyan-400 text-[16px] sm:text-xs"
                       />
                       <input
                         type="text"
@@ -485,14 +485,14 @@ export default function SupportChatWidget() {
                         required
                         value={handoffContact}
                         onChange={(e) => setHandoffContact(e.target.value)}
-                        className="w-full bg-[#050C1B] border border-cyan-500/30 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-400 focus:outline-none focus:border-cyan-400 text-xs"
+                        className="w-full bg-[#050C1B] border border-cyan-500/30 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-400 focus:outline-none focus:border-cyan-400 text-[16px] sm:text-xs"
                       />
                       <input
                         type="text"
                         placeholder="Brief requirement (e.g. Hospital OS, Voice Agent)"
                         value={handoffNotes}
                         onChange={(e) => setHandoffNotes(e.target.value)}
-                        className="w-full bg-[#050C1B] border border-cyan-500/30 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-400 focus:outline-none focus:border-cyan-400 text-xs"
+                        className="w-full bg-[#050C1B] border border-cyan-500/30 rounded-lg px-2.5 py-1.5 text-white placeholder:text-zinc-400 focus:outline-none focus:border-cyan-400 text-[16px] sm:text-xs"
                       />
                       <div className="flex gap-2 pt-1">
                         <button
@@ -519,7 +519,7 @@ export default function SupportChatWidget() {
                   onKeyDown={handleKeyDown}
                   placeholder="Ask LOGIC AI about platforms, architecture, pricing..."
                   rows={1}
-                  className="flex-1 max-h-[90px] min-h-[38px] resize-none bg-transparent px-3 py-2 text-xs sm:text-sm text-white placeholder:text-zinc-400 focus:outline-none"
+                  className="flex-1 max-h-[90px] min-h-[38px] resize-none bg-transparent px-3 py-2 text-[16px] sm:text-sm text-white placeholder:text-zinc-400 focus:outline-none"
                 />
                 <button
                   type="button"

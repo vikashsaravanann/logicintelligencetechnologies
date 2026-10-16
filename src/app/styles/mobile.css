@@ -34,3 +34,27 @@ img, video, canvas, iframe, svg {
     font-size: 14px;
   }
 }
+
+/* Prevent iOS Safari from auto-zooming when focusing on inputs or textareas */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+    touch-action: manipulation;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    font-size: 16px !important;
+  }
+}
+

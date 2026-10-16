@@ -29,7 +29,13 @@ export async function middleware(req: NextRequest) {
           data: { user },
         } = await supabase.auth.getUser();
         if (user && !user.is_anonymous) {
-          const dest = safeNextPath(req.nextUrl.searchParams.get("next"), "/");
+          const nextParam = req.nextUrl.searchParams.get("next");
+          const refParam = req.nextUrl.searchParams.get("ref");
+          let dest = safeNextPath(nextParam, "");
+          if (!dest && refParam && /^[a-zA-Z0-9_-]+$/.test(refParam)) {
+            dest = `/client/dashboard?ref=${encodeURIComponent(refParam)}`;
+          }
+          if (!dest) dest = "/";
           return NextResponse.redirect(new URL(dest, req.url));
         }
       } catch {

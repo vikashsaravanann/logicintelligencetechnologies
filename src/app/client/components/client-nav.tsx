@@ -37,7 +37,7 @@ export function ClientNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="space-y-1" aria-label="Client Portal Navigation">
+    <nav className="grid grid-cols-2 gap-2 md:block md:space-y-1" aria-label="Client Portal Navigation">
       {NAV_ITEMS.map((item) => {
         const Icon = item.icon;
         const isActive =
@@ -49,15 +49,15 @@ export function ClientNav() {
           <Link
             key={item.href}
             href={item.href}
-            className={`group flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-150 ${
+            className={`group flex items-center justify-between px-2.5 sm:px-3 py-2 rounded-xl text-[11px] sm:text-xs font-semibold transition-all duration-150 min-h-[42px] border ${
               isActive
-                ? "bg-[var(--lit-navy,#0B2545)] text-white shadow-xs"
-                : "text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-cloud,#F7F9FC)]"
+                ? "bg-[var(--lit-navy,#0B2545)] text-white border-[var(--lit-navy,#0B2545)] shadow-xs"
+                : "border-[var(--lit-border-light,#DFE7EF)] md:border-transparent text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-cloud,#F7F9FC)] bg-slate-50/70 md:bg-transparent"
             }`}
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2 min-w-0">
               <Icon
-                className={`w-4 h-4 shrink-0 transition-colors ${
+                className={`w-3.5 h-3.5 shrink-0 transition-colors ${
                   isActive
                     ? "text-[var(--lit-teal,#1FA9A2)]"
                     : "text-[var(--lit-text-muted,#52677C)] group-hover:text-[var(--lit-navy,#0B2545)]"
@@ -66,7 +66,7 @@ export function ClientNav() {
               <span className="truncate">{item.label}</span>
             </div>
             {isActive && (
-              <ChevronRight className="w-3.5 h-3.5 text-white/50 shrink-0" />
+              <ChevronRight className="w-3.5 h-3.5 text-white/50 shrink-0 hidden md:inline-block" />
             )}
           </Link>
         );
