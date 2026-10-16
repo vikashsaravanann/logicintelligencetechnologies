@@ -18,6 +18,7 @@ export interface EngagementPortalInvitationEmailProps {
   projectTitle?: string;
   engagementRef?: string;
   portalUrl?: string;
+  workspaceUrl?: string;
   customMessage?: string;
 }
 
@@ -27,6 +28,7 @@ export default function EngagementPortalInvitationEmail({
   projectTitle = "Enterprise AI & Cloud Infrastructure Architecture",
   engagementRef = "ENG-2026-LIT-SAMPLE",
   portalUrl = `${EMAIL.siteUrl}/engagement/${engagementRef}`,
+  workspaceUrl = `${EMAIL.siteUrl}/client/login?ref=${engagementRef}`,
   customMessage,
 }: EngagementPortalInvitationEmailProps) {
   return (
@@ -113,13 +115,23 @@ export default function EngagementPortalInvitationEmail({
           </ol>
         </div>
 
-        <EmailButton href={portalUrl}>Access Your Client Portal</EmailButton>
+        <div style={{ textAlign: "center", margin: "24px 0" }}>
+          <EmailButton href={workspaceUrl}>Launch Client Workspace</EmailButton>
+        </div>
 
-        <div style={{ marginTop: "16px", padding: "12px", backgroundColor: "#F7F9FC", borderRadius: "8px", border: "1px solid #DFE7EF", fontSize: "11px", color: "#52677C", wordBreak: "break-all" }}>
-          <strong>Direct Portal Link:</strong><br />
-          <a href={portalUrl} style={{ color: "#1565C0", textDecoration: "underline" }}>
-            {portalUrl}
-          </a>
+        <div style={{ marginTop: "16px", padding: "14px 16px", backgroundColor: "#F7F9FC", borderRadius: "10px", border: "1px solid #DFE7EF", fontSize: "12px", color: "#52677C" }}>
+          <div style={{ marginBottom: "8px" }}>
+            <strong style={{ color: "#0B2545" }}>Client Portal Workspace:</strong><br />
+            <a href={workspaceUrl} style={{ color: "#1565C0", wordBreak: "break-all", textDecoration: "underline" }}>
+              {workspaceUrl}
+            </a>
+          </div>
+          <div>
+            <strong style={{ color: "#0B2545" }}>Direct 13-Stage Milestone Portal:</strong><br />
+            <a href={portalUrl} style={{ color: "#1FA9A2", wordBreak: "break-all", textDecoration: "underline" }}>
+              {portalUrl}
+            </a>
+          </div>
         </div>
 
         <EmailMuted>

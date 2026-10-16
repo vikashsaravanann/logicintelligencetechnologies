@@ -61,6 +61,7 @@ export async function sendEngagementInvitationEmail(
 
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || COMPANY.websiteUrl).replace(/\/$/, '');
   const portalUrl = `${siteUrl}/engagement/${engagement.engagement_ref}`;
+  const workspaceUrl = `${siteUrl}/client/login?ref=${engagement.engagement_ref}`;
 
   try {
     const result = await sendEmail({
@@ -76,6 +77,7 @@ export async function sendEngagementInvitationEmail(
         projectTitle: engagement.project_title,
         engagementRef: engagement.engagement_ref,
         portalUrl,
+        workspaceUrl,
         customMessage,
       }),
     });

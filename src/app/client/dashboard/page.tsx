@@ -12,12 +12,13 @@ import {
   FolderOpen,
   Clock,
   Sparkles,
+  GitBranch,
 } from "lucide-react";
 import { getPortalContext, listOwnRows } from "@/lib/client-portal/data";
 import { getEngagementByRef, getEngagementsByEmail, getEngagementStages } from "@/lib/engagements/db";
 import { ClientEngagement } from "@/lib/engagements/types";
 import { formatINR, formatIST } from "@/lib/format/datetime";
-import { GitBranch } from "lucide-react";
+import { ensureWelcomeEmail } from "@/lib/email/send-welcome";
 
 export const metadata: Metadata = {
   title: "Executive Dashboard | Client Portal | Logic Intelligence Technologies",
@@ -33,6 +34,21 @@ type Props = {
 export default async function ClientDashboardPage({ searchParams }: Props) {
   const sp = searchParams ? await searchParams : {};
   const portal = await getPortalContext("/client/dashboard");
+
+  // Ensure client receives official welcome email upon entering their workspace
+  if (portal.user?.email) {
+    ensureWelcomeEmail({
+      userId: portal.user.id,
+      email: portal.user.email,
+      fullName:
+        (portal.user.user_metadata?.full_name as string | undefined) ||
+        (portal.user.user_metadata?.name as string | undefined) ||
+        null,
+    }).catch((err) => {
+      console.warn("[Client Dashboard] ensureWelcomeEmail non-critical error:", err);
+    });
+  }
+
   const [projects, invoices, tickets, files, userEngagements] = await Promise.all([
     listOwnRows(portal, "projects", 4),
     listOwnRows(portal, "invoices", 4),
