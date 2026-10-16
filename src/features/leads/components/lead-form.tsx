@@ -68,7 +68,7 @@ export default function LeadForm() {
     }
   };
 
-  const inputClass = "w-full px-4 py-3 bg-zinc-900/50 border border-white/10 rounded-xl text-base md:text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner";
+  const inputClass = "w-full px-4 py-3 bg-zinc-900/50 border border-white/10 rounded-xl text-base md:text-sm !text-white text-white placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all shadow-inner";
   const labelClass = "block text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-2";
   const sectionTitleClass = "text-xl font-bold text-white mb-2 flex items-center gap-3";
   const sectionDescClass = "text-sm text-zinc-400 mb-6";

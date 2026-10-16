@@ -11,6 +11,28 @@ img, video, canvas, svg { max-width: 100%; height: auto; }
 input, textarea, select {
   color: var(--lit-ink, #0B2545);
 }
+
+/* Ensure inputs on dark surfaces and the AI chatbot always have crisp high-contrast white text */
+.dark input,
+.dark textarea,
+.dark select,
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+.chat-widget-input,
+textarea.chat-widget-input,
+input.chat-widget-input,
+[data-chat-widget] textarea,
+[data-chat-widget] input,
+input.text-white,
+textarea.text-white,
+input.\!text-white,
+textarea.\!text-white {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  caret-color: #38BDF8 !important;
+}
+
 @media screen and (max-width: 768px) {
   input, textarea, select {
     font-size: 16px !important;
@@ -18,4 +40,10 @@ input, textarea, select {
 }
 input::placeholder, textarea::placeholder {
   color: #94A3B8;
+}
+input.text-white::placeholder,
+textarea.text-white::placeholder,
+.chat-widget-input::placeholder {
+  color: #94A3B8 !important;
+  -webkit-text-fill-color: #94A3B8 !important;
 }

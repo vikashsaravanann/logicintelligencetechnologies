@@ -58,3 +58,22 @@ img, video, canvas, iframe, svg {
   }
 }
 
+/* AI Chatbot & Dark Input text visibility */
+.chat-widget-input,
+textarea.chat-widget-input,
+input.chat-widget-input,
+[data-chat-widget] textarea,
+[data-chat-widget] input {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  caret-color: #38BDF8 !important;
+}
+
+.chat-widget-input::placeholder,
+textarea.chat-widget-input::placeholder,
+input.chat-widget-input::placeholder {
+  color: #94A3B8 !important;
+  -webkit-text-fill-color: #94A3B8 !important;
+}
+
+
