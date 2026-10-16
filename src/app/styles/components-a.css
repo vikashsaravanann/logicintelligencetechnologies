@@ -8,17 +8,40 @@ body {
 }
 * { box-sizing: border-box; }
 img, video, canvas, svg { max-width: 100%; height: auto; }
+
+/* ── Global Form Input, Textarea, Select Typography & Visibility ── */
+/* Default: High-contrast dark ink on light surfaces (Canvas, Portals, Admin, Modals) */
 input, textarea, select {
-  color: var(--lit-ink, #0B2545);
+  color: #0B2545 !important;
+  -webkit-text-fill-color: #0B2545 !important;
+  caret-color: #1565C0 !important;
 }
 
-/* Ensure inputs on dark surfaces and the AI chatbot always have crisp high-contrast white text */
-.dark input,
-.dark textarea,
-.dark select,
-[data-theme="dark"] input,
-[data-theme="dark"] textarea,
-[data-theme="dark"] select,
+/* Light surface inputs must always display dark ink text, even if parent has dark theme */
+.bg-white input,
+.bg-white textarea,
+.bg-white select,
+.bg-slate-50 input,
+.bg-slate-50 textarea,
+.bg-slate-50 select,
+input.bg-white,
+textarea.bg-white,
+select.bg-white,
+input.bg-slate-50,
+textarea.bg-slate-50,
+select.bg-slate-50,
+input[class*="bg-white"],
+textarea[class*="bg-white"],
+select[class*="bg-white"],
+input[class*="bg-slate-"],
+textarea[class*="bg-slate-"],
+select[class*="bg-slate-"] {
+  color: #0B2545 !important;
+  -webkit-text-fill-color: #0B2545 !important;
+  caret-color: #1565C0 !important;
+}
+
+/* Ensure inputs specifically designed for dark surfaces (AI chatbot, dark widgets) have crisp white text */
 .chat-widget-input,
 textarea.chat-widget-input,
 input.chat-widget-input,
@@ -26,8 +49,18 @@ input.chat-widget-input,
 [data-chat-widget] input,
 input.text-white,
 textarea.text-white,
+select.text-white,
 input.\!text-white,
-textarea.\!text-white {
+textarea.\!text-white,
+select.\!text-white,
+input[class*="bg-slate-900"],
+textarea[class*="bg-slate-900"],
+select[class*="bg-slate-900"],
+input[class*="bg-black"],
+textarea[class*="bg-black"],
+select[class*="bg-black"],
+input[class*="bg-[#070F1E]"],
+textarea[class*="bg-[#070F1E]"] {
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
   caret-color: #38BDF8 !important;
@@ -38,9 +71,13 @@ textarea.\!text-white {
     font-size: 16px !important;
   }
 }
+
 input::placeholder, textarea::placeholder {
-  color: #94A3B8;
+  color: #64748B !important;
+  -webkit-text-fill-color: #64748B !important;
+  opacity: 1;
 }
+
 input.text-white::placeholder,
 textarea.text-white::placeholder,
 .chat-widget-input::placeholder {

@@ -76,4 +76,12 @@ input.chat-widget-input::placeholder {
   -webkit-text-fill-color: #94A3B8 !important;
 }
 
+/* Ensure all form inputs on light surfaces always render crisp dark text on mobile devices */
+input:not(.chat-widget-input):not([data-chat-widget]):not(.text-white):not([class*="bg-slate-900"]):not([class*="bg-black"]):not([class*="bg-[#070F1E]"]),
+textarea:not(.chat-widget-input):not([data-chat-widget]):not(.text-white):not([class*="bg-slate-900"]):not([class*="bg-black"]):not([class*="bg-[#070F1E]"]),
+select:not(.chat-widget-input):not([data-chat-widget]):not(.text-white):not([class*="bg-slate-900"]):not([class*="bg-black"]):not([class*="bg-[#070F1E]"]) {
+  color: #0B2545 !important;
+  -webkit-text-fill-color: #0B2545 !important;
+}
+
 

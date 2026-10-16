@@ -243,7 +243,8 @@ export function SendNotificationModal({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Action Required: Approve Milestone 06"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#DFE7EF] bg-white text-xs text-[#0B2545] focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30 focus:border-[#1565C0]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#DFE7EF] bg-white text-xs text-[#0B2545] font-medium focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30 focus:border-[#1565C0]"
+                style={{ color: '#0B2545', WebkitTextFillColor: '#0B2545' }}
               />
             </div>
 
@@ -254,7 +255,8 @@ export function SendNotificationModal({
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as CategoryType)}
-                className="w-full px-3 py-2.5 rounded-xl border border-[#DFE7EF] bg-white text-xs text-[#0B2545] focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30 focus:border-[#1565C0]"
+                className="w-full px-3 py-2.5 rounded-xl border border-[#DFE7EF] bg-white text-xs text-[#0B2545] font-medium focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30 focus:border-[#1565C0]"
+                style={{ color: '#0B2545', WebkitTextFillColor: '#0B2545' }}
               >
                 <option value="action_required">⚡ Action Required</option>
                 <option value="milestone">🎯 Milestone Delivery</option>
@@ -277,7 +279,8 @@ export function SendNotificationModal({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Provide clear, actionable details for the client. This will be prominently visible in their workspace notification center."
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#DFE7EF] bg-white text-xs text-[#0B2545] focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30 focus:border-[#1565C0] leading-relaxed resize-y"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#DFE7EF] bg-white text-xs text-[#0B2545] font-medium focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30 focus:border-[#1565C0] leading-relaxed resize-y"
+              style={{ color: '#0B2545', WebkitTextFillColor: '#0B2545' }}
             />
           </div>
 
@@ -292,7 +295,8 @@ export function SendNotificationModal({
                 value={actionUrl}
                 onChange={(e) => setActionUrl(e.target.value)}
                 placeholder={defaultActionUrl}
-                className="w-full px-3 py-2 rounded-xl border border-[#DFE7EF] bg-white text-xs text-[#0B2545] focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30 focus:border-[#1565C0] font-mono text-[11px]"
+                className="w-full px-3 py-2 rounded-xl border border-[#DFE7EF] bg-white text-xs text-[#0B2545] font-medium focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30 focus:border-[#1565C0] font-mono text-[11px]"
+                style={{ color: '#0B2545', WebkitTextFillColor: '#0B2545' }}
               />
             </div>
 
@@ -305,7 +309,8 @@ export function SendNotificationModal({
                 value={actionLabel}
                 onChange={(e) => setActionLabel(e.target.value)}
                 placeholder="e.g. View Milestone / Review Deliverable"
-                className="w-full px-3 py-2 rounded-xl border border-[#DFE7EF] bg-white text-xs text-[#0B2545] focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30 focus:border-[#1565C0]"
+                className="w-full px-3 py-2 rounded-xl border border-[#DFE7EF] bg-white text-xs text-[#0B2545] font-medium focus:outline-none focus:ring-2 focus:ring-[#1565C0]/30 focus:border-[#1565C0]"
+                style={{ color: '#0B2545', WebkitTextFillColor: '#0B2545' }}
               />
             </div>
           </div>

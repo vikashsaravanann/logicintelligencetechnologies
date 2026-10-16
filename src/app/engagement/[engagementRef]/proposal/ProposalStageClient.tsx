@@ -986,13 +986,14 @@ export default function ProposalStageClient({
                   <select
                     value={clarificationTopic}
                     onChange={(e) => setClarificationTopic(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-[#0B2545] font-medium focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                    style={{ color: '#0B2545', WebkitTextFillColor: '#0B2545' }}
                   >
-                    <option value="Scope & Deliverables">Scope & Deliverables</option>
-                    <option value="Commercial Terms & Pricing">Commercial Terms & Pricing</option>
-                    <option value="Architecture & Technology">Architecture & Technology</option>
-                    <option value="Timeline & Milestones">Timeline & Milestones</option>
-                    <option value="Other Inquiries">Other Inquiries</option>
+                    <option value="Scope & Deliverables" className="text-[#0B2545] bg-white">Scope & Deliverables</option>
+                    <option value="Commercial Terms & Pricing" className="text-[#0B2545] bg-white">Commercial Terms & Pricing</option>
+                    <option value="Architecture & Technology" className="text-[#0B2545] bg-white">Architecture & Technology</option>
+                    <option value="Timeline & Milestones" className="text-[#0B2545] bg-white">Timeline & Milestones</option>
+                    <option value="Other Inquiries" className="text-[#0B2545] bg-white">Other Inquiries</option>
                   </select>
                 </div>
 
@@ -1004,7 +1005,8 @@ export default function ProposalStageClient({
                     value={clarificationNotes}
                     onChange={(e) => setClarificationNotes(e.target.value)}
                     placeholder="Specify any adjustments to line items, deliverables, or questions..."
-                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-[#0B2545] font-medium focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                    style={{ color: '#0B2545', WebkitTextFillColor: '#0B2545' }}
                   />
                 </div>
 
