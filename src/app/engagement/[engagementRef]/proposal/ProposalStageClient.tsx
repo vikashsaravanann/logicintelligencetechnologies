@@ -176,7 +176,7 @@ export default function ProposalStageClient({
     metadata?.subtotal ||
     metadata?.contract_value ||
     metadata?.budget_range ||
-    50;
+    0;
 
   const customItems = (
     metadata?.commercial_items ||
@@ -190,7 +190,7 @@ export default function ProposalStageClient({
 
   const commercialItems = financials.scopeItems;
   const subtotalPaise = financials.subtotal;
-  const discountPaise = couponApplied ? Math.min(50000, Math.round(subtotalPaise * 0.1)) : 0;
+  const discountPaise = couponApplied ? Number(initialSnapshot?.approvedDiscountAmount ?? 0) : 0;
   const netSubtotalPaise = Math.max(0, subtotalPaise - discountPaise);
   const cgstPaise = Math.round(netSubtotalPaise * 0.09 * 100) / 100;
   const sgstPaise = Math.round(netSubtotalPaise * 0.09 * 100) / 100;
@@ -207,15 +207,37 @@ export default function ProposalStageClient({
     }).format(val);
   };
 
-  const handleApplyCoupon = (e: React.FormEvent) => {
+  const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
     setCouponMessage(null);
     const code = couponCode.trim().toUpperCase();
-    if (code === 'WAKEUPINDIA' || code === 'LIT2026' || code === 'FOUNDER50K') {
+    if (!code) {
+      setCouponApplied(false);
+      setCouponMessage('Please enter a valid coupon code.');
+      return;
+    }
+
+    try {
+      const shareToken = String(initialSnapshot?.quotationShareToken ?? proposalMeta.reference ?? '');
+      const res = await fetch(`/api/quotations/${encodeURIComponent(shareToken)}/apply-coupon`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.valid) {
+        setCouponApplied(false);
+        setCouponMessage(
+          json.error ||
+            'Coupon code is not active or has not been approved by the Super Admin. Standard pricing applies.'
+        );
+        return;
+      }
       setCouponApplied(true);
-      setCouponMessage(`Promo coupon "${code}" applied successfully! ₹50,000 launch incentive deducted.`);
-    } else {
-      setCouponMessage('Invalid or expired coupon code. Standard pricing applies.');
+      setCouponMessage(`Approved coupon "${code}" applied.`);
+    } catch {
+      setCouponApplied(false);
+      setCouponMessage('Coupon verification failed. Standard pricing applies.');
     }
   };
 

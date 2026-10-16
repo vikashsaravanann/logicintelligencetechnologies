@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendEngagementInvitationEmail } from '@/lib/engagements/invitations';
+import { requireCapabilityApi } from '@/lib/auth/session';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,6 +9,11 @@ export async function POST(
   context: { params: Promise<{ ref: string }> | { ref: string } }
 ) {
   try {
+    const auth = await requireCapabilityApi(req, 'clients.write');
+    if (!auth.ok) {
+      return NextResponse.json({ ok: false, message: auth.message }, { status: auth.status });
+    }
+
     const params = await context.params;
     const ref = params?.ref;
 

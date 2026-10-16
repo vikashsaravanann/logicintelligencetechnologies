@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const auth = await requireCapabilityApi(req, 'clients.write');
+    const auth = await requireCapabilityApi(req, 'engagement.identity_change.approve');
     if (!auth.ok) {
       return NextResponse.json({ success: false, error: auth.message }, { status: auth.status });
     }

@@ -6,18 +6,21 @@ interface EmailHeaderProps {
   subBrand?: string;
 }
 
-/** Centered circular logo (64x64px), company wordmark, and optional sub-brand */
+/**
+ * Centered circular logo (48x48px), single-line non-wrapping wordmark:
+ * LOGIC INTELLIGENCE TECHNOLOGIES (12px, tracking 0.14em, bold uppercase)
+ */
 export const EmailHeader = ({ subBrand }: EmailHeaderProps) => {
   return (
     <Section style={header}>
       <Img
         src={EMAIL.logoUrl}
         alt={EMAIL.company}
-        width="64"
-        height="64"
+        width="48"
+        height="48"
         style={logo}
       />
-      <Text style={brand}>LOGIC INTELLIGENCE TECHNOLOGIES</Text>
+      <Text style={brand}>{EMAIL.companyFull}</Text>
       {subBrand ? <Text style={subBrandStyle}>{subBrand}</Text> : null}
       <Hr style={divider} />
     </Section>
@@ -25,7 +28,7 @@ export const EmailHeader = ({ subBrand }: EmailHeaderProps) => {
 };
 
 const header = {
-  padding: "36px 32px 16px 32px",
+  padding: "32px 32px 16px 32px",
   textAlign: "center" as const,
   backgroundColor: EMAIL.colors.cardBg,
 };
@@ -34,32 +37,34 @@ const logo = {
   display: "block",
   margin: "0 auto 12px auto",
   borderRadius: "50%",
-  border: `1px solid ${EMAIL.colors.border}`,
-  width: "64px",
-  height: "64px",
+  border: `1px solid ${EMAIL.colors.cardBorder}`,
+  width: "48px",
+  height: "48px",
   objectFit: "cover" as const,
 };
 
 const brand = {
-  color: EMAIL.colors.text,
-  fontSize: "15px",
-  fontWeight: "700" as const,
-  lineHeight: "22px",
+  color: EMAIL.colors.inkPrimary,
+  fontSize: "12px",
+  fontWeight: "800" as const,
+  lineHeight: "16px",
   margin: "0 auto",
-  letterSpacing: "0.05em",
+  letterSpacing: "0.14em",
   textTransform: "uppercase" as const,
-  fontFamily: EMAIL.font,
+  whiteSpace: "nowrap" as const,
+  fontFamily: EMAIL.fontSans,
   textAlign: "center" as const,
 };
 
 const subBrandStyle = {
   color: EMAIL.colors.muted,
-  fontSize: "13px",
+  fontSize: "12px",
   fontWeight: "500" as const,
   lineHeight: "18px",
-  margin: "4px auto 0 auto",
-  fontFamily: EMAIL.font,
+  margin: "6px auto 0 auto",
+  fontFamily: EMAIL.fontSans,
   textAlign: "center" as const,
+  letterSpacing: "0.02em",
 };
 
 const divider = {

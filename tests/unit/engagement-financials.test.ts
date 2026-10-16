@@ -4,13 +4,14 @@ import {
   calculateEngagementFinancials,
   generateScopeItems,
   getFinancialsForEngagement,
+  validateExplicitSubtotalAmount,
   formatInr,
 } from '../../src/lib/engagements/financials';
-import { EngagementRecord } from '../../src/lib/engagements/types';
 
 describe('Engagement Financials Calculation Engine', () => {
   it('correctly calculates GST and 50/50 milestones for 50 rupees base amount', () => {
     const fin = calculateEngagementFinancials(50);
+    assert.equal(fin.isPriced, true);
     assert.equal(fin.subtotal, 50);
     assert.equal(fin.cgstAmount, 4.5);
     assert.equal(fin.sgstAmount, 4.5);
@@ -21,6 +22,31 @@ describe('Engagement Financials Calculation Engine', () => {
     assert.equal(fin.cgstRate, 0.09);
     assert.equal(fin.sgstRate, 0.09);
     assert.equal(fin.gstRate, 0.18);
+  });
+
+  it('supports gstApplicable=false (0% GST) and discounts with exact 50/50 milestone split', () => {
+    const fin = calculateEngagementFinancials(50000, {
+      gstApplicable: false,
+      discountAmount: 5000,
+    });
+    assert.equal(fin.subtotal, 50000);
+    assert.equal(fin.discountAmount, 5000);
+    assert.equal(fin.taxableSubtotal, 45000);
+    assert.equal(fin.gstAmount, 0);
+    assert.equal(fin.totalAmount, 45000);
+    assert.equal(fin.depositAmount, 22500);
+    assert.equal(fin.settlementAmount, 22500);
+  });
+
+  it('rejects missing, zero, negative, or non-numeric subtotals in validateExplicitSubtotalAmount', () => {
+    assert.equal(validateExplicitSubtotalAmount(undefined).ok, false);
+    assert.equal(validateExplicitSubtotalAmount(null).ok, false);
+    assert.equal(validateExplicitSubtotalAmount(0).ok, false);
+    assert.equal(validateExplicitSubtotalAmount(-500).ok, false);
+    assert.equal(validateExplicitSubtotalAmount('abc').ok, false);
+    const valid = validateExplicitSubtotalAmount(50000);
+    assert.equal(valid.ok, true);
+    if (valid.ok) assert.equal(valid.subtotal, 50000);
   });
 
   it('correctly handles string inputs like "50", "₹50.00", and raw integers', () => {
@@ -38,14 +64,14 @@ describe('Engagement Financials Calculation Engine', () => {
     assert.equal(fin3.gstAmount, 9);
   });
 
-  it('generates dynamic scope items that sum up precisely to the subtotal', () => {
+  it('generates scope items that sum up precisely to the subtotal without fabricating 5-item splits', () => {
     const items = generateScopeItems(50);
-    assert.ok(items.length >= 1);
+    assert.equal(items.length, 1);
     const sum = items.reduce((acc, it) => acc + it.unitPrice * it.qty, 0);
     assert.equal(Math.round(sum * 100) / 100, 50);
 
     const largeItems = generateScopeItems(1800000);
-    assert.equal(largeItems.length, 5);
+    assert.equal(largeItems.length, 1);
     const largeSum = largeItems.reduce((acc, it) => acc + it.unitPrice * it.qty, 0);
     assert.equal(Math.round(largeSum * 100) / 100, 1800000);
   });
@@ -79,3 +105,4 @@ describe('Engagement Financials Calculation Engine', () => {
     assert.ok(formatted.includes('50'));
   });
 });
+

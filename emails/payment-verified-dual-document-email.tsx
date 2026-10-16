@@ -29,13 +29,13 @@ export interface PaymentVerifiedDualDocumentEmailProps {
 
 export default function PaymentVerifiedDualDocumentEmail({
   recipientName = "Partner",
-  milestoneTitle = "Stage 6: Initial Project Milestone (50%)",
-  amountPaid = "₹1,50,000.00",
-  paymentDate = "October 14, 2026",
-  utrReference = "UPI/428910398471",
-  bankCreditReference = "YESB-CMS-20261014-9918",
-  invoiceDownloadUrl = "https://www.logicintelligencetechnologies.in/api/documents/invoice-demo",
-  receiptDownloadUrl = "https://www.logicintelligencetechnologies.in/api/documents/receipt-demo",
+  milestoneTitle = "Project Milestone Payment",
+  amountPaid,
+  paymentDate,
+  utrReference,
+  bankCreditReference,
+  invoiceDownloadUrl,
+  receiptDownloadUrl,
   stageNumber = 6,
   nextStageUrl,
 }: PaymentVerifiedDualDocumentEmailProps) {
@@ -46,16 +46,18 @@ export default function PaymentVerifiedDualDocumentEmail({
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })
-      : amountPaid.startsWith("₹")
-      ? amountPaid
-      : `₹${amountPaid}`;
+      : typeof amountPaid === "string" && amountPaid.trim().length > 0
+      ? amountPaid.startsWith("₹")
+        ? amountPaid
+        : `₹${amountPaid}`
+      : "Verified per milestone schedule";
 
   const isStage6 = stageNumber === 6;
   const isStage11 = stageNumber === 11;
 
   const defaultNextStageUrl = isStage6
     ? "https://www.logicintelligencetechnologies.in/onboarding"
-    : "https://www.logicintelligencetechnologies.in/dashboard";
+    : "https://www.logicintelligencetechnologies.in/portal";
 
   const targetNextStageUrl = nextStageUrl || defaultNextStageUrl;
 
@@ -70,7 +72,7 @@ export default function PaymentVerifiedDualDocumentEmail({
         <EmailBody>
           We are pleased to confirm that your milestone payment has been successfully verified
           against our bank ledger. Your official Tax Invoice and Payment Receipt have been issued
-          and are ready for download.
+          and are accessible below.
         </EmailBody>
 
         {/* Financial Settlement Summary Card */}
@@ -79,63 +81,85 @@ export default function PaymentVerifiedDualDocumentEmail({
           <EmailInfoRow
             label="Amount Paid (INR)"
             value={
-              <strong style={{ color: EMAIL.colors.primary, fontSize: "15px" }}>
+              <strong style={{ color: EMAIL.colors.inkPrimary, fontSize: "15px" }}>
                 {formattedAmount}
               </strong>
             }
           />
-          <EmailInfoRow label="Payment Date" value={paymentDate} />
-          <EmailInfoRow
-            label="UTR / UPI Reference"
-            value={
-              <span style={{ fontFamily: EMAIL.fontMono, fontSize: "13px" }}>
-                {utrReference}
-              </span>
-            }
-          />
-          <EmailInfoRow
-            label="Bank Credit Ref"
-            value={
-              <span
-                style={{
-                  fontFamily: EMAIL.fontMono,
-                  fontSize: "13px",
-                  color: EMAIL.colors.successText,
-                  fontWeight: 600,
-                }}
-              >
-                {bankCreditReference}
-              </span>
-            }
-            isLast={true}
-          />
+          {paymentDate ? (
+            <EmailInfoRow label="Payment Date" value={paymentDate} />
+          ) : null}
+          {utrReference ? (
+            <EmailInfoRow
+              label="UTR / Reference"
+              value={
+                <span style={{ fontFamily: EMAIL.fontMono, fontSize: "13px" }}>
+                  {utrReference}
+                </span>
+              }
+            />
+          ) : null}
+          {bankCreditReference ? (
+            <EmailInfoRow
+              label="Bank Reconciliation"
+              value={
+                <span
+                  style={{
+                    fontFamily: EMAIL.fontMono,
+                    fontSize: "13px",
+                    color: EMAIL.colors.successText,
+                    fontWeight: 600,
+                  }}
+                >
+                  {bankCreditReference}
+                </span>
+              }
+              isLast={true}
+            />
+          ) : null}
         </EmailInfoGrid>
 
-        {/* Dual Document Download Action Buttons */}
-        <Section style={dualButtonContainer}>
-          <table
-            role="presentation"
-            width="100%"
-            cellPadding={0}
-            cellSpacing={0}
-            style={{ borderCollapse: "collapse" }}
-          >
-            <tr>
-              <td align="center" style={{ padding: "8px 0" }}>
-                <Link href={invoiceDownloadUrl} style={btnPrimary}>
-                  Download Tax Invoice (PDF)
-                </Link>
-              </td>
-            </tr>
-            <tr>
-              <td align="center" style={{ padding: "4px 0 12px 0" }}>
-                <Link href={receiptDownloadUrl} style={btnSecondary}>
-                  Download Payment Receipt (PDF)
-                </Link>
-              </td>
-            </tr>
-          </table>
-        </Section>
+        {/* Dual Document Download Action Buttons (if URLs provided) */}
+        {(invoiceDownloadUrl || receiptDownloadUrl) ? (
+          <Section style={dualButtonContainer}>
+            <table
+              role="presentation"
+              width="100%"
+              cellPadding={0}
+              cellSpacing={0}
+              style={{ borderCollapse: "collapse" }}
+            >
+              <tbody>
+                {invoiceDownloadUrl ? (
+                  <tr>
+                    <td align="center" style={{ padding: "8px 0" }}>
+                      <Link href={invoiceDownloadUrl} style={btnPrimary}>
+                        Download Tax Invoice (PDF)
+                      </Link>
+                    </td>
+                  </tr>
+                ) : null}
+                {receiptDownloadUrl ? (
+                  <tr>
+                    <td align="center" style={{ padding: "4px 0 12px 0" }}>
+                      <Link href={receiptDownloadUrl} style={btnSecondary}>
+                        Download Payment Receipt (PDF)
+                      </Link>
+                    </td>
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+          </Section>
+        ) : (
+          <Section style={dualButtonContainer}>
+            <div style={{ textAlign: "center", padding: "8px 0" }}>
+              <Link href={targetNextStageUrl} style={btnPrimary}>
+                Access Official Documents in Client Portal &rarr;
+              </Link>
+            </div>
+          </Section>
+        )}
 
         {/* Next Stage Unlocking Card */}
         {isStage6 ? (
@@ -144,7 +168,7 @@ export default function PaymentVerifiedDualDocumentEmail({
               <span style={badgeActive}>STAGE 6 COMPLETED · ENGAGEMENT ACTIVE</span>
             </div>
             <Text style={unlockTitle}>
-              Your engagement is now active! Proceed to Stage 7: Client Onboarding
+              Your engagement is active! Proceed to Stage 7: Client Onboarding
             </Text>
             <Text style={unlockDesc}>
               Our engineering workspace and kickoff roadmap have been provisioned. Please complete
@@ -199,7 +223,7 @@ export default function PaymentVerifiedDualDocumentEmail({
 
       <EmailFooter
         msmeRegistration="UDYAM-TN-03-0345274"
-        registeredAddress="Eachanari, Coimbatore, Tamil Nadu 641021, India"
+        registeredAddress="Coimbatore, Tamil Nadu, India"
       />
     </EmailLayout>
   );
@@ -218,32 +242,31 @@ const btnPrimary = {
   fontWeight: "700" as const,
   lineHeight: "20px",
   padding: "13px 28px",
-  borderRadius: "8px",
+  borderRadius: "6px",
   textDecoration: "none",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
   textAlign: "center" as const,
-  boxShadow: "0 2px 4px rgba(21, 101, 192, 0.2)",
 };
 
 const btnSecondary = {
-  backgroundColor: "#FFFFFF",
-  color: EMAIL.colors.primary,
-  border: `1.5px solid ${EMAIL.colors.primary}`,
+  backgroundColor: EMAIL.colors.surfaceMuted,
+  color: EMAIL.colors.inkPrimary,
+  border: `1px solid ${EMAIL.colors.surfaceBorder}`,
   display: "inline-block",
-  fontSize: "14px",
+  fontSize: "13px",
   fontWeight: "600" as const,
   lineHeight: "20px",
   padding: "11px 26px",
-  borderRadius: "8px",
+  borderRadius: "6px",
   textDecoration: "none",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
   textAlign: "center" as const,
 };
 
 const unlockCard = {
-  backgroundColor: EMAIL.colors.softBg,
-  border: `1px solid ${EMAIL.colors.border}`,
-  borderRadius: "10px",
+  backgroundColor: EMAIL.colors.surfaceMuted,
+  border: `1px solid ${EMAIL.colors.surfaceBorder}`,
+  borderRadius: "8px",
   padding: "20px",
   margin: "20px 0",
 };
@@ -257,17 +280,17 @@ const badgeActive = {
   letterSpacing: "0.05em",
   padding: "4px 8px",
   borderRadius: "4px",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
   display: "inline-block",
 };
 
 const unlockTitle = {
-  color: EMAIL.colors.text,
+  color: EMAIL.colors.inkPrimary,
   fontSize: "16px",
   fontWeight: "700" as const,
   lineHeight: "24px",
   margin: "8px 0 6px 0",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSerif,
 };
 
 const unlockDesc = {
@@ -275,18 +298,18 @@ const unlockDesc = {
   fontSize: "13px",
   lineHeight: "20px",
   margin: "0 0 12px 0",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
 };
 
 const btnUnlock = {
-  backgroundColor: EMAIL.colors.accent,
+  backgroundColor: EMAIL.colors.primary,
   color: "#FFFFFF",
   display: "inline-block",
   fontSize: "13px",
   fontWeight: "700" as const,
   lineHeight: "18px",
-  padding: "10px 20px",
+  padding: "11px 22px",
   borderRadius: "6px",
   textDecoration: "none",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
 };

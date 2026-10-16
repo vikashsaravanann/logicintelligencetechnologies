@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireCapabilityApi } from "@/lib/auth/session";
-import { listQuotations, createQuotation, CreateQuotationInput } from "@/lib/quotations/service";
+import { hasCapability } from "@/config/roles";
+import {
+  listQuotations,
+  createQuotation,
+  CreateQuotationInput,
+  redactQuotationForStaff,
+} from "@/lib/quotations/service";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -8,8 +14,6 @@ export const runtime = "nodejs";
 export async function GET(req: NextRequest) {
   const auth = await requireCapabilityApi(req, "proposals.read");
   if (!auth.ok) {
-    // If during dev/testing not authenticated as admin, still allow graceful fallback or return error
-    // For admin security:
     return NextResponse.json({ error: auth.message }, { status: auth.status });
   }
 
@@ -18,11 +22,21 @@ export async function GET(req: NextRequest) {
   const search = searchParams.get("search") || undefined;
 
   const quotations = await listQuotations({ status, search });
-  return NextResponse.json({ quotations });
+  const canReadPrices = hasCapability(auth.session.role, "quotation.price.read");
+  const payload = canReadPrices
+    ? quotations
+    : quotations.map((q) => redactQuotationForStaff(q));
+
+  return NextResponse.json({
+    quotations: payload,
+    financialRedacted: !canReadPrices,
+  });
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireCapabilityApi(req, "proposals.write");
+  // Policy 1: Only Super Admin may create commercial quotations with unit prices.
+  // Staff must use /api/admin/quotations/technical-drafts for non-commercial technical preparation.
+  const auth = await requireCapabilityApi(req, "quotation.price.write");
   if (!auth.ok) {
     return NextResponse.json({ error: auth.message }, { status: auth.status });
   }
@@ -49,3 +63,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: err.message || "Failed to create quotation" }, { status: 500 });
   }
 }
+

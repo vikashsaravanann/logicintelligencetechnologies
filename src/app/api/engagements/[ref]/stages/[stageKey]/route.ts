@@ -84,7 +84,7 @@ export async function POST(
     }
 
     const body = await req.json().catch(() => ({}));
-    const { action, payload, actorId } = body;
+    const { action, payload, actorId, actorRole } = body;
 
     if (!action || typeof action !== 'string') {
       return NextResponse.json(
@@ -93,8 +93,35 @@ export async function POST(
       );
     }
 
-    // Server-derived actor role: check staff session. Clients cannot elevate themselves to 'admin'.
+    // Server-derived actor role: check staff session.
+    // Policy 2: Staff cannot impersonate a client or submit client-only signatures/utr/acceptance actions as 'client'.
     const staff = await getStaffSession();
+    if (staff) {
+      if (actorRole === 'client') {
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              'Client impersonation is strictly forbidden by LIT corporate security policy. Staff cannot submit stage actions as a client.',
+          },
+          { status: 403 }
+        );
+      }
+      const adminStageOverrideActions = ['admin_approve_stage', 'admin_override_status', 'admin_unlock_stage'];
+      if (
+        adminStageOverrideActions.includes(action) &&
+        !hasCapability(staff.role, 'engagement.stage.approve')
+      ) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Only Super Admin may approve or override engagement stages.',
+          },
+          { status: 403 }
+        );
+      }
+    }
+
     const isStaff = Boolean(staff && hasCapability(staff.role, 'clients.write'));
     const verifiedActorRole = isStaff ? 'admin' : 'client';
     const verifiedActorId = isStaff
@@ -135,8 +162,8 @@ export async function PATCH(
   context: { params: Promise<{ ref: string; stageKey: string }> | { ref: string; stageKey: string } }
 ) {
   try {
-    // Admin override strictly requires 'clients.write' staff capability
-    const auth = await requireCapabilityApi(req, 'clients.write');
+    // Policy 1 & 2: Stage approval and status overrides strictly require 'engagement.stage.approve' (Super Admin only)
+    const auth = await requireCapabilityApi(req, 'engagement.stage.approve');
     if (!auth.ok) {
       return NextResponse.json({ success: false, error: auth.message }, { status: auth.status });
     }

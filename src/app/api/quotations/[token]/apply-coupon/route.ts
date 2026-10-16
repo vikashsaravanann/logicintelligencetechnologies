@@ -21,7 +21,10 @@ export async function POST(
 
     const result = await validateQuotationCoupon(token, body.couponCode.trim());
     if (!result.valid) {
-      return NextResponse.json({ valid: false, error: result.error }, { status: 400 });
+      return NextResponse.json(
+        { valid: false, error: result.error },
+        { status: result.statusCode || 400 }
+      );
     }
 
     return NextResponse.json({

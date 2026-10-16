@@ -7,42 +7,11 @@ interface EmailLayoutProps {
   preview?: string;
 }
 
-/** LIT EMAIL v2 Layout: Cloud-gray canvas (#F7F9FC), 620px white card (#FFFFFF), 12px radius */
+/** LIT EMAIL v3 Layout: Warm parchment canvas (#F8F6F2), 600px soft white card (#FFFEFC), 12px radius */
 export const EmailLayout = ({ children, preview }: EmailLayoutProps) => {
   return (
     <Html lang="en">
-      <Head>
-        <Font
-          fontFamily="Poppins"
-          fallbackFontFamily="sans-serif"
-          webFont={{
-            url: "https://fonts.gstatic.com/s/poppins/v20/pxiEyp8kv8JHgFVrFJA.woff2",
-            format: "woff2",
-          }}
-          fontWeight={400}
-          fontStyle="normal"
-        />
-        <Font
-          fontFamily="Poppins"
-          fallbackFontFamily="sans-serif"
-          webFont={{
-            url: "https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLCz7V1s.woff2",
-            format: "woff2",
-          }}
-          fontWeight={600}
-          fontStyle="normal"
-        />
-        <Font
-          fontFamily="Poppins"
-          fallbackFontFamily="sans-serif"
-          webFont={{
-            url: "https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLDD4V1s.woff2",
-            format: "woff2",
-          }}
-          fontWeight={700}
-          fontStyle="normal"
-        />
-      </Head>
+      <Head />
       {preview ? <Preview>{preview}</Preview> : null}
       <Body style={main}>
         <Container style={wrapper}>{children}</Container>
@@ -53,7 +22,7 @@ export const EmailLayout = ({ children, preview }: EmailLayoutProps) => {
 
 const main = {
   backgroundColor: EMAIL.colors.pageBg,
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
   padding: "36px 16px",
   margin: 0,
   width: "100%" as const,
@@ -64,9 +33,9 @@ const wrapper = {
   maxWidth: `${EMAIL.width}px`,
   width: "100%" as const,
   margin: "0 auto",
-  border: `1px solid ${EMAIL.colors.border}`,
+  border: `1px solid ${EMAIL.colors.cardBorder}`,
   borderRadius: "12px",
-  boxShadow: "0 2px 8px rgba(11, 37, 69, 0.04), 0 1px 3px rgba(11, 37, 69, 0.02)",
+  boxShadow: "0 2px 12px rgba(23, 23, 23, 0.04), 0 1px 3px rgba(23, 23, 23, 0.02)",
   overflow: "hidden" as const,
 };
 

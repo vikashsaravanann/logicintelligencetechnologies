@@ -119,8 +119,8 @@ function getInitialProposalValues(engagement: ClientEngagement) {
     meta.subtotal ||
     meta.contract_value ||
     meta.budget_range ||
-    "50";
-  const subtotalInput = String(initialSubtotal).replace(/[^0-9.]/g, "") || "50";
+    "0";
+  const subtotalInput = String(initialSubtotal).replace(/[^0-9.]/g, "") || "0";
 
   const executiveSummary =
     savedProposal.executiveSummary ||

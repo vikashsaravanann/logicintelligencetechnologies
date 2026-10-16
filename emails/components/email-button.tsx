@@ -47,43 +47,44 @@ const btnPrimary = {
   backgroundColor: EMAIL.colors.primary,
   color: EMAIL.colors.ctaText,
   display: "inline-block",
-  fontSize: "15px",
+  fontSize: "14px",
   fontWeight: "700" as const,
   lineHeight: "20px",
-  padding: "14px 28px",
-  borderRadius: "8px",
+  padding: "13px 26px",
+  borderRadius: "6px",
   textDecoration: "none",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
   textAlign: "center" as const,
+  letterSpacing: "0.02em",
 };
 
 const btnTeal = {
   backgroundColor: EMAIL.colors.accent,
   color: "#FFFFFF",
   display: "inline-block",
-  fontSize: "15px",
+  fontSize: "14px",
   fontWeight: "700" as const,
   lineHeight: "20px",
-  padding: "14px 28px",
-  borderRadius: "8px",
+  padding: "13px 26px",
+  borderRadius: "6px",
   textDecoration: "none",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
   textAlign: "center" as const,
 };
 
 const btnSecondary = {
-  backgroundColor: EMAIL.colors.softBg,
-  color: EMAIL.colors.text,
+  backgroundColor: EMAIL.colors.surfaceMuted,
+  color: EMAIL.colors.inkPrimary,
   display: "inline-block",
-  fontSize: "14px",
+  fontSize: "13px",
   fontWeight: "600" as const,
   lineHeight: "20px",
-  padding: "12px 24px",
-  borderRadius: "8px",
+  padding: "11px 22px",
+  borderRadius: "6px",
   textDecoration: "none",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
   textAlign: "center" as const,
-  border: `1px solid ${EMAIL.colors.border}`,
+  border: `1px solid ${EMAIL.colors.surfaceBorder}`,
 };
 
 const fallbackText = {
@@ -91,14 +92,14 @@ const fallbackText = {
   fontSize: "12px",
   lineHeight: "18px",
   margin: "14px 0 0 0",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
   textAlign: "center" as const,
   wordBreak: "break-all" as const,
 };
 
 const fallbackLink = {
-  color: EMAIL.colors.primary,
-  textDecoration: "none",
+  color: EMAIL.colors.linkAccent,
+  textDecoration: "underline",
   wordBreak: "break-all" as const,
 };
 

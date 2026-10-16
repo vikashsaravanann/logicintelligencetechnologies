@@ -35,6 +35,10 @@ import OnboardingInvitationEmail from "@/emails/onboarding-invitation-email";
 import QuotationEmail from "@/emails/quotation-email";
 import ConsultationBookingConfirmationEmail from "@/emails/consultation-booking-confirmation-email";
 import ConsultationRegistrationReceivedEmail from "@/emails/consultation-registration-received-email";
+import EngagementPortalInvitationEmail from "@/emails/engagement-portal-invitation-email";
+import StageApprovedClientEmail from "@/emails/stage-approved-client-email";
+import StageSubmissionAdminAlertEmail from "@/emails/stage-submission-admin-alert-email";
+import StageSubmissionClientReceiptEmail from "@/emails/stage-submission-client-receipt-email";
 
 export interface TemplateDefinition {
   key: string;
@@ -301,10 +305,10 @@ export const EMAIL_TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
         milestoneTitle="Stage 6: Initial Project Milestone (50%)"
         amountPaid="₹1,50,000.00"
         paymentDate="October 14, 2026"
-        utrReference="UPI/428910398471"
+        utrReference="YESB2628810294"
         bankCreditReference="YESB-CMS-20261014-9918"
-        invoiceDownloadUrl="https://www.logicintelligencetechnologies.in/api/documents/invoice-demo"
-        receiptDownloadUrl="https://www.logicintelligencetechnologies.in/api/documents/receipt-demo"
+        invoiceDownloadUrl="https://www.logicintelligencetechnologies.in/portal"
+        receiptDownloadUrl="https://www.logicintelligencetechnologies.in/portal"
         stageNumber={6}
         nextStageUrl="https://www.logicintelligencetechnologies.in/onboarding"
       />
@@ -596,6 +600,97 @@ export const EMAIL_TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
     subject: "Scheduled maintenance completed",
     getElement: () => (
       <AdminGenericEmail message="Scheduled maintenance window completed successfully." />
+    ),
+  },
+  "engagement-portal-invitation": {
+    key: "engagement-portal-invitation",
+    name: "Engagement Portal Invitation",
+    category: "lifecycle",
+    description: "Invites client stakeholders to access their dedicated client lifecycle engagement portal.",
+    defaultSender: "hello@logicintelligencetechnologies.in",
+    replyTo: "hello@logicintelligencetechnologies.in",
+    subject: "Your Client Lifecycle & Project Portal: Apex Logistics",
+    getElement: () => (
+      <EngagementPortalInvitationEmail
+        recipientName="Marcus Vance"
+        companyName="Apex Logistics"
+        projectTitle="Enterprise AI & Cloud Infrastructure Architecture"
+        engagementRef="ENG-2026-LIT-SAMPLE"
+        portalUrl="https://www.logicintelligencetechnologies.in/engagement/ENG-2026-LIT-SAMPLE"
+        workspaceUrl="https://www.logicintelligencetechnologies.in/client/login?ref=ENG-2026-LIT-SAMPLE"
+      />
+    ),
+  },
+  "stage-approved-client": {
+    key: "stage-approved-client",
+    name: "Stage Approved Client Notification",
+    category: "lifecycle",
+    description: "Notifies client when a submitted engagement stage is officially verified and approved.",
+    defaultSender: "hello@logicintelligencetechnologies.in",
+    replyTo: "hello@logicintelligencetechnologies.in",
+    subject: "Stage 4 Approved: Apex Logistics",
+    getElement: () => (
+      <StageApprovedClientEmail
+        recipientName="Marcus Vance"
+        companyName="Apex Logistics"
+        engagementRef="ENG-2026-LIT-SAMPLE"
+        approvedStageOrdinal={4}
+        approvedStageTitle="SOW Execution & Verification"
+        nextStageOrdinal={5}
+        nextStageTitle="Commercial Invoice & Settlement"
+        nextStageUrl="https://www.logicintelligencetechnologies.in/portal"
+        adminNotes="All statement of work clauses and deliverables verified."
+      />
+    ),
+  },
+  "stage-submission-admin-alert": {
+    key: "stage-submission-admin-alert",
+    name: "Stage Submission Admin Alert",
+    category: "operational",
+    description: "Alerts engineering administrators when a client submits stage artifacts requiring review.",
+    defaultSender: "system@logicintelligencetechnologies.in",
+    replyTo: "hello@logicintelligencetechnologies.in",
+    subject: "Action Required: Stage 4 submitted by Apex Logistics",
+    getElement: () => (
+      <StageSubmissionAdminAlertEmail
+        companyName="Apex Logistics"
+        contactName="Marcus Vance"
+        contactEmail="marcus@apexlogistics.com"
+        engagementRef="ENG-2026-LIT-SAMPLE"
+        stageOrdinal={4}
+        stageTitle="SOW Execution & Verification"
+        submittedSummary="Signed SOW agreement submitted with authorized signature"
+        detailsList={[
+          { label: "Document Reference", value: "SOW-2026-APEX-01" },
+          { label: "Signatory", value: "Marcus Vance (VP Engineering)" },
+        ]}
+        adminPortalUrl="https://www.logicintelligencetechnologies.in/admin"
+      />
+    ),
+  },
+  "stage-submission-client-receipt": {
+    key: "stage-submission-client-receipt",
+    name: "Stage Submission Client Receipt",
+    category: "lifecycle",
+    description: "Acknowledges receipt of client stage submission with record verification.",
+    defaultSender: "hello@logicintelligencetechnologies.in",
+    replyTo: "hello@logicintelligencetechnologies.in",
+    subject: "Submission Confirmed · Stage 4 (SOW Verification)",
+    getElement: () => (
+      <StageSubmissionClientReceiptEmail
+        recipientName="Marcus Vance"
+        companyName="Apex Logistics"
+        engagementRef="ENG-2026-LIT-SAMPLE"
+        stageOrdinal={4}
+        stageTitle="SOW Execution & Verification"
+        submittedSummary="Signed SOW agreement received by engineering operations"
+        detailsList={[
+          { label: "Document Reference", value: "SOW-2026-APEX-01" },
+          { label: "Status", value: "Queued for Executive Verification" },
+        ]}
+        portalUrl="https://www.logicintelligencetechnologies.in/portal"
+        nextStageTitle="Commercial Invoice & Settlement"
+      />
     ),
   },
 };

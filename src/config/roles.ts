@@ -31,11 +31,38 @@ export const CAPABILITIES = [
   "proposals.read",
   "proposals.write",
   "proposals.send",
+  "quotation.technical_draft.read",
+  "quotation.technical_draft.create",
+  "quotation.technical_draft.update",
+  "quotation.technical_draft.submit_for_approval",
+  "quotation.price.read",
+  "quotation.price.write",
+  "quotation.commercial.approve",
+  "quotation.publish",
+  "quotation.send",
+  "quotation.revoke",
+  "coupon.read",
+  "coupon.manage",
+  "coupon.activate",
+  "coupon.apply",
   "invoices.read",
   "invoices.write",
+  "invoice.preparation.read",
+  "invoice.preparation.create",
+  "invoice.preparation.update",
+  "invoice.preparation.submit_for_approval",
+  "invoice.price.manage",
+  "invoice.issue",
+  "invoice.send",
   "payment.verify",
+  "engagement.pricing.manage",
+  "engagement.stage.approve",
+  "engagement.identity_change.approve",
   "support.read",
   "support.reply",
+  "support.assigned_client.read",
+  "support.assigned_client.assist",
+  "support.assignment.manage",
   "outreach.read",
   "outreach.manage",
   "emails.read",
@@ -73,18 +100,66 @@ export const CAPABILITIES = [
 ] as const;
 export type Capability = (typeof CAPABILITIES)[number];
 
+/**
+ * Policy 1 & Policy 2: Capabilities strictly reserved for Super Admin.
+ * No staff role (admin, operations, support, developer, viewer) may price,
+ * discount, approve commercial terms, publish/send quotations, issue invoices,
+ * verify bank payments, approve final engagement stages/identity changes, or
+ * manage staff-client assignments.
+ */
+export const SUPER_ADMIN_ONLY_CAPABILITIES = [
+  "team.manage",
+  "proposals.write",
+  "proposals.send",
+  "quotation.price.read",
+  "quotation.price.write",
+  "quotation.commercial.approve",
+  "quotation.publish",
+  "quotation.send",
+  "quotation.revoke",
+  "coupon.read",
+  "coupon.manage",
+  "coupon.activate",
+  "coupon.apply",
+  "invoices.write",
+  "invoice.price.manage",
+  "invoice.issue",
+  "invoice.send",
+  "payment.verify",
+  "engagement.pricing.manage",
+  "engagement.stage.approve",
+  "engagement.identity_change.approve",
+  "documents.approve",
+  "documents.issue",
+  "contracts.record_signature",
+  "approvals.decide",
+  "support.assignment.manage",
+] as const satisfies readonly Capability[];
+
 const ALL: readonly Capability[] = CAPABILITIES;
 
-// admin has everything except managing staff roles (super_admin only).
-const ADMIN: readonly Capability[] = CAPABILITIES.filter((c) => c !== "team.manage");
+// admin holds operational & technical preparation capabilities, never Super Admin commercial/pricing/team capabilities.
+const ADMIN: readonly Capability[] = CAPABILITIES.filter(
+  (c) => !(SUPER_ADMIN_ONLY_CAPABILITIES as readonly string[]).includes(c)
+);
 
 const OPERATIONS: readonly Capability[] = [
   "dashboard.view",
   "leads.read", "leads.write",
   "bookings.read", "bookings.write",
-  "proposals.read", "proposals.write", "proposals.send",
-  "invoices.read", "invoices.write",
+  "proposals.read",
+  "quotation.technical_draft.read",
+  "quotation.technical_draft.create",
+  "quotation.technical_draft.update",
+  "quotation.technical_draft.submit_for_approval",
+  "invoices.read",
+  "invoice.preparation.read",
+  "invoice.preparation.create",
+  "invoice.preparation.update",
+  "invoice.preparation.submit_for_approval",
   "support.read",
+  "support.assigned_client.read",
+  "support.assigned_client.assist",
   "outreach.read", "outreach.manage",
   "emails.read", "emails.send",
   "voiceshield.read", "voiceshield.approve",
@@ -94,7 +169,6 @@ const OPERATIONS: readonly Capability[] = [
   "onboarding.manage",
   "checklists.read", "checklists.write", "checklists.send",
   "automations.read", "automations.retry", "automations.manage",
-  "approvals.decide",
   "seo.read", "seo.manage",
   "cdn.read", "cdn.manage",
   "status.read", "analytics.read",
@@ -103,6 +177,8 @@ const OPERATIONS: readonly Capability[] = [
 const SUPPORT: readonly Capability[] = [
   "dashboard.view",
   "support.read", "support.reply",
+  "support.assigned_client.read",
+  "support.assigned_client.assist",
   "leads.read",
   "bookings.read",
   "clients.read",

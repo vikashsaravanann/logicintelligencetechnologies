@@ -9,7 +9,7 @@ export async function POST(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const auth = await requireCapabilityApi(req, "proposals.write");
+  const auth = await requireCapabilityApi(req, "quotation.publish");
   if (!auth.ok) {
     return NextResponse.json({ error: auth.message }, { status: auth.status });
   }

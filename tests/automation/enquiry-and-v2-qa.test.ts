@@ -443,12 +443,14 @@ test("QA-70: Role-based access control on enquiry approval decisions", () => {
   assert.equal(canDecideEnquiryApproval("client"), false);
   assert.equal(canDecideEnquiryApproval("user"), false);
 
-  // Verify against roles.ts CAPABILITIES matrix
+  // Verify against roles.ts CAPABILITIES matrix (Policy 1: approvals.decide is super_admin only)
   assert.equal(hasCapability("super_admin", "approvals.decide"), true);
-  assert.equal(hasCapability("admin", "approvals.decide"), true);
-  assert.equal(hasCapability("operations", "approvals.decide"), true);
+  assert.equal(hasCapability("admin", "approvals.decide"), false);
+  assert.equal(hasCapability("operations", "approvals.decide"), false);
   assert.equal(hasCapability("viewer", "approvals.decide"), false);
   assert.equal(hasCapability("support", "approvals.decide"), false);
+  assert.equal(hasCapability("admin", "leads.write"), true);
+  assert.equal(hasCapability("operations", "leads.write"), true);
 });
 
 // -----------------------------------------------------------------------------

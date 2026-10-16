@@ -10,7 +10,7 @@ import { EmailPreviewGallery } from "./EmailPreviewGallery";
 
 export const metadata: Metadata = {
   title: "Enterprise Email Template Preview | Admin | Logic Intelligence Technologies",
-  description: "Live preview and link audit harness for all 28 approved enterprise email templates.",
+  description: "Live preview and link audit harness for all approved enterprise email templates.",
   robots: {
     index: false,
     follow: false,
@@ -41,14 +41,14 @@ export default async function EmailPreviewPage() {
           <AdminBackLink href="/admin/emails" label="Back to Emails" />
           <div className="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-[var(--lit-blue,#1565C0)] border border-blue-200 mb-2">
-                LIT EMAIL v2 Design System
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-200 mb-2">
+                LIT EMAIL v3 Design System ({initialTemplates.length} Templates)
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-[var(--lit-navy,#0B2545)] tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                 Enterprise Email Template Gallery & QA Preview
               </h1>
-              <p className="mt-1 text-sm text-[var(--lit-text-muted,#52677C)]">
-                Authoritative visual inspection, responsive frame testing, and absolute link validation for all approved corporate communications.
+              <p className="mt-1 text-sm text-slate-600">
+                Authoritative visual inspection, responsive frame testing, and absolute link validation for all {initialTemplates.length} approved corporate communications.
               </p>
             </div>
           </div>

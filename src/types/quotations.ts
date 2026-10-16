@@ -16,12 +16,15 @@ export interface QuotationCategory {
 
 export type QuotationStatus =
   | 'draft'
+  | 'technical_draft'
+  | 'pending_commercial_approval'
   | 'awaiting_founder_review'
   | 'approved'
   | 'published'
   | 'changes_requested'
   | 'accepted'
   | 'revised'
+  | 'superseded'
   | 'expired'
   | 'revoked'
   | 'archived';
@@ -126,7 +129,7 @@ export interface QuotationCoupon {
   campaign_id?: string | null;
   campaign_name?: string | null;
   description?: string | null;
-  discount_type: 'percentage' | 'fixed_paise';
+  discount_type: 'percentage' | 'fixed_paise' | null;
   discount_percentage?: number | null; // e.g. 10 for 10%
   discount_paise?: number | null; // in paise
   max_discount_paise?: number | null; // in paise

@@ -311,12 +311,12 @@ const inMemoryCoupons: QuotationCoupon[] = [
     id: "coupon-001",
     code: "WAKEUPINDIA",
     campaign_name: "Support Wake Up India — Initial Launch",
-    description: "Founder-controlled promotional discount for qualifying initial launch initiatives. Inactive by default per policy.",
-    discount_type: "fixed_paise",
-    discount_paise: 1000000, // ₹10,000
+    description: "Founder-controlled promotional discount for qualifying initial launch initiatives. Inactive by default per policy until Super Admin configures discount type/value and activates.",
+    discount_type: null,
+    discount_paise: null,
     discount_percentage: null,
     min_subtotal_paise: 5000000,
-    max_discount_paise: 1000000,
+    max_discount_paise: null,
     is_active: false, // strictly disabled by default
     can_stack: false,
     max_redemptions: 100,
@@ -333,10 +333,10 @@ const inMemoryCoupons: QuotationCoupon[] = [
     discount_paise: null,
     min_subtotal_paise: 5000000,
     max_discount_paise: 2500000, // max ₹25,000
-    is_active: true,
+    is_active: false, // inactive until Super Admin explicitly activates
     can_stack: false,
     max_redemptions: 50,
-    current_redemptions: 3,
+    current_redemptions: 0,
     created_at: new Date(Date.now() - 14 * 86400000).toISOString(),
   },
 ];
@@ -537,7 +537,8 @@ export async function getQuotationById(id: string): Promise<QuotationDetailsResp
 }
 
 /**
- * Gets client-safe projection of quotation by secure token
+ * Gets client-safe projection of quotation by secure token.
+ * Rejects draft, technical_draft, pending_commercial_approval, revoked, expired, or superseded tokens.
  */
 export async function getQuotationByToken(secureToken: string): Promise<PublicQuotationProjection | null> {
   let quote: QuotationRecord | null = null;
@@ -574,6 +575,23 @@ export async function getQuotationByToken(secureToken: string): Promise<PublicQu
   }
 
   if (!quote) return null;
+
+  // Reject unpublished, revoked, expired, or superseded tokens
+  const allowedPublicStatuses: QuotationStatus[] = [
+    "published",
+    "accepted",
+    "changes_requested",
+  ];
+  if (!allowedPublicStatuses.includes(quote.status)) {
+    return null;
+  }
+
+  if (quote.valid_until) {
+    const expiryMs = new Date(quote.valid_until).getTime();
+    if (!Number.isNaN(expiryMs) && expiryMs < Date.now() && quote.status !== "accepted") {
+      return null;
+    }
+  }
 
   // Strict projection: excludes unselected and unpriced lines, strips internal notes
   return projectPublicQuotation(quote, lines);
@@ -1150,23 +1168,81 @@ export async function listCoupons(): Promise<QuotationCoupon[]> {
 }
 
 /**
- * Toggles coupon active status
+ * Toggles coupon active status (with optional Super Admin discount configuration)
  */
-export async function toggleCoupon(id: string, isActive: boolean): Promise<{ ok: boolean }> {
-  const coupon = inMemoryCoupons.find((c) => c.id === id);
+export async function toggleCoupon(
+  id: string,
+  isActive: boolean,
+  config?: {
+    discount_type?: "percentage" | "fixed_paise";
+    discount_value?: number;
+    max_discount_paise?: number | null;
+    min_subtotal_paise?: number | null;
+    approved_by?: string | null;
+  }
+): Promise<{ ok: boolean; error?: string; coupon?: QuotationCoupon }> {
+  const coupon = inMemoryCoupons.find((c) => c.id === id || c.code.toUpperCase() === id.toUpperCase());
+
+  if (coupon && config) {
+    if (config.discount_type) {
+      coupon.discount_type = config.discount_type;
+      if (config.discount_type === "percentage" && typeof config.discount_value === "number") {
+        coupon.discount_percentage = config.discount_value;
+        coupon.discount_paise = null;
+      } else if (config.discount_type === "fixed_paise" && typeof config.discount_value === "number") {
+        coupon.discount_paise = config.discount_value;
+        coupon.discount_percentage = null;
+      }
+    }
+    if (config.max_discount_paise !== undefined) coupon.max_discount_paise = config.max_discount_paise;
+    if (config.min_subtotal_paise !== undefined) coupon.min_subtotal_paise = config.min_subtotal_paise;
+    if (config.approved_by) coupon.approved_by = config.approved_by;
+  }
+
+  if (isActive && coupon) {
+    const hasConfiguredDiscount =
+      (coupon.discount_type === "percentage" &&
+        typeof coupon.discount_percentage === "number" &&
+        coupon.discount_percentage > 0) ||
+      (coupon.discount_type === "fixed_paise" &&
+        typeof coupon.discount_paise === "number" &&
+        coupon.discount_paise > 0);
+    if (!hasConfiguredDiscount) {
+      return {
+        ok: false,
+        error: `Cannot activate coupon '${coupon.code}' until Super Admin configures discount_type and a positive discount value.`,
+      };
+    }
+  }
+
   if (coupon) coupon.is_active = isActive;
 
   if (isAdminClientConfigured()) {
     try {
+      const updatePayload: Record<string, unknown> = { is_active: isActive };
+      if (config?.discount_type) {
+        updatePayload.discount_type = config.discount_type;
+        if (config.discount_type === "percentage" && typeof config.discount_value === "number") {
+          updatePayload.discount_percentage = config.discount_value;
+          updatePayload.discount_paise = null;
+        } else if (config.discount_type === "fixed_paise" && typeof config.discount_value === "number") {
+          updatePayload.discount_paise = config.discount_value;
+          updatePayload.discount_percentage = null;
+        }
+      }
+      if (config?.max_discount_paise !== undefined) updatePayload.max_discount_paise = config.max_discount_paise;
+      if (config?.min_subtotal_paise !== undefined) updatePayload.min_subtotal_paise = config.min_subtotal_paise;
+      if (config?.approved_by) updatePayload.approved_by = config.approved_by;
+
       await supabaseAdmin
         .from("quotation_coupons")
-        .update({ is_active: isActive })
+        .update(updatePayload)
         .eq("id", id);
     } catch (e) {
       console.warn("[quotations-service] Toggle coupon DB error:", e);
     }
   }
-  return { ok: true };
+  return { ok: true, coupon };
 }
 
 /**
@@ -1198,7 +1274,7 @@ export async function createCoupon(couponData: {
     discount_paise: couponData.discount_type === "fixed_paise" ? couponData.discount_value : null,
     min_subtotal_paise: couponData.min_subtotal_paise || 0,
     max_discount_paise: couponData.max_discount_paise || null,
-    is_active: couponData.is_active ?? true,
+    is_active: couponData.is_active ?? false,
     can_stack: false,
     max_redemptions: couponData.max_redemptions || 100,
     current_redemptions: 0,
@@ -1256,6 +1332,7 @@ export async function validateQuotationCoupon(
   couponCode: string
 ): Promise<{
   valid: boolean;
+  statusCode?: number;
   error?: string;
   discountPaise?: number;
   label?: string;
@@ -1265,27 +1342,52 @@ export async function validateQuotationCoupon(
 }> {
   const quoteProj = await getQuotationByToken(secureToken);
   if (!quoteProj) {
-    return { valid: false, error: "Quotation not found" };
+    return { valid: false, statusCode: 404, error: "Quotation not found" };
   }
 
   const coupon = await getCouponByCode(couponCode);
   if (!coupon) {
-    return { valid: false, error: `Coupon code '${couponCode}' is invalid` };
+    return { valid: false, statusCode: 400, error: `Coupon code '${couponCode}' is invalid` };
   }
 
   if (!coupon.is_active) {
-    return { valid: false, error: `Coupon '${coupon.code}' is inactive or not currently available` };
+    return {
+      valid: false,
+      statusCode: 422,
+      error: `Coupon '${coupon.code}' is inactive or not currently available`,
+    };
+  }
+
+  const hasValidDiscountConfig =
+    (coupon.discount_type === "percentage" &&
+      typeof coupon.discount_percentage === "number" &&
+      coupon.discount_percentage > 0) ||
+    (coupon.discount_type === "fixed_paise" &&
+      typeof coupon.discount_paise === "number" &&
+      coupon.discount_paise > 0);
+
+  if (!hasValidDiscountConfig) {
+    return {
+      valid: false,
+      statusCode: 422,
+      error: `Coupon '${coupon.code}' has no approved discount configuration`,
+    };
   }
 
   if (coupon.min_subtotal_paise && quoteProj.subtotal_paise < coupon.min_subtotal_paise) {
     return {
       valid: false,
+      statusCode: 422,
       error: `Coupon requires minimum order value of ${formatPaiseToINR(coupon.min_subtotal_paise)}`,
     };
   }
 
   if (coupon.max_redemptions && coupon.current_redemptions >= coupon.max_redemptions) {
-    return { valid: false, error: "Coupon maximum usage limit has been reached" };
+    return {
+      valid: false,
+      statusCode: 422,
+      error: "Coupon maximum usage limit has been reached",
+    };
   }
 
   const { discountPaise, label } = calculateDiscount(quoteProj.subtotal_paise, coupon, 0);
@@ -1294,6 +1396,7 @@ export async function validateQuotationCoupon(
 
   return {
     valid: true,
+    statusCode: 200,
     discountPaise,
     label,
     newTotalPaise: newTotal,
@@ -1301,4 +1404,75 @@ export async function validateQuotationCoupon(
     milestone2Paise,
   };
 }
+
+/**
+ * Redacts all commercial/pricing fields from a QuotationRecord for non-super_admin staff.
+ */
+export function redactQuotationForStaff(quote: QuotationRecord): Omit<
+  QuotationRecord,
+  | "subtotal_paise"
+  | "discount_paise"
+  | "discount_label"
+  | "tax_paise"
+  | "total_payable_paise"
+  | "milestone_1_paise"
+  | "milestone_2_paise"
+  | "secure_token"
+  | "secure_token_hash"
+> {
+  const {
+    subtotal_paise: _subtotal,
+    discount_paise: _discount,
+    discount_label: _discountLabel,
+    tax_paise: _tax,
+    total_payable_paise: _total,
+    milestone_1_paise: _m1,
+    milestone_2_paise: _m2,
+    secure_token: _tok,
+    secure_token_hash: _tokHash,
+    ...technicalFields
+  } = quote;
+  return technicalFields;
+}
+
+/**
+ * Redacts all commercial/pricing fields from a QuotationDetailsResponse for non-super_admin staff.
+ */
+export function redactQuotationDetailsForStaff(details: QuotationDetailsResponse) {
+  return {
+    quotation: redactQuotationForStaff(details.quotation),
+    lines: details.lines.map((line) => {
+      const {
+        quoted_unit_price_paise: _unitPrice,
+        extended_amount_paise: _ext,
+        ...techLine
+      } = line;
+      return techLine;
+    }),
+    versions: details.versions.map((ver) => {
+      const {
+        subtotal_paise: _s,
+        discount_paise: _d,
+        discount_label: _dl,
+        tax_paise: _t,
+        total_payable_paise: _tot,
+        milestone_1_paise: _m1,
+        milestone_2_paise: _m2,
+        lines_snapshot: _ls,
+        ...techVer
+      } = ver;
+      return techVer;
+    }),
+    auditLogs: details.auditLogs.map((log) => {
+      const safeDetails = { ...log.details };
+      delete safeDetails.total_payable_paise;
+      delete safeDetails.accepted_total_paise;
+      delete safeDetails.subtotal_paise;
+      delete safeDetails.discount_paise;
+      return { ...log, details: safeDetails };
+    }),
+    acceptance: details.acceptance,
+  };
+}
+
 

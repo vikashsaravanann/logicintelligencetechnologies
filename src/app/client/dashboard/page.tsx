@@ -85,24 +85,13 @@ export default async function ClientDashboardPage({ searchParams }: Props) {
 
   let primaryEngagement: ClientEngagement | null = userEngagements[0] || null;
 
-  // Strict tenant verification: load requested ref if it belongs to this client or if staff is previewing
+  // Strict tenant verification: only load requested ref if it belongs to this authenticated client.
+  // Staff support access is strictly separated under /admin/support/clients/[clientId] (Policy 2).
   if (sp.ref) {
     const requested = await getEngagementByRef(sp.ref);
-    const isStaff =
-      portal.user.email &&
-      [
-        "createwithvikash@gmail.com",
-        "vikash@logicintelligencetechnologies.in",
-        "founder@logicintelligencetechnologies.in",
-        "admin@logicintelligencetechnologies.in",
-        "hello@logicintelligencetechnologies.in",
-        "platform_owner@healthcare.lit",
-      ].includes(portal.user.email.toLowerCase());
-
     if (
       requested &&
-      (isStaff ||
-        requested.contact_email?.toLowerCase() === portal.user.email?.toLowerCase() ||
+      (requested.contact_email?.toLowerCase() === portal.user.email?.toLowerCase() ||
         userEngagements.some((e) => e.id === requested.id))
     ) {
       primaryEngagement = requested;
@@ -560,7 +549,7 @@ export default async function ClientDashboardPage({ searchParams }: Props) {
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-[var(--lit-navy,#0B2545)] font-mono">
-                      {primaryEngagement ? getFinancialsForEngagement(primaryEngagement, stages).depositFormatted : "₹10,62,000.00"}
+                      {primaryEngagement ? getFinancialsForEngagement(primaryEngagement, stages).depositFormatted : "Pending Commercial Approval"}
                     </p>
                     <span
                       className={`inline-block mt-1 text-[9px] uppercase font-bold px-2 py-0.5 rounded-full border ${

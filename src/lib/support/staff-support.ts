@@ -1,0 +1,948 @@
+import { createClient } from '@supabase/supabase-js';
+import { hasCapability, type StaffRole } from '@/config/roles';
+import { recordAdminAction } from '@/lib/admin/audit';
+
+export type AssignmentRole =
+  | 'technical_support'
+  | 'project_coordinator'
+  | 'operations_prep'
+  | 'delivery_engineer';
+
+export type AssignmentStatus = 'active' | 'expired' | 'revoked';
+
+export interface StaffClientAssignment {
+  id: string;
+  staff_user_id: string;
+  staff_email?: string | null;
+  client_id: string | null;
+  engagement_id: string | null;
+  assignment_role: AssignmentRole;
+  status: AssignmentStatus;
+  can_view_technical_stages: boolean;
+  can_prepare_technical_quotation: boolean;
+  can_prepare_invoice_request: boolean;
+  assigned_by: string;
+  assignment_reason: string;
+  starts_at: string;
+  expires_at: string | null;
+  revoked_at: string | null;
+  revoked_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StaffSupportAccessEvent {
+  id: string;
+  staff_user_id: string;
+  staff_email: string | null;
+  staff_role: StaffRole;
+  client_id: string | null;
+  engagement_id: string | null;
+  assignment_id: string | null;
+  action: string;
+  route: string;
+  reason: string | null;
+  redacted_fields: string[];
+  ip_address: string | null;
+  user_agent: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface StaffSupportTechnicalStageSummary {
+  stage_number: number;
+  stage_key: string;
+  display_name: string;
+  status: string;
+  is_financial_stage_redacted: boolean;
+  technical_data: Record<string, unknown>;
+  updated_at: string | null;
+}
+
+export interface RedactedStaffSupportClientContext {
+  banner: string;
+  actor: {
+    staff_user_id: string;
+    staff_email: string | null;
+    staff_role: StaffRole;
+    impersonating_client: false;
+    client_session_established: false;
+  };
+  assignment: {
+    id: string;
+    assignment_role: AssignmentRole;
+    status: AssignmentStatus;
+    can_view_technical_stages: boolean;
+    can_prepare_technical_quotation: boolean;
+    can_prepare_invoice_request: boolean;
+    expires_at: string | null;
+  };
+  client: {
+    client_id: string;
+    company_name: string;
+    contact_name: string;
+    contact_email: string;
+    project_title: string;
+    engagement_ref: string | null;
+    engagement_id: string | null;
+    current_stage: number | null;
+    engagement_status: string | null;
+  };
+  financial_redaction: {
+    redacted: true;
+    policy: 'POLICY_2_AUDITED_STAFF_SUPPORT_VIEW';
+    omitted_fields: readonly string[];
+    commercial_summary: 'REDACTED — Commercial pricing, discounts, GST/PAN, invoices, and payment records are restricted to Super Admin.';
+  };
+  technical_stages: StaffSupportTechnicalStageSummary[];
+  support_notes: Array<{
+    id: string;
+    author_user_id: string;
+    author_email: string | null;
+    author_role: StaffRole;
+    note: string;
+    stage_key: string | null;
+    created_at: string;
+  }>;
+  action_requests: Array<{
+    id: string;
+    requested_by: string;
+    requested_by_email: string | null;
+    requested_by_role: StaffRole;
+    request_type: 'stage_review' | 'identity_correction_escalation' | 'technical_clarification' | 'commercial_escalation';
+    stage_key: string | null;
+    summary: string;
+    status: 'pending_super_admin' | 'resolved';
+    created_at: string;
+  }>;
+}
+
+export const FORBIDDEN_FINANCIAL_KEYS = [
+  'unit_price',
+  'unit_price_paise',
+  'base_price_paise',
+  'line_total_paise',
+  'line_subtotal_paise',
+  'line_discount_paise',
+  'line_taxable_paise',
+  'line_gst_paise',
+  'price',
+  'subtotal',
+  'subtotal_paise',
+  'tax',
+  'tax_paise',
+  'taxable_paise',
+  'gst',
+  'gst_paise',
+  'gst_rate',
+  'gst_rate_bps',
+  'discount',
+  'discount_paise',
+  'discount_bps',
+  'discount_value',
+  'coupon',
+  'coupon_code',
+  'coupon_id',
+  'coupon_snapshot',
+  'total',
+  'total_paise',
+  'total_value',
+  'milestone_amount',
+  'advance_paise',
+  'final_paise',
+  'advance_amount',
+  'final_amount',
+  'invoice_total',
+  'amount_due',
+  'amount_paid',
+  'payment_reference',
+  'utr',
+  'bank_details',
+  'account_number',
+  'ifsc',
+  'upi_vpa',
+  'gstin',
+  'pan',
+  'commercial_versions',
+  'priced_line_items',
+  'proposal_Commercial',
+] as const;
+
+const FORBIDDEN_KEY_SET = new Set<string>(
+  FORBIDDEN_FINANCIAL_KEYS.map((k) => k.toLowerCase())
+);
+
+const FINANCIAL_STAGE_KEYS = new Set<string>([
+  'proposal',
+  'initial_invoice',
+  'final_payment',
+]);
+
+// In-memory stores for deterministic testing & fallback when DB tables are not yet migrated
+const inMemoryAssignments = new Map<string, StaffClientAssignment>();
+const inMemoryAccessEvents: StaffSupportAccessEvent[] = [];
+const inMemorySupportNotes = new Map<
+  string,
+  RedactedStaffSupportClientContext['support_notes']
+>();
+const inMemoryActionRequests = new Map<
+  string,
+  RedactedStaffSupportClientContext['action_requests']
+>();
+
+function getServiceClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key, { auth: { persistSession: false } });
+}
+
+export function buildStaffSupportBanner(staffEmailOrId: string, staffRole: StaffRole): string {
+  return `Staff Support View — acting as ${staffEmailOrId} (${staffRole}), read-only client context; not signed in as client`;
+}
+
+/**
+ * Recursively strips all forbidden commercial, pricing, tax, coupon, invoice,
+ * bank, UTR, and tax-identifier keys from any object before returning to staff.
+ */
+export function redactFinancialFieldsForStaffSupport<T>(input: T): T {
+  if (input === null || input === undefined) return input;
+  if (Array.isArray(input)) {
+    return input.map((item) => redactFinancialFieldsForStaffSupport(item)) as unknown as T;
+  }
+  if (typeof input === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(input as Record<string, unknown>)) {
+      const normalized = key.toLowerCase();
+      if (
+        FORBIDDEN_KEY_SET.has(normalized) ||
+        normalized.includes('price') ||
+        normalized.includes('paise') ||
+        normalized.includes('subtotal') ||
+        normalized.includes('discount') ||
+        normalized.includes('coupon') ||
+        normalized.includes('invoice') ||
+        normalized.includes('utr') ||
+        normalized.includes('gstin') ||
+        normalized.includes('upi_vpa') ||
+        normalized.includes('bank_account')
+      ) {
+        continue;
+      }
+      out[key] = redactFinancialFieldsForStaffSupport(value);
+    }
+    return out as T;
+  }
+  return input;
+}
+
+/**
+ * Policy 2 Guard: Staff must NEVER impersonate a client or execute client-only mutations
+ * pretending to be a client user.
+ */
+export function assertNeverClientImpersonation(params: {
+  actorUserId: string;
+  actorRole: StaffRole | 'client' | 'user';
+  requestedActorRole?: string | null;
+  impersonateClientId?: string | null;
+}): { ok: true } | { ok: false; status: 403; message: string } {
+  if (params.impersonateClientId) {
+    return {
+      ok: false,
+      status: 403,
+      message:
+        'Policy 2 violation: Client impersonation and session takeover are strictly prohibited.',
+    };
+  }
+  if (
+    params.actorRole !== 'client' &&
+    params.requestedActorRole &&
+    params.requestedActorRole.toLowerCase() === 'client'
+  ) {
+    return {
+      ok: false,
+      status: 403,
+      message:
+        'Policy 2 violation: Staff members must act under their own staff identity and cannot submit actions as a client.',
+    };
+  }
+  return { ok: true };
+}
+
+export async function createStaffClientAssignment(input: {
+  actorUserId: string;
+  actorEmail: string | null;
+  actorRole: StaffRole;
+  staffUserId: string;
+  staffEmail?: string | null;
+  clientId?: string | null;
+  engagementId?: string | null;
+  assignmentRole: AssignmentRole;
+  canViewTechnicalStages?: boolean;
+  canPrepareTechnicalQuotation?: boolean;
+  canPrepareInvoiceRequest?: boolean;
+  assignmentReason: string;
+  expiresAt?: string | null;
+}): Promise<StaffClientAssignment> {
+  if (!hasCapability(input.actorRole, 'support.assignment.manage')) {
+    throw new Error('Forbidden: Only Super Admin may create staff-client assignments.');
+  }
+  if (!input.clientId && !input.engagementId) {
+    throw new Error('Either clientId or engagementId is required for a staff assignment.');
+  }
+  if (!input.assignmentReason || input.assignmentReason.trim().length < 5) {
+    throw new Error('A clear assignment reason (minimum 5 characters) is required.');
+  }
+
+  const now = new Date().toISOString();
+  const assignment: StaffClientAssignment = {
+    id: crypto.randomUUID(),
+    staff_user_id: input.staffUserId,
+    staff_email: input.staffEmail ?? null,
+    client_id: input.clientId ?? null,
+    engagement_id: input.engagementId ?? null,
+    assignment_role: input.assignmentRole,
+    status: 'active',
+    can_view_technical_stages: input.canViewTechnicalStages ?? true,
+    can_prepare_technical_quotation: input.canPrepareTechnicalQuotation ?? false,
+    can_prepare_invoice_request: input.canPrepareInvoiceRequest ?? false,
+    assigned_by: input.actorUserId,
+    assignment_reason: input.assignmentReason.trim(),
+    starts_at: now,
+    expires_at: input.expiresAt ?? null,
+    revoked_at: null,
+    revoked_by: null,
+    created_at: now,
+    updated_at: now,
+  };
+
+  inMemoryAssignments.set(assignment.id, assignment);
+
+  const supabase = getServiceClient();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('staff_client_assignments')
+      .insert({
+        id: assignment.id,
+        staff_user_id: assignment.staff_user_id,
+        client_id: assignment.client_id,
+        engagement_id: assignment.engagement_id,
+        assignment_role: assignment.assignment_role,
+        status: assignment.status,
+        can_view_technical_stages: assignment.can_view_technical_stages,
+        can_prepare_technical_quotation: assignment.can_prepare_technical_quotation,
+        can_prepare_invoice_request: assignment.can_prepare_invoice_request,
+        assigned_by: assignment.assigned_by,
+        assignment_reason: assignment.assignment_reason,
+        starts_at: assignment.starts_at,
+        expires_at: assignment.expires_at,
+      })
+      .select('*')
+      .maybeSingle();
+
+    if (!error && data) {
+      Object.assign(assignment, data);
+      inMemoryAssignments.set(assignment.id, assignment);
+    }
+  }
+
+  await recordAdminAction({
+    actor: { userId: input.actorUserId, email: input.actorEmail, role: input.actorRole },
+    action: 'staff_client_assignment.create',
+    capability: 'support.assignment.manage',
+    outcome: 'succeeded',
+    target: {
+      type: 'staff_client_assignment',
+      id: assignment.id,
+    },
+    metadata: {
+      staff_user_id: assignment.staff_user_id,
+      client_id: assignment.client_id,
+      engagement_id: assignment.engagement_id,
+      assignment_role: assignment.assignment_role,
+    },
+  });
+
+  return assignment;
+}
+
+export async function updateStaffClientAssignment(input: {
+  actorUserId: string;
+  actorEmail: string | null;
+  actorRole: StaffRole;
+  assignmentId: string;
+  status?: AssignmentStatus;
+  expiresAt?: string | null;
+  canViewTechnicalStages?: boolean;
+  canPrepareTechnicalQuotation?: boolean;
+  canPrepareInvoiceRequest?: boolean;
+}): Promise<StaffClientAssignment> {
+  if (!hasCapability(input.actorRole, 'support.assignment.manage')) {
+    throw new Error('Forbidden: Only Super Admin may modify or revoke staff-client assignments.');
+  }
+
+  const now = new Date().toISOString();
+  const existing = inMemoryAssignments.get(input.assignmentId);
+  if (existing) {
+    if (input.status) existing.status = input.status;
+    if (input.status === 'revoked') {
+      existing.revoked_at = now;
+      existing.revoked_by = input.actorUserId;
+    }
+    if (input.expiresAt !== undefined) existing.expires_at = input.expiresAt;
+    if (input.canViewTechnicalStages !== undefined) {
+      existing.can_view_technical_stages = input.canViewTechnicalStages;
+    }
+    if (input.canPrepareTechnicalQuotation !== undefined) {
+      existing.can_prepare_technical_quotation = input.canPrepareTechnicalQuotation;
+    }
+    if (input.canPrepareInvoiceRequest !== undefined) {
+      existing.can_prepare_invoice_request = input.canPrepareInvoiceRequest;
+    }
+    existing.updated_at = now;
+    inMemoryAssignments.set(existing.id, existing);
+  }
+
+  const supabase = getServiceClient();
+  if (supabase) {
+    const patch: Record<string, unknown> = { updated_at: now };
+    if (input.status) patch.status = input.status;
+    if (input.status === 'revoked') {
+      patch.revoked_at = now;
+      patch.revoked_by = input.actorUserId;
+    }
+    if (input.expiresAt !== undefined) patch.expires_at = input.expiresAt;
+    if (input.canViewTechnicalStages !== undefined) {
+      patch.can_view_technical_stages = input.canViewTechnicalStages;
+    }
+    if (input.canPrepareTechnicalQuotation !== undefined) {
+      patch.can_prepare_technical_quotation = input.canPrepareTechnicalQuotation;
+    }
+    if (input.canPrepareInvoiceRequest !== undefined) {
+      patch.can_prepare_invoice_request = input.canPrepareInvoiceRequest;
+    }
+
+    const { data, error } = await supabase
+      .from('staff_client_assignments')
+      .update(patch)
+      .eq('id', input.assignmentId)
+      .select('*')
+      .maybeSingle();
+
+    if (!error && data) {
+      const updated = data as StaffClientAssignment;
+      inMemoryAssignments.set(updated.id, updated);
+      return updated;
+    }
+  }
+
+  if (!existing) {
+    throw new Error(`Assignment ${input.assignmentId} not found.`);
+  }
+  return existing;
+}
+
+export async function listStaffClientAssignments(filter?: {
+  staffUserId?: string;
+  clientId?: string;
+  engagementId?: string;
+  onlyActive?: boolean;
+}): Promise<StaffClientAssignment[]> {
+  const supabase = getServiceClient();
+  if (supabase) {
+    let query = supabase
+      .from('staff_client_assignments')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (filter?.staffUserId) query = query.eq('staff_user_id', filter.staffUserId);
+    if (filter?.clientId) query = query.eq('client_id', filter.clientId);
+    if (filter?.engagementId) query = query.eq('engagement_id', filter.engagementId);
+    if (filter?.onlyActive) query = query.eq('status', 'active');
+
+    const { data, error } = await query;
+    if (!error && Array.isArray(data) && data.length > 0) {
+      return data as StaffClientAssignment[];
+    }
+  }
+
+  const nowMs = Date.now();
+  return Array.from(inMemoryAssignments.values()).filter((a) => {
+    if (filter?.staffUserId && a.staff_user_id !== filter.staffUserId) return false;
+    if (filter?.clientId && a.client_id !== filter.clientId) return false;
+    if (filter?.engagementId && a.engagement_id !== filter.engagementId) return false;
+    if (filter?.onlyActive) {
+      if (a.status !== 'active') return false;
+      if (a.expires_at && new Date(a.expires_at).getTime() <= nowMs) return false;
+    }
+    return true;
+  });
+}
+
+export async function verifyStaffClientAssignment(params: {
+  staffUserId: string;
+  staffRole: StaffRole;
+  clientId?: string | null;
+  engagementId?: string | null;
+  requireTechnicalQuotationPrep?: boolean;
+  requireInvoicePrep?: boolean;
+}): Promise<
+  | { allowed: true; assignment: StaffClientAssignment }
+  | { allowed: false; status: 403; reason: string }
+> {
+  if (!hasCapability(params.staffRole, 'support.assigned_client.read')) {
+    return {
+      allowed: false,
+      status: 403,
+      reason: `Role '${params.staffRole}' does not hold support.assigned_client.read capability.`,
+    };
+  }
+
+  // Super Admin holds global oversight
+  if (params.staffRole === 'super_admin') {
+    const now = new Date().toISOString();
+    return {
+      allowed: true,
+      assignment: {
+        id: 'super-admin-global-oversight',
+        staff_user_id: params.staffUserId,
+        client_id: params.clientId ?? null,
+        engagement_id: params.engagementId ?? null,
+        assignment_role: 'technical_support',
+        status: 'active',
+        can_view_technical_stages: true,
+        can_prepare_technical_quotation: true,
+        can_prepare_invoice_request: true,
+        assigned_by: params.staffUserId,
+        assignment_reason: 'Super Admin sovereign oversight',
+        starts_at: now,
+        expires_at: null,
+        revoked_at: null,
+        revoked_by: null,
+        created_at: now,
+        updated_at: now,
+      },
+    };
+  }
+
+  const activeAssignments = await listStaffClientAssignments({
+    staffUserId: params.staffUserId,
+    onlyActive: true,
+  });
+
+  const nowMs = Date.now();
+  const matched = activeAssignments.find((a) => {
+    if (a.status !== 'active') return false;
+    if (a.expires_at && new Date(a.expires_at).getTime() <= nowMs) return false;
+    const matchesClient = Boolean(params.clientId && a.client_id === params.clientId);
+    const matchesEngagement = Boolean(
+      params.engagementId && a.engagement_id === params.engagementId
+    );
+    return matchesClient || matchesEngagement;
+  });
+
+  if (!matched) {
+    return {
+      allowed: false,
+      status: 403,
+      reason:
+        'Forbidden: Staff member does not have an active, non-expired assignment for this client or engagement.',
+    };
+  }
+
+  if (params.requireTechnicalQuotationPrep && !matched.can_prepare_technical_quotation) {
+    return {
+      allowed: false,
+      status: 403,
+      reason:
+        'Forbidden: Assignment does not grant technical quotation preparation permission for this client.',
+    };
+  }
+
+  if (params.requireInvoicePrep && !matched.can_prepare_invoice_request) {
+    return {
+      allowed: false,
+      status: 403,
+      reason:
+        'Forbidden: Assignment does not grant invoice preparation permission for this client.',
+    };
+  }
+
+  return { allowed: true, assignment: matched };
+}
+
+export async function recordStaffSupportAccessEvent(input: {
+  staffUserId: string;
+  staffEmail: string | null;
+  staffRole: StaffRole;
+  clientId?: string | null;
+  engagementId?: string | null;
+  assignmentId?: string | null;
+  action: string;
+  route: string;
+  reason?: string | null;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  metadata?: Record<string, unknown>;
+}): Promise<StaffSupportAccessEvent> {
+  const event: StaffSupportAccessEvent = {
+    id: crypto.randomUUID(),
+    staff_user_id: input.staffUserId,
+    staff_email: input.staffEmail,
+    staff_role: input.staffRole,
+    client_id: input.clientId ?? null,
+    engagement_id: input.engagementId ?? null,
+    assignment_id:
+      input.assignmentId && input.assignmentId !== 'super-admin-global-oversight'
+        ? input.assignmentId
+        : null,
+    action: input.action,
+    route: input.route,
+    reason: input.reason ?? null,
+    redacted_fields: [...FORBIDDEN_FINANCIAL_KEYS],
+    ip_address: input.ipAddress ?? null,
+    user_agent: input.userAgent ?? null,
+    metadata: input.metadata ?? {},
+    created_at: new Date().toISOString(),
+  };
+
+  inMemoryAccessEvents.unshift(event);
+
+  const supabase = getServiceClient();
+  if (supabase) {
+    await supabase
+      .from('staff_support_access_events')
+      .insert({
+        id: event.id,
+        staff_user_id: event.staff_user_id,
+        staff_email: event.staff_email,
+        staff_role: event.staff_role,
+        client_id: event.client_id,
+        engagement_id: event.engagement_id,
+        assignment_id: event.assignment_id,
+        action: event.action,
+        route: event.route,
+        reason: event.reason,
+        redacted_fields: event.redacted_fields,
+        ip_address: event.ip_address,
+        user_agent: event.user_agent,
+        metadata: event.metadata,
+      })
+      .then(
+        () => undefined,
+        () => undefined
+      );
+  }
+
+  return event;
+}
+
+export async function getRedactedStaffSupportContext(params: {
+  staffUserId: string;
+  staffEmail: string | null;
+  staffRole: StaffRole;
+  clientId: string;
+  engagementId?: string | null;
+  reason?: string | null;
+  route: string;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+}): Promise<
+  | { ok: true; data: RedactedStaffSupportClientContext }
+  | { ok: false; status: 403 | 404; message: string }
+> {
+  const check = await verifyStaffClientAssignment({
+    staffUserId: params.staffUserId,
+    staffRole: params.staffRole,
+    clientId: params.clientId,
+    engagementId: params.engagementId ?? null,
+  });
+
+  if (!check.allowed) {
+    await recordStaffSupportAccessEvent({
+      staffUserId: params.staffUserId,
+      staffEmail: params.staffEmail,
+      staffRole: params.staffRole,
+      clientId: params.clientId,
+      engagementId: params.engagementId ?? null,
+      action: 'support_view.access_denied',
+      route: params.route,
+      reason: check.reason,
+      ipAddress: params.ipAddress,
+      userAgent: params.userAgent,
+    });
+    return { ok: false, status: 403, message: check.reason };
+  }
+
+  // Load client / engagement metadata from Supabase if available
+  let companyName = 'Assigned Enterprise Client';
+  let contactName = 'Authorized Client Contact';
+  let contactEmail = '';
+  let projectTitle = 'Enterprise Architecture Engagement';
+  let engagementRef: string | null = null;
+  let engagementId: string | null = params.engagementId ?? null;
+  let currentStage: number | null = 1;
+  let engagementStatus: string | null = 'active';
+  const technicalStages: StaffSupportTechnicalStageSummary[] = [];
+
+  const supabase = getServiceClient();
+  if (supabase) {
+    const { data: engagement } = await supabase
+      .from('client_engagements')
+      .select(
+        'id, engagement_ref, client_id, company_name, client_name, client_email, project_title, current_stage, status'
+      )
+      .or(`client_id.eq.${params.clientId},id.eq.${params.clientId}`)
+      .maybeSingle();
+
+    if (engagement) {
+      engagementId = engagement.id;
+      engagementRef = engagement.engagement_ref;
+      companyName = engagement.company_name || companyName;
+      contactName = engagement.client_name || contactName;
+      contactEmail = engagement.client_email || contactEmail;
+      projectTitle = engagement.project_title || projectTitle;
+      currentStage = engagement.current_stage ?? 1;
+      engagementStatus = engagement.status ?? 'active';
+
+      const { data: stages } = await supabase
+        .from('engagement_stages')
+        .select('stage_number, stage_key, display_name, status, data, updated_at')
+        .eq('engagement_id', engagement.id)
+        .order('stage_number', { ascending: true });
+
+      if (Array.isArray(stages)) {
+        for (const s of stages) {
+          const isFinancialStage = FINANCIAL_STAGE_KEYS.has(s.stage_key);
+          technicalStages.push({
+            stage_number: s.stage_number,
+            stage_key: s.stage_key,
+            display_name: s.display_name,
+            status: s.status,
+            is_financial_stage_redacted: isFinancialStage,
+            technical_data: isFinancialStage
+              ? {
+                  redacted: true,
+                  notice:
+                    'Commercial pricing, invoice amounts, GST/PAN, and payment references are redacted in Staff Support View.',
+                }
+              : redactFinancialFieldsForStaffSupport(
+                  (s.data as Record<string, unknown>) ?? {}
+                ),
+            updated_at: s.updated_at ?? null,
+          });
+        }
+      }
+    }
+  }
+
+  await recordStaffSupportAccessEvent({
+    staffUserId: params.staffUserId,
+    staffEmail: params.staffEmail,
+    staffRole: params.staffRole,
+    clientId: params.clientId,
+    engagementId,
+    assignmentId: check.assignment.id,
+    action: 'support_view.read',
+    route: params.route,
+    reason: params.reason ?? check.assignment.assignment_reason,
+    ipAddress: params.ipAddress,
+    userAgent: params.userAgent,
+  });
+
+  const notes = inMemorySupportNotes.get(params.clientId) ?? [];
+  const requests = inMemoryActionRequests.get(params.clientId) ?? [];
+
+  const context: RedactedStaffSupportClientContext = {
+    banner: buildStaffSupportBanner(
+      params.staffEmail ?? params.staffUserId,
+      params.staffRole
+    ),
+    actor: {
+      staff_user_id: params.staffUserId,
+      staff_email: params.staffEmail,
+      staff_role: params.staffRole,
+      impersonating_client: false,
+      client_session_established: false,
+    },
+    assignment: {
+      id: check.assignment.id,
+      assignment_role: check.assignment.assignment_role,
+      status: check.assignment.status,
+      can_view_technical_stages: check.assignment.can_view_technical_stages,
+      can_prepare_technical_quotation: check.assignment.can_prepare_technical_quotation,
+      can_prepare_invoice_request: check.assignment.can_prepare_invoice_request,
+      expires_at: check.assignment.expires_at,
+    },
+    client: {
+      client_id: params.clientId,
+      company_name: companyName,
+      contact_name: contactName,
+      contact_email: contactEmail,
+      project_title: projectTitle,
+      engagement_ref: engagementRef,
+      engagement_id: engagementId,
+      current_stage: currentStage,
+      engagement_status: engagementStatus,
+    },
+    financial_redaction: {
+      redacted: true,
+      policy: 'POLICY_2_AUDITED_STAFF_SUPPORT_VIEW',
+      omitted_fields: FORBIDDEN_FINANCIAL_KEYS,
+      commercial_summary:
+        'REDACTED — Commercial pricing, discounts, GST/PAN, invoices, and payment records are restricted to Super Admin.',
+    },
+    technical_stages: technicalStages,
+    support_notes: notes,
+    action_requests: requests,
+  };
+
+  return { ok: true, data: context };
+}
+
+export async function addStaffSupportNote(params: {
+  staffUserId: string;
+  staffEmail: string | null;
+  staffRole: StaffRole;
+  clientId: string;
+  stageKey?: string | null;
+  note: string;
+  route: string;
+}): Promise<
+  | {
+      ok: true;
+      note: RedactedStaffSupportClientContext['support_notes'][number];
+    }
+  | { ok: false; status: 400 | 403; message: string }
+> {
+  if (!hasCapability(params.staffRole, 'support.assigned_client.assist')) {
+    return {
+      ok: false,
+      status: 403,
+      message: 'Forbidden: Missing support.assigned_client.assist capability.',
+    };
+  }
+  if (!params.note || params.note.trim().length < 3) {
+    return {
+      ok: false,
+      status: 400,
+      message: 'Support note must be at least 3 characters.',
+    };
+  }
+
+  const check = await verifyStaffClientAssignment({
+    staffUserId: params.staffUserId,
+    staffRole: params.staffRole,
+    clientId: params.clientId,
+  });
+  if (!check.allowed) {
+    return { ok: false, status: 403, message: check.reason };
+  }
+
+  const created = {
+    id: crypto.randomUUID(),
+    author_user_id: params.staffUserId,
+    author_email: params.staffEmail,
+    author_role: params.staffRole,
+    note: params.note.trim(),
+    stage_key: params.stageKey ?? null,
+    created_at: new Date().toISOString(),
+  };
+
+  const list = inMemorySupportNotes.get(params.clientId) ?? [];
+  list.unshift(created);
+  inMemorySupportNotes.set(params.clientId, list);
+
+  await recordStaffSupportAccessEvent({
+    staffUserId: params.staffUserId,
+    staffEmail: params.staffEmail,
+    staffRole: params.staffRole,
+    clientId: params.clientId,
+    assignmentId: check.assignment.id,
+    action: 'support_view.add_note',
+    route: params.route,
+    reason: `Added staff support note (${params.stageKey ?? 'general'})`,
+    metadata: { note_id: created.id, stage_key: created.stage_key },
+  });
+
+  return { ok: true, note: created };
+}
+
+export async function createStaffSupportActionRequest(params: {
+  staffUserId: string;
+  staffEmail: string | null;
+  staffRole: StaffRole;
+  clientId: string;
+  requestType:
+    | 'stage_review'
+    | 'identity_correction_escalation'
+    | 'technical_clarification'
+    | 'commercial_escalation';
+  stageKey?: string | null;
+  summary: string;
+  route: string;
+}): Promise<
+  | {
+      ok: true;
+      request: RedactedStaffSupportClientContext['action_requests'][number];
+    }
+  | { ok: false; status: 400 | 403; message: string }
+> {
+  if (!hasCapability(params.staffRole, 'support.assigned_client.assist')) {
+    return {
+      ok: false,
+      status: 403,
+      message: 'Forbidden: Missing support.assigned_client.assist capability.',
+    };
+  }
+  if (!params.summary || params.summary.trim().length < 5) {
+    return {
+      ok: false,
+      status: 400,
+      message: 'Action request summary must be at least 5 characters.',
+    };
+  }
+
+  const check = await verifyStaffClientAssignment({
+    staffUserId: params.staffUserId,
+    staffRole: params.staffRole,
+    clientId: params.clientId,
+  });
+  if (!check.allowed) {
+    return { ok: false, status: 403, message: check.reason };
+  }
+
+  const created = {
+    id: crypto.randomUUID(),
+    requested_by: params.staffUserId,
+    requested_by_email: params.staffEmail,
+    requested_by_role: params.staffRole,
+    request_type: params.requestType,
+    stage_key: params.stageKey ?? null,
+    summary: params.summary.trim(),
+    status: 'pending_super_admin' as const,
+    created_at: new Date().toISOString(),
+  };
+
+  const list = inMemoryActionRequests.get(params.clientId) ?? [];
+  list.unshift(created);
+  inMemoryActionRequests.set(params.clientId, list);
+
+  await recordStaffSupportAccessEvent({
+    staffUserId: params.staffUserId,
+    staffEmail: params.staffEmail,
+    staffRole: params.staffRole,
+    clientId: params.clientId,
+    assignmentId: check.assignment.id,
+    action: 'support_view.request_action',
+    route: params.route,
+    reason: `Escalated ${params.requestType} to Super Admin`,
+    metadata: { request_id: created.id, request_type: created.request_type },
+  });
+
+  return { ok: true, request: created };
+}
+
+export function listStaffSupportAccessEvents(): StaffSupportAccessEvent[] {
+  return [...inMemoryAccessEvents];
+}

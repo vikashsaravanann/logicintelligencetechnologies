@@ -12,28 +12,23 @@ interface EmailFooterProps {
 export const EmailFooter = ({
   unsubscribeUrl,
   signature,
-  msmeRegistration,
-  registeredAddress,
+  msmeRegistration = EMAIL.msmeRegistration,
+  registeredAddress = EMAIL.registeredAddress,
 }: EmailFooterProps) => {
   return (
     <Section style={footer}>
-      <Hr style={divider} />
       {signature ? (
         <Text style={sigText}>
           Warm regards,
           <br />
-          <strong style={{ color: EMAIL.colors.text }}>{signature}</strong>
+          <strong style={{ color: EMAIL.colors.footerHeading }}>{signature}</strong>
           <br />
-          {EMAIL.company}
+          <span style={{ color: EMAIL.colors.footerText }}>{EMAIL.company}</span>
         </Text>
       ) : null}
-      <Text style={company}>{EMAIL.company}</Text>
-      {msmeRegistration ? (
-        <Text style={msmeStyle}>MSME / Udyam: {msmeRegistration}</Text>
-      ) : null}
-      <Text style={addressText}>
-        {registeredAddress || "Coimbatore, Tamil Nadu, India"}
-      </Text>
+      <Text style={company}>{EMAIL.companyFull}</Text>
+      <Text style={msmeStyle}>MSME / Udyam: {msmeRegistration}</Text>
+      <Text style={addressText}>{registeredAddress}</Text>
       <Text style={site}>
         <Link href={EMAIL.siteUrl} style={siteLink}>
           logicintelligencetechnologies.in
@@ -67,86 +62,82 @@ export const EmailFooter = ({
 };
 
 const footer = {
-  padding: "12px 32px 32px 32px",
+  padding: "32px 32px 32px 32px",
   textAlign: "center" as const,
-  backgroundColor: EMAIL.colors.cardBg,
-};
-
-const divider = {
-  borderColor: EMAIL.colors.divider,
-  borderTop: `1px solid ${EMAIL.colors.divider}`,
-  margin: "0 0 24px 0",
+  backgroundColor: EMAIL.colors.footerBg,
+  borderTop: `1px solid ${EMAIL.colors.footerBorder}`,
 };
 
 const sigText = {
-  color: EMAIL.colors.muted,
-  fontSize: "14px",
+  color: EMAIL.colors.footerText,
+  fontSize: "13px",
   lineHeight: "22px",
   margin: "0 0 20px 0",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
   textAlign: "center" as const,
 };
 
 const company = {
-  color: EMAIL.colors.text,
-  fontSize: "13px",
-  fontWeight: "700" as const,
+  color: EMAIL.colors.footerHeading,
+  fontSize: "12px",
+  fontWeight: "800" as const,
   margin: "0 0 4px 0",
-  fontFamily: EMAIL.font,
-  letterSpacing: "0.02em",
+  fontFamily: EMAIL.fontSans,
+  letterSpacing: "0.08em",
+  textTransform: "uppercase" as const,
 };
 
 const msmeStyle = {
-  color: EMAIL.colors.muted,
-  fontSize: "12px",
+  color: EMAIL.colors.footerText,
+  fontSize: "11px",
   fontWeight: "600" as const,
   margin: "0 0 4px 0",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
   letterSpacing: "0.02em",
 };
 
 const addressText = {
-  color: EMAIL.colors.muted,
-  fontSize: "12px",
-  margin: "0 0 8px 0",
-  fontFamily: EMAIL.font,
+  color: EMAIL.colors.footerText,
+  fontSize: "11px",
+  margin: "0 0 10px 0",
+  fontFamily: EMAIL.fontSans,
 };
 
-const site = { margin: "0 0 12px 0" };
+const site = { margin: "0 0 10px 0" };
 
 const siteLink = {
-  color: EMAIL.colors.primary,
-  fontSize: "13px",
+  color: EMAIL.colors.footerLink,
+  fontSize: "12px",
   fontWeight: "600" as const,
   textDecoration: "none",
 };
 
 const links = {
-  color: EMAIL.colors.muted,
-  fontSize: "12px",
+  color: EMAIL.colors.footerText,
+  fontSize: "11px",
   margin: "0 0 10px 0",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
 };
 
 const link = {
-  color: EMAIL.colors.muted,
+  color: EMAIL.colors.footerText,
   textDecoration: "underline",
-  fontSize: "12px",
+  fontSize: "11px",
 };
 
-const unsub = { margin: "0 0 10px 0", fontSize: "12px" };
+const unsub = { margin: "0 0 8px 0", fontSize: "11px" };
 
 const unsubLink = {
-  color: EMAIL.colors.faint,
+  color: "#6B7280",
   textDecoration: "underline",
   fontSize: "11px",
 };
 
 const copy = {
-  color: EMAIL.colors.faint,
+  color: "#6B7280",
   fontSize: "11px",
-  margin: "16px 0 0 0",
-  fontFamily: EMAIL.font,
+  margin: "12px 0 0 0",
+  fontFamily: EMAIL.fontSans,
 };
 
 export default EmailFooter;

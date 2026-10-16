@@ -459,7 +459,7 @@ export default function EngagementsAdminClient({
                     <div>
                       <span className="text-slate-500 block text-[11px]">Contract Value:</span>
                       <span className="font-medium text-emerald-700 font-mono">
-                        {(eng.metadata?.budget_range as string) || '₹21,24,000.00 (Total SOW)'}
+                        {(eng.metadata?.budget_range as string) || 'Pending Commercial Approval'}
                       </span>
                     </div>
                   </div>

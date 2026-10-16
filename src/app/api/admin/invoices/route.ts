@@ -21,6 +21,8 @@ const invoiceSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  // Policy 1: Direct invoice issuance with commercial pricing is restricted to super_admin (invoices.write & invoice.issue).
+  // Staff must submit non-priced preparation requests via /api/admin/invoice-preparations.
   const auth = await requireCapabilityApi(req, "invoices.write");
   if (!auth.ok) {
     return NextResponse.json({ error: auth.message }, { status: auth.status });
@@ -70,7 +72,7 @@ export async function POST(req: NextRequest) {
       await recordAdminAction({
         actor,
         action: "invoice.create",
-        capability: "invoices.write",
+        capability: "invoice.issue",
         outcome: "failed",
         errorCode: "db_insert_failed",
         request: req,
@@ -103,7 +105,7 @@ export async function POST(req: NextRequest) {
     await recordAdminAction({
       actor,
       action: "invoice.create",
-      capability: "invoices.write",
+      capability: "invoice.issue",
       target: { type: "invoice", id: invoice.id },
       outcome: "succeeded",
       metadata: { invoiceCode: invoice.invoice_code, amount, emailStatus: emailResult.status },
@@ -122,7 +124,7 @@ export async function POST(req: NextRequest) {
     await recordAdminAction({
       actor,
       action: "invoice.create",
-      capability: "invoices.write",
+      capability: "invoice.issue",
       outcome: "failed",
       errorCode: "unexpected",
       request: req,

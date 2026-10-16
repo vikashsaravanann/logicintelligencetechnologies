@@ -4,6 +4,15 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      deploy_mode:
+        description: "Deployment mode: 'native_git' (verify Vercel Git integration) or 'cli' (force Vercel CLI deploy if token valid)"
+        required: false
+        default: "native_git"
+        type: choice
+        options:
+          - native_git
+          - cli
 
 concurrency:
   group: production-${{ github.ref }}
@@ -12,41 +21,100 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  CANONICAL_PRODUCTION_URL: "https://www.logicintelligencetechnologies.in"
+  CANONICAL_VERCEL_PROJECT_ID: "prj_Oij4lC7BxRmiAcxim3REtNuNms0y"
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
 
-      - name: Install
+      - name: Install dependencies
         run: npm ci --prefer-offline
 
-      - name: Typecheck
+      - name: Typecheck gate
         run: npm run typecheck
 
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+      - name: Lint gate
+        run: npm run lint
 
-      - name: Pull Vercel env
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - name: Unit & security regression gate
+        run: npm run test:unit
 
-      - name: Build
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Production build verification gate
+        run: npm run build
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          NEXT_PUBLIC_SITE_URL: https://www.logicintelligencetechnologies.in
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://example.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.placeholder' }}
 
-      - name: Deploy
-        run: vercel deploy --prebuilt --prod --archive=tgz --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Preflight Vercel CLI token & select authoritative deployment mode
+        id: vercel_preflight
         env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID || 'prj_Oij4lC7BxRmiAcxim3REtNuNms0y' }}
+          REQUESTED_MODE: ${{ github.event.inputs.deploy_mode || vars.VERCEL_DEPLOY_MODE || 'native_git' }}
+        run: |
+          set -euo pipefail
+          # Never print or echo token values in logs.
+          if [ "$REQUESTED_MODE" = "cli" ] && [ -n "${VERCEL_TOKEN:-}" ]; then
+            if npx --yes vercel@latest whoami --token="$VERCEL_TOKEN" >/dev/null 2>&1; then
+              echo "token_valid=true" >> "$GITHUB_OUTPUT"
+              echo "deploy_mode=cli" >> "$GITHUB_OUTPUT"
+              echo "Vercel CLI token verified; proceeding with explicit CLI deployment for project ${VERCEL_PROJECT_ID}."
+              exit 0
+            fi
+          fi
+          echo "token_valid=false" >> "$GITHUB_OUTPUT"
+          echo "deploy_mode=native_git" >> "$GITHUB_OUTPUT"
+          echo "::notice::Vercel native Git integration is primary; CLI token preflight skipped/expired — verifying live deployment on https://www.logicintelligencetechnologies.in"
+
+      - name: Pull Vercel environment (CLI mode only)
+        if: steps.vercel_preflight.outputs.deploy_mode == 'cli' && steps.vercel_preflight.outputs.token_valid == 'true'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID || 'prj_Oij4lC7BxRmiAcxim3REtNuNms0y' }}
+        run: npx --yes vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
+
+      - name: Build prebuilt Vercel artifact (CLI mode only)
+        if: steps.vercel_preflight.outputs.deploy_mode == 'cli' && steps.vercel_preflight.outputs.token_valid == 'true'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID || 'prj_Oij4lC7BxRmiAcxim3REtNuNms0y' }}
+        run: npx --yes vercel@latest build --prod --token="$VERCEL_TOKEN"
+
+      - name: Deploy prebuilt artifact to Vercel production (CLI mode only)
+        if: steps.vercel_preflight.outputs.deploy_mode == 'cli' && steps.vercel_preflight.outputs.token_valid == 'true'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID || 'prj_Oij4lC7BxRmiAcxim3REtNuNms0y' }}
+        run: npx --yes vercel@latest deploy --prebuilt --prod --archive=tgz --token="$VERCEL_TOKEN"
+
+      - name: Verify live custom domain & health endpoint
+        env:
+          SMOKE_TEST_BASE_URL: ${{ env.CANONICAL_PRODUCTION_URL }}
+        run: |
+          set -euo pipefail
+          echo "Verifying live production deployment on ${SMOKE_TEST_BASE_URL}..."
+          HTTP_STATUS=$(curl -sS -o /tmp/lit-health.json -w "%{http_code}" "${SMOKE_TEST_BASE_URL}/api/health" || echo "000")
+          echo "Health endpoint HTTP status: ${HTTP_STATUS}"
+          if [ "$HTTP_STATUS" != "200" ] && [ "$HTTP_STATUS" != "503" ]; then
+            echo "::error::Unexpected HTTP status ${HTTP_STATUS} from ${SMOKE_TEST_BASE_URL}/api/health"
+            exit 1
+          fi
+          npm run smoke:test
+

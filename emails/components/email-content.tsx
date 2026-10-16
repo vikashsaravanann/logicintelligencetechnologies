@@ -5,38 +5,38 @@ import { EMAIL } from "./email-styles";
 export const contentPad = { padding: "32px 32px 12px 32px" };
 
 export const titleStyle = {
-  color: EMAIL.colors.text,
+  color: EMAIL.colors.inkPrimary,
   fontSize: "24px",
   fontWeight: "700" as const,
   lineHeight: "32px",
   margin: "0 0 16px 0",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSerif,
   letterSpacing: "-0.01em",
 };
 
 export const greetingStyle = {
-  color: EMAIL.colors.text,
-  fontSize: "16px",
+  color: EMAIL.colors.inkPrimary,
+  fontSize: "15px",
   fontWeight: "600" as const,
-  lineHeight: "26px",
+  lineHeight: "24px",
   margin: "0 0 16px 0",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
 };
 
 export const bodyStyle = {
   color: EMAIL.colors.body,
-  fontSize: "15px",
-  lineHeight: "26px",
+  fontSize: "14.5px",
+  lineHeight: "24px",
   margin: "0 0 16px 0",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
 };
 
 export const mutedStyle = {
   color: EMAIL.colors.muted,
-  fontSize: "14px",
-  lineHeight: "22px",
+  fontSize: "13px",
+  lineHeight: "20px",
   margin: "0 0 12px 0",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
 };
 
 export const dividerStyle = {
@@ -46,8 +46,8 @@ export const dividerStyle = {
 };
 
 export const softBoxStyle = {
-  backgroundColor: EMAIL.colors.tintBg,
-  border: `1px solid ${EMAIL.colors.border}`,
+  backgroundColor: EMAIL.colors.surfaceMuted,
+  border: `1px solid ${EMAIL.colors.surfaceBorder}`,
   borderRadius: "8px",
   padding: "16px 20px",
   margin: "0 0 20px 0",
@@ -60,6 +60,22 @@ export function EmailTitle({ children }: { children: React.ReactNode }) {
 export function EmailGreeting({ name }: { name?: string }) {
   const text = name && name.trim() ? `Hi ${name.trim()},` : "Hello,";
   return <Text style={greetingStyle}>{text}</Text>;
+}
+
+export function EmailHighlight({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      style={{
+        backgroundColor: EMAIL.colors.highlightBg,
+        color: EMAIL.colors.highlightText,
+        padding: "2px 6px",
+        borderRadius: "4px",
+        fontWeight: 600,
+      }}
+    >
+      {children}
+    </span>
+  );
 }
 
 export function EmailBody({ children }: { children: React.ReactNode }) {
@@ -85,9 +101,9 @@ export function EmailNotice({
   children: React.ReactNode;
   variant?: "info" | "success" | "warning" | "alert";
 }) {
-  let bg: string = EMAIL.colors.tintBg;
-  let border: string = EMAIL.colors.border;
-  let text: string = EMAIL.colors.text;
+  let bg: string = EMAIL.colors.surfaceMuted;
+  let border: string = EMAIL.colors.surfaceBorder;
+  let text: string = EMAIL.colors.inkPrimary;
 
   if (variant === "success") {
     bg = EMAIL.colors.successBg;
@@ -119,7 +135,7 @@ export function EmailNotice({
           fontSize: "14px",
           lineHeight: "22px",
           margin: 0,
-          fontFamily: EMAIL.font,
+          fontFamily: EMAIL.fontSans,
         }}
       >
         {children}
@@ -137,8 +153,8 @@ export function EmailInfoGrid({ children }: { children: React.ReactNode }) {
       cellSpacing={0}
       style={{
         borderCollapse: "collapse",
-        backgroundColor: EMAIL.colors.softBg,
-        border: `1px solid ${EMAIL.colors.border}`,
+        backgroundColor: EMAIL.colors.surfaceMuted,
+        border: `1px solid ${EMAIL.colors.surfaceBorder}`,
         borderRadius: "8px",
         margin: "16px 0 20px 0",
         overflow: "hidden",
@@ -161,7 +177,7 @@ export function EmailInfoRow({
   return (
     <tr
       style={{
-        borderBottom: isLast ? "none" : `1px solid ${EMAIL.colors.border}`,
+        borderBottom: isLast ? "none" : `1px solid ${EMAIL.colors.surfaceBorder}`,
       }}
     >
       <td
@@ -170,7 +186,7 @@ export function EmailInfoRow({
           color: EMAIL.colors.muted,
           fontSize: "13px",
           fontWeight: 600,
-          fontFamily: EMAIL.font,
+          fontFamily: EMAIL.fontSans,
           width: "35%",
           verticalAlign: "top",
         }}
@@ -180,10 +196,10 @@ export function EmailInfoRow({
       <td
         style={{
           padding: "12px 16px",
-          color: EMAIL.colors.text,
+          color: EMAIL.colors.inkPrimary,
           fontSize: "14px",
           fontWeight: 500,
-          fontFamily: EMAIL.font,
+          fontFamily: EMAIL.fontSans,
           verticalAlign: "top",
         }}
       >

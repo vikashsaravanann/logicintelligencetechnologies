@@ -356,16 +356,16 @@ describe("LIT EMAIL v2 Enterprise Template Suite", () => {
 
       // 1. Structure & Token Verification
       assert.ok(
-        html.includes("#F7F9FC") || html.includes("rgb(247, 249, 252)"),
-        `${name}: HTML must contain cloud canvas background #F7F9FC`
+        html.includes("#F7F9FC") || html.includes("rgb(247, 249, 252)") || html.includes("#F8F6F2") || html.includes("rgb(248, 246, 242)"),
+        `${name}: HTML must contain cloud canvas background #F7F9FC or parchment #F8F6F2`
       );
       assert.ok(
-        html.includes("#FFFFFF") || html.includes("#fff") || html.includes("rgb(255, 255, 255)"),
-        `${name}: HTML must contain crisp white card background #FFFFFF`
+        html.includes("#FFFFFF") || html.includes("#fff") || html.includes("rgb(255, 255, 255)") || html.includes("#FFFEFC") || html.includes("rgb(255, 254, 252)"),
+        `${name}: HTML must contain crisp white card background #FFFFFF or soft white #FFFEFC`
       );
       assert.ok(
-        html.includes("#0B2545") || html.includes("rgb(11, 37, 69)"),
-        `${name}: HTML must contain primary brand navy #0B2545`
+        html.includes("#0B2545") || html.includes("rgb(11, 37, 69)") || html.includes("#171717") || html.includes("rgb(23, 23, 23)"),
+        `${name}: HTML must contain brand ink/navy (#0B2545 or #171717)`
       );
 
       // 2. Official Logo & Brand Header

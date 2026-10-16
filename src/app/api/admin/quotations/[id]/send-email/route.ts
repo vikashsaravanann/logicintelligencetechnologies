@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireCapabilityApi } from "@/lib/auth/session";
 import { getQuotationById } from "@/lib/quotations/service";
-import { sendEmail } from "@/lib/email/send-email";
-import QuotationEmail from "@/emails/quotation-email";
-import * as React from "react";
-import { formatPaiseToINR } from "@/lib/quotations/pricing";
-import { formatIST } from "@/lib/format/datetime";
+import { sendQuotationEmail } from "@/lib/email/send-quotation-email";
+import { supabaseAdmin, isAdminClientConfigured } from "@/lib/supabase/admin";
+import { recordAdminAction } from "@/lib/admin/audit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -14,10 +12,12 @@ export async function POST(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const auth = await requireCapabilityApi(req, "proposals.write");
+  // Policy 1: Quotation sending is restricted to Super Admin
+  const auth = await requireCapabilityApi(req, "quotation.send");
   if (!auth.ok) {
     return NextResponse.json({ error: auth.message }, { status: auth.status });
   }
+  const actor = { userId: auth.session.userId, email: auth.session.email, role: auth.session.role };
 
   const { id } = await context.params;
   const quoteData = await getQuotationById(id);
@@ -29,46 +29,79 @@ export async function POST(
 
   const raw = await req.json().catch(() => ({}));
   const customMessage = raw?.customMessage?.trim() || undefined;
-  const recipientEmail = raw?.recipientEmail?.trim() || quotation.recipient_email;
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.logicintelligencetechnologies.in";
-  const quotationUrl = `${siteUrl}/quotation/${quotation.secure_token}`;
+  const recipientEmail = (raw?.recipientEmail?.trim() || quotation.recipient_email || "").trim();
 
   try {
     const selectedCount = lines.filter((l) => l.is_selected).length;
-    const formattedTotal = formatPaiseToINR(quotation.total_payable_paise);
-    const validUntilFormatted = quotation.valid_until
-      ? formatIST(quotation.valid_until)
-      : "14 days from issue";
 
-    const emailComponent = React.createElement(QuotationEmail, {
-      recipientName: quotation.recipient_name,
-      companyName: quotation.company_name,
-      projectTitle: quotation.project_title,
-      quotationRef: quotation.quotation_ref,
-      quotationUrl,
-      totalFormatted: formattedTotal,
-      validUntil: validUntilFormatted,
-      selectedServicesCount: selectedCount,
+    const sendRes = await sendQuotationEmail({
+      quotation,
+      recipientEmail,
       customMessage,
+      selectedServicesCount: selectedCount,
     });
 
-    const sendRes = await sendEmail({
-      to: recipientEmail,
-      from: "billing",
-      subject: `Project Quotation: ${quotation.project_title} [${quotation.quotation_ref}]`,
-      react: emailComponent,
-    });
+    if (!sendRes.success) {
+      quotation.delivery_state = "email_failed";
+      if (isAdminClientConfigured()) {
+        await supabaseAdmin
+          .from("quotations")
+          .update({ delivery_state: "email_failed", updated_at: new Date().toISOString() })
+          .eq("id", quotation.id);
+      }
+
+      await recordAdminAction({
+        actor,
+        action: "quotation.send",
+        capability: "quotation.send",
+        target: { type: "quotation", id: quotation.id },
+        outcome: "failed",
+        errorCode: sendRes.errorCode || "email_delivery_failed",
+        metadata: { quotationRef: quotation.quotation_ref, recipientEmail, error: sendRes.message },
+        request: req,
+      });
+
+      return NextResponse.json(
+        { ok: false, error: sendRes.message || "Failed to deliver quotation email", status: sendRes.status },
+        { status: 502 }
+      );
+    }
 
     quotation.delivery_state = "email_sent";
+    if (isAdminClientConfigured()) {
+      await supabaseAdmin
+        .from("quotations")
+        .update({ delivery_state: "email_sent", updated_at: new Date().toISOString() })
+        .eq("id", quotation.id);
+    }
+
+    await recordAdminAction({
+      actor,
+      action: "quotation.send",
+      capability: "quotation.send",
+      target: { type: "quotation", id: quotation.id },
+      outcome: "succeeded",
+      metadata: { quotationRef: quotation.quotation_ref, recipientEmail, messageId: sendRes.messageId },
+      request: req,
+    });
 
     return NextResponse.json({
       ok: true,
       messageId: sendRes.messageId,
-      deliveryState: quotation.delivery_state,
+      deliveryState: "email_sent",
     });
   } catch (err: any) {
     console.error("[send-email] error sending quotation email:", err);
+    await recordAdminAction({
+      actor,
+      action: "quotation.send",
+      capability: "quotation.send",
+      target: { type: "quotation", id: quotation.id },
+      outcome: "failed",
+      errorCode: "unexpected",
+      metadata: { quotationRef: quotation.quotation_ref, error: err?.message },
+      request: req,
+    });
     return NextResponse.json({ error: err.message || "Failed to send email" }, { status: 500 });
   }
 }

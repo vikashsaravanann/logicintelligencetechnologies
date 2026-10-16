@@ -12,6 +12,7 @@ import {
   loadDueOutbox,
   markOutboxFailure,
   markOutboxSent,
+  markOutboxSimulated,
   recordAttempt,
 } from "@/lib/email/outbox";
 import { classifyEmailError } from "@/lib/email/errors";
@@ -136,13 +137,6 @@ export async function GET(request: Request) {
       continue;
     }
 
-    // Dry-run mode
-    if (isEmailDryRun()) {
-      await markOutboxSent(row.id, "dry-run");
-      processed.push({ id: row.id, status: "sent" });
-      continue;
-    }
-
     // Rows without rendered HTML cannot be retried by the worker
     if (!row.html) {
       await markOutboxFailure(row.id, row.attempt_count + 1, {
@@ -154,8 +148,8 @@ export async function GET(request: Request) {
       continue;
     }
 
+    // Dry-run mode: truthful simulation record without network transmission
     if (isEmailDryRun()) {
-      const { markOutboxSimulated } = await import("@/lib/email/outbox");
       await recordAttempt({
         outboxId: row.id,
         attempt: row.attempt_count + 1,

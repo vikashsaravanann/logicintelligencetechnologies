@@ -93,7 +93,6 @@ export default function EngagementDetailAdminClient({
           status: newStatus,
           action: 'admin_override_status',
           notes: `Status changed to ${newStatus} by Super Admin`,
-          actorRole: 'admin',
         }),
       });
       const data = await res.json();
@@ -124,7 +123,7 @@ export default function EngagementDetailAdminClient({
 
     const isPaymentStage = stageKey === 'initial-invoice' || stageKey === 'final-payment';
     const snapshot = (stage.snapshot || {}) as Record<string, any>;
-    const defaultUtr = snapshot.utrNumber || snapshot.utr || snapshot.transactionRef || snapshot.transaction_ref || snapshot.billingSubmission?.utr || 'BANK-CR-MANUAL';
+    const defaultUtr = snapshot.utrNumber || snapshot.utr || snapshot.transactionRef || snapshot.transaction_ref || snapshot.billingSubmission?.utr || '';
     const defaultNote = `Approved and verified by Super Admin for ${stage.title}. Next milestone unlocked.`;
 
     setApprovalModal({
@@ -198,7 +197,6 @@ export default function EngagementDetailAdminClient({
             action: 'admin_approve_stage',
             notes: notesOrUtr.trim(),
             unlockNext: true,
-            actorRole: 'admin',
           }),
         });
         const data = await res.json();
@@ -653,7 +651,7 @@ export default function EngagementDetailAdminClient({
                 <span className="text-xs font-mono font-bold text-emerald-700 mt-1 block">
                   {snap.acceptedAt ? new Date(snap.acceptedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'Recorded'}
                 </span>
-                <span className="text-[10px] font-mono text-emerald-600 mt-0.5 block">IP: {snap.clientIp || '103.21.244.1'}</span>
+                <span className="text-[10px] font-mono text-emerald-600 mt-0.5 block">IP: {snap.clientIp || 'Not recorded'}</span>
               </div>
             </div>
           </div>
@@ -689,7 +687,7 @@ export default function EngagementDetailAdminClient({
                   Signature Audit Hash
                 </span>
                 <span className="text-[10px] font-mono text-slate-700 mt-1 block truncate">
-                  {snap.signatureHash || stage.snapshot?.last_audit_hash || 'SHA-256 Validated'}
+                  {snap.signatureHash || stage.snapshot?.last_audit_hash || 'Pending signature'}
                 </span>
                 <span className="text-[10px] font-bold text-emerald-700 mt-0.5 block">✓ Legally Binding</span>
               </div>
@@ -818,7 +816,7 @@ export default function EngagementDetailAdminClient({
                   Git Repository
                 </span>
                 <span className="text-xs font-mono font-bold text-[#1565C0] mt-1 block truncate">
-                  {snap.repoUrl || 'https://github.com/apexmeridian/enterprise-platform'}
+                  {snap.repoUrl || 'Not yet submitted by client'}
                 </span>
                 <span className="text-[10px] text-slate-500 mt-0.5 block">Access verified by LIT engineering</span>
               </div>
@@ -835,7 +833,7 @@ export default function EngagementDetailAdminClient({
                   Cloud Infrastructure
                 </span>
                 <span className="text-xs font-bold text-emerald-700 mt-1 block">
-                  {snap.cloudAccounts || 'AWS IAM Role & VPC Peering Configured'}
+                  {snap.cloudAccounts || 'Not yet submitted by client'}
                 </span>
               </div>
             </div>
@@ -861,7 +859,7 @@ export default function EngagementDetailAdminClient({
                   SLA Target
                 </span>
                 <span className="text-xs font-bold text-slate-800 mt-1 block">
-                  {snap.slaRequirement || '99.95% High Availability Uptime'}
+                  {snap.slaRequirement || 'Pending specification sign-off'}
                 </span>
               </div>
               <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-xl">
@@ -869,7 +867,7 @@ export default function EngagementDetailAdminClient({
                   Client Technical Sign-Off
                 </span>
                 <span className="text-xs font-bold text-emerald-700 mt-1 block">
-                  {snap.clientSignoff || `${engagement.contact_name} (CTO)`}
+                  {snap.clientSignoff || 'Pending client sign-off'}
                 </span>
               </div>
             </div>
@@ -886,7 +884,7 @@ export default function EngagementDetailAdminClient({
                   Sprint Roadmap
                 </span>
                 <span className="text-xs font-bold text-slate-800 mt-1 block">
-                  Sprint 1 &amp; 2 Complete · Sprint 3 Active
+                  {snap.sprintRoadmap || 'Pending active development sprint'}
                 </span>
               </div>
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
@@ -894,7 +892,7 @@ export default function EngagementDetailAdminClient({
                   Staging Environment
                 </span>
                 <span className="text-xs font-mono font-bold text-[#1565C0] mt-1 block truncate">
-                  {snap.stagingUrl || 'https://staging.logicintelligencetechnologies.in'}
+                  {snap.stagingUrl || 'Pending staging deployment'}
                 </span>
               </div>
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
@@ -919,7 +917,7 @@ export default function EngagementDetailAdminClient({
                   QA Acceptance
                 </span>
                 <span className="text-xs font-bold text-emerald-700 mt-1 block">
-                  {snap.qaSignoff || '100% Automated Test Suite Passed'}
+                  {snap.qaSignoff || 'Pending QA sign-off'}
                 </span>
               </div>
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
@@ -927,7 +925,7 @@ export default function EngagementDetailAdminClient({
                   UAT Product Sign-Off
                 </span>
                 <span className="text-xs font-bold text-slate-800 mt-1 block">
-                  {snap.uatApprovedBy || `${engagement.contact_name} (Product Sponsor)`}
+                  {snap.uatApprovedBy || 'Pending UAT sign-off'}
                 </span>
               </div>
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
@@ -935,7 +933,7 @@ export default function EngagementDetailAdminClient({
                   Acceptance Notes
                 </span>
                 <span className="text-xs text-slate-600 mt-1 block">
-                  {snap.acceptanceNotes || 'All deliverables approved for production deployment.'}
+                  {snap.acceptanceNotes || 'Pending client acceptance submission.'}
                 </span>
               </div>
             </div>

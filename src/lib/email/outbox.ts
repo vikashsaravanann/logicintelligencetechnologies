@@ -69,7 +69,9 @@ export async function enqueueEmail(
     subject: params.subject,
     html:
       params.html ||
-      (params.metadata
+      (params.text
+        ? `<p>${escapeHtml(params.text)}</p>`
+        : params.metadata
         ? `<p>${escapeHtml(params.subject)}</p><pre>${escapeHtml(JSON.stringify(params.metadata, null, 2))}</pre>`
         : `<p>${escapeHtml(params.subject)}</p>`),
     text: params.text,

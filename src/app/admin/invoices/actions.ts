@@ -7,9 +7,9 @@ import { recordAdminAction } from "@/lib/admin/audit";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Mark a Pending/Overdue invoice Paid. Idempotent; audited. */
+/** Mark a Pending/Overdue invoice Paid. Idempotent; audited. Restricted to Super Admin (payment.verify). */
 export async function markInvoicePaid(formData: FormData): Promise<void> {
-  const session = await requireCapabilityAction("invoices.write", "invoice.mark_paid");
+  const session = await requireCapabilityAction("payment.verify", "invoice.mark_paid");
   const id = String(formData.get("id") ?? "");
   if (!UUID.test(id)) throw new Error("Invalid invoice id");
 
@@ -22,7 +22,7 @@ export async function markInvoicePaid(formData: FormData): Promise<void> {
   await recordAdminAction({
     actor: { userId: session.userId, email: session.email, role: session.role },
     action: "invoice.mark_paid",
-    capability: "invoices.write",
+    capability: "payment.verify",
     target: { type: "invoice", id },
     outcome: error ? "failed" : "succeeded",
     errorCode: error ? "db_update_failed" : undefined,
