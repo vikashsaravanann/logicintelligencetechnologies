@@ -73,3 +73,9 @@ proxy_*
 *.pid
 .supabase/
 local_pdfs/
+
+# Python cache & temporary build/patch artifacts
+__pycache__/
+*.pyc
+*.b64.part*
+*.patch

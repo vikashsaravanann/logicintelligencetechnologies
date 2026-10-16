@@ -15,6 +15,7 @@ import {
 import { sendEngagementInvitationEmail } from './invitations';
 import { notifyStageSubmitted, notifyStageApproved } from './stage-notifications';
 import { calculateEngagementFinancials } from './financials';
+import { generateTaxInvoicePdf, generatePaymentReceiptPdf } from '@/lib/pdf/invoice-receipt-generator';
 
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -234,10 +235,13 @@ export async function submitStageAction(input: {
 }): Promise<StageActionResult> {
   const { engagementRef, stageKey, action, payload, actorRole = 'client', actorId } = input;
 
-  const engagement =
-    input.engagement ||
-    (engagementRef ? await getEngagementByRef(engagementRef) : null) ||
-    FALLBACK_SAMPLE_ENGAGEMENT;
+  let engagement = input.engagement || null;
+  if (!engagement && engagementRef) {
+    engagement = await getEngagementByRef(engagementRef);
+  }
+  if (!engagement && engagementRef === FALLBACK_SAMPLE_ENGAGEMENT.engagement_ref) {
+    engagement = FALLBACK_SAMPLE_ENGAGEMENT;
+  }
 
   if (!engagement) {
     return {
@@ -511,6 +515,16 @@ export async function submitStageAction(input: {
 
       if (stageUpsertErr) {
         console.error('[submitStageAction] Stage upsert error:', stageUpsertErr);
+        return {
+          success: false,
+          stageKey,
+          status: currentStage.status,
+          newStatus: currentStage.status,
+          auditHash,
+          nextUnlockedStageKey: null,
+          nextStageToUnlock: null,
+          error: `Database stage update failed: ${stageUpsertErr.message}`,
+        };
       }
 
       // 3. If next stage is unlocked, upsert next stage status to 'available'
@@ -1341,6 +1355,9 @@ export async function reconcileEngagementStagePayment(input: {
     last_updated_at: now,
   };
 
+  let invoicePdfResult: { bytes: Uint8Array; sha256: string } | null = null;
+  let receiptPdfResult: { bytes: Uint8Array; sha256: string } | null = null;
+
   if (isAdminClientConfigured()) {
     try {
       // 1. Record immutable audit ledger event
@@ -1394,29 +1411,150 @@ export async function reconcileEngagementStagePayment(input: {
         })
         .eq('id', engagement.id);
 
-      // 5. Upsert bank reconciliation receipt in engagement document links
+      // 5. Generate authentic Tax Invoice & Payment Receipt PDFs and upsert both in engagement document links
       const isInitial = stageKey === 'initial-invoice';
-      const receiptDoc = {
-        engagement_id: engagement.id,
-        stage_key: stageKey,
-        document_title: isInitial
-          ? 'Initial 50% Deposit Bank Reconciliation Receipt & Tax Invoice'
-          : 'Final 50% Milestone Settlement Bank Reconciliation Receipt',
-        master_id: isInitial ? 'LIT-02-RCPT' : 'LIT-05-RCPT',
-        version_label: 'v1.0 (Verified)',
-        file_url: isInitial
-          ? '/assets/docs/masters/LIT-02-Initial-Invoice.pdf'
-          : '/assets/docs/masters/LIT-05-Final-Invoice.pdf',
-        file_size_bytes: 620485,
-        sha256_hash: crypto.createHash('sha256').update(`${engagement.id}-${stageKey}-${now}`).digest('hex'),
-        is_client_visible: true,
-        requires_signature: false,
-        signature_status: 'none' as const,
-      };
+      const cleanRef = (engagement.engagement_ref || 'ENG').replace(/[^A-Z0-9]/gi, '');
+      const invoiceDocNumber = isInitial ? `LIT-INV-${cleanRef}-01` : `LIT-INV-${cleanRef}-02`;
+      const receiptDocNumber = isInitial ? `LIT-REC-${cleanRef}-01` : `LIT-REC-${cleanRef}-02`;
+      const formattedDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const dueDate = new Date(Date.now() + 7 * 86400000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const milestoneRef = isInitial
+        ? 'Stage 6: Initial Project Milestone (50% Deposit)'
+        : 'Stage 11: Final Milestone Settlement (50%)';
+      const milestoneAmount = isInitial ? financials.depositAmount : financials.settlementAmount;
+      const lineItemBase = Math.round((milestoneAmount / 1.18) * 100) / 100;
+      const gstAmount = Math.round((milestoneAmount - lineItemBase) * 100) / 100;
 
-      await supabaseAdmin
-        .from('engagement_document_links')
-        .insert(receiptDoc);
+      const engMeta = (engagement.metadata || {}) as Record<string, unknown>;
+      const billingAddress = (engMeta.billing_address as string) || (engMeta.registered_address as string) || 'Registered Address';
+      const clientGstin = (engMeta.gstin as string) || undefined;
+      const projectTitle = engagement.project_title || 'Enterprise Engagement';
+
+      try {
+        invoicePdfResult = await generateTaxInvoicePdf({
+          invoiceNumber: invoiceDocNumber,
+          dateIssued: formattedDate,
+          dueDate,
+          milestoneRef,
+          client: {
+            legalName: engagement.company_name,
+            attentionName: engagement.contact_name,
+            billingAddress,
+            email: engagement.contact_email,
+            phone: engagement.contact_phone || undefined,
+            gstin: clientGstin,
+          },
+          items: [
+            {
+              description: `${milestoneRef} — ${projectTitle}`,
+              quantity: 1,
+              unitPrice: lineItemBase,
+              taxRatePercent: 18,
+              amount: lineItemBase,
+            },
+          ],
+          subtotal: lineItemBase,
+          cgstAmount: Math.round((gstAmount / 2) * 100) / 100,
+          sgstAmount: Math.round((gstAmount / 2) * 100) / 100,
+          totalTaxAmount: gstAmount,
+          totalPayable: milestoneAmount,
+          status: 'paid',
+          amountPaid: milestoneAmount,
+          amountDue: 0,
+          notes: `Reconciled by ${actorName}. Transaction Ref: ${reconciliationData.transaction_ref}`,
+        });
+      } catch (invErr) {
+        console.error('[reconcileEngagementStagePayment] Tax invoice generation error:', invErr);
+      }
+
+      try {
+        receiptPdfResult = await generatePaymentReceiptPdf({
+          receiptNumber: receiptDocNumber,
+          invoiceNumber: invoiceDocNumber,
+          datePaid: formattedDate,
+          milestoneRef,
+          client: {
+            legalName: engagement.company_name,
+            attentionName: engagement.contact_name,
+            billingAddress,
+            email: engagement.contact_email,
+            phone: engagement.contact_phone || undefined,
+            gstin: clientGstin,
+          },
+          items: [
+            {
+              description: `${milestoneRef} — ${projectTitle}`,
+              quantity: 1,
+              unitPrice: lineItemBase,
+              taxRatePercent: 18,
+              amount: lineItemBase,
+            },
+          ],
+          subtotal: lineItemBase,
+          cgstAmount: Math.round((gstAmount / 2) * 100) / 100,
+          sgstAmount: Math.round((gstAmount / 2) * 100) / 100,
+          totalTaxAmount: gstAmount,
+          totalAmount: milestoneAmount,
+          amountPaid: milestoneAmount,
+          remainingBalance: 0,
+          paymentHistory: [
+            {
+              paymentMethod: 'UPI Manual Transfer',
+              paymentDate: formattedDate,
+              utrReference: reconciliationData.transaction_ref,
+              receivingBankRef: 'YES BANK / PTYES',
+              amountPaid: milestoneAmount,
+              receiptNumber: receiptDocNumber,
+            },
+          ],
+          notes: `Reconciled by ${actorName}. Transaction Ref: ${reconciliationData.transaction_ref}`,
+        });
+      } catch (rcptErr) {
+        console.error('[reconcileEngagementStagePayment] Payment receipt generation error:', rcptErr);
+      }
+
+      const docsToInsert = [];
+      if (invoicePdfResult) {
+        docsToInsert.push({
+          engagement_id: engagement.id,
+          stage_key: stageKey,
+          document_title: isInitial
+            ? 'Stage 06 Advance Tax Invoice (GST Rule 46)'
+            : 'Stage 11 Final Tax Invoice (GST Rule 46)',
+          master_id: isInitial ? 'LIT-02-INV' : 'LIT-05-INV',
+          version_label: 'v1.0 (Verified)',
+          file_url: `/api/documents/invoice/${invoiceDocNumber}/pdf`,
+          file_size_bytes: invoicePdfResult.bytes.byteLength,
+          sha256_hash: invoicePdfResult.sha256,
+          is_client_visible: true,
+          requires_signature: false,
+          signature_status: 'none' as const,
+        });
+      }
+
+      if (receiptPdfResult) {
+        docsToInsert.push({
+          engagement_id: engagement.id,
+          stage_key: stageKey,
+          document_title: isInitial
+            ? 'Stage 06 Payment Receipt & Reconciliation Certificate'
+            : 'Stage 11 Settlement Receipt & Reconciliation Certificate',
+          master_id: isInitial ? 'LIT-02-RCPT' : 'LIT-05-RCPT',
+          version_label: 'v1.0 (Verified)',
+          file_url: `/api/documents/receipt/${receiptDocNumber}/pdf`,
+          file_size_bytes: receiptPdfResult.bytes.byteLength,
+          sha256_hash: receiptPdfResult.sha256,
+          is_client_visible: true,
+          requires_signature: false,
+          signature_status: 'none' as const,
+        });
+      }
+
+      if (docsToInsert.length > 0) {
+        await supabaseAdmin
+          .from('engagement_document_links')
+          .insert(docsToInsert);
+      }
 
     } catch (dbErr: any) {
       console.error('[reconcileEngagementStagePayment] DB write error:', dbErr);
@@ -1459,12 +1597,34 @@ export async function reconcileEngagementStagePayment(input: {
   const updatedStage = refreshedStages.find((s) => s.stage_key === stageKey);
   const updatedNextStage = refreshedStages.find((s) => s.stage_key === nextStageKey);
 
-  // Trigger client unlock email for bank credit verification
+  // Prepare attachments for approval email: both Tax Invoice and Payment Receipt
+  const cleanRef = (engagement.engagement_ref || 'ENG').replace(/[^A-Z0-9]/gi, '');
+  const invoiceDocNumber = stageKey === 'initial-invoice' ? `LIT-INV-${cleanRef}-01` : `LIT-INV-${cleanRef}-02`;
+  const receiptDocNumber = stageKey === 'initial-invoice' ? `LIT-REC-${cleanRef}-01` : `LIT-REC-${cleanRef}-02`;
+  const emailAttachments = [];
+
+  if (invoicePdfResult && (invoicePdfResult as any).bytes) {
+    emailAttachments.push({
+      filename: `${invoiceDocNumber}.pdf`,
+      content: Buffer.from((invoicePdfResult as any).bytes),
+      contentType: 'application/pdf',
+    });
+  }
+  if (receiptPdfResult && (receiptPdfResult as any).bytes) {
+    emailAttachments.push({
+      filename: `${receiptDocNumber}.pdf`,
+      content: Buffer.from((receiptPdfResult as any).bytes),
+      contentType: 'application/pdf',
+    });
+  }
+
+  // Trigger client unlock email for bank credit verification with attached invoice & receipt
   notifyStageApproved({
     engagement,
     approvedStageKey: stageKey,
     nextStageKey,
     adminNotes: reconciliationNotes || `Manual bank credit verified in receiving account. Ref: ${reconciliationData.transaction_ref}`,
+    attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
   }).catch((notifErr) => {
     console.warn('[reconcileEngagementStagePayment] Bank approval notification error:', notifErr);
   });

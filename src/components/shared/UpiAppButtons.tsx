@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
+
+const emptySubscribe = () => () => {};
 import {
   ShieldCheck,
   Copy,
@@ -39,11 +41,7 @@ export function UpiAppButtons({
 }: UpiAppButtonsProps) {
   const [selectedApp, setSelectedApp] = useState<UpiAppInfo | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   useEffect(() => {
     if (selectedApp) {

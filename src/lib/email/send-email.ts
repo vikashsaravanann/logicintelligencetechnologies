@@ -41,7 +41,7 @@ import type {
   SenderKey,
 } from "./types";
 
-export type { EmailResponse };
+export type { EmailResponse, EmailAttachment };
 
 interface SendEmailOptions {
   to: string | string[];

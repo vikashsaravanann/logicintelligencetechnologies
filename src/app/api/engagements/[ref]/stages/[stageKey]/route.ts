@@ -6,8 +6,11 @@ import {
   submitStageAction,
 } from '@/lib/engagements/db';
 import { StageKey, ORDERED_STAGE_KEYS } from '@/lib/engagements/types';
+import { getStaffSession, requireCapabilityApi } from '@/lib/auth/session';
+import { hasCapability } from '@/config/roles';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function GET(
   _req: NextRequest,
@@ -81,7 +84,7 @@ export async function POST(
     }
 
     const body = await req.json().catch(() => ({}));
-    const { action, payload, actorRole, actorId } = body;
+    const { action, payload, actorId } = body;
 
     if (!action || typeof action !== 'string') {
       return NextResponse.json(
@@ -90,13 +93,21 @@ export async function POST(
       );
     }
 
+    // Server-derived actor role: check staff session. Clients cannot elevate themselves to 'admin'.
+    const staff = await getStaffSession();
+    const isStaff = Boolean(staff && hasCapability(staff.role, 'clients.write'));
+    const verifiedActorRole = isStaff ? 'admin' : 'client';
+    const verifiedActorId = isStaff
+      ? (staff?.email || staff?.userId)
+      : (actorId ? String(actorId) : undefined);
+
     const result = await submitStageAction({
       engagementRef: ref,
       stageKey,
       action,
       payload: payload || {},
-      actorRole: actorRole || 'client',
-      actorId,
+      actorRole: verifiedActorRole,
+      actorId: verifiedActorId,
     });
 
     if (!result.success) {
@@ -124,6 +135,12 @@ export async function PATCH(
   context: { params: Promise<{ ref: string; stageKey: string }> | { ref: string; stageKey: string } }
 ) {
   try {
+    // Admin override strictly requires 'clients.write' staff capability
+    const auth = await requireCapabilityApi(req, 'clients.write');
+    if (!auth.ok) {
+      return NextResponse.json({ success: false, error: auth.message }, { status: auth.status });
+    }
+
     const params = await context.params;
     const ref = params?.ref;
     const stageKey = params?.stageKey as StageKey;
@@ -143,7 +160,7 @@ export async function PATCH(
     }
 
     const body = await req.json().catch(() => ({}));
-    const { status, action = 'admin_override_status', notes, unlockNext = true, actorRole = 'admin', actorId } = body;
+    const { status, action = 'admin_override_status', notes, unlockNext = true } = body;
 
     if (!status && !action) {
       return NextResponse.json(
@@ -152,13 +169,29 @@ export async function PATCH(
       );
     }
 
+    // Invariant: Payment stages cannot be verified via generic override
+    if (stageKey === 'initial-invoice' || stageKey === 'final-payment') {
+      const targetStatus = status || (action === 'admin_approve_stage' ? 'verified' : null);
+      if (['paid', 'verified', 'approved'].includes(targetStatus)) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Payment stages (${stageKey}) cannot be marked verified via generic status override. Reconcile bank credit via /api/admin/payments/reconcile.`,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    const verifiedActorId = auth.session.email || auth.session.userId || 'admin';
+
     const result = await submitStageAction({
       engagementRef: ref,
       stageKey,
       action,
       payload: { status, notes, unlockNext },
-      actorRole,
-      actorId,
+      actorRole: 'admin',
+      actorId: verifiedActorId,
     });
 
     if (!result.success) {
@@ -180,4 +213,3 @@ export async function PATCH(
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
-

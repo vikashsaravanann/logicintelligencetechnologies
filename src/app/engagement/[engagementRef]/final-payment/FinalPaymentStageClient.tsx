@@ -44,8 +44,14 @@ export default function FinalPaymentStageClient({
   const [placeOfSupply, setPlaceOfSupply] = useState(initialData?.placeOfSupply || 'Tamil Nadu (33)');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isReported, setIsReported] = useState(
-    ['under_review', 'customer_claimed_paid', 'paid', 'verified', 'completed'].includes(initialStatus)
+    ['under_review', 'customer_claimed_paid', 'paid', 'verified', 'completed', 'approved'].includes(initialStatus)
   );
+  const isVerified =
+    ['verified', 'completed', 'approved', 'paid'].includes(initialStatus) ||
+    initialData?.bank_verified === true;
+  const isUnderReview =
+    !isVerified &&
+    (['under_review', 'customer_claimed_paid'].includes(initialStatus) || isReported);
   const [auditHash, setAuditHash] = useState<string | null>(initialData?.last_audit_hash || null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
@@ -158,8 +164,25 @@ export default function FinalPaymentStageClient({
             opacity: 0;
           }
         }
+        @keyframes litPaymentSuccessBurst {
+          0% {
+            transform: scale(0.92);
+            opacity: 0;
+          }
+          60% {
+            transform: scale(1.02);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
         .lit-qr-laser-line {
           animation: litQrLaserSweep 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        .lit-success-card {
+          animation: litPaymentSuccessBurst 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
       `}</style>
 
@@ -457,7 +480,148 @@ export default function FinalPaymentStageClient({
               </div>
             )}
 
-            {isReported ? (
+            {isVerified ? (
+              /* Celebratory Payment Verified & Settled View with Animation */
+              <div className="space-y-5 lit-success-card">
+                <div className="bg-gradient-to-b from-[#ECFDF5] via-[#F0FDF4] to-white border-2 border-[#10B981] rounded-3xl p-6 sm:p-7 text-xs text-emerald-950 space-y-5 shadow-lg relative overflow-hidden">
+                  {/* Decorative celebratory glow */}
+                  <div className="absolute -top-12 -right-12 w-40 h-40 bg-emerald-400/20 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-blue-400/15 rounded-full blur-2xl pointer-events-none" />
+
+                  {/* Pulsing Animated Green Shield Badge */}
+                  <div className="flex items-center gap-4 relative z-10">
+                    <div className="relative flex items-center justify-center">
+                      <span className="absolute w-14 h-14 rounded-full bg-emerald-500/20 animate-ping" />
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#059669] to-[#10B981] text-white flex items-center justify-center font-bold text-2xl shadow-[0_0_25px_rgba(16,185,129,0.5)] border-2 border-white">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 uppercase tracking-wider mb-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                        100% Contract Commitment Fully Settled
+                      </div>
+                      <h4 className="text-lg font-extrabold text-[#064E3B] font-poppins">
+                        Final Settlement Successfully Cleared
+                      </h4>
+                      <span className="text-xs text-emerald-700 font-medium">
+                        Verified in LIT Reserve Ledger · Final Tax Invoice Issued
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-white/95 border border-emerald-200/90 rounded-2xl font-mono text-xs text-slate-800 space-y-2.5 shadow-2xs relative z-10">
+                    <div className="flex justify-between items-center pb-2 border-b border-emerald-100 text-xs">
+                      <span className="text-slate-500">Settlement Amount Verified:</span>
+                      <span className="font-mono text-base font-black text-[#047857]">{paymentData.totalPayable}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Bank UTR Reference:</span>
+                      <strong className="text-slate-900 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">{utrNumber || 'Verified Bank Credit'}</strong>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Statutory GST Included:</span>
+                      <span className="text-slate-700">18% Total ({paymentData.cgst} + {paymentData.sgst})</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Clearance Timestamp:</span>
+                      <span className="text-slate-700">{initialData?.reconciled_at ? new Date(initialData.reconciled_at).toLocaleString('en-IN') : new Date().toLocaleDateString('en-IN')}</span>
+                    </div>
+                    {auditHash && (
+                      <div className="pt-2 border-t border-slate-100 break-all text-[10px] text-slate-500">
+                        Cryptographic Audit Hash: <strong>{auditHash}</strong>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Dual Document Download Cards */}
+                  <div className="space-y-2 relative z-10">
+                    <span className="font-bold text-[11px] uppercase tracking-wider text-emerald-900 block">
+                      Official Financial Documents Issued:
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      <a
+                        href={initialData?.invoice_url || `/api/documents/invoice/${initialData?.invoice_id || 'latest'}/pdf`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between p-3 bg-white hover:bg-emerald-50/50 border border-emerald-200 rounded-xl transition-all shadow-2xs group cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-8 h-8 rounded-lg bg-blue-50 text-[#1565C0] flex items-center justify-center font-bold text-xs">
+                            PDF
+                          </span>
+                          <div>
+                            <span className="font-bold text-slate-900 block text-xs group-hover:text-[#1565C0]">
+                              Final Tax Invoice
+                            </span>
+                            <span className="text-[10px] text-slate-500 block font-mono">
+                              {initialData?.invoice_number || 'LIT-INV-2026'}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-xs font-semibold text-[#1565C0] flex items-center gap-1">
+                          <span>View</span>
+                          <span>↓</span>
+                        </span>
+                      </a>
+
+                      <a
+                        href={initialData?.receipt_url || `/api/documents/receipt/${initialData?.receipt_id || 'latest'}/pdf`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between p-3 bg-white hover:bg-emerald-50/50 border border-emerald-200 rounded-xl transition-all shadow-2xs group cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">
+                            PDF
+                          </span>
+                          <div>
+                            <span className="font-bold text-slate-900 block text-xs group-hover:text-emerald-700">
+                              Settlement Receipt
+                            </span>
+                            <span className="text-[10px] text-slate-500 block font-mono">
+                              {initialData?.receipt_number || 'LIT-REC-2026'}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1">
+                          <span>View</span>
+                          <span>↓</span>
+                        </span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stage 12 Unlocked Action Banner */}
+                <div className="p-5 bg-gradient-to-r from-[#047857] via-[#059669] to-[#10B981] rounded-2xl text-white text-xs space-y-3 shadow-md relative overflow-hidden">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 font-bold text-sm">
+                      <svg className="w-5 h-5 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                      <span>Stage 12: Production Handover &amp; IP Transfer is UNLOCKED</span>
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white text-emerald-900 uppercase">
+                      Ready
+                    </span>
+                  </div>
+                  <p className="text-emerald-50 leading-relaxed">
+                    All contract commitments are 100% reconciled and legally settled. Proceed to Stage 12 to review the definitive Intellectual Property Transfer Deed and receive full production ownership.
+                  </p>
+                  <div className="pt-1 flex flex-col sm:flex-row gap-3">
+                    <Link
+                      href={`/engagement/${engagementRef}/handover`}
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-emerald-900 rounded-xl font-bold shadow-md transition-all text-xs"
+                    >
+                      <span>Proceed to Stage 12: Handover &amp; IP Transfer →</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ) : isUnderReview ? (
               /* Verified / Under Audit State View */
               <div className="space-y-5">
                 <div className="bg-gradient-to-b from-amber-50 to-orange-50/50 border border-amber-200 rounded-3xl p-6 text-xs text-amber-950 space-y-4 shadow-2xs">

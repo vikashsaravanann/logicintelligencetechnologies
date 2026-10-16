@@ -604,7 +604,7 @@ export default function SowStageClient({
                   className="mt-0.5 w-4 h-4 text-[#1565C0] rounded border-slate-300 focus:ring-[#1565C0]"
                 />
                 <span className="leading-relaxed">
-                  I agree to the exact two-milestone payment schedule: 50% ({formatINR(1062000)}) at Stage 6, and 50% ({formatINR(1062000)}) at Stage 11 upon Delivery Acceptance (Chapter 14).
+                  I agree to the exact two-milestone payment schedule: 50% ({sowMeta.commercial.financials.depositFormatted}) at Stage 6, and 50% ({sowMeta.commercial.financials.settlementFormatted}) at Stage 11 upon Delivery Acceptance (Chapter 14).
                 </span>
               </label>
             </div>

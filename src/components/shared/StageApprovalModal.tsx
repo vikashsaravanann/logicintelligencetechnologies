@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import {
   CheckCircle2,
@@ -8,7 +8,6 @@ import {
   X,
   ShieldCheck,
   Building2,
-  Lock,
   ArrowRight,
   Loader2,
   FileText,
@@ -29,8 +28,17 @@ export interface StageApprovalModalProps {
   inputPlaceholder?: string;
 }
 
-export function StageApprovalModal({
-  isOpen,
+const emptySubscribe = () => () => {};
+
+export function StageApprovalModal(props: StageApprovalModalProps) {
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+
+  if (!props.isOpen || !mounted) return null;
+
+  return createPortal(<StageApprovalModalDialog {...props} />, document.body);
+}
+
+function StageApprovalModalDialog({
   onClose,
   onConfirm,
   title,
@@ -45,27 +53,13 @@ export function StageApprovalModal({
   const [notes, setNotes] = useState(defaultNotes);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isOpen) {
-      setNotes(defaultNotes);
-      setError(null);
-      setIsSubmitting(false);
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen, defaultNotes]);
-
-  if (!isOpen || !mounted) return null;
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,7 +80,7 @@ export function StageApprovalModal({
     }
   };
 
-  return createPortal(
+  return (
     <div
       role="dialog"
       aria-modal="true"
@@ -232,7 +226,6 @@ export function StageApprovalModal({
           </div>
         </form>
       </div>
-    </div>,
-    document.body
+    </div>
   );
 }

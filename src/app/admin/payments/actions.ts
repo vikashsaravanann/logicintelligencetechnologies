@@ -15,6 +15,7 @@ import {
 import React from "react";
 import { sendEmail } from "@/lib/email/send-email";
 import PaymentVerifiedDualDocumentEmail from "@/emails/payment-verified-dual-document-email";
+import { calculateEngagementFinancials } from "@/lib/engagements/financials";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -51,10 +52,11 @@ export async function approveAndIssueDocumentsAction(
   const receivingBank = (String(formData.get("receivingBank") ?? "").trim() || "YES BANK / PTYES");
   const reconciliationNotes = String(formData.get("reconciliationNotes") ?? "").trim();
 
+  const isEngagementAttempt = paymentAttemptId.startsWith("att-");
   if (!UUID_REGEX.test(paymentRequestId)) {
     throw new Error("Invalid payment request ID");
   }
-  if (!UUID_REGEX.test(paymentAttemptId)) {
+  if (!isEngagementAttempt && !UUID_REGEX.test(paymentAttemptId)) {
     throw new Error("Invalid payment attempt ID");
   }
   if (!bankCreditReference) {
@@ -66,7 +68,368 @@ export async function approveAndIssueDocumentsAction(
     throw new Error("Verified bank credit amount must be greater than zero");
   }
 
-  // 1. Fetch current payment request and billing snapshot
+  // 1. Check if this is an engagement stage payment (Stage 06 Initial Deposit / Stage 11 Final Settlement)
+  const { data: stageRecord } = await supabaseAdmin
+    .from("engagement_stages")
+    .select(`
+      id,
+      engagement_id,
+      stage_key,
+      title,
+      ordinal,
+      status,
+      snapshot,
+      client_engagements (
+        id,
+        engagement_ref,
+        company_name,
+        contact_name,
+        contact_email,
+        contact_phone,
+        metadata
+      )
+    `)
+    .eq("id", paymentRequestId)
+    .maybeSingle();
+
+  if (stageRecord) {
+    const eng =
+      (Array.isArray(stageRecord.client_engagements)
+        ? stageRecord.client_engagements[0]
+        : stageRecord.client_engagements) || {};
+    const snap = (stageRecord.snapshot || {}) as Record<string, any>;
+    const metadata = (eng.metadata || {}) as Record<string, any>;
+
+    const candidateSubtotal =
+      snap.subtotal ||
+      metadata.contract_subtotal ||
+      metadata.subtotal ||
+      metadata.contract_value ||
+      metadata.budget_range ||
+      50;
+
+    const financials = calculateEngagementFinancials(candidateSubtotal);
+    const isInitial = stageRecord.stage_key === "initial-invoice";
+    const milestoneAmount = isInitial
+      ? financials.depositAmount
+      : financials.settlementAmount;
+    const milestoneSubtotal = Math.round((financials.subtotal / 2) * 100) / 100;
+    const milestoneCgst = Math.round((financials.cgstAmount / 2) * 100) / 100;
+    const milestoneSgst = Math.round((financials.sgstAmount / 2) * 100) / 100;
+
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const hexSuffix = paymentRequestId.replace(/-/g, "").slice(0, 6).toUpperCase();
+    const invoiceNumber = `LIT-INV-${currentYear}-${hexSuffix}`;
+    const receiptNumber = `LIT-REC-${currentYear}-${hexSuffix}`;
+
+    const formattedDate = now.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+
+    const clientName = snap.remitterName || eng.contact_name || "Enterprise Client";
+    const clientCompany = eng.company_name || "";
+    const clientEmail = eng.contact_email || "";
+    const clientPhone = eng.contact_phone || "";
+    const clientGstin = snap.gstin || undefined;
+    const placeOfSupply = snap.placeOfSupply || "Tamil Nadu (Code 33)";
+
+    const milestoneTitle = isInitial
+      ? "Stage 06: Initial 50% Project Commitment Deposit"
+      : "Stage 11: Final 50% Milestone Settlement";
+
+    const verifiedINR = verifiedAmountPaise / 100;
+
+    const invoiceData: TaxInvoiceData = {
+      invoiceNumber,
+      dateIssued: formattedDate,
+      dueDate: formattedDate,
+      placeOfSupply,
+      milestoneRef: milestoneTitle,
+      client: {
+        legalName: clientName,
+        attentionName: clientCompany ? `${clientName} (${clientCompany})` : clientName,
+        billingAddress: [placeOfSupply, "India"],
+        email: clientEmail,
+        phone: clientPhone || undefined,
+        gstin: clientGstin,
+      },
+      items: [
+        {
+          description: milestoneTitle,
+          quantity: 1,
+          unitPrice: milestoneSubtotal,
+          taxRatePercent: 18,
+          amount: milestoneSubtotal,
+        },
+      ],
+      taxType: "INTRA_STATE",
+      taxRatePercent: 18,
+      subtotal: milestoneSubtotal,
+      cgstAmount: milestoneCgst,
+      sgstAmount: milestoneSgst,
+      igstAmount: 0,
+      totalTaxAmount: milestoneCgst + milestoneSgst,
+      totalPayable: verifiedINR,
+      status: "paid",
+      amountPaid: verifiedINR,
+      amountDue: 0,
+      notes: `Bank Credit Ref: ${bankCreditReference} · Account: ${receivingBank}`,
+    };
+
+    const receiptData: PaymentReceiptData = {
+      receiptNumber,
+      invoiceNumber,
+      datePaid: formattedDate,
+      placeOfSupply,
+      milestoneRef: milestoneTitle,
+      client: invoiceData.client,
+      items: invoiceData.items,
+      taxType: "INTRA_STATE",
+      taxRatePercent: 18,
+      subtotal: milestoneSubtotal,
+      cgstAmount: milestoneCgst,
+      sgstAmount: milestoneSgst,
+      igstAmount: 0,
+      totalTaxAmount: milestoneCgst + milestoneSgst,
+      totalAmount: verifiedINR,
+      amountPaid: verifiedINR,
+      remainingBalance: 0,
+      paymentHistory: [
+        {
+          paymentMethod: "UPI / Direct Bank Transfer",
+          paymentDate: formattedDate,
+          utrReference: snap.utrNumber || snap.utr || bankCreditReference,
+          receivingBankRef: receivingBank,
+          amountPaid: verifiedINR,
+          receiptNumber,
+        },
+      ],
+      notes: `Official Payment Receipt. Bank credit reference verified: ${bankCreditReference}.`,
+    };
+
+    // Generate binary PDFs
+    const invoicePdf = await generateTaxInvoicePdf(invoiceData);
+    const receiptPdf = await generatePaymentReceiptPdf(receiptData);
+
+    const invoiceStoragePath = `financial-docs/${paymentRequestId}/${invoiceNumber}.pdf`;
+    const receiptStoragePath = `financial-docs/${paymentRequestId}/${receiptNumber}.pdf`;
+
+    await supabaseAdmin.storage
+      .from(DOCUMENTS_BUCKET)
+      .upload(invoiceStoragePath, invoicePdf.buffer, {
+        contentType: "application/pdf",
+        upsert: true,
+      });
+
+    await supabaseAdmin.storage
+      .from(DOCUMENTS_BUCKET)
+      .upload(receiptStoragePath, receiptPdf.buffer, {
+        contentType: "application/pdf",
+        upsert: true,
+      });
+
+    // Insert financial_documents records
+    const { data: invoiceDoc } = await supabaseAdmin
+      .from("financial_documents")
+      .insert({
+        payment_request_id: null,
+        doc_type: "invoice",
+        document_number: invoiceNumber,
+        title: `Tax Invoice - ${milestoneTitle}`,
+        storage_path: invoiceStoragePath,
+        sha256_hash: invoicePdf.sha256,
+        byte_size: invoicePdf.bytes.length,
+        status: "issued",
+        issued_at: now.toISOString(),
+      })
+      .select("id")
+      .single();
+
+    const { data: receiptDoc } = await supabaseAdmin
+      .from("financial_documents")
+      .insert({
+        payment_request_id: null,
+        doc_type: "receipt",
+        document_number: receiptNumber,
+        title: `Payment Receipt - ${milestoneTitle}`,
+        storage_path: receiptStoragePath,
+        sha256_hash: receiptPdf.sha256,
+        byte_size: receiptPdf.bytes.length,
+        status: "issued",
+        issued_at: now.toISOString(),
+      })
+      .select("id")
+      .single();
+
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      "https://www.logicintelligencetechnologies.com";
+    const invoiceDownloadUrl = invoiceDoc?.id
+      ? `${baseUrl}/api/documents/financial/${invoiceDoc.id}`
+      : `${baseUrl}/engagement/${eng.engagement_ref}/${stageRecord.stage_key}`;
+    const receiptDownloadUrl = receiptDoc?.id
+      ? `${baseUrl}/api/documents/financial/${receiptDoc.id}`
+      : `${baseUrl}/engagement/${eng.engagement_ref}/${stageRecord.stage_key}`;
+
+    // Upsert into engagement_document_links
+    if (eng.id) {
+      await supabaseAdmin.from("engagement_document_links").insert([
+        {
+          engagement_id: eng.id,
+          stage_key: stageRecord.stage_key,
+          document_title: `Tax Invoice - ${invoiceNumber}`,
+          master_id: `INV-${hexSuffix}`,
+          version_label: "v1.0 (Verified)",
+          file_url: invoiceDownloadUrl,
+          file_size_bytes: invoicePdf.bytes.length,
+          sha256_hash: invoicePdf.sha256,
+          is_client_visible: true,
+          requires_signature: false,
+          signature_status: "none",
+        },
+        {
+          engagement_id: eng.id,
+          stage_key: stageRecord.stage_key,
+          document_title: `Payment Receipt - ${receiptNumber}`,
+          master_id: `RCPT-${hexSuffix}`,
+          version_label: "v1.0 (Verified)",
+          file_url: receiptDownloadUrl,
+          file_size_bytes: receiptPdf.bytes.length,
+          sha256_hash: receiptPdf.sha256,
+          is_client_visible: true,
+          requires_signature: false,
+          signature_status: "none",
+        },
+      ]);
+    }
+
+    const updatedSnapshot = {
+      ...snap,
+      bank_verified: true,
+      bank_credit_reference: bankCreditReference,
+      verified_amount: verifiedINR,
+      reconciled_at: now.toISOString(),
+      reconciled_by: actor.email,
+      receiving_bank: receivingBank,
+      notes: reconciliationNotes || "Manual receiving bank credit verified by Super Admin",
+      invoice_number: invoiceNumber,
+      receipt_number: receiptNumber,
+      invoice_id: invoiceDoc?.id || null,
+      receipt_id: receiptDoc?.id || null,
+      invoice_url: invoiceDownloadUrl,
+      receipt_url: receiptDownloadUrl,
+      last_action: "verify_bank_credit",
+      last_updated_at: now.toISOString(),
+    };
+
+    // Update current stage to 'verified'
+    await supabaseAdmin
+      .from("engagement_stages")
+      .update({
+        status: "verified",
+        snapshot: updatedSnapshot,
+        approved_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      })
+      .eq("id", stageRecord.id);
+
+    // Unlock next stage: onboarding (Stage 07) or handover (Stage 12)
+    const nextStageKey = isInitial ? "onboarding" : "handover";
+    await supabaseAdmin
+      .from("engagement_stages")
+      .update({
+        status: "available",
+        unlocked_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      })
+      .eq("engagement_id", eng.id)
+      .eq("stage_key", nextStageKey);
+
+    await supabaseAdmin
+      .from("client_engagements")
+      .update({
+        current_stage: nextStageKey,
+        updated_at: now.toISOString(),
+      })
+      .eq("id", eng.id);
+
+    // DISPATCH DUAL-DOCUMENT EMAIL WITH THE TWO ATTACHED PDFS!
+    if (clientEmail) {
+      try {
+        const nextStageUrl = `${baseUrl}/engagement/${eng.engagement_ref}/${nextStageKey}`;
+        await sendEmail({
+          to: clientEmail,
+          subject: `Payment Verified & Official Documents Issued (${invoiceNumber} & ${receiptNumber})`,
+          from: "hello",
+          category: "transactional",
+          templateKey: "payment-verified-dual-document",
+          attachments: [
+            {
+              filename: `${invoiceNumber}.pdf`,
+              content: Buffer.from(invoicePdf.bytes),
+              contentType: "application/pdf",
+            },
+            {
+              filename: `${receiptNumber}.pdf`,
+              content: Buffer.from(receiptPdf.bytes),
+              contentType: "application/pdf",
+            },
+          ],
+          react: React.createElement(PaymentVerifiedDualDocumentEmail, {
+            recipientName: clientName,
+            milestoneTitle,
+            amountPaid: formatINR(verifiedINR),
+            paymentDate: formattedDate,
+            utrReference: snap.utrNumber || snap.utr || bankCreditReference,
+            bankCreditReference: bankCreditReference,
+            invoiceDownloadUrl,
+            receiptDownloadUrl,
+            stageNumber: isInitial ? 6 : 11,
+            nextStageUrl,
+          }),
+        });
+      } catch (emailErr) {
+        console.warn("[payments-action] Dual-document email delivery failed (logged):", emailErr);
+      }
+    }
+
+    await recordAdminAction({
+      actor,
+      action: "payment.reconcile_and_approve",
+      capability: "payment.verify",
+      target: { type: "engagement_stage", id: paymentRequestId },
+      outcome: "succeeded",
+      metadata: {
+        invoiceNumber,
+        receiptNumber,
+        bankCreditReference,
+        verifiedAmountPaise,
+        receivingBank,
+        engagementRef: eng.engagement_ref,
+      },
+    });
+
+    revalidatePath("/admin/payments");
+    if (eng.engagement_ref) {
+      revalidatePath(`/engagement/${eng.engagement_ref}`);
+      revalidatePath(`/engagement/${eng.engagement_ref}/${stageRecord.stage_key}`);
+      revalidatePath(`/engagement/${eng.engagement_ref}/${nextStageKey}`);
+    }
+
+    return {
+      success: true,
+      invoiceNumber,
+      receiptNumber,
+      invoiceDownloadUrl,
+      receiptDownloadUrl,
+    };
+  }
+
+  // 2. Fetch standalone payment request and billing snapshot
   const { data: req, error: reqError } = await supabaseAdmin
     .from("engagement_payment_requests")
     .select("*, clients(*)")
@@ -325,6 +688,18 @@ export async function approveAndIssueDocumentsAction(
         from: "hello",
         category: "transactional",
         templateKey: "payment-verified-dual-document",
+        attachments: [
+          {
+            filename: `${invoiceNumber}.pdf`,
+            content: Buffer.from(invoicePdf.bytes),
+            contentType: "application/pdf",
+          },
+          {
+            filename: `${receiptNumber}.pdf`,
+            content: Buffer.from(receiptPdf.bytes),
+            contentType: "application/pdf",
+          },
+        ],
         react: React.createElement(PaymentVerifiedDualDocumentEmail, {
           recipientName: clientName,
           milestoneTitle: req.milestone_title,

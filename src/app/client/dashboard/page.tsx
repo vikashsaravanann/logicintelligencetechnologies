@@ -17,6 +17,7 @@ import {
 import { getPortalContext, listOwnRows } from "@/lib/client-portal/data";
 import { getEngagementByRef, getEngagementsByEmail, getEngagementStages } from "@/lib/engagements/db";
 import { ClientEngagement } from "@/lib/engagements/types";
+import { getFinancialsForEngagement } from "@/lib/engagements/financials";
 import { formatINR, formatIST } from "@/lib/format/datetime";
 import { ensureWelcomeEmail } from "@/lib/email/send-welcome";
 
@@ -559,7 +560,7 @@ export default async function ClientDashboardPage({ searchParams }: Props) {
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-[var(--lit-navy,#0B2545)] font-mono">
-                      ₹10,62,000.00
+                      {primaryEngagement ? getFinancialsForEngagement(primaryEngagement, stages).depositFormatted : "₹10,62,000.00"}
                     </p>
                     <span
                       className={`inline-block mt-1 text-[9px] uppercase font-bold px-2 py-0.5 rounded-full border ${

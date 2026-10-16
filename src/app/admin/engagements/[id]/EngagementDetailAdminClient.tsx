@@ -122,7 +122,7 @@ export default function EngagementDetailAdminClient({
 
     const isPaymentStage = stageKey === 'initial-invoice' || stageKey === 'final-payment';
     const snapshot = (stage.snapshot || {}) as Record<string, any>;
-    const defaultUtr = snapshot.utr || snapshot.billingSubmission?.utr || 'BANK-CR-MANUAL';
+    const defaultUtr = snapshot.utrNumber || snapshot.utr || snapshot.transactionRef || snapshot.transaction_ref || snapshot.billingSubmission?.utr || 'BANK-CR-MANUAL';
     const defaultNote = `Approved and verified by Super Admin for ${stage.title}. Next milestone unlocked.`;
 
     setApprovalModal({
@@ -145,6 +145,7 @@ export default function EngagementDetailAdminClient({
 
     try {
       if (isPaymentStage) {
+        const milestoneAmount = stageKey === 'initial-invoice' ? financials.depositAmount : financials.settlementAmount;
         const res = await fetch('/api/admin/payments/reconcile', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -152,6 +153,7 @@ export default function EngagementDetailAdminClient({
             engagementRef: engagement.engagement_ref,
             stageKey,
             transactionRef: notesOrUtr.trim(),
+            verifiedAmount: milestoneAmount,
             actorName: 'Super Admin',
             reconciliationNotes: `Manual receiving bank verification for ${stageKey}. Ref: ${notesOrUtr.trim()}`,
           }),
@@ -655,7 +657,7 @@ export default function EngagementDetailAdminClient({
       case 'initial-invoice':
       case 'final-payment': {
         const isInitial = stageKey === 'initial-invoice';
-        const utr = snap.utr || snap.transactionRef || snap.transaction_ref;
+        const utr = snap.utrNumber || snap.utr || snap.transactionRef || snap.transaction_ref;
         const amount = snap.amount || (isInitial ? financials.depositFormatted : financials.settlementFormatted);
         const billing = (snap.billingSubmission || {}) as Record<string, any>;
         const isVerified = stage.status === 'verified';
@@ -711,6 +713,29 @@ export default function EngagementDetailAdminClient({
                 </span>
               </div>
             </div>
+
+            {/* Direct Reconcile Action Banner when pending review */}
+            {!isVerified && (
+              <div className="p-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <span className="text-xs font-bold text-[#0B2545] flex items-center gap-1.5">
+                    <CheckCircle className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Reconcile Payment &amp; Issue Legal Documents</span>
+                  </span>
+                  <p className="text-[11px] text-slate-600">
+                    Verify receiving bank credit in YES BANK, generate Tax Invoice &amp; Payment Receipt PDFs, advance to {isInitial ? 'Stage 07 Onboarding' : 'Stage 12 Handover'}, and dispatch email with both PDF attachments.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  disabled={updatingStageId === stage.id}
+                  onClick={() => handleApproveStage(stageKey)}
+                  className="px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-bold rounded-lg shadow-sm transition-all cursor-pointer whitespace-nowrap self-start sm:self-center disabled:opacity-50"
+                >
+                  ✓ Reconcile &amp; Approve
+                </button>
+              </div>
+            )}
 
             {/* Billing Address Details */}
             {Object.keys(billing).length > 0 && (

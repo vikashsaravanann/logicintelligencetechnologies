@@ -587,7 +587,7 @@ export async function createQuotation(
   actorEmail?: string
 ): Promise<{ ok: boolean; quotation?: QuotationRecord; error?: string }> {
   try {
-    const quoteId = "qt-" + crypto.randomBytes(8).toString("hex");
+    const quoteId = crypto.randomUUID();
     const quotationRef = generateQuotationRef();
     const secureToken = generateSecureToken();
     const tokenHash = crypto.createHash("sha256").update(secureToken).digest("hex");
@@ -612,7 +612,7 @@ export async function createQuotation(
       const extendedAmount = calculateLineTotal(unitPricePaise, l.quantity, isIncluded);
 
       return {
-        id: "line-" + crypto.randomBytes(6).toString("hex"),
+        id: crypto.randomUUID(),
         quotation_id: quoteId,
         service_code: l.serviceCode,
         category_code: catalogItem?.category_code,
@@ -689,7 +689,7 @@ export async function createQuotation(
       issued_at: issuedAt,
       accepted_at: null,
       version_number: 1,
-      latest_version_id: "ver-" + quoteId + "-1",
+      latest_version_id: crypto.randomUUID(),
       created_by: null,
       approved_by: null,
       created_at: new Date().toISOString(),
@@ -699,7 +699,7 @@ export async function createQuotation(
     // Attempt database persistence
     if (isAdminClientConfigured()) {
       try {
-        await supabaseAdmin.from("quotations").insert({
+        const { error: quoteInsertErr } = await supabaseAdmin.from("quotations").insert({
           id: record.id,
           quotation_ref: record.quotation_ref,
           company_name: record.company_name,
@@ -725,9 +725,15 @@ export async function createQuotation(
           latest_version_number: 1,
         });
 
+        if (quoteInsertErr) {
+          console.error("[quotations-service] DB write error inserting quotation:", quoteInsertErr);
+          return { ok: false, error: `Failed to persist quotation: ${quoteInsertErr.message}` };
+        }
+
         // Insert lines
         for (const line of mappedLines) {
-          await supabaseAdmin.from("quotation_line_items").insert({
+          const { error: lineInsertErr } = await supabaseAdmin.from("quotation_line_items").insert({
+            id: line.id,
             quotation_id: record.id,
             service_code: line.service_code,
             category_code: line.category_code || "B",
@@ -744,6 +750,9 @@ export async function createQuotation(
             is_selected: line.is_selected,
             sort_order: line.sort_order,
           });
+          if (lineInsertErr) {
+            console.error("[quotations-service] DB line item error:", lineInsertErr);
+          }
         }
 
         // Insert audit log
@@ -757,8 +766,9 @@ export async function createQuotation(
             lines_count: mappedLines.length,
           },
         });
-      } catch (dbErr) {
-        console.warn("[quotations-service] DB write error, keeping in-memory:", dbErr);
+      } catch (dbErr: any) {
+        console.error("[quotations-service] DB write error:", dbErr);
+        return { ok: false, error: `Database error: ${dbErr?.message || "Unknown error"}` };
       }
     }
 
@@ -853,7 +863,7 @@ export async function duplicateQuotation(id: string, actorEmail?: string): Promi
 /**
  * Publishes a draft quotation after invariant validation
  */
-export async function publishQuotation(id: string, actorEmail?: string): Promise<{ ok: boolean; error?: string }> {
+export async function publishQuotation(id: string, actorEmail?: string): Promise<{ ok: boolean; error?: string; quotation?: QuotationRecord }> {
   const existing = await getQuotationById(id);
   if (!existing) return { ok: false, error: "Quotation not found" };
 
@@ -943,30 +953,7 @@ export async function publishQuotation(id: string, actorEmail?: string): Promise
     }
   }
 
-  // Automatically send branded quotation email if recipient email is present
-  if (existing.quotation.recipient_email) {
-    try {
-      const selectedCount = existing.lines.filter((l) => l.is_selected).length;
-      const emailResult = await sendQuotationEmail({
-        quotation: existing.quotation,
-        recipientEmail: existing.quotation.recipient_email,
-        selectedServicesCount: selectedCount,
-      });
-      if (emailResult.success) {
-        existing.quotation.delivery_state = "email_sent";
-        if (isAdminClientConfigured()) {
-          await supabaseAdmin
-            .from("quotations")
-            .update({ delivery_state: "email_sent" })
-            .eq("id", id);
-        }
-      }
-    } catch (mailErr) {
-      console.warn("[quotations-service] Auto email dispatch error upon publish:", mailErr);
-    }
-  }
-
-  return { ok: true };
+  return { ok: true, quotation: existing.quotation };
 }
 
 /**
