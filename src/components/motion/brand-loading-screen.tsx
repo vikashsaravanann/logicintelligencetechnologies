@@ -13,14 +13,12 @@ export interface BrandLoadingScreenProps {
  * Can be used as a Server Component in Next.js `loading.tsx` or as a Client Component.
  */
 export default function BrandLoadingScreen({
-  isFixed = false,
+  isFixed = true,
   className = "",
 }: BrandLoadingScreenProps) {
   return (
     <div
-      className={`${
-        isFixed ? "fixed inset-0 z-[9999]" : "min-h-[70vh] w-full"
-      } flex flex-col items-center justify-center bg-[#050608] text-white select-none ${className}`}
+      className={`fixed inset-0 z-[999999] w-screen h-screen min-h-screen flex flex-col items-center justify-center bg-[#050608] text-white select-none ${className}`}
       role="status"
       aria-live="polite"
       aria-label="Loading Logic Intelligence Technologies"
