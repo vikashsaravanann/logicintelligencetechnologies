@@ -16,6 +16,8 @@ import FreeDemoConfirmationEmail from "../../emails/free-demo-confirmation-email
 import InvoiceEmail from "../../emails/invoice-email";
 import JobApplicationEmail from "../../emails/job-application-email";
 import LeadConfirmationEmail from "../../emails/lead-confirmation-email";
+import ConsultationBookingConfirmationEmail from "../../emails/consultation-booking-confirmation-email";
+import ConsultationRegistrationReceivedEmail from "../../emails/consultation-registration-received-email";
 import LoginNotificationEmail from "../../emails/login-notification-email";
 import MaintenanceRenewalEmail from "../../emails/maintenance-renewal-email";
 import NewLeadNotificationEmail from "../../emails/new-lead-notification-email";
@@ -152,6 +154,38 @@ describe("LIT EMAIL v2 Enterprise Template Suite", () => {
         <LeadConfirmationEmail
           fullName="Priya Sharma"
           service="Autonomous Voice Agents"
+        />
+      ),
+    },
+    {
+      name: "ConsultationRegistrationReceivedEmail",
+      element: (
+        <ConsultationRegistrationReceivedEmail
+          fullName="Priya Sharma"
+          consultationType="Enterprise AI Architecture Session"
+          bookingRef="LIT-BK-2026-TEST"
+          slotFormatted="Saturday, October 17, 2026 at 10:00 AM (IST)"
+          timezone="Asia/Kolkata (IST · UTC+05:30)"
+          duration="45 Mins"
+          companyName="OmniGlobal Tech"
+          notes="Testing consultation registration received render."
+        />
+      ),
+    },
+    {
+      name: "ConsultationBookingConfirmationEmail",
+      element: (
+        <ConsultationBookingConfirmationEmail
+          fullName="Priya Sharma"
+          consultationType="Enterprise AI Architecture Session"
+          bookingRef="LIT-BK-2026-TEST"
+          slotFormatted="Saturday, October 17, 2026 at 10:00 AM (IST)"
+          timezone="Asia/Kolkata (IST · UTC+05:30)"
+          duration="45 Mins"
+          meetingUrl="https://meet.google.com/lit-arch-briefing"
+          calendarAddUrl="https://calendar.google.com"
+          companyName="OmniGlobal Tech"
+          notes="Testing consultation confirmation render."
         />
       ),
     },
@@ -311,8 +345,8 @@ describe("LIT EMAIL v2 Enterprise Template Suite", () => {
     },
   ];
 
-  it("verifies all 28 templates exist and are covered", () => {
-    assert.equal(templates.length, 28);
+  it("verifies all 30 templates exist and are covered", () => {
+    assert.equal(templates.length, 30);
   });
 
   for (const { name, element } of templates) {

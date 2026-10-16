@@ -3,6 +3,8 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { requireCapabilityPage } from "@/lib/auth/session";
 import { AdminBackLink } from "../components/AdminBackLink";
 import { formatIST } from "@/lib/format/datetime";
+import { InspectAiLeadButton } from "./components/InspectAiLeadButton";
+import { AiLeadActions } from "./ai-lead-actions";
 import {
   Sparkles,
   Bot,
@@ -152,6 +154,7 @@ export default async function AdminAiLeadsPage() {
                 <th className="px-4 py-3 font-semibold">Expressed Interest</th>
                 <th className="px-4 py-3 font-semibold">Source</th>
                 <th className="px-4 py-3 font-semibold">Chat Session</th>
+                <th className="px-4 py-3 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--lit-border-light,#DFE7EF)]/70">
@@ -215,11 +218,19 @@ export default async function AdminAiLeadsPage() {
                       <span className="text-[var(--lit-text-muted,#52677C)]">—</span>
                     )}
                   </td>
+                  <td className="px-4 py-3.5 text-right whitespace-nowrap">
+                    <div className="flex items-center justify-end gap-2">
+                      <InspectAiLeadButton lead={row} />
+                      {row.email ? (
+                        <AiLeadActions email={row.email} name={row.name || "Lead"} />
+                      ) : null}
+                    </div>
+                  </td>
                 </tr>
               ))}
               {!rows.length && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center">
+                  <td colSpan={7} className="px-4 py-12 text-center">
                     <div className="flex flex-col items-center justify-center space-y-2">
                       <div className="p-3 rounded-full bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-text-muted,#52677C)]">
                         <Bot className="w-6 h-6" />

@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { updateBookingStatus, sendAdminEmail } from "../actions";
-import { Mail, CheckCircle2, XCircle, Loader2, Send, X } from "lucide-react";
+import { ConfirmBookingModal } from "./components/ConfirmBookingModal";
+import { Mail, CheckCircle2, XCircle, Loader2, Send, X, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 interface BookingActionsProps {
@@ -10,9 +12,22 @@ interface BookingActionsProps {
   email: string;
   name: string;
   currentStatus: string;
+  consultationType?: string;
+  slotFormatted?: string;
+  rawSlotTime?: string;
+  meetingUrl?: string | null;
 }
 
-export function BookingActions({ bookingId, email, name, currentStatus }: BookingActionsProps) {
+export function BookingActions({
+  bookingId,
+  email,
+  name,
+  currentStatus,
+  consultationType,
+  slotFormatted,
+  rawSlotTime,
+  meetingUrl,
+}: BookingActionsProps) {
   const [updating, setUpdating] = useState(false);
   const [showEmail, setShowEmail] = useState(false);
   const [subject, setSubject] = useState("");
@@ -52,6 +67,26 @@ export function BookingActions({ bookingId, email, name, currentStatus }: Bookin
   return (
     <div className="relative inline-flex flex-col items-end">
       <div className="flex items-center gap-1.5">
+        <Link
+          href={`/admin/bookings/${bookingId}`}
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] hover:border-[var(--lit-blue,#1565C0)] hover:text-[var(--lit-blue,#1565C0)] text-[10px] font-bold uppercase tracking-wider transition-all shadow-2xs"
+          title="Inspect Complete Client Details & Architecture Notes"
+        >
+          <Eye className="w-3 h-3 text-[var(--lit-blue,#1565C0)]" />
+          <span>Inspect</span>
+        </Link>
+
+        <ConfirmBookingModal
+          bookingId={bookingId}
+          name={name}
+          email={email}
+          consultationType={consultationType}
+          slotFormatted={slotFormatted}
+          rawSlotTime={rawSlotTime}
+          initialMeetUrl={meetingUrl}
+          triggerLabel={currentStatus === "Pending" ? "Confirm" : "Meet Link"}
+        />
+
         <button
           type="button"
           onClick={() => setShowEmail(!showEmail)}

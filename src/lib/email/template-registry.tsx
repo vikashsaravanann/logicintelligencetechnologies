@@ -33,6 +33,8 @@ import WeeklyRecognitionEmail from "@/emails/weekly-recognition-email";
 import WelcomeEmail from "@/emails/welcome-email";
 import OnboardingInvitationEmail from "@/emails/onboarding-invitation-email";
 import QuotationEmail from "@/emails/quotation-email";
+import ConsultationBookingConfirmationEmail from "@/emails/consultation-booking-confirmation-email";
+import ConsultationRegistrationReceivedEmail from "@/emails/consultation-registration-received-email";
 
 export interface TemplateDefinition {
   key: string;
@@ -136,6 +138,50 @@ export const EMAIL_TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
       <LeadConfirmationEmail
         fullName="Daniel Croft"
         service="Enterprise Hospital AI Core"
+      />
+    ),
+  },
+  "consultation-registration-received": {
+    key: "consultation-registration-received",
+    name: "Consultation Registration Received",
+    category: "transactional",
+    description: "Dispatched to clients upon registering for an engineering consultation, confirming receipt while awaiting admin review and meeting scheduling.",
+    defaultSender: "hello@logicintelligencetechnologies.in",
+    replyTo: "hello@logicintelligencetechnologies.in",
+    subject: "Consultation Request Received: Technical Discovery Call — Logic Intelligence Technologies",
+    getElement: () => (
+      <ConsultationRegistrationReceivedEmail
+        fullName="Daniel Croft"
+        consultationType="Technical Discovery Call"
+        bookingRef="LIT-BK-2026-9021"
+        slotFormatted="Saturday, October 17, 2026 at 10:00 AM (IST)"
+        timezone="Asia/Kolkata (IST · UTC+05:30)"
+        duration="45 Mins"
+        companyName="OmniGlobal Tech"
+        notes="Discussing RAG pipeline architecture and model latency targets."
+      />
+    ),
+  },
+  "consultation-booking-confirmation": {
+    key: "consultation-booking-confirmation",
+    name: "Consultation Booking Confirmation",
+    category: "transactional",
+    description: "Dispatched to clients confirming their scheduled engineering consultation with Google Meet video link and iCalendar attachment.",
+    defaultSender: "hello@logicintelligencetechnologies.in",
+    replyTo: "hello@logicintelligencetechnologies.in",
+    subject: "Consultation Confirmed: Technical Discovery Call — Logic Intelligence Technologies",
+    getElement: () => (
+      <ConsultationBookingConfirmationEmail
+        fullName="Daniel Croft"
+        consultationType="Technical Discovery Call"
+        bookingRef="LIT-BK-2026-9021"
+        slotFormatted="Saturday, October 17, 2026 at 10:00 AM (IST)"
+        timezone="Asia/Kolkata (IST · UTC+05:30)"
+        duration="30 Mins"
+        meetingUrl="https://meet.google.com/lit-arch-briefing"
+        calendarAddUrl="https://calendar.google.com"
+        companyName="OmniGlobal Tech"
+        notes="Discussing RAG pipeline architecture and model latency targets."
       />
     ),
   },

@@ -4,6 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { formatIST } from "@/lib/format/datetime";
 import { AdminBackLink } from "../../components/AdminBackLink";
 import { EmailNavTabs } from "../components/EmailNavTabs";
+import { InspectEmailButton } from "../components/InspectEmailButton";
 import { Inbox, Mail, Clock, Tag, Search, Filter } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -238,9 +239,25 @@ export default async function OutboxPage({
                         {getStatusBadge(statusRaw)}
                       </td>
                       <td className="px-5 py-3.5 text-right">
-                        <button className="text-[11px] font-semibold text-blue-600 hover:text-blue-800">
-                          View
-                        </button>
+                        <InspectEmailButton
+                          email={{
+                            id: String(r.id || `outbox-${i}`),
+                            recipient,
+                            sender: typeof r.sender === "string" ? r.sender : null,
+                            replyTo: typeof r.reply_to === "string" ? r.reply_to : null,
+                            subject,
+                            status: statusRaw,
+                            eventType: typeof r.event_type === "string" ? r.event_type : null,
+                            templateKey: typeof r.template_key === "string" ? r.template_key : null,
+                            html: typeof r.html === "string" ? r.html : null,
+                            text: typeof r.text === "string" ? r.text : null,
+                            sentAt,
+                            createdAt: typeof r.created_at === "string" ? r.created_at : null,
+                            providerMessageId: typeof r.provider_message_id === "string" ? r.provider_message_id : null,
+                            lastError: typeof r.last_error === "string" ? r.last_error : null,
+                            attemptCount: typeof r.attempt_count === "number" ? r.attempt_count : null,
+                          }}
+                        />
                       </td>
                     </tr>
                   );

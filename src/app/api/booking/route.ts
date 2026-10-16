@@ -7,7 +7,11 @@ import { getLeadNotificationRecipients } from "@/lib/email/recipients";
 import { sanitizePersonName, sanitizeMultilineText } from "@/lib/email/validation";
 import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
 import NewLeadNotificationEmail from "@/emails/new-lead-notification-email";
-import LeadConfirmationEmail from "@/emails/lead-confirmation-email";
+import ConsultationRegistrationReceivedEmail from "@/emails/consultation-registration-received-email";
+import {
+  formatConsultationDateTime,
+  getConsultationDurationMinutes,
+} from "@/lib/calendar/consultation-ics";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -77,7 +81,7 @@ export async function POST(req: NextRequest) {
 
     const normalizedSlotTime = normalizeSlotTimeToIso(rawSlotTime);
 
-    // Initial status is 'received' per state machine (received -> pending_scheduling -> offered -> confirmed)
+    // Initial status is 'Pending' awaiting admin review and meeting confirmation
     const stored = await insertLead("bookings", {
       name,
       email,
@@ -87,7 +91,7 @@ export async function POST(req: NextRequest) {
       slot_time: normalizedSlotTime,
       timezone,
       notes: notes || null,
-      status: "received",
+      status: "Pending",
     });
 
     if (!stored.ok) {
@@ -96,22 +100,28 @@ export async function POST(req: NextRequest) {
     }
 
     const idemBase = stored.id;
+    const durationMinutes = getConsultationDurationMinutes(consultationType);
+    const durationLabel = `${durationMinutes} Mins`;
+    const slotFormatted = formatConsultationDateTime(normalizedSlotTime, timezone);
+
     const requirements = [
       `Type: ${consultationType}`,
-      `Slot: ${normalizedSlotTime}`,
+      `Slot: ${slotFormatted} (${normalizedSlotTime})`,
       `Timezone: ${timezone}`,
+      `Status: Pending Admin Confirmation`,
       phone ? `Phone: ${phone}` : "",
       notes ? `Notes: ${notes}` : "",
     ]
       .filter(Boolean)
       .join("\n");
 
+    // 1. Internal notification to Admin and Engineering Lead
     try {
       const internal = await sendEmail({
         to: getLeadNotificationRecipients(),
         from: "noReply",
         replyTo: email,
-        subject: `New consultation booking: ${name} — ${consultationType}`,
+        subject: `New consultation booking request: ${name} — ${consultationType}`,
         category: "transactional",
         eventType: "booking-internal",
         templateKey: "new-lead-notification-email",
@@ -133,18 +143,25 @@ export async function POST(req: NextRequest) {
       console.error("[Booking Email] internal exception:", emailErr);
     }
 
+    // 2. Customer Registration Received Acknowledgement Email
     try {
       const customer = await sendEmail({
         to: email,
         from: "hello",
-        subject: "Consultation received — Logic Intelligence Technologies",
+        subject: `Consultation Request Received: ${consultationType} — Logic Intelligence Technologies`,
         category: "transactional",
-        eventType: "booking-confirmation",
-        templateKey: "lead-confirmation-email",
-        idempotencyKey: `booking:${idemBase}:customer`,
-        react: React.createElement(LeadConfirmationEmail, {
+        eventType: "booking-received",
+        templateKey: "consultation-registration-received",
+        idempotencyKey: `consultation-booking:${idemBase}:received`,
+        react: React.createElement(ConsultationRegistrationReceivedEmail, {
           fullName: name,
-          service: consultationType,
+          consultationType,
+          bookingRef: stored.id,
+          slotFormatted,
+          timezone: `${timezone} (${timezone === "Asia/Kolkata" ? "IST · UTC+05:30" : timezone})`,
+          duration: durationLabel,
+          companyName: company || undefined,
+          notes: notes || undefined,
         }),
       });
       if (!customer.success) {
@@ -159,9 +176,10 @@ export async function POST(req: NextRequest) {
         success: true,
         requestId: stored.id,
         bookingId: stored.id,
-        status: "received",
-        notificationStatus: "queued",
-        message: "Your consultation request has been received. Our team will verify calendar availability and confirm your booking.",
+        status: "Pending",
+        slotFormatted,
+        notificationStatus: "delivered",
+        message: "Your consultation request has been received! Our engineering team will review your requirements and dispatch your official Google Meet conference invitation shortly.",
       },
       { status: 201 }
     );

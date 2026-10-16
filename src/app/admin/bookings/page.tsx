@@ -39,8 +39,10 @@ interface BookingRow {
   consultation_type: string;
   slot_time: string;
   timezone?: string | null;
-  status: "Scheduled" | "Completed" | "Cancelled" | string;
+  status: "Scheduled" | "Completed" | "Cancelled" | "Pending" | string;
   notes?: string | null;
+  calendar_event_id?: string | null;
+  meeting_url?: string | null;
   created_at: string;
 }
 
@@ -56,6 +58,11 @@ const STATUS_CONFIG: Record<
   pending_scheduling: {
     label: "Pending Verification",
     badge: "border-amber-200 bg-amber-50 text-amber-800",
+    icon: Clock,
+  },
+  Pending: {
+    label: "Pending Confirmation",
+    badge: "border-amber-300 bg-amber-50 text-amber-900 font-bold",
     icon: Clock,
   },
   Scheduled: {
@@ -312,7 +319,11 @@ export default async function AdminBookingsPage() {
                           bookingId={b.id}
                           email={b.email}
                           name={b.name}
-                          currentStatus={b.status || "Scheduled"}
+                          currentStatus={b.status || "Pending"}
+                          consultationType={b.consultation_type}
+                          slotFormatted={formatIST(b.slot_time, "datetime")}
+                          rawSlotTime={b.slot_time}
+                          meetingUrl={b.calendar_event_id}
                         />
                       </td>
                     </tr>

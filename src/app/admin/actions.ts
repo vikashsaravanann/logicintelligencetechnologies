@@ -4,6 +4,15 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email/send-email";
 import { revalidatePath } from "next/cache";
 import AdminGenericEmail from "@/emails/admin-generic-email";
+import ConsultationBookingConfirmationEmail from "@/emails/consultation-booking-confirmation-email";
+import {
+  generateConsultationIcs,
+  getGoogleCalendarUrl,
+  formatConsultationDateTime,
+  getConsultationDurationMinutes,
+  DEFAULT_CONSULTATION_MEETING_URL,
+} from "@/lib/calendar/consultation-ics";
+import * as React from "react";
 import { requireCapabilityAction } from "@/lib/auth/session";
 import { recordAdminAction, type StaffActor } from "@/lib/admin/audit";
 import { isValidEmail } from "@/lib/email/validation";
@@ -156,6 +165,136 @@ export async function updateBookingStatus(bookingId: string, status: string) {
   if (error) throw new Error("Could not update booking");
   revalidatePath("/admin/bookings");
   return { success: true };
+}
+
+export async function sendConsultationConfirmationAction(
+  bookingId: string,
+  customMeetingUrl?: string,
+  customSlotTime?: string
+) {
+  const session = await requireCapabilityAction("bookings.write", "booking.send_confirmation");
+  const actor = actorOf(session);
+
+  const { data: booking, error } = await supabaseAdmin
+    .from("bookings")
+    .select("*")
+    .eq("id", bookingId)
+    .single();
+
+  if (error || !booking) {
+    await recordAdminAction({
+      actor,
+      action: "booking.send_confirmation",
+      capability: "bookings.write",
+      outcome: "failed",
+      errorCode: "booking_not_found",
+    });
+    throw new Error("Booking record not found");
+  }
+
+  const meetingUrl = (customMeetingUrl && customMeetingUrl.trim()) || booking.calendar_event_id || DEFAULT_CONSULTATION_MEETING_URL;
+  const slotTime = (customSlotTime && customSlotTime.trim()) || booking.slot_time;
+
+  // Persist updated status, real meeting URL, and slot time in database
+  await supabaseAdmin
+    .from("bookings")
+    .update({
+      status: "Scheduled",
+      calendar_event_id: meetingUrl,
+      slot_time: slotTime,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", bookingId);
+
+  const durationMinutes = getConsultationDurationMinutes(booking.consultation_type || "");
+  const durationLabel = `${durationMinutes} Mins`;
+  const slotFormatted = formatConsultationDateTime(slotTime, booking.timezone || "Asia/Kolkata");
+
+  const calendarDescription = [
+    `Technical Consultation: ${booking.consultation_type}`,
+    `Client: ${booking.name}${booking.company ? ` (${booking.company})` : ""}`,
+    `Scheduled Time: ${slotFormatted}`,
+    booking.notes ? `Agenda / Notes: ${booking.notes}` : "",
+    `Join Video Teleconference: ${meetingUrl}`,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
+  const icsContent = generateConsultationIcs({
+    bookingId: booking.id,
+    title: `LIT Consultation: ${booking.consultation_type} — ${booking.name}`,
+    description: calendarDescription,
+    startTime: slotTime,
+    durationMinutes,
+    meetingUrl,
+    attendeeEmail: booking.email,
+    attendeeName: booking.name,
+  });
+
+  const calendarAddUrl = getGoogleCalendarUrl({
+    title: `LIT Consultation: ${booking.consultation_type}`,
+    description: calendarDescription,
+    startTime: slotTime,
+    durationMinutes,
+    meetingUrl,
+  });
+
+  const emailRes = await sendEmail({
+    to: booking.email,
+    from: "hello",
+    subject: `Consultation Confirmed: ${booking.consultation_type} — Logic Intelligence Technologies`,
+    category: "transactional",
+    eventType: "booking-confirmation",
+    templateKey: "consultation-booking-confirmation-email",
+    idempotencyKey: `consultation-dispatch:${booking.id}:${Date.now()}`,
+    attachments: [
+      {
+        filename: "consultation-invitation.ics",
+        content: icsContent,
+        contentType: "text/calendar; charset=utf-8; method=REQUEST",
+      },
+    ],
+    react: React.createElement(ConsultationBookingConfirmationEmail, {
+      fullName: booking.name,
+      consultationType: booking.consultation_type,
+      bookingRef: booking.id,
+      slotFormatted,
+      timezone: `${booking.timezone || "Asia/Kolkata"} (${(booking.timezone || "Asia/Kolkata") === "Asia/Kolkata" ? "IST · UTC+05:30" : booking.timezone})`,
+      duration: durationLabel,
+      meetingUrl,
+      calendarAddUrl,
+      companyName: booking.company || undefined,
+      notes: booking.notes || undefined,
+    }),
+  });
+
+  if (!emailRes.success) {
+    await recordAdminAction({
+      actor,
+      action: "booking.send_confirmation",
+      capability: "bookings.write",
+      target: { type: "booking", id: bookingId },
+      outcome: "failed",
+      errorCode: emailRes.errorCode || "email_delivery_failed",
+    });
+    throw new Error(emailRes.message || "Could not dispatch consultation confirmation email.");
+  }
+
+  await recordAdminAction({
+    actor,
+    action: "booking.send_confirmation",
+    capability: "bookings.write",
+    target: { type: "booking", id: bookingId },
+    outcome: "succeeded",
+    metadata: {
+      recipient: booking.email,
+      messageId: emailRes.messageId,
+      delivered: true,
+    },
+  });
+
+  revalidatePath("/admin/bookings");
+  return { success: true, messageId: emailRes.messageId, recipient: booking.email };
 }
 
 export async function sendAdminEmail(to: string, subject: string, message: string) {

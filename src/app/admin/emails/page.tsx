@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { EmailNavTabs } from "./components/EmailNavTabs";
+import { InspectEmailButton } from "./components/InspectEmailButton";
 
 export const metadata: Metadata = {
   title: "Outbound Email Dispatch Log | Admin | Logic Intelligence Technologies",
@@ -316,6 +317,7 @@ export default async function EmailsPage() {
                 <th className="px-5 py-3.5">Template / Tag</th>
                 <th className="px-5 py-3.5">Sent At</th>
                 <th className="px-5 py-3.5">Status</th>
+                <th className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--lit-border-light,#DFE7EF)]">
@@ -366,12 +368,33 @@ export default async function EmailsPage() {
                     <td className="px-5 py-3.5">
                       {getStatusBadge(statusRaw)}
                     </td>
+                    <td className="px-5 py-3.5 text-right">
+                      <InspectEmailButton
+                        email={{
+                          id: String(r.id || `email-${i}`),
+                          recipient,
+                          sender: typeof r.sender === "string" ? r.sender : null,
+                          replyTo: typeof r.reply_to === "string" ? r.reply_to : null,
+                          subject,
+                          status: statusRaw,
+                          eventType: typeof r.event_type === "string" ? r.event_type : null,
+                          templateKey: typeof r.template_key === "string" ? r.template_key : null,
+                          html: typeof r.html === "string" ? r.html : null,
+                          text: typeof r.text === "string" ? r.text : null,
+                          sentAt,
+                          createdAt: typeof r.created_at === "string" ? r.created_at : null,
+                          providerMessageId: typeof r.provider_message_id === "string" ? r.provider_message_id : null,
+                          lastError: typeof r.last_error === "string" ? r.last_error : null,
+                          attemptCount: typeof r.attempt_count === "number" ? r.attempt_count : null,
+                        }}
+                      />
+                    </td>
                   </tr>
                 );
               })}
               {recent.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-sm text-[var(--lit-text-muted,#52677C)]">
+                  <td colSpan={6} className="px-6 py-12 text-center text-sm text-[var(--lit-text-muted,#52677C)]">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <Mail className="w-8 h-8 text-slate-300" />
                       <span className="font-semibold text-[var(--lit-navy,#0B2545)]">No outbox entries yet</span>
