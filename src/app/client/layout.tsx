@@ -100,11 +100,11 @@ export default async function ClientPortalLayout({
               <span>Meetings</span>
             </Link>
             <Link
-              href="/engagement"
+              href="/client/dashboard#journey"
               className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-[var(--lit-navy,#0B2545)] text-xs font-semibold transition-colors"
-              title="13-Stage Engagement Timeline"
+              title="Milestone Progression & Next Actions"
             >
-              <span>13 Stages</span>
+              <span>Milestones</span>
             </Link>
 
             <Link

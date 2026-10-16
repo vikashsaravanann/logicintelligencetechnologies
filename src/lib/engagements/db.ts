@@ -890,11 +890,11 @@ export async function getEngagementsByEmail(email: string): Promise<ClientEngage
         return data as ClientEngagement[];
       }
     } catch (err) {
-      console.warn('[getEngagementsByEmail] DB query failed, using fallback:', err);
+      console.warn('[getEngagementsByEmail] DB query failed:', err);
     }
   }
 
-  return [FALLBACK_SAMPLE_ENGAGEMENT];
+  return [];
 }
 
 

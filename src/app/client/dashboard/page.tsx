@@ -14,7 +14,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { getPortalContext, listOwnRows } from "@/lib/client-portal/data";
-import { getEngagementsByEmail, getEngagementStages } from "@/lib/engagements/db";
+import { getEngagementByRef, getEngagementsByEmail, getEngagementStages } from "@/lib/engagements/db";
+import { ClientEngagement } from "@/lib/engagements/types";
 import { formatINR, formatIST } from "@/lib/format/datetime";
 import { GitBranch } from "lucide-react";
 
@@ -25,9 +26,14 @@ export const metadata: Metadata = {
 
 export const revalidate = 0;
 
-export default async function ClientDashboardPage() {
+type Props = {
+  searchParams?: Promise<{ ref?: string }>;
+};
+
+export default async function ClientDashboardPage({ searchParams }: Props) {
+  const sp = searchParams ? await searchParams : {};
   const portal = await getPortalContext("/client/dashboard");
-  const [projects, invoices, tickets, files, engagements] = await Promise.all([
+  const [projects, invoices, tickets, files, userEngagements] = await Promise.all([
     listOwnRows(portal, "projects", 4),
     listOwnRows(portal, "invoices", 4),
     listOwnRows(portal, "support_tickets", 4),
@@ -39,7 +45,20 @@ export default async function ClientDashboardPage() {
   const pendingInvoices = invoices?.filter((i) => i.status === "Pending") || [];
   const openTickets = tickets?.filter((t) => t.status === "Open" || t.status === "In Progress") || [];
 
-  const primaryEngagement = engagements[0] || null;
+  let primaryEngagement: ClientEngagement | null = userEngagements[0] || null;
+
+  // Strict tenant verification: only load requested ref if it belongs to this client
+  if (sp.ref) {
+    const requested = await getEngagementByRef(sp.ref);
+    if (
+      requested &&
+      (requested.contact_email?.toLowerCase() === portal.user.email?.toLowerCase() ||
+        userEngagements.some((e) => e.id === requested.id))
+    ) {
+      primaryEngagement = requested;
+    }
+  }
+
   const stages = primaryEngagement ? await getEngagementStages(primaryEngagement.id) : [];
   const completedStagesCount = stages.filter((s) =>
     ["completed", "signed", "verified", "paid", "accepted"].includes(s.status)
@@ -91,7 +110,7 @@ export default async function ClientDashboardPage() {
 
       {/* UPGRADE 01: Next Best Action Card & 13-Stage Journey Header */}
       {primaryEngagement && (
-        <div className="rounded-3xl border border-[var(--lit-border-light,#DFE7EF)] bg-gradient-to-br from-white via-white to-[var(--lit-cloud,#F7F9FC)] p-6 sm:p-8 shadow-sm space-y-6">
+        <div id="journey" className="rounded-3xl border border-[var(--lit-border-light,#DFE7EF)] bg-gradient-to-br from-white via-white to-[var(--lit-cloud,#F7F9FC)] p-6 sm:p-8 shadow-sm space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--lit-border-light,#DFE7EF)] pb-5">
             <div>
               <div className="flex items-center gap-2 mb-1">

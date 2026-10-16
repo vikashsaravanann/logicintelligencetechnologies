@@ -20,7 +20,7 @@ import {
 
 export const NAV_ITEMS = [
   { label: "Dashboard", href: "/client/dashboard", icon: LayoutDashboard },
-  { label: "Lifecycle Stages", href: "/engagement", icon: GitBranch },
+  { label: "Milestone Journey", href: "/client/dashboard#journey", icon: GitBranch },
   { label: "Approvals & Tasks", href: "/client/actions", icon: CheckSquare },
   { label: "Notifications", href: "/client/notifications", icon: Bell },
   { label: "Change Requests (RFC)", href: "/client/change-requests", icon: FileEdit },
