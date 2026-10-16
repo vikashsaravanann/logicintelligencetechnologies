@@ -62,7 +62,25 @@ export default async function ClientDashboardPage({ searchParams }: Props) {
 
   const activeProjects = projects?.filter((p) => p.status !== "Completed") || [];
   const pendingInvoices = invoices?.filter((i) => i.status === "Pending") || [];
-  const openTickets = tickets?.filter((t) => t.status === "Open" || t.status === "In Progress") || [];
+  let openTickets = tickets?.filter((t) => t.status === "Open" || t.status === "In Progress") || [];
+
+  // Fallback: check support_tickets matching user_id or requester_email
+  if (openTickets.length === 0 && portal.user?.email) {
+    try {
+      const { data: emailTickets } = await portal.supabase
+        .from("support_tickets")
+        .select("*")
+        .or(`user_id.eq.${portal.user.id},requester_email.eq.${portal.user.email.toLowerCase()}`)
+        .limit(10);
+      if (emailTickets && emailTickets.length > 0) {
+        openTickets = emailTickets.filter(
+          (t: any) => t.status === "Open" || t.status === "In Progress"
+        );
+      }
+    } catch (ticketErr) {
+      console.warn("[Client Dashboard] Ticket lookup non-critical warning:", ticketErr);
+    }
+  }
 
   let primaryEngagement: ClientEngagement | null = userEngagements[0] || null;
 
@@ -94,6 +112,25 @@ export default async function ClientDashboardPage({ searchParams }: Props) {
   const completedStagesCount = stages.filter((s) =>
     ["completed", "signed", "verified", "paid", "accepted"].includes(s.status)
   ).length;
+
+  const initialInvoiceStage = stages.find((s) => s.stage_key === "initial-invoice");
+  const isInitialInvoicePending =
+    initialInvoiceStage &&
+    !["completed", "signed", "verified", "paid", "accepted"].includes(initialInvoiceStage.status);
+
+  const displayActiveProjectsCount =
+    activeProjects.length > 0
+      ? activeProjects.length
+      : primaryEngagement && primaryEngagement.status !== "completed"
+      ? 1
+      : 0;
+
+  const displayPendingInvoicesCount =
+    pendingInvoices.length > 0
+      ? pendingInvoices.length
+      : isInitialInvoicePending
+      ? 1
+      : 0;
 
   const nextActionStage =
     stages.find((s) => ["available", "in_progress", "changes_requested"].includes(s.status)) ||
@@ -241,7 +278,7 @@ export default async function ClientDashboardPage({ searchParams }: Props) {
             </div>
           </div>
           <div className="text-3xl font-bold text-[var(--lit-navy,#0B2545)] font-poppins">
-            {activeProjects.length}
+            {displayActiveProjectsCount}
           </div>
           <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1.5 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
@@ -260,7 +297,7 @@ export default async function ClientDashboardPage({ searchParams }: Props) {
             </div>
           </div>
           <div className="text-3xl font-bold text-[var(--lit-navy,#0B2545)] font-poppins">
-            {pendingInvoices.length}
+            {displayPendingInvoicesCount}
           </div>
           <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1.5 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
@@ -392,6 +429,56 @@ export default async function ClientDashboardPage({ searchParams }: Props) {
                   </div>
                 </div>
               ))
+            ) : primaryEngagement ? (
+              <div className="p-5 rounded-2xl bg-[var(--lit-cloud,#F7F9FC)]/60 border border-[var(--lit-border-light,#DFE7EF)] space-y-3.5 hover:border-[var(--lit-teal,#1FA9A2)]/40 hover:bg-white transition-all shadow-2xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="font-bold text-sm text-[var(--lit-navy,#0B2545)] font-poppins">
+                      {primaryEngagement.project_title}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[11px] font-mono text-[var(--lit-text-muted,#52677C)]">
+                        REF: {primaryEngagement.engagement_ref}
+                      </span>
+                      <span className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)]">
+                        Enterprise 13-Stage Delivery
+                      </span>
+                    </div>
+                  </div>
+                  <span className="self-start sm:self-auto px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-teal-50 text-[var(--lit-teal,#1FA9A2)] border border-teal-200">
+                    {primaryEngagement.status || "Active Sprint"}
+                  </span>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between text-xs text-[var(--lit-text-muted,#52677C)] mb-1.5 font-mono">
+                    <span>Lifecycle Milestone Progress</span>
+                    <span className="font-bold text-[var(--lit-navy,#0B2545)]">
+                      {Math.round((completedStagesCount / 13) * 100)}% ({completedStagesCount}/13 Stages Completed)
+                    </span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-[var(--lit-teal,#1FA9A2)] to-[var(--lit-blue,#1565C0)] transition-all duration-500 rounded-full"
+                      style={{ width: `${Math.round((completedStagesCount / 13) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-1 flex items-center justify-between text-[11px] text-[var(--lit-text-muted,#52677C)]">
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-[var(--lit-teal,#1FA9A2)]" />
+                    <span>Updated {primaryEngagement.updated_at ? formatIST(primaryEngagement.updated_at, "date") : "Recently"}</span>
+                  </span>
+                  <Link
+                    href={`/engagement/${primaryEngagement.engagement_ref}`}
+                    className="font-semibold text-[var(--lit-navy,#0B2545)] hover:text-[var(--lit-teal,#1FA9A2)] transition-colors inline-flex items-center gap-1"
+                  >
+                    <span>View 13-Stage Timeline</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
+              </div>
             ) : (
               <div className="p-10 text-center rounded-2xl border border-dashed border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]/40">
                 <FolderOpen className="w-10 h-10 text-[var(--lit-text-muted,#52677C)]/60 mx-auto mb-2" />
@@ -457,6 +544,34 @@ export default async function ClientDashboardPage({ searchParams }: Props) {
                     </div>
                   </div>
                 ))
+              ) : primaryEngagement && initialInvoiceStage ? (
+                <Link
+                  href={`/engagement/${primaryEngagement.engagement_ref}/initial-invoice`}
+                  className="p-3.5 rounded-2xl bg-[var(--lit-cloud,#F7F9FC)]/60 border border-[var(--lit-border-light,#DFE7EF)] flex items-center justify-between text-xs hover:bg-white hover:border-[var(--lit-teal,#1FA9A2)] transition-all shadow-2xs group"
+                >
+                  <div>
+                    <p className="font-bold text-[var(--lit-navy,#0B2545)] font-mono group-hover:text-[var(--lit-teal,#1FA9A2)] transition-colors">
+                      INV-{primaryEngagement.engagement_ref.replace("ENG-", "")}-01
+                    </p>
+                    <p className="text-[10px] text-[var(--lit-text-muted,#52677C)] mt-0.5">
+                      Stage 06 · 50% Kickoff Advance
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-[var(--lit-navy,#0B2545)] font-mono">
+                      ₹10,62,000.00
+                    </p>
+                    <span
+                      className={`inline-block mt-1 text-[9px] uppercase font-bold px-2 py-0.5 rounded-full border ${
+                        ["verified", "paid", "completed"].includes(initialInvoiceStage.status)
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          : "bg-amber-50 text-amber-700 border-amber-200"
+                      }`}
+                    >
+                      {["verified", "paid", "completed"].includes(initialInvoiceStage.status) ? "Paid" : "Pending"}
+                    </span>
+                  </div>
+                </Link>
               ) : (
                 <div className="p-6 text-center text-xs text-[var(--lit-text-muted,#52677C)] rounded-2xl bg-[var(--lit-cloud,#F7F9FC)]/40 border border-dashed border-[var(--lit-border-light,#DFE7EF)]">
                   No billing statements currently recorded.

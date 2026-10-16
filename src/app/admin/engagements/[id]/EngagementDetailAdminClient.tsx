@@ -23,6 +23,7 @@ import {
   Server,
   HelpCircle,
   Sparkles,
+  Bell,
 } from 'lucide-react';
 import {
   ClientEngagement,
@@ -35,6 +36,7 @@ import {
 } from '@/lib/engagements/types';
 import { ENTERPRISE_CHECKPOINTS, EnterpriseCheckpoint } from '@/data/enterpriseDeploymentChecklist';
 import { StageApprovalModal } from '@/components/shared/StageApprovalModal';
+import { SendNotificationModal } from '../components/SendNotificationModal';
 
 interface EngagementDetailAdminClientProps {
   engagement: ClientEngagement;
@@ -58,6 +60,7 @@ export default function EngagementDetailAdminClient({
     initialActiveStageKey || (engagement.current_stage as StageKey) || 'checklist'
   );
   const [checklistSearch, setChecklistSearch] = useState<string>('');
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
 
   // Animated Approval Modal State
   const [approvalModal, setApprovalModal] = useState<{
@@ -1009,6 +1012,15 @@ export default function EngagementDetailAdminClient({
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsNotificationModalOpen(true)}
+              className="px-4 py-2 bg-[var(--lit-teal,#1FA9A2)] hover:bg-[#188c86] text-white text-xs font-semibold rounded-lg transition-colors shadow-xs flex items-center gap-1.5"
+              title="Send notification to this client workspace"
+            >
+              <Bell className="w-3.5 h-3.5 text-white" />
+              <span>Send Notification</span>
+            </button>
             <Link
               href={`/engagement/${engagement.engagement_ref}`}
               target="_blank"
@@ -1382,6 +1394,17 @@ export default function EngagementDetailAdminClient({
           defaultNotes={approvalModal.defaultNotes}
         />
       )}
+
+      {/* Send Notification Modal */}
+      <SendNotificationModal
+        engagement={engagement}
+        isOpen={isNotificationModalOpen}
+        onClose={() => setIsNotificationModalOpen(false)}
+        onSuccess={(msg) => {
+          setSuccessMessage(msg);
+          setTimeout(() => setSuccessMessage(null), 4000);
+        }}
+      />
     </div>
   );
 }

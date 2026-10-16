@@ -16,10 +16,12 @@ import {
   CheckCircle2,
   AlertCircle,
   FileEdit,
+  Bell,
 } from 'lucide-react';
 import { ClientEngagement, ClientIdentityChangeRequest } from '@/lib/engagements/types';
 import { generatePortalEmailCopyText } from '@/lib/engagements/share';
 import { IssueEngagementModal } from './components/IssueEngagementModal';
+import { SendNotificationModal } from './components/SendNotificationModal';
 
 interface EngagementsAdminClientProps {
   initialEngagements: ClientEngagement[];
@@ -41,6 +43,7 @@ export default function EngagementsAdminClient({
   const [sendingEmailRef, setSendingEmailRef] = useState<string | null>(null);
   const [sentRefs, setSentRefs] = useState<Set<string>>(new Set());
   const [emailNotice, setEmailNotice] = useState<{ ref: string; message: string; success: boolean } | null>(null);
+  const [notifyingEngagement, setNotifyingEngagement] = useState<ClientEngagement | null>(null);
 
   const filteredEngagements = engagements.filter((e) => {
     const q = searchQuery.toLowerCase();
@@ -340,6 +343,17 @@ export default function EngagementsAdminClient({
 
                   {/* Action Toolbar */}
                   <div className="flex flex-wrap items-center gap-2 self-start lg:self-center">
+                    {/* Notify Client Workspace Button */}
+                    <button
+                      type="button"
+                      onClick={() => setNotifyingEngagement(eng)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white text-[var(--lit-navy,#0B2545)] hover:border-amber-400 text-[11px] font-bold uppercase tracking-wider transition-all shadow-2xs"
+                      title={`Send direct workspace notification to ${eng.company_name}`}
+                    >
+                      <Bell className="w-3 h-3 text-amber-500" />
+                      <span>Notify</span>
+                    </button>
+
                     {/* Inspect Button - EXACTLY matching Proposal Creation */}
                     <Link
                       href={`/admin/engagements/${eng.id}`}
@@ -455,6 +469,22 @@ export default function EngagementsAdminClient({
           })}
         </div>
       </div>
+
+      {/* Direct Workspace Notification Dispatch Modal */}
+      <SendNotificationModal
+        engagement={notifyingEngagement}
+        isOpen={!!notifyingEngagement}
+        onClose={() => setNotifyingEngagement(null)}
+        onSuccess={(msg) => {
+          if (notifyingEngagement) {
+            setEmailNotice({
+              ref: notifyingEngagement.engagement_ref,
+              message: msg,
+              success: true,
+            });
+          }
+        }}
+      />
     </div>
   );
 }

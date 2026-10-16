@@ -85,7 +85,9 @@ export default function ClientNotificationsPage() {
   const fetchNotifications = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch("/api/client/notifications");
+      const ref = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("ref") : null;
+      const url = ref ? `/api/client/notifications?ref=${encodeURIComponent(ref)}` : "/api/client/notifications";
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         if (data.success) {

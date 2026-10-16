@@ -107,16 +107,24 @@ export interface ClientNotificationPreferences {
 
 export async function listClientNotifications(
   clientEmail: string,
-  limit = 30
+  engagementRef?: string | null,
+  limit = 50
 ): Promise<ClientNotification[]> {
   const normalizedEmail = clientEmail.trim().toLowerCase();
 
-  const { data: rows, error } = await supabaseAdmin
+  let query = supabaseAdmin
     .from("client_notifications")
     .select("*")
-    .eq("client_email", normalizedEmail)
     .order("created_at", { ascending: false })
     .limit(limit);
+
+  if (engagementRef && engagementRef.trim()) {
+    query = query.or(`client_email.eq.${normalizedEmail},engagement_ref.eq.${engagementRef.trim()}`);
+  } else {
+    query = query.eq("client_email", normalizedEmail);
+  }
+
+  const { data: rows, error } = await query;
 
   if (error || !rows || rows.length === 0) {
     // Generate default welcome notification if completely empty
@@ -124,12 +132,12 @@ export async function listClientNotifications(
       {
         id: "notif_welcome",
         clientEmail: normalizedEmail,
-        engagementRef: null,
+        engagementRef: engagementRef || null,
         title: "Enterprise Client Workspace Ready",
         message:
           "Welcome to your Logic Intelligence Technologies client portal. All 13 canonical stages, project milestones, invoices, and asynchronous engineering communications are accessible here.",
         category: "system",
-        actionUrl: "/client/dashboard",
+        actionUrl: engagementRef ? `/client/dashboard?ref=${encodeURIComponent(engagementRef)}` : "/client/dashboard",
         actionLabel: "View Dashboard",
         readAt: null,
         createdAt: new Date().toISOString(),
@@ -154,13 +162,23 @@ export async function listClientNotifications(
   }));
 }
 
-export async function getUnreadNotificationCount(clientEmail: string): Promise<number> {
+export async function getUnreadNotificationCount(
+  clientEmail: string,
+  engagementRef?: string | null
+): Promise<number> {
   const normalizedEmail = clientEmail.trim().toLowerCase();
-  const { count, error } = await supabaseAdmin
+  let query = supabaseAdmin
     .from("client_notifications")
     .select("id", { count: "exact", head: true })
-    .eq("client_email", normalizedEmail)
     .is("read_at", null);
+
+  if (engagementRef && engagementRef.trim()) {
+    query = query.or(`client_email.eq.${normalizedEmail},engagement_ref.eq.${engagementRef.trim()}`);
+  } else {
+    query = query.eq("client_email", normalizedEmail);
+  }
+
+  const { count, error } = await query;
 
   if (error) return 0;
   return count || 0;

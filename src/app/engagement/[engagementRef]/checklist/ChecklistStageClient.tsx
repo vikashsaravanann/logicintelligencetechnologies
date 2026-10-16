@@ -12,6 +12,29 @@ interface ChecklistStageClientProps {
   initialStatus?: string;
 }
 
+const FAQ_ITEMS = [
+  {
+    q: 'What if I am unsure about certain technical checkpoints?',
+    a: 'You do not need to be an expert in every technical tier. Select what aligns with your project goals or leave them unmarked. During Stage 2 (Discovery Review), our Principal Engineering Architect will walk through every item with you and make tailored recommendations.'
+  },
+  {
+    q: 'Can I add or remove checkpoints after submitting this stage?',
+    a: 'Yes. Your submission forms the initial scope baseline. During Stage 2 Discovery and Stage 3 Proposal formulation, checkpoints can be adjusted, added, or deferred to future phases before the formal Statement of Work (Stage 5) is locked.'
+  },
+  {
+    q: 'Does selecting more checkpoints immediately increase the cost?',
+    a: 'Not automatically. Many foundational checkpoints (such as TLS encryption, PostgreSQL RLS, and clean Git workflows) are standard baseline practices included across all enterprise engagements. Custom specialized modules (e.g. bespoke FHIR middleware or specialized AI models) are priced transparently in Stage 3.'
+  },
+  {
+    q: 'How does LIT ensure compliance and architectural integrity?',
+    a: 'Every selected checkpoint maps directly to concrete engineering deliverables and acceptance criteria. In Stage 8 (Technical Spec) and Stage 10 (Delivery & Acceptance), each item is validated against automated test suites and cryptographic verification ledgers.'
+  },
+  {
+    q: 'What happens immediately after I submit this checklist?',
+    a: 'Your selections are cryptographically hashed (SHA-256) and recorded to the Supabase engagement ledger. Dual notification alerts are sent to your team and our engineering queue. Once a Principal Architect reviews the baseline, Stage 2 unlocks automatically.'
+  }
+];
+
 export default function ChecklistStageClient({
   engagementRef,
   initialSelectedItems = [],
@@ -21,6 +44,9 @@ export default function ChecklistStageClient({
   const router = useRouter();
   const [selectedPhase, setSelectedPhase] = useState<number | 'all'>('all');
   const [selectedItems, setSelectedItems] = useState<number[]>(initialSelectedItems);
+  const [priorities, setPriorities] = useState<Record<number, 'Essential' | 'Preferred' | 'Future'>>({});
+  const [expandedCheckpoints, setExpandedCheckpoints] = useState<Record<number, boolean>>({});
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [notes, setNotes] = useState(initialNotes);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,6 +62,16 @@ export default function ChecklistStageClient({
     setSelectedItems((prev) =>
       prev.includes(num) ? prev.filter((i) => i !== num) : [...prev, num]
     );
+  };
+
+  const setPriority = (num: number, priority: 'Essential' | 'Preferred' | 'Future', e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPriorities((prev) => ({ ...prev, [num]: priority }));
+  };
+
+  const toggleExpand = (num: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedCheckpoints((prev) => ({ ...prev, [num]: !prev[num] }));
   };
 
   const selectAll = () => {
@@ -70,6 +106,7 @@ export default function ChecklistStageClient({
           action: 'save_draft',
           payload: {
             selectedItems,
+            priorities,
             notes,
             totalSelected: selectedItems.length,
           },
@@ -109,6 +146,7 @@ export default function ChecklistStageClient({
           action: 'submit_checklist',
           payload: {
             selectedItems,
+            priorities,
             notes,
             totalSelected: selectedItems.length,
             submittedAt: new Date().toISOString(),
@@ -135,9 +173,53 @@ export default function ChecklistStageClient({
   };
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-6 pb-24">
+      {/* Educational Header & Introduction */}
+      <div className="bg-gradient-to-br from-[#0B2545] to-[#133E68] text-white rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div className="max-w-4xl space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold text-sky-200 border border-white/15">
+            <span>Stage 01 of 13</span>
+            <span>·</span>
+            <span>Canonical Scoping Blueprint</span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+            Start Your Project — 50-Point Enterprise Requirements Checklist
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+            Welcome to the Logic Intelligence Technologies engagement onboarding system. This 50-point checklist encompasses all critical layers of modern production engineering: foundational architecture, multi-tenant databases, strict security and Row-Level Security (RLS), custom REST/GraphQL APIs, high-performance web frontends, deterministic AI pipelines, and continuous integration.
+          </p>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Tell us which engineering, business, and operational capabilities your project requires. You do not need to know every technical term; expand any checkpoint to read what it means and why it matters. Select only the requirements relevant to your initiative. Submitted choices form the foundational basis for Stage 2 Discovery and Stage 3 Commercial Proposal.
+          </p>
+        </div>
+
+        {/* 4-Step Scoping Timeline */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-6 border-t border-white/15 text-xs">
+          <div className="bg-white/10 rounded-xl p-3 border border-white/10">
+            <span className="font-mono text-[10px] text-sky-300 font-bold block mb-1">STEP 01</span>
+            <p className="font-semibold text-white">Select Requirements</p>
+            <p className="text-[11px] text-slate-300 mt-0.5">Filter & mark key items across 8 phases.</p>
+          </div>
+          <div className="bg-white/10 rounded-xl p-3 border border-white/10">
+            <span className="font-mono text-[10px] text-sky-300 font-bold block mb-1">STEP 02</span>
+            <p className="font-semibold text-white">LIT Review</p>
+            <p className="text-[11px] text-slate-300 mt-0.5">Principal architects evaluate technical fit.</p>
+          </div>
+          <div className="bg-white/10 rounded-xl p-3 border border-white/10">
+            <span className="font-mono text-[10px] text-sky-300 font-bold block mb-1">STEP 03</span>
+            <p className="font-semibold text-white">Discovery Clarifications</p>
+            <p className="text-[11px] text-slate-300 mt-0.5">Stage 2 resolves edge cases & roles.</p>
+          </div>
+          <div className="bg-white/10 rounded-xl p-3 border border-white/10">
+            <span className="font-mono text-[10px] text-sky-300 font-bold block mb-1">STEP 04</span>
+            <p className="font-semibold text-white">Locked SOW</p>
+            <p className="text-[11px] text-slate-300 mt-0.5">Contractual baseline ready in Stage 5.</p>
+          </div>
+        </div>
+      </div>
+
       {/* Scope Selection Summary Banner */}
-      <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
           <h2 className="text-base font-bold text-[#0B2545]">Interactive Scope Selection</h2>
           <p className="text-xs text-[#52677C] mt-0.5">
@@ -254,59 +336,147 @@ export default function ChecklistStageClient({
       <div className="space-y-3">
         {filteredItems.map((item) => {
           const isSelected = selectedItems.includes(item.number);
+          const currentPriority = priorities[item.number] || 'Essential';
+          const isExpanded = !!expandedCheckpoints[item.number];
+
           return (
             <div
               key={item.number}
               onClick={() => toggleItem(item.number)}
-              className={`cursor-pointer rounded-xl border p-4 transition-all duration-150 flex items-start gap-4 ${
+              className={`cursor-pointer rounded-xl border p-4 transition-all duration-150 flex flex-col gap-3 ${
                 isSelected
-                  ? 'bg-blue-50/40 border-[#1565C0] shadow-xs'
+                  ? 'bg-blue-50/40 border-[#1565C0] shadow-2xs'
                   : 'bg-white border-[#DFE7EF] hover:border-slate-300'
               }`}
             >
-              {/* Checkbox */}
-              <div className="pt-0.5 shrink-0">
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => {}} // handled by parent div
-                  className="w-4 h-4 text-[#1565C0] rounded border-slate-300 focus:ring-[#1565C0]"
-                />
-              </div>
+              <div className="flex items-start gap-4">
+                {/* Checkbox */}
+                <div className="pt-0.5 shrink-0">
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => {}} // handled by parent div
+                    className="w-4 h-4 text-[#1565C0] rounded border-slate-300 focus:ring-[#1565C0]"
+                  />
+                </div>
 
-              {/* Ordinal Pill */}
-              <div className="shrink-0 w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center font-mono font-bold text-xs text-[#0B2545]">
-                {String(item.number).padStart(2, '0')}
-              </div>
+                {/* Ordinal Pill */}
+                <div className="shrink-0 w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center font-mono font-bold text-xs text-[#0B2545]">
+                  {String(item.number).padStart(2, '0')}
+                </div>
 
-              {/* Checkpoint Details */}
-              <div className="flex-1 space-y-1">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h4 className="text-sm font-bold text-[#0B2545]">{item.title}</h4>
-                  <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
-                    <span>Phase {item.phase}: {item.phase_title}</span>
-                    <span>•</span>
-                    <span>PDF Page {item.pdf_page}</span>
+                {/* Checkpoint Details */}
+                <div className="flex-1 space-y-1">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h4 className="text-sm font-bold text-[#0B2545]">{item.title}</h4>
+                    <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
+                      <span>Phase {item.phase}: {item.phase_title}</span>
+                      <span>•</span>
+                      <span>PDF Page {item.pdf_page}</span>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    <strong className="text-slate-700">Engineering Requirement: </strong>
+                    {item.engineering_requirement}
+                  </p>
+
+                  <div className="bg-white/80 border border-slate-200/80 rounded-lg p-2.5 mt-2 text-[11px] text-slate-600">
+                    <strong className="text-slate-700">Acceptance Criteria: </strong>
+                    {item.acceptance_criteria}
                   </div>
                 </div>
-
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  <strong className="text-slate-700">Engineering Requirement: </strong>
-                  {item.engineering_requirement}
-                </p>
-
-                <div className="bg-white/80 border border-slate-200/80 rounded-lg p-2 mt-2 text-[11px] text-slate-600">
-                  <strong className="text-slate-700">Acceptance Criteria: </strong>
-                  {item.acceptance_criteria}
-                </div>
               </div>
+
+              {/* Priority Selection & Expand Toggle */}
+              {isSelected && (
+                <div className="pt-2 border-t border-slate-200/70 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-semibold text-slate-500">Priority:</span>
+                    {(['Essential', 'Preferred', 'Future'] as const).map((pri) => (
+                      <button
+                        key={pri}
+                        type="button"
+                        onClick={(e) => setPriority(item.number, pri, e)}
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition-colors ${
+                          currentPriority === pri
+                            ? pri === 'Essential'
+                              ? 'bg-rose-50 text-rose-700 border-rose-300'
+                              : pri === 'Preferred'
+                              ? 'bg-sky-50 text-sky-700 border-sky-300'
+                              : 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                            : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+                        }`}
+                      >
+                        {pri}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => toggleExpand(item.number, e)}
+                    className="text-[11px] font-semibold text-[#1565C0] hover:text-[#0B2545] inline-flex items-center gap-1"
+                  >
+                    <span>{isExpanded ? 'Hide Architecture Rationale ▲' : 'Why would I need this? ▼'}</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Expandable Architecture Detail */}
+              {isSelected && isExpanded && (
+                <div className="bg-white rounded-lg border border-slate-200 p-3 text-xs space-y-2 mt-1">
+                  <div>
+                    <span className="font-bold text-[#0B2545] text-[11px] block">Why would I need this?</span>
+                    <p className="text-slate-600 text-[11px] leading-relaxed">
+                      Ensures resilient enterprise operability, preventing technical debt, security regressions, or platform downtime as user concurrency expands.
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-bold text-[#1FA9A2] text-[11px] block">What LIT will deliver:</span>
+                    <p className="text-slate-600 text-[11px] leading-relaxed">
+                      Formal TypeScript contracts, PostgreSQL migration scripts, automated unit tests, and documented acceptance evidence linked to Stage 10.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}
       </div>
 
+      {/* 5-Item Scoping FAQ Accordion */}
+      <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-2xs space-y-4">
+        <div>
+          <h3 className="text-base font-bold text-[#0B2545]">Frequently Asked Questions</h3>
+          <p className="text-xs text-[#52677C]">
+            Common guidance regarding the 50-point scoping process and architectural lifecycle.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          {FAQ_ITEMS.map((faq, idx) => (
+            <div key={idx} className="border border-slate-200 rounded-xl overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                className="w-full text-left px-4 py-3 bg-slate-50/70 hover:bg-slate-100 flex items-center justify-between text-xs font-semibold text-[#0B2545] transition-colors"
+              >
+                <span>{faq.q}</span>
+                <span className="text-slate-400 font-mono text-sm">{openFaq === idx ? '−' : '+'}</span>
+              </button>
+              {openFaq === idx && (
+                <div className="p-4 bg-white text-xs text-slate-600 leading-relaxed border-t border-slate-100">
+                  {faq.a}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Submission Form */}
-      <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-xs">
+      <div className="bg-white rounded-2xl border border-[#DFE7EF] p-6 shadow-2xs">
         {['approved', 'verified', 'completed', 'accepted'].includes(currentStatus) ? (
           <div className="bg-[#ECFDF5] border border-[#A7F3D0] rounded-xl p-6 text-xs text-[#065F46] space-y-4">
             <div className="flex items-start justify-between gap-4">

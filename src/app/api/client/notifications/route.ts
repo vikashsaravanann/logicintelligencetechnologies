@@ -13,16 +13,24 @@ import {
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-async function resolveClientEmail(req: NextRequest): Promise<string | null> {
+import { getEngagementByRef } from "@/lib/engagements/db";
+
+async function resolveClientEmail(req: NextRequest): Promise<{ email: string | null; ref: string | null }> {
+  const ref = req.nextUrl.searchParams.get("ref")?.trim() || null;
+
   try {
     const cookieStore = await cookies();
     const supabase = createRouteHandlerClient(
       { cookies: () => cookieStore as any },
       { supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL, supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY }
     );
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.email) {
+      return { email: user.email.toLowerCase(), ref };
+    }
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user?.email) {
-      return session.user.email.toLowerCase();
+      return { email: session.user.email.toLowerCase(), ref };
     }
   } catch (err) {
     console.warn("[api/client/notifications] Session extraction failed:", err);
@@ -30,15 +38,26 @@ async function resolveClientEmail(req: NextRequest): Promise<string | null> {
 
   const authHeader = req.headers.get("x-client-email");
   if (authHeader && authHeader.includes("@")) {
-    return authHeader.toLowerCase();
+    return { email: authHeader.toLowerCase(), ref };
   }
 
-  return null;
+  if (ref) {
+    try {
+      const eng = await getEngagementByRef(ref);
+      if (eng && eng.contact_email) {
+        return { email: eng.contact_email.toLowerCase(), ref };
+      }
+    } catch (err) {
+      console.warn("[api/client/notifications] Engagement ref lookup failed:", err);
+    }
+  }
+
+  return { email: null, ref };
 }
 
 export async function GET(req: NextRequest) {
   try {
-    const clientEmail = await resolveClientEmail(req);
+    const { email: clientEmail, ref } = await resolveClientEmail(req);
     if (!clientEmail) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
@@ -47,13 +66,14 @@ export async function GET(req: NextRequest) {
     }
 
     const [notifications, unreadCount] = await Promise.all([
-      listClientNotifications(clientEmail),
-      getUnreadNotificationCount(clientEmail),
+      listClientNotifications(clientEmail, ref),
+      getUnreadNotificationCount(clientEmail, ref),
     ]);
 
     return NextResponse.json({
       success: true,
       clientEmail,
+      engagementRef: ref,
       unreadCount,
       notifications,
     });
@@ -68,7 +88,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const clientEmail = await resolveClientEmail(req);
+    const { email: clientEmail } = await resolveClientEmail(req);
     if (!clientEmail) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },

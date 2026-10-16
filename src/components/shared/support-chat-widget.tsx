@@ -223,7 +223,6 @@ export default function SupportChatWidget() {
               className="w-full h-full object-contain rounded-full"
               priority
             />
-            <span className="absolute -top-0.5 -right-0.5 sm:top-0 sm:right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-400 ring-2 ring-[#081328] animate-pulse" />
           </div>
         )}
       </motion.button>
