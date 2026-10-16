@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { updateBookingStatus, sendConsultationConfirmationAction, sendAdminEmail } from "../../actions";
 import { ConfirmBookingModal } from "../components/ConfirmBookingModal";
