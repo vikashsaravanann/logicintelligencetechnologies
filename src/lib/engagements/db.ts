@@ -422,7 +422,7 @@ export async function submitStageAction(input: {
         break;
 
       case 'support':
-        newStatus = 'under_review';
+        newStatus = action === 'submit_ticket' ? 'in_progress' : 'completed';
         nextStageToUnlock = null;
         break;
 
@@ -432,13 +432,18 @@ export async function submitStageAction(input: {
     }
   }
 
-  const updatedSnapshot = {
+  const existingTickets = Array.isArray(currentStage.snapshot?.tickets) ? currentStage.snapshot.tickets : [];
+  const updatedSnapshot: Record<string, any> = {
     ...(currentStage.snapshot || {}),
     ...payload,
     last_action: action,
     last_audit_hash: auditHash,
     last_updated_at: new Date().toISOString(),
   };
+
+  if (stageKey === 'support' && action === 'submit_ticket' && payload.ticket) {
+    updatedSnapshot.tickets = [payload.ticket, ...existingTickets];
+  }
 
   const isCompleted = [
     'completed',
