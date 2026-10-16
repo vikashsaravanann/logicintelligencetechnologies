@@ -32,7 +32,6 @@ export default function StageDocumentCard({
   const resolvedFilename = filename || documentRef || 'document.pdf';
   const resolvedUrl = fileUrl || documentMasterPath || '';
   const isAvailable = Boolean(resolvedUrl && resolvedUrl !== '#');
-  const resolvedVersion = version || versionLabel;
   const formattedSize = fileSizeBytes
     ? `${(fileSizeBytes / 1024).toFixed(0)} KB`
     : isAvailable ? 'Enterprise PDF Master' : 'Pending Milestone Issue';
@@ -49,9 +48,6 @@ export default function StageDocumentCard({
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-bold text-[#0B2545]">{title}</h3>
-              <span className="bg-slate-100 text-slate-700 text-[10px] font-mono px-2 py-0.5 rounded font-semibold">
-                {resolvedVersion}
-              </span>
               {requiresSignature && (
                 <span className="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded font-semibold">
                   Signature Required

@@ -161,14 +161,7 @@ export default async function ResourceDetailPage({ params }: Props) {
 
               {/* Technical Specifications Strip */}
               <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 shadow-sm">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
-                  <div className="flex items-center gap-2.5 text-[var(--lit-text-muted,#52677C)]">
-                    <Hash className="w-4 h-4 text-[var(--lit-blue,#1565C0)] shrink-0" />
-                    <div>
-                      <span className="block text-[10px] uppercase font-bold text-[var(--lit-navy,#0B2545)]">Version</span>
-                      <span>{res.version}</span>
-                    </div>
-                  </div>
+                <div className="grid grid-cols-2 gap-4 text-xs">
                   <div className="flex items-center gap-2.5 text-[var(--lit-text-muted,#52677C)]">
                     <Layers className="w-4 h-4 text-[var(--lit-teal,#1FA9A2)] shrink-0" />
                     <div>

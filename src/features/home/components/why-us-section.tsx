@@ -146,7 +146,7 @@ export default function WhyUsSection() {
               <div className="p-4 rounded-xl bg-[#0F172A] border border-slate-800 font-mono text-[11px] text-slate-300 space-y-1.5">
                 <div className="flex items-center justify-between text-xs text-white pb-1.5 border-b border-slate-800">
                   <span className="text-[var(--lit-cyan)]">{`> SYSTEM PROTOCOLS`}</span>
-                  <span className="text-slate-400">v2.4.0-production</span>
+                  <span className="text-slate-400">production</span>
                 </div>
                 <p className="text-emerald-400">{`[OK] Strict TypeScript 5.8: 0 Errors`}</p>
                 <p className="text-emerald-400">{`[OK] 260 Unit & Security Contracts Passing`}</p>

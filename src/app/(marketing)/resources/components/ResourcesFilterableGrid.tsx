@@ -253,8 +253,6 @@ export default function ResourcesFilterableGrid({ resources }: Props) {
                   {/* Body Content */}
                   <div className="p-6">
                     <div className="flex items-center gap-3 text-[11px] text-[var(--lit-text-muted,#52677C)] mb-2 font-mono">
-                      <span>Ver. {res.version}</span>
-                      <span>•</span>
                       <span>{res.publishedAt}</span>
                     </div>
 

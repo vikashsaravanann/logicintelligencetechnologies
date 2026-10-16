@@ -316,9 +316,6 @@ export function ClientQuotationView({
               <span className="font-mono font-bold text-xs px-2.5 py-1 rounded-md bg-blue-50 text-blue-800 border border-blue-200">
                 {projection.quotation_ref}
               </span>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
-                Version {projection.version_number}
-              </span>
               {isAccepted ? (
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                   <CheckCircle2 className="w-3 h-3" /> Executed
@@ -780,7 +777,7 @@ export function ClientQuotationView({
                     className="mt-1 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="text-xs text-slate-700">
-                    <strong className="text-slate-900">Exact Technical Scope:</strong> I have reviewed and agree to the exact technical deliverables, quantities, and timelines detailed in Quotation {projection.quotation_ref} (Version {projection.version_number}).
+                    <strong className="text-slate-900">Exact Technical Scope:</strong> I have reviewed and agree to the exact technical deliverables, quantities, and timelines detailed in Quotation {projection.quotation_ref}.
                   </span>
                 </label>
 

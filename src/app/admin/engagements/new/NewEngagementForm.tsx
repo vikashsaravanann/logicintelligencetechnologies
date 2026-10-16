@@ -340,7 +340,7 @@ export default function NewEngagementForm() {
 
             <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
               {emailStatusNote || (createdResult.emailDispatched
-                ? `Official LIT Email v2 invitation was dispatched to ${createdResult.engagement.contact_email}.`
+                ? `Official LIT invitation email was dispatched to ${createdResult.engagement.contact_email}.`
                 : "Automatic dispatch was not triggered. You can send it now or copy the formatted text below.")}
             </p>
           </div>

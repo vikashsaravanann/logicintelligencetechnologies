@@ -64,7 +64,7 @@ const SCENARIOS: VoiceScenario[] = [
     sttLatencyMs: 44,
     reasoningSteps: [
       "Detected state-mutating production command: [deploy.production]",
-      "Target service: billing-dunning-worker v2.4.1",
+      "Target service: billing-dunning-worker",
       "SAFETY ENFORCEMENT: Mutation exceeds autonomous execution policy",
       "Halted pipeline at authorization checkpoint — awaiting explicit confirmation",
     ],

@@ -184,7 +184,7 @@ export default function AcceptanceStageClient({
                 disabled={isSubmitting || !agreedToTerms}
                 className="w-full sm:w-auto bg-[#0B2545] hover:bg-[#1565C0] text-white px-6 py-2.5 rounded-xl font-semibold shadow-xs disabled:opacity-50 transition-colors cursor-pointer"
               >
-                {isSubmitting ? 'Recording Acceptance...' : 'Digitally Accept Proposal Version →'}
+                {isSubmitting ? 'Recording Acceptance...' : 'Digitally Accept Proposal →'}
               </button>
             </div>
           </form>

@@ -63,7 +63,6 @@ export default async function ClientPortalLayout({
               <span>Main Site</span>
               <ExternalLink className="w-2.5 h-2.5" />
             </Link>
-            <span className="text-[9px] font-mono text-[var(--lit-text-muted,#52677C)]/70">v2.4.0</span>
           </div>
         </div>
       </aside>
@@ -76,9 +75,6 @@ export default async function ClientPortalLayout({
             <div className="hidden lg:flex items-center gap-2 shrink-0">
               <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)] font-mono uppercase tracking-wider">
                 Workspace
-              </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
-                V4
               </span>
             </div>
             <ClientSearchBar />
