@@ -363,7 +363,7 @@ export function IssueEngagementModal({
                         placeholder="e.g. Apex Meridian Technologies Pvt Ltd"
                         value={companyName}
                         onChange={(e) => setCompanyName(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                        className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                       />
                     </div>
 
@@ -378,7 +378,7 @@ export function IssueEngagementModal({
                           placeholder="e.g. Dr. Rajesh Krishnan"
                           value={contactName}
                           onChange={(e) => setContactName(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                          className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                         />
                       </div>
 
@@ -392,7 +392,7 @@ export function IssueEngagementModal({
                           placeholder="e.g. contact@company.com"
                           value={contactEmail}
                           onChange={(e) => setContactEmail(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                          className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                         />
                       </div>
                     </div>
@@ -407,7 +407,7 @@ export function IssueEngagementModal({
                           placeholder="e.g. +91 98401 23456"
                           value={contactPhone}
                           onChange={(e) => setContactPhone(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                          className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                         />
                       </div>
 
@@ -420,7 +420,7 @@ export function IssueEngagementModal({
                           placeholder="e.g. ₹15,00,000 - ₹25,00,000"
                           value={budgetRange}
                           onChange={(e) => setBudgetRange(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                          className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                         />
                       </div>
                     </div>
@@ -433,7 +433,7 @@ export function IssueEngagementModal({
                         type="text"
                         value={projectTitle}
                         onChange={(e) => setProjectTitle(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                        className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                       />
                     </div>
 
@@ -446,7 +446,7 @@ export function IssueEngagementModal({
                         placeholder="Preliminary client notes, architectural focus, or intake brief…"
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0] resize-none"
+                        className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0] resize-none"
                       />
                     </div>
 

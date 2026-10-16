@@ -420,7 +420,7 @@ export default function NewEngagementForm() {
                     placeholder="e.g. Apex Meridian Technologies Pvt Ltd"
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                   />
                 </div>
               </div>
@@ -437,7 +437,7 @@ export default function NewEngagementForm() {
                     placeholder="e.g. Dr. Rajesh Krishnan"
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                   />
                 </div>
               </div>
@@ -454,7 +454,7 @@ export default function NewEngagementForm() {
                     placeholder="e.g. rajesh.krishnan@apexmeridian.com"
                     value={contactEmail}
                     onChange={(e) => setContactEmail(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                   />
                 </div>
                 <span className="text-[10px] text-[var(--lit-text-muted,#52677C)] mt-1 block">
@@ -473,7 +473,7 @@ export default function NewEngagementForm() {
                     placeholder="e.g. +91 98401 23456"
                     value={contactPhone}
                     onChange={(e) => setContactPhone(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                   />
                 </div>
                 <span className="text-[10px] text-[var(--lit-text-muted,#52677C)] mt-1 block">
@@ -500,7 +500,7 @@ export default function NewEngagementForm() {
                   value={projectTitle}
                   onChange={(e) => setProjectTitle(e.target.value)}
                   placeholder="e.g. Enterprise Multi-Tenant AI Platform & Hospital Infrastructure"
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                 />
               </div>
 
@@ -514,7 +514,7 @@ export default function NewEngagementForm() {
                     value={budgetRange}
                     onChange={(e) => setBudgetRange(e.target.value)}
                     placeholder="e.g. ₹15,00,000 - ₹25,00,000"
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                   />
                 </div>
 
@@ -527,7 +527,7 @@ export default function NewEngagementForm() {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="e.g. Client requested initial kickoff before Q4 2026."
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                   />
                 </div>
               </div>
@@ -551,7 +551,7 @@ export default function NewEngagementForm() {
                   value={customMessage}
                   onChange={(e) => setCustomMessage(e.target.value)}
                   placeholder="e.g. Thank you for connecting with us today. Please find your dedicated 13-stage lifecycle portal below where you can review technical requirements and proceed with milestone execution."
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
                 />
               </div>
 
