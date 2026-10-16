@@ -294,7 +294,7 @@ export async function submitChecklistSelections(
     .maybeSingle();
 
   let responseId: string;
-  let finalRef = existingResp?.confirmation_reference || confirmationReference;
+  const finalRef = existingResp?.confirmation_reference || confirmationReference;
 
   if (existingResp) {
     responseId = existingResp.id;
@@ -534,7 +534,7 @@ export async function recordAdminChecklistIntake(
     .maybeSingle();
 
   let responseId: string;
-  let finalRef = existingResp?.confirmation_reference || confirmationReference;
+  const finalRef = existingResp?.confirmation_reference || confirmationReference;
 
   if (existingResp) {
     responseId = existingResp.id;

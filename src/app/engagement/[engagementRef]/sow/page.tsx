@@ -56,6 +56,7 @@ export default async function SowStagePage({ params }: SowPageProps) {
         contactEmail={engagement.contact_email}
         initialStatus={stage?.status}
         initialData={stage?.snapshot}
+        metadata={engagement.metadata as Record<string, unknown>}
       />
     </div>
   );

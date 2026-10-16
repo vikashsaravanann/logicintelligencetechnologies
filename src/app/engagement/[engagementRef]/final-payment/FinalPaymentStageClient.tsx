@@ -5,6 +5,7 @@ import Link from 'next/link';
 import StageDocumentCard from '../components/StageDocumentCard';
 import { UpiAppButtons } from '@/components/shared/UpiAppButtons';
 import { BankTransferCard } from '@/components/shared/BankTransferCard';
+import { calculateEngagementFinancials, formatInr } from '@/lib/engagements/financials';
 
 interface FinalPaymentStageClientProps {
   engagementRef: string;
@@ -18,6 +19,7 @@ interface FinalPaymentStageClientProps {
   initialStatus?: string;
   initialData?: Record<string, any>;
   document?: any;
+  metadata?: Record<string, unknown>;
 }
 
 export default function FinalPaymentStageClient({
@@ -32,6 +34,7 @@ export default function FinalPaymentStageClient({
   initialStatus = 'available',
   initialData = {},
   document,
+  metadata,
 }: FinalPaymentStageClientProps) {
   const [utrNumber, setUtrNumber] = useState(initialData?.utrNumber || '');
   const [paymentDate, setPaymentDate] = useState(initialData?.paymentDate || new Date().toISOString().split('T')[0]);
@@ -47,19 +50,32 @@ export default function FinalPaymentStageClient({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
+  const candidateSubtotal =
+    initialData?.subtotal ||
+    metadata?.contract_subtotal ||
+    metadata?.subtotal ||
+    metadata?.contract_value ||
+    metadata?.budget_range ||
+    50;
+
+  const financials = calculateEngagementFinancials(candidateSubtotal);
+  const settlementBase = Math.round((financials.subtotal / 2) * 100) / 100;
+  const settlementCgst = Math.round(settlementBase * 0.09 * 100) / 100;
+  const settlementSgst = Math.round(settlementBase * 0.09 * 100) / 100;
+
   const paymentData = {
     requestRef: transactionRef,
     milestone: 'Final Settlement (50% Completion & Handover)',
-    subtotal: '₹9,00,000.00',
-    cgst: '₹81,000.00 (9%)',
-    sgst: '₹81,000.00 (9%)',
-    totalPayable: '₹10,62,000.00',
-    totalNumeric: '1062000.00',
+    subtotal: formatInr(settlementBase),
+    cgst: `${formatInr(settlementCgst)} (9%)`,
+    sgst: `${formatInr(settlementSgst)} (9%)`,
+    totalPayable: financials.settlementFormatted,
+    totalNumeric: financials.settlementNumeric,
     beneficiaryVpa: '9342877474@ptyes',
     beneficiaryName: 'S VIKASH',
     msmeRegistration: 'UDYAM-TN-03-0345274',
     brandName: 'Logic Intelligence Technologies',
-    upiDeepLink: upiDeepLink || `upi://pay?pa=9342877474@ptyes&pn=S%20VIKASH&am=1062000.00&cu=INR&tr=${transactionRef}&tn=Final%20Settlement%2050`,
+    upiDeepLink: upiDeepLink || `upi://pay?pa=9342877474@ptyes&pn=S%20VIKASH&am=${financials.settlementNumeric}&cu=INR&tr=${transactionRef}&tn=Final%20Settlement%2050`,
   };
 
   const handleCopy = (text: string, field: string) => {
@@ -225,7 +241,7 @@ export default function FinalPaymentStageClient({
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                  Locked: ₹10,62,000.00
+                  Locked: {paymentData.totalPayable}
                 </span>
               </div>
 
@@ -267,7 +283,7 @@ export default function FinalPaymentStageClient({
                   className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-mono font-semibold text-[#0B2545] shadow-2xs transition-colors cursor-pointer"
                 >
                   {copiedField === 'amount' ? (
-                    <span className="text-emerald-600 font-bold">✓ Amount Copied (₹10,62,000.00)</span>
+                    <span className="text-emerald-600 font-bold">✓ Amount Copied ({paymentData.totalPayable})</span>
                   ) : (
                     <>
                       <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -48,7 +48,7 @@ export function IssueEngagementModal({
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [projectTitle, setProjectTitle] = useState("Enterprise Digital Platform & Cloud Architecture");
-  const [budgetRange, setBudgetRange] = useState("₹15,00,000 - ₹25,00,000");
+  const [budgetRange, setBudgetRange] = useState("");
   const [notes, setNotes] = useState("");
   const [sendEmailImmediately, setSendEmailImmediately] = useState(true);
 
@@ -413,14 +413,15 @@ export function IssueEngagementModal({
 
                       <div>
                         <label className="block text-[11px] font-bold text-[var(--lit-navy,#0B2545)] mb-1">
-                          Budget Range (Optional)
+                          Total Contract Commitment / Base Rate (Excl. GST)
                         </label>
                         <input
                           type="text"
-                          placeholder="e.g. ₹15,00,000 - ₹25,00,000"
+                          placeholder="e.g. 50 or ₹50.00"
                           value={budgetRange}
                           onChange={(e) => setBudgetRange(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                          className="w-full px-3 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white text-black font-semibold placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#1565C0]"
+                          style={{ color: "#000000", WebkitTextFillColor: "#000000", backgroundColor: "#FFFFFF" }}
                         />
                       </div>
                     </div>

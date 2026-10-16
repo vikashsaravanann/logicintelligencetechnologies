@@ -4,11 +4,18 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import {
+  calculateEngagementFinancials,
+  ScopeQuotationItem,
+} from '@/lib/engagements/financials';
+
 interface ProposalStageClientProps {
   engagementRef: string;
   companyName: string;
   contactName: string;
   initialStatus?: string;
+  metadata?: Record<string, unknown>;
+  initialSnapshot?: Record<string, unknown>;
 }
 
 export default function ProposalStageClient({
@@ -16,6 +23,8 @@ export default function ProposalStageClient({
   companyName,
   contactName,
   initialStatus = 'available',
+  metadata,
+  initialSnapshot,
 }: ProposalStageClientProps) {
   const router = useRouter();
   const [activeSection, setActiveSection] = useState<string>('exec-summary');
@@ -100,52 +109,43 @@ export default function ProposalStageClient({
     },
   ];
 
-  const commercialItems = [
-    {
-      item: 'Core Full-Stack Web Application & 13-Stage Portal Engine',
-      description: 'Next.js 15, App Router, responsive multi-device design, state management, and real-time client engagement portal.',
-      qty: 1,
-      unitPrice: 850000,
-    },
-    {
-      item: 'Supabase Security Hardening, Relational Schema & Cryptographic Ledgers',
-      description: 'PostgreSQL database architecture, 100% RLS policy enforcement, automated backup triggers, and SHA-256 mutation digests.',
-      qty: 1,
-      unitPrice: 350000,
-    },
-    {
-      item: 'Audited Direct UPI Payment Engine & Super Admin Reconciliation Suite',
-      description: 'Zero-PSP manual UPI QR generator, client billing intake gate, duplicate UTR prevention, and dual-document (Invoice/Receipt) PDF engine.',
-      qty: 1,
-      unitPrice: 250000,
-    },
-    {
-      item: 'Multi-Corpus Knowledge Base & Domain-Isolated RAG Assistant Engine',
-      description: 'FastEmbed vector embeddings, Groq LPU integration, SQLite BM25 retrieval, and zero-PHI privacy enforcement guardrails.',
-      qty: 1,
-      unitPrice: 200000,
-    },
-    {
-      item: 'Enterprise CI/CD Pipelines, Operating Runbooks & 90-Day SLA Warranty',
-      description: 'Automated GitHub Actions workflows, staging/production environments, developer runbooks, and 90 days of priority defect remediation.',
-      qty: 1,
-      unitPrice: 150000,
-    },
-  ];
+  // Dynamic Commercial Quotation calculation
+  const candidateSubtotal =
+    initialSnapshot?.subtotal ||
+    (initialSnapshot?.pricing as Record<string, unknown> | undefined)?.subtotal ||
+    metadata?.contract_subtotal ||
+    metadata?.subtotal ||
+    metadata?.contract_value ||
+    metadata?.budget_range ||
+    50;
 
-  const subtotalPaise = commercialItems.reduce((acc, curr) => acc + curr.unitPrice, 0);
-  const discountPaise = couponApplied ? 50000 : 0; // ₹50,000 promotional credit if coupon applied
-  const netSubtotalPaise = subtotalPaise - discountPaise;
-  const gstPaise = Math.round(netSubtotalPaise * 0.18);
-  const totalPayablePaise = netSubtotalPaise + gstPaise;
-  const milestoneAmountPaise = Math.round(totalPayablePaise / 2);
+  const customItems = (
+    metadata?.commercial_items ||
+    initialSnapshot?.commercialItems ||
+    initialSnapshot?.scopeItems
+  ) as ScopeQuotationItem[] | undefined;
 
-  const formatINR = (paiseOrRupees: number) => {
+  const financials = calculateEngagementFinancials(candidateSubtotal, {
+    customScopeItems: customItems,
+  });
+
+  const commercialItems = financials.scopeItems;
+  const subtotalPaise = financials.subtotal;
+  const discountPaise = couponApplied ? Math.min(50000, Math.round(subtotalPaise * 0.1)) : 0;
+  const netSubtotalPaise = Math.max(0, subtotalPaise - discountPaise);
+  const cgstPaise = Math.round(netSubtotalPaise * 0.09 * 100) / 100;
+  const sgstPaise = Math.round(netSubtotalPaise * 0.09 * 100) / 100;
+  const gstPaise = Math.round((cgstPaise + sgstPaise) * 100) / 100;
+  const totalPayablePaise = Math.round((netSubtotalPaise + gstPaise) * 100) / 100;
+  const milestoneAmountPaise = Math.round((totalPayablePaise / 2) * 100) / 100;
+
+  const formatINR = (val: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(paiseOrRupees);
+      minimumFractionDigits: val % 1 === 0 && val >= 1000 ? 0 : 2,
+      maximumFractionDigits: 2,
+    }).format(val);
   };
 
   const handleApplyCoupon = (e: React.FormEvent) => {
@@ -282,7 +282,7 @@ export default function ProposalStageClient({
               Logic Intelligence Technologies (LIT) is pleased to submit this comprehensive Project Proposal and Commercial Quotation to <strong>{companyName}</strong>. Following our review of your Stage 1 Enterprise Deployment Checklist and Stage 2 Discovery inputs, this document formalizes our architectural approach, work breakdown structure, technology stack, and commercial terms.
             </p>
             <p>
-              Our mandate is to deliver an enterprise-grade, high-performance web platform built on modern Next.js 15, PostgreSQL (Supabase) with Row-Level Security, an audited direct UPI payment settlement system, and domain-isolated artificial intelligence capabilities. This proposal represents a fixed-price, milestone-governed engineering commitment with zero hidden fees.
+              Our mandate is to deliver an enterprise-grade, high-performance web platform built on modern Next.js 15, PostgreSQL (Supabase) with Row-Level Security, an audited direct UPI payment settlement system, and domain-isolated artificial intelligence capabilities. This proposal represents an approved commercial quotation, milestone-governed engineering commitment with transparent statutory taxation and zero hidden fees.
             </p>
           </div>
 
@@ -689,14 +689,14 @@ export default function ProposalStageClient({
               <span className="text-xs font-mono font-bold text-[#1565C0]">CHAPTER 10</span>
               <h2 className="text-lg font-bold text-[#0B2545] mt-0.5">Commercial Quotation & Financial Breakdown</h2>
             </div>
-            <span className="text-xs font-semibold text-slate-500">Fixed-Price Engineering Contract</span>
+            <span className="text-xs font-semibold text-slate-500">Commercial Quotation &amp; Scope Breakdown</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
-                  <th className="py-3 px-3">Scope Item & Description</th>
+                  <th className="py-3 px-3">Scope Item &amp; Description</th>
                   <th className="py-3 px-3 text-center w-16">Qty</th>
                   <th className="py-3 px-3 text-right w-36">Rate (INR)</th>
                   <th className="py-3 px-3 text-right w-36">Amount (INR)</th>
@@ -729,11 +729,19 @@ export default function ProposalStageClient({
                   </tr>
                 )}
                 <tr className="font-medium text-slate-700">
-                  <td colSpan={3} className="py-2.5 px-3 text-right">Goods & Services Tax (GST @ 18%):</td>
+                  <td colSpan={3} className="py-2 px-3 text-right">Central GST (CGST @ 9%):</td>
+                  <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">{formatINR(cgstPaise)}</td>
+                </tr>
+                <tr className="font-medium text-slate-700">
+                  <td colSpan={3} className="py-2 px-3 text-right">State GST (SGST @ 9%):</td>
+                  <td className="py-2 px-3 text-right font-mono font-bold text-slate-900">{formatINR(sgstPaise)}</td>
+                </tr>
+                <tr className="font-medium text-slate-700 bg-slate-50/60">
+                  <td colSpan={3} className="py-2.5 px-3 text-right">Total Statutory GST (18%):</td>
                   <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">{formatINR(gstPaise)}</td>
                 </tr>
                 <tr className="border-t-2 border-slate-300 bg-slate-100 font-bold text-slate-900">
-                  <td colSpan={3} className="py-3 px-3 text-right text-sm">Total Contract Value (INR):</td>
+                  <td colSpan={3} className="py-3 px-3 text-right text-sm">Total Contract Commitment (INR):</td>
                   <td className="py-3 px-3 text-right font-mono text-base font-black text-[#0B2545]">{formatINR(totalPayablePaise)}</td>
                 </tr>
               </tfoot>

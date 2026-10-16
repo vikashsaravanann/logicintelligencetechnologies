@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { calculateEngagementFinancials } from '@/lib/engagements/financials';
+
 interface AcceptanceStageClientProps {
   engagementRef: string;
   companyName: string;
@@ -11,6 +13,7 @@ interface AcceptanceStageClientProps {
   contactEmail: string;
   initialStatus?: string;
   initialData?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export default function AcceptanceStageClient({
@@ -20,6 +23,7 @@ export default function AcceptanceStageClient({
   contactEmail,
   initialStatus = 'available',
   initialData = {},
+  metadata,
 }: AcceptanceStageClientProps) {
   const router = useRouter();
   const [signerName, setSignerName] = useState(initialData?.signerName || contactName);
@@ -49,23 +53,33 @@ export default function AcceptanceStageClient({
   const [isSubmittingDecline, setIsSubmittingDecline] = useState(false);
   const [declineSuccessMessage, setDeclineSuccessMessage] = useState<string | null>(null);
 
+  const candidateSubtotal =
+    initialData?.subtotal ||
+    metadata?.contract_subtotal ||
+    metadata?.subtotal ||
+    metadata?.contract_value ||
+    metadata?.budget_range ||
+    50;
+
+  const financials = calculateEngagementFinancials(candidateSubtotal);
+
   const proposalSummary = {
-    proposalRef: 'LIT-PROP-2026-084',
+    proposalRef: initialData?.proposalRef || 'LIT-PROP-2026-084',
     version: 'v1.0 (LIT-Approved Baseline)',
     issueDate: '14 October 2026',
     validUntil: '14 November 2026',
-    subtotal: '₹18,00,000',
-    gst: '₹3,24,000',
-    totalPayable: '₹21,24,000',
+    subtotal: financials.subtotalFormatted,
+    gst: financials.gstFormatted,
+    totalPayable: financials.totalFormatted,
     milestones: [
       {
         label: 'Milestone 1: Initial Deposit (Stage 6)',
-        amount: '₹10,62,000 (50%)',
+        amount: `${financials.depositFormatted} (50%)`,
         trigger: 'Execution of Statement of Work (Stage 5)',
       },
       {
         label: 'Milestone 2: Final Settlement (Stage 11)',
-        amount: '₹10,62,000 (50%)',
+        amount: `${financials.settlementFormatted} (50%)`,
         trigger: 'Delivery Acceptance Sign-off & QA Verification (Stage 10)',
       },
     ],

@@ -1336,7 +1336,7 @@ export async function acceptQuotation(input: {
   }
 
   // Locate or create version
-  let version = (await getQuotationVersions(quotation.id))[0];
+  const version = (await getQuotationVersions(quotation.id))[0];
   let versionId = version?.id;
 
   if (!versionId) {

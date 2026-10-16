@@ -10,35 +10,49 @@ body {
 img, video, canvas, svg { max-width: 100%; height: auto; }
 
 /* ── Global Form Input, Textarea, Select Typography & Visibility ── */
-/* Default: High-contrast dark ink on light surfaces (Canvas, Portals, Admin, Modals) */
-input, textarea, select {
-  color: #0B2545 !important;
-  -webkit-text-fill-color: #0B2545 !important;
-  caret-color: #1565C0 !important;
+/* High-contrast pure black ink (#000000) for all input typing across portals, admin, modals, and stages */
+input, textarea, select, option, optgroup {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  caret-color: #000000 !important;
 }
 
-/* Light surface inputs must always display dark ink text, even if parent has dark theme */
+/* Light surface inputs, selects, dropdowns and options */
 .bg-white input,
 .bg-white textarea,
 .bg-white select,
+.bg-white option,
 .bg-slate-50 input,
 .bg-slate-50 textarea,
 .bg-slate-50 select,
+.bg-slate-50 option,
 input.bg-white,
 textarea.bg-white,
 select.bg-white,
+option.bg-white,
 input.bg-slate-50,
 textarea.bg-slate-50,
 select.bg-slate-50,
+option.bg-slate-50,
 input[class*="bg-white"],
 textarea[class*="bg-white"],
 select[class*="bg-white"],
 input[class*="bg-slate-"],
 textarea[class*="bg-slate-"],
 select[class*="bg-slate-"] {
-  color: #0B2545 !important;
-  -webkit-text-fill-color: #0B2545 !important;
-  caret-color: #1565C0 !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  caret-color: #000000 !important;
+  background-color: #FFFFFF;
+}
+
+/* Select option tags must always display black text on white background */
+select option,
+select optgroup,
+option {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  background-color: #FFFFFF !important;
 }
 
 /* Ensure inputs specifically designed for dark surfaces (AI chatbot, dark widgets) have crisp white text */

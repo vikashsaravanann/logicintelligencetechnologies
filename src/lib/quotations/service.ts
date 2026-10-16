@@ -80,7 +80,7 @@ export interface QuotationDetailsResponse {
 }
 
 // In-memory fallback cache to ensure zero-downtime and flawless local demo/testing
-let inMemoryQuotations: QuotationRecord[] = [
+const inMemoryQuotations: QuotationRecord[] = [
   {
     id: "qt-sample-001",
     quotation_ref: "LIT-QT-2026-0001",
@@ -194,7 +194,7 @@ let inMemoryQuotations: QuotationRecord[] = [
   },
 ];
 
-let inMemoryLines: Record<string, QuotationLineItem[]> = {
+const inMemoryLines: Record<string, QuotationLineItem[]> = {
   "qt-sample-001": [
     {
       id: "line-001",
@@ -306,7 +306,7 @@ let inMemoryLines: Record<string, QuotationLineItem[]> = {
   ],
 };
 
-let inMemoryCoupons: QuotationCoupon[] = [
+const inMemoryCoupons: QuotationCoupon[] = [
   {
     id: "coupon-001",
     code: "WAKEUPINDIA",
@@ -341,7 +341,7 @@ let inMemoryCoupons: QuotationCoupon[] = [
   },
 ];
 
-let inMemoryAuditLogs: Record<string, Array<{
+const inMemoryAuditLogs: Record<string, Array<{
   id: string;
   quotation_id: string;
   action: string;
@@ -377,7 +377,7 @@ let inMemoryAuditLogs: Record<string, Array<{
   ],
 };
 
-let inMemoryVersions: Record<string, QuotationVersion[]> = {
+const inMemoryVersions: Record<string, QuotationVersion[]> = {
   "qt-sample-001": [
     {
       id: "ver-001",

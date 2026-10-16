@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { UpiAppButtons } from '@/components/shared/UpiAppButtons';
 import { BankTransferCard } from '@/components/shared/BankTransferCard';
+import { calculateEngagementFinancials, formatInr } from '@/lib/engagements/financials';
 
 interface InitialInvoiceStageClientProps {
   engagementRef: string;
@@ -17,6 +18,7 @@ interface InitialInvoiceStageClientProps {
   secureToken?: string;
   initialStatus?: string;
   initialData?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export default function InitialInvoiceStageClient({
@@ -30,6 +32,7 @@ export default function InitialInvoiceStageClient({
   secureToken,
   initialStatus = 'available',
   initialData = {},
+  metadata,
 }: InitialInvoiceStageClientProps) {
   const router = useRouter();
   const [utrNumber, setUtrNumber] = useState(initialData?.utrNumber || '');
@@ -46,20 +49,33 @@ export default function InitialInvoiceStageClient({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
+  const candidateSubtotal =
+    initialData?.subtotal ||
+    metadata?.contract_subtotal ||
+    metadata?.subtotal ||
+    metadata?.contract_value ||
+    metadata?.budget_range ||
+    50;
+
+  const financials = calculateEngagementFinancials(candidateSubtotal);
+  const depositBase = Math.round((financials.subtotal / 2) * 100) / 100;
+  const depositCgst = Math.round(depositBase * 0.09 * 100) / 100;
+  const depositSgst = Math.round(depositBase * 0.09 * 100) / 100;
+
   const paymentData = {
     requestRef: transactionRef,
     milestone: 'Initial Deposit (50% Project Commitment)',
-    subtotal: '₹9,00,000.00',
-    cgst: '₹81,000.00 (9%)',
-    sgst: '₹81,000.00 (9%)',
-    totalPayable: '₹10,62,000.00',
-    totalNumeric: '1062000.00',
+    subtotal: formatInr(depositBase),
+    cgst: `${formatInr(depositCgst)} (9%)`,
+    sgst: `${formatInr(depositSgst)} (9%)`,
+    totalPayable: financials.depositFormatted,
+    totalNumeric: financials.depositNumeric,
     beneficiaryVpa: '9342877474@ptyes',
     beneficiaryName: 'S VIKASH',
     msmeRegistration: 'UDYAM-TN-03-0345274',
     brandName: 'Logic Intelligence Technologies',
     bankName: 'YES BANK / PTYES',
-    upiDeepLink: upiDeepLink || `upi://pay?pa=9342877474@ptyes&pn=S%20VIKASH&am=1062000.00&cu=INR&tr=${transactionRef}&tn=Initial%20Deposit%2050`,
+    upiDeepLink: upiDeepLink || `upi://pay?pa=9342877474@ptyes&pn=S%20VIKASH&am=${financials.depositNumeric}&cu=INR&tr=${transactionRef}&tn=Initial%20Deposit%2050`,
   };
 
   const handleCopy = (text: string, fieldKey: string) => {
@@ -217,7 +233,7 @@ export default function InitialInvoiceStageClient({
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                  Locked: ₹10,62,000.00
+                  Locked: {paymentData.totalPayable}
                 </span>
               </div>
 
@@ -260,7 +276,7 @@ export default function InitialInvoiceStageClient({
                 >
                   {copiedField === 'amount' ? (
                     <>
-                      <span className="text-emerald-600 font-bold">✓ Amount Copied (₹10,62,000.00)</span>
+                      <span className="text-emerald-600 font-bold">✓ Amount Copied ({paymentData.totalPayable})</span>
                     </>
                   ) : (
                     <>

@@ -14,6 +14,7 @@ import {
 } from './types';
 import { sendEngagementInvitationEmail } from './invitations';
 import { notifyStageSubmitted, notifyStageApproved } from './stage-notifications';
+import { calculateEngagementFinancials } from './financials';
 
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -1039,6 +1040,9 @@ export async function createEngagement(input: CreateEngagementInput): Promise<{
   const engagementRef = await generateEngagementRef();
   const now = new Date().toISOString();
 
+  const rawBudget = input.budgetRange?.trim();
+  const financials = calculateEngagementFinancials(rawBudget || 50);
+
   const newEngagementRecord = {
     engagement_ref: engagementRef,
     company_name: input.companyName.trim(),
@@ -1050,7 +1054,13 @@ export async function createEngagement(input: CreateEngagementInput): Promise<{
     current_stage: 'checklist' as StageKey,
     notes: input.notes?.trim() || null,
     metadata: {
-      budget_range: input.budgetRange?.trim() || null,
+      budget_range: financials.totalFormatted,
+      contract_subtotal: financials.subtotal,
+      contract_value: financials.totalFormatted,
+      gst_amount: financials.gstFormatted,
+      deposit_amount: financials.depositFormatted,
+      settlement_amount: financials.settlementFormatted,
+      commercial_items: financials.scopeItems,
       created_via: 'admin_portal',
       initial_custom_message: input.customMessage?.trim() || null,
     },
@@ -1075,10 +1085,31 @@ export async function createEngagement(input: CreateEngagementInput): Promise<{
 
       createdEngagement = engData as ClientEngagement;
 
-      // Seed all 13 canonical stages
+      // Seed all 13 canonical stages with dynamic proposal and milestone amounts
       const stagesToInsert = ORDERED_STAGE_KEYS.map((key, idx) => {
         const def = CANONICAL_13_STAGES[key];
         const isFirst = idx === 0;
+
+        let initialSnapshot: Record<string, any> = {};
+        if (key === 'proposal') {
+          initialSnapshot = {
+            subtotal: financials.subtotalFormatted,
+            gst: financials.gstFormatted,
+            totalPayable: financials.totalFormatted,
+            deposit: financials.depositFormatted,
+            settlement: financials.settlementFormatted,
+            commercialItems: financials.scopeItems,
+          };
+        } else if (key === 'initial-invoice') {
+          initialSnapshot = {
+            amount: financials.depositFormatted,
+          };
+        } else if (key === 'final-payment') {
+          initialSnapshot = {
+            amount: financials.settlementFormatted,
+          };
+        }
+
         return {
           engagement_id: createdEngagement!.id,
           stage_key: key,
@@ -1091,7 +1122,7 @@ export async function createEngagement(input: CreateEngagementInput): Promise<{
           prerequisite_stage_key: def.prerequisiteKey,
           prerequisite_description: def.prerequisiteDesc,
           document_master_ref: def.documentMasterRef,
-          snapshot: {},
+          snapshot: initialSnapshot,
           unlocked_at: isFirst ? now : null,
           completed_at: null,
           approved_at: null,
@@ -1284,12 +1315,22 @@ export async function reconcileEngagementStagePayment(input: {
   const nextStage = stages.find((s) => s.stage_key === nextStageKey);
   const now = new Date().toISOString();
 
+  const candidateSubtotal =
+    currentStage.snapshot?.subtotal ||
+    (engagement.metadata as Record<string, any>)?.contract_subtotal ||
+    (engagement.metadata as Record<string, any>)?.subtotal ||
+    (engagement.metadata as Record<string, any>)?.contract_value ||
+    (engagement.metadata as Record<string, any>)?.budget_range ||
+    50;
+  const financials = calculateEngagementFinancials(candidateSubtotal);
+  const defaultMilestoneAmount = stageKey === 'initial-invoice' ? financials.depositFormatted : financials.settlementFormatted;
+
   const reconciliationData = {
     bank_verified: true,
     reconciled_at: now,
     reconciled_by: actorName,
     notes: reconciliationNotes || 'Manual bank credit verified in receiving account.',
-    verified_amount: verifiedAmount || '₹10,62,000.00',
+    verified_amount: verifiedAmount || currentStage.snapshot?.amount || defaultMilestoneAmount,
     transaction_ref: transactionRef || `BANK-REC-${Date.now()}`,
   };
 

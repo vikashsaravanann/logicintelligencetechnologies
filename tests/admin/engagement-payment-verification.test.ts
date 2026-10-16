@@ -25,12 +25,12 @@ import {
   LIT_PAYEE_CONFIG,
 } from "../../src/lib/payments/upi";
 
-// Require after server-only stub is loaded
 // eslint-disable-next-line @typescript-eslint/no-require-imports
+const db = require("../../src/lib/engagements/db");
 const {
   submitStageAction,
   reconcileEngagementStagePayment,
-} = require("../../src/lib/engagements/db");
+} = db;
 
 describe("Admin & Payment Workflows Verification", () => {
   describe("1. Corporate Identity & Payment Credentials Verification", () => {

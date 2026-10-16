@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { calculateEngagementFinancials } from '@/lib/engagements/financials';
+
 interface SowStageClientProps {
   engagementRef: string;
   companyName: string;
@@ -11,6 +13,7 @@ interface SowStageClientProps {
   contactEmail?: string;
   initialStatus?: string;
   initialData?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export default function SowStageClient({
@@ -20,6 +23,7 @@ export default function SowStageClient({
   contactEmail = 'client@domain.com',
   initialStatus = 'available',
   initialData = {},
+  metadata,
 }: SowStageClientProps) {
   const router = useRouter();
   const [signerName, setSignerName] = useState(initialData?.signerName || contactName);
@@ -63,23 +67,34 @@ export default function SowStageClient({
       primaryContact: contactName,
       contactEmail: contactEmail,
     },
-    commercial: {
-      subtotal: '₹18,00,000',
-      tax: '₹3,24,000 (18% GST)',
-      total: '₹21,24,000',
-      milestones: [
-        {
-          name: 'Milestone 1: Initial Deposit (Stage 6)',
-          amount: '₹10,62,000 (50%)',
-          timing: 'Due upon execution of this SOW, prior to project technical kickoff',
-        },
-        {
-          name: 'Milestone 2: Final Settlement (Stage 11)',
-          amount: '₹10,62,000 (50%)',
-          timing: 'Due upon delivery acceptance sign-off (Stage 10), prior to asset handover',
-        },
-      ],
-    },
+    commercial: (() => {
+      const candidateSubtotal =
+        initialData?.subtotal ||
+        metadata?.contract_subtotal ||
+        metadata?.subtotal ||
+        metadata?.contract_value ||
+        metadata?.budget_range ||
+        50;
+      const fin = calculateEngagementFinancials(candidateSubtotal);
+      return {
+        financials: fin,
+        subtotal: fin.subtotalFormatted,
+        tax: `${fin.gstFormatted} (18% Statutory GST: CGST 9% [${fin.cgstFormatted}] + SGST 9% [${fin.sgstFormatted}])`,
+        total: fin.totalFormatted,
+        milestones: [
+          {
+            name: 'Milestone 1: Initial Deposit (Stage 6)',
+            amount: `${fin.depositFormatted} (50%)`,
+            timing: 'Due upon execution of this SOW, prior to project technical kickoff',
+          },
+          {
+            name: 'Milestone 2: Final Settlement (Stage 11)',
+            amount: `${fin.settlementFormatted} (50%)`,
+            timing: 'Due upon delivery acceptance sign-off (Stage 10), prior to asset handover',
+          },
+        ],
+      };
+    })(),
   };
 
   const sowChapters = [
@@ -157,15 +172,15 @@ export default function SowStageClient({
     },
     {
       num: 13,
-      title: 'Commercial Terms & Fixed-Price Quotation',
-      summary: 'Reiterates fixed-price contract value of ₹18,00,000 plus applicable 18% GST (₹3,24,000), totaling ₹21,24,000.',
-      content: 'Total Contract Value is fixed at ₹21,24,000 (Rupees Twenty-One Lakh Twenty-Four Thousand Only) inclusive of 18% Goods & Services Tax (CGST 9% + SGST 9%). This is an all-inclusive fixed-price professional services agreement with no uncontracted hourly billing.',
+      title: 'Commercial Terms & Scope Quotation',
+      summary: `Commercial quotation subtotal of ${sowMeta.commercial.financials.subtotalFormatted} plus applicable 18% GST (${sowMeta.commercial.financials.gstFormatted}), totaling ${sowMeta.commercial.financials.totalFormatted}.`,
+      content: `Total Contract Value is ${sowMeta.commercial.financials.totalFormatted} inclusive of 18% Goods & Services Tax (CGST 9% [${sowMeta.commercial.financials.cgstFormatted}] + SGST 9% [${sowMeta.commercial.financials.sgstFormatted}]). This professional services agreement reflects the Super Admin commercial quotation and scope schedule.`,
     },
     {
       num: 14,
       title: 'Payment Schedule (Strictly Two 50% Milestones)',
       summary: 'Preserves the canonical two-installment structure: 50% post-SOW execution at Stage 6, and 50% post-Delivery Acceptance at Stage 11.',
-      content: 'PAYMENT STRUCTURE (STRICTLY TWO 50% INSTALLMENTS):\n• Milestone 1: ₹10,62,000 (50%) due upon bilateral execution of this SOW, payable at Stage 6 via verified manual UPI transfer.\n• Milestone 2: ₹10,62,000 (50%) due upon formal sign-off of Delivery Acceptance (Stage 10), payable at Stage 11 prior to production handover (Stage 12).',
+      content: `PAYMENT STRUCTURE (STRICTLY TWO 50% INSTALLMENTS):\n• Milestone 1: ${sowMeta.commercial.financials.depositFormatted} (50%) due upon bilateral execution of this SOW, payable at Stage 6 via verified manual UPI transfer.\n• Milestone 2: ${sowMeta.commercial.financials.settlementFormatted} (50%) due upon formal sign-off of Delivery Acceptance (Stage 10), payable at Stage 11 prior to production handover (Stage 12).`,
     },
     {
       num: 15,
@@ -336,7 +351,7 @@ export default function SowStageClient({
               {sowMeta.commercial.total}
             </span>
             <span className="text-[11px] text-emerald-700 font-semibold mt-1">
-              Two 50% Milestones: ₹10,62,000 each
+              Two 50% Milestones: {sowMeta.commercial.financials.depositFormatted} each
             </span>
           </div>
         </div>

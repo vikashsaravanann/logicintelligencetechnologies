@@ -37,6 +37,8 @@ import {
 import { ENTERPRISE_CHECKPOINTS, EnterpriseCheckpoint } from '@/data/enterpriseDeploymentChecklist';
 import { StageApprovalModal } from '@/components/shared/StageApprovalModal';
 import { SendNotificationModal } from '../components/SendNotificationModal';
+import { ManagePricingModal } from '../components/ManagePricingModal';
+import { getFinancialsForEngagement, calculateEngagementFinancials } from '@/lib/engagements/financials';
 
 interface EngagementDetailAdminClientProps {
   engagement: ClientEngagement;
@@ -47,20 +49,22 @@ interface EngagementDetailAdminClientProps {
 }
 
 export default function EngagementDetailAdminClient({
-  engagement,
+  engagement: initialEngagement,
   initialStages,
   documents,
   identityRequests: _identityRequests,
   initialActiveStageKey,
 }: EngagementDetailAdminClientProps) {
+  const [engagement, setEngagement] = useState<ClientEngagement>(initialEngagement);
   const [stages, setStages] = useState<EngagementStage[]>(initialStages);
   const [updatingStageId, setUpdatingStageId] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [activeInspectorStageKey, setActiveInspectorStageKey] = useState<StageKey>(
-    initialActiveStageKey || (engagement.current_stage as StageKey) || 'checklist'
+    initialActiveStageKey || (initialEngagement.current_stage as StageKey) || 'checklist'
   );
   const [checklistSearch, setChecklistSearch] = useState<string>('');
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+  const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
 
   // Animated Approval Modal State
   const [approvalModal, setApprovalModal] = useState<{
@@ -224,62 +228,10 @@ export default function EngagementDetailAdminClient({
     }
   };
 
-  // Dynamically compute total contract commitment and payment terms from metadata, proposals, and milestones
-  const computeFinancials = () => {
-    const metadata = (engagement.metadata || {}) as Record<string, any>;
-    const proposalStage = stages.find((s) => s.stage_key === 'proposal');
-    const invoiceStage = stages.find((s) => s.stage_key === 'initial-invoice');
-    const finalStage = stages.find((s) => s.stage_key === 'final-payment');
-
-    const proposalSnap = (proposalStage?.snapshot || {}) as Record<string, any>;
-    const invoiceSnap = (invoiceStage?.snapshot || {}) as Record<string, any>;
-    const finalSnap = (finalStage?.snapshot || {}) as Record<string, any>;
-
-    let numericVal: number | null = null;
-    if (typeof metadata.contract_value === 'number') {
-      numericVal = metadata.contract_value;
-    } else if (typeof metadata.contract_value === 'string' && !isNaN(Number(metadata.contract_value))) {
-      numericVal = Number(metadata.contract_value);
-    } else if (typeof proposalSnap.totalPayable === 'number') {
-      numericVal = proposalSnap.totalPayable;
-    } else if (typeof proposalSnap.total_payable === 'number') {
-      numericVal = proposalSnap.total_payable;
-    } else if (typeof proposalSnap.pricing?.total === 'number') {
-      numericVal = proposalSnap.pricing.total;
-    } else if (typeof invoiceSnap.total_payable === 'number') {
-      numericVal = invoiceSnap.total_payable;
-    } else if (typeof invoiceSnap.amount === 'number' && typeof finalSnap.amount === 'number') {
-      numericVal = invoiceSnap.amount + finalSnap.amount;
-    } else if (typeof invoiceSnap.amount === 'number') {
-      numericVal = invoiceSnap.amount * 2;
-    }
-
-    const formatInr = (n: number) =>
-      new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 2,
-      }).format(n);
-
-    let totalDisplay = '₹21,24,000.00';
-    if (numericVal !== null && numericVal > 0) {
-      totalDisplay = formatInr(numericVal);
-    } else if (typeof metadata.contract_value === 'string' && metadata.contract_value.trim()) {
-      totalDisplay = metadata.contract_value;
-    } else if (typeof metadata.budget_range === 'string' && metadata.budget_range.trim()) {
-      totalDisplay = metadata.budget_range;
-    }
-
-    const termsDisplay =
-      proposalSnap.paymentTerms ||
-      proposalSnap.payment_terms ||
-      metadata.payment_terms ||
-      '50% Deposit / 50% Settlement';
-
-    return { totalDisplay, termsDisplay };
-  };
-
-  const { totalDisplay: contractValueDisplay, termsDisplay: paymentTermsDisplay } = computeFinancials();
+  // Dynamically compute total contract commitment and payment terms using statutory GST engine
+  const financials = getFinancialsForEngagement(engagement, stages);
+  const contractValueDisplay = financials.totalFormatted;
+  const paymentTermsDisplay = `50% Deposit (${financials.depositFormatted}) / 50% Settlement (${financials.settlementFormatted})`;
 
   // Status badge styling helper
   const renderStatusBadge = (status: StageStatus) => {
@@ -561,9 +513,9 @@ export default function EngagementDetailAdminClient({
       }
 
       case 'proposal': {
-        const subtotal = snap.subtotal || snap.pricing?.subtotal || '₹18,00,000.00';
-        const gst = snap.gst || snap.pricing?.gst || '₹3,24,000.00';
-        const total = snap.totalPayable || snap.total_payable || snap.pricing?.total || contractValueDisplay;
+        const subtotal = financials.subtotalFormatted;
+        const gst = financials.gstFormatted;
+        const total = financials.totalFormatted;
 
         return (
           <div className="space-y-4">
@@ -581,7 +533,7 @@ export default function EngagementDetailAdminClient({
                   Subtotal (Excl. GST)
                 </span>
                 <span className="text-sm font-mono font-bold text-slate-800 mt-1 block">
-                  {typeof subtotal === 'number' ? `₹${subtotal.toLocaleString('en-IN')}` : subtotal}
+                  {subtotal}
                 </span>
               </div>
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
@@ -589,7 +541,10 @@ export default function EngagementDetailAdminClient({
                   GST (18% Statutory)
                 </span>
                 <span className="text-sm font-mono font-bold text-slate-800 mt-1 block">
-                  {typeof gst === 'number' ? `₹${gst.toLocaleString('en-IN')}` : gst}
+                  {gst}
+                  <span className="text-[10px] font-normal text-slate-500 block mt-0.5">
+                    (CGST 9%: {financials.cgstFormatted} · SGST 9%: {financials.sgstFormatted})
+                  </span>
                 </span>
               </div>
               <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-xl">
@@ -597,14 +552,25 @@ export default function EngagementDetailAdminClient({
                   Total Commitment
                 </span>
                 <span className="text-base font-mono font-black text-emerald-700 mt-1 block">
-                  {typeof total === 'number' ? `₹${total.toLocaleString('en-IN')}` : total}
+                  {total}
                 </span>
               </div>
             </div>
 
             <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-1">
-              <span className="font-bold text-slate-700 block">Payment Terms &amp; Milestones:</span>
-              <p className="text-slate-600">{paymentTermsDisplay}</p>
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-700 block">Payment Terms &amp; Milestones:</span>
+                <button
+                  type="button"
+                  onClick={() => setIsPricingModalOpen(true)}
+                  className="text-xs font-bold text-[#1565C0] hover:underline cursor-pointer"
+                >
+                  Edit Quotation &amp; Rates
+                </button>
+              </div>
+              <p className="text-slate-600">
+                Milestone 1: 50% Initial Deposit ({financials.depositFormatted}) · Milestone 2: 50% Final Settlement ({financials.settlementFormatted})
+              </p>
             </div>
           </div>
         );
@@ -690,7 +656,7 @@ export default function EngagementDetailAdminClient({
       case 'final-payment': {
         const isInitial = stageKey === 'initial-invoice';
         const utr = snap.utr || snap.transactionRef || snap.transaction_ref;
-        const amount = snap.amount || (isInitial ? '₹10,62,000.00' : '₹10,62,000.00');
+        const amount = snap.amount || (isInitial ? financials.depositFormatted : financials.settlementFormatted);
         const billing = (snap.billingSubmission || {}) as Record<string, any>;
         const isVerified = stage.status === 'verified';
 
@@ -1014,6 +980,15 @@ export default function EngagementDetailAdminClient({
           <div className="flex items-center gap-2">
             <button
               type="button"
+              onClick={() => setIsPricingModalOpen(true)}
+              className="px-4 py-2 bg-[#1565C0] hover:bg-[#0D47A1] text-white text-xs font-semibold rounded-lg transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+              title="Edit Quotation, Subtotal, and GST rates for this engagement"
+            >
+              <DollarSign className="w-3.5 h-3.5 text-white" />
+              <span>Edit Quotation &amp; Rates</span>
+            </button>
+            <button
+              type="button"
               onClick={() => setIsNotificationModalOpen(true)}
               className="px-4 py-2 bg-[var(--lit-teal,#1FA9A2)] hover:bg-[#188c86] text-white text-xs font-semibold rounded-lg transition-colors shadow-xs flex items-center gap-1.5"
               title="Send notification to this client workspace"
@@ -1190,17 +1165,28 @@ export default function EngagementDetailAdminClient({
                 value={currentStageRecord.status}
                 disabled={updatingStageId === currentStageRecord.id}
                 onChange={(e) => handleStatusChange(currentStageRecord.id, e.target.value as StageStatus)}
-                className="px-2.5 py-1 text-xs border border-[#DFE7EF] rounded-lg bg-white text-[#0B2545] font-semibold focus:outline-none focus:ring-1 focus:ring-[#1565C0]"
+                className="px-2.5 py-1 text-xs border border-slate-300 rounded-lg bg-white text-black font-bold focus:outline-none focus:ring-1 focus:ring-[#1565C0] shadow-2xs"
+                style={{ color: '#000000', WebkitTextFillColor: '#000000', backgroundColor: '#FFFFFF' }}
               >
-                <option value="locked">locked</option>
-                <option value="available">available</option>
-                <option value="in_progress">in_progress</option>
-                <option value="submitted">submitted</option>
-                <option value="under_review">under_review</option>
-                <option value="approved">approved</option>
-                <option value="verification_pending">verification_pending</option>
-                <option value="verified">verified</option>
-                <option value="completed">completed</option>
+                {[
+                  'locked',
+                  'available',
+                  'in_progress',
+                  'submitted',
+                  'under_review',
+                  'approved',
+                  'verification_pending',
+                  'verified',
+                  'completed',
+                ].map((st) => (
+                  <option
+                    key={st}
+                    value={st}
+                    style={{ color: '#000000', WebkitTextFillColor: '#000000', backgroundColor: '#FFFFFF' }}
+                  >
+                    {st}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -1320,17 +1306,28 @@ export default function EngagementDetailAdminClient({
                             value={stage.status}
                             disabled={isUpdating}
                             onChange={(e) => handleStatusChange(stage.id, e.target.value as StageStatus)}
-                            className="px-2 py-1 text-[11px] border border-[#DFE7EF] rounded-lg bg-white text-[#0B2545] focus:outline-none focus:ring-1 focus:ring-[#1565C0]"
+                            className="px-2 py-1 text-[11px] border border-slate-300 rounded-lg bg-white text-black font-semibold focus:outline-none focus:ring-1 focus:ring-[#1565C0]"
+                            style={{ color: '#000000', WebkitTextFillColor: '#000000', backgroundColor: '#FFFFFF' }}
                           >
-                            <option value="locked">locked</option>
-                            <option value="available">available</option>
-                            <option value="in_progress">in_progress</option>
-                            <option value="submitted">submitted</option>
-                            <option value="under_review">under_review</option>
-                            <option value="approved">approved</option>
-                            <option value="verification_pending">verification_pending</option>
-                            <option value="verified">verified</option>
-                            <option value="completed">completed</option>
+                            {[
+                              'locked',
+                              'available',
+                              'in_progress',
+                              'submitted',
+                              'under_review',
+                              'approved',
+                              'verification_pending',
+                              'verified',
+                              'completed',
+                            ].map((st) => (
+                              <option
+                                key={st}
+                                value={st}
+                                style={{ color: '#000000', WebkitTextFillColor: '#000000', backgroundColor: '#FFFFFF' }}
+                              >
+                                {st}
+                              </option>
+                            ))}
                           </select>
                         </div>
                       </td>
@@ -1403,6 +1400,18 @@ export default function EngagementDetailAdminClient({
         onSuccess={(msg) => {
           setSuccessMessage(msg);
           setTimeout(() => setSuccessMessage(null), 4000);
+        }}
+      />
+
+      {/* Manage Pricing Modal */}
+      <ManagePricingModal
+        engagement={engagement}
+        isOpen={isPricingModalOpen}
+        onClose={() => setIsPricingModalOpen(false)}
+        onUpdated={(updatedEngagement) => {
+          setEngagement(updatedEngagement);
+          setSuccessMessage("✓ Commercial quotation & rates updated successfully!");
+          setTimeout(() => setSuccessMessage(null), 4500);
         }}
       />
     </div>

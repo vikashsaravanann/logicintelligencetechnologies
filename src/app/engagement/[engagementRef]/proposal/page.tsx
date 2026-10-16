@@ -53,6 +53,8 @@ export default async function ProposalStagePage({ params }: ProposalPageProps) {
         companyName={engagement.company_name}
         contactName={engagement.contact_name}
         initialStatus={stage?.status}
+        metadata={engagement.metadata as Record<string, unknown>}
+        initialSnapshot={stage?.snapshot}
       />
     </div>
   );

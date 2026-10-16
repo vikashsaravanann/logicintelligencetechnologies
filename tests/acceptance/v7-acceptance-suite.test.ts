@@ -46,13 +46,13 @@ import {
   generatePortalWhatsAppText,
 } from "../../src/lib/engagements/share";
 
-// Require db functions after server-only stub is loaded
 // eslint-disable-next-line @typescript-eslint/no-require-imports
+const db = require("../../src/lib/engagements/db");
 const {
   submitStageAction,
   FALLBACK_SAMPLE_ENGAGEMENT,
   FALLBACK_SAMPLE_STAGES,
-} = require("../../src/lib/engagements/db");
+} = db;
 
 function createTestStages(currentKey: StageKey, currentStatus: StageStatus = "available") {
   const currentDef = CANONICAL_13_STAGES[currentKey];

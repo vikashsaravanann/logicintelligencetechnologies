@@ -8,6 +8,7 @@ import {
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { buildUpiUri, generateUpiQrDataUrl, LIT_PAYEE_CONFIG } from '@/lib/payments/upi';
 import { isCurrentUserSuperAdmin } from '@/lib/auth/is-super-admin';
+import { calculateEngagementFinancials } from '@/lib/engagements/financials';
 import StageHeader from '../components/StageHeader';
 import LockedStageCard from '../components/LockedStageCard';
 import FinalPaymentStageClient from './FinalPaymentStageClient';
@@ -52,11 +53,20 @@ export default async function FinalPaymentStagePage({ params }: FinalPaymentPage
     }
   }
 
+  const candidateSubtotal =
+    stage?.snapshot?.subtotal ||
+    (engagement.metadata as Record<string, any>)?.contract_subtotal ||
+    (engagement.metadata as Record<string, any>)?.subtotal ||
+    (engagement.metadata as Record<string, any>)?.contract_value ||
+    (engagement.metadata as Record<string, any>)?.budget_range ||
+    50;
+  const financials = calculateEngagementFinancials(candidateSubtotal);
+
   const transactionRef = `LIT-PAY-${engagement.engagement_ref}-FINAL`;
   const upiDeepLink = buildUpiUri({
     pa: LIT_PAYEE_CONFIG.upiId,
     pn: LIT_PAYEE_CONFIG.accountHolder,
-    am: 1062000.0,
+    am: financials.settlementAmount,
     cu: 'INR',
     tr: transactionRef,
     tn: `Final Settlement 50% ${engagement.engagement_ref}`,
@@ -86,6 +96,7 @@ export default async function FinalPaymentStagePage({ params }: FinalPaymentPage
         initialStatus={stage?.status}
         initialData={stage?.snapshot}
         document={docs[0]}
+        metadata={engagement.metadata as Record<string, unknown>}
       />
     </div>
   );

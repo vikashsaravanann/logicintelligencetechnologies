@@ -55,6 +55,7 @@ export default async function AcceptanceStagePage({ params }: AcceptancePageProp
         contactEmail={engagement.contact_email}
         initialStatus={stage?.status}
         initialData={stage?.snapshot}
+        metadata={engagement.metadata as Record<string, unknown>}
       />
     </div>
   );
