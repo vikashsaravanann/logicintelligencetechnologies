@@ -53,7 +53,6 @@ export const PUBLIC_MARKETING_PREFIXES: readonly string[] = [
   // Public & lifecycle pages that live outside the (marketing) group
   "/ai",
   "/company",
-  "/engagement",
   "/handover",
   "/onboard",
   "/onboarding",
@@ -101,6 +100,7 @@ export const PROTECTED_PREFIXES: readonly string[] = [
   "/admin",
   "/client",
   "/dashboard",
+  "/engagement",
   "/profile",
 ];
 

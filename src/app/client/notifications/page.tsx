@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   Bell,
@@ -55,6 +56,7 @@ export default function ClientNotificationsPage() {
 
   // Preferences modal state
   const [isPrefsOpen, setIsPrefsOpen] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
   const [prefs, setPrefs] = useState<NotificationPreferences>({
     emailCriticalAlerts: true,
     emailStageMilestones: true,
@@ -64,6 +66,21 @@ export default function ClientNotificationsPage() {
   const [isLoadingPrefs, setIsLoadingPrefs] = useState<boolean>(false);
   const [isSavingPrefs, setIsSavingPrefs] = useState<boolean>(false);
   const [prefsSuccess, setPrefsSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isPrefsOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isPrefsOpen]);
 
   const fetchNotifications = async () => {
     try {
@@ -376,15 +393,15 @@ export default function ClientNotificationsPage() {
       )}
 
       {/* Preferences Slide-over / Modal */}
-      {isPrefsOpen && (
+      {isPrefsOpen && mounted && typeof document !== 'undefined' && createPortal(
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto"
           onClick={() => setIsPrefsOpen(false)}
         >
           <div
-            className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 my-auto flex flex-col max-h-[92vh] text-left"
+            className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 my-auto flex flex-col max-h-[90vh] text-left relative"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Top Decorative Banner */}
@@ -554,7 +571,8 @@ export default function ClientNotificationsPage() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

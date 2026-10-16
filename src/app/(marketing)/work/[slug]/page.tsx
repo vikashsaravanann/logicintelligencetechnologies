@@ -1,5 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import { getProjectBySlug, portfolioProjects } from "@/data/portfolioData";
 import { testimonials } from "@/data/testimonialsData";
 import CaseStudyContent from "./case-study-content";
@@ -44,5 +46,16 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
     ? testimonials.find((t) => t.id === project.testimonialId)
     : undefined;
 
-  return <CaseStudyContent project={project} linkedTestimonial={linkedTestimonial} />;
+  return (
+    <>
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "Work", path: "/work" },
+          { name: project.title, path: `/work/${slug}` },
+        ])}
+      />
+      <CaseStudyContent project={project} linkedTestimonial={linkedTestimonial} />
+    </>
+  );
 }

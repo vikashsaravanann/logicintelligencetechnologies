@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { PRICING_CONFIG, Currency, formatPrice, isCustomPlan, PRICING_DISCLAIMER } from '@/config/pricing';
 import { Check, HelpCircle, Shield, Lock, FileCheck, Sparkles, ArrowRight } from 'lucide-react';
 import BackButton from "@/components/navigation/back-button";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 
 export default function PricingPage() {
   const [currency, setCurrency] = useState<Currency>('USD');
@@ -15,6 +17,12 @@ export default function PricingPage() {
       tabIndex={-1}
       className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0] pt-28 sm:pt-36 pb-20 overflow-x-hidden"
     >
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "Pricing", path: "/pricing" },
+        ])}
+      />
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Navigation Breadcrumb */}
         <div className="mb-6">

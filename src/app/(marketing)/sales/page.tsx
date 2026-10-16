@@ -21,6 +21,8 @@ import {
   Loader2,
 } from "lucide-react";
 import BackButton from "@/components/navigation/back-button";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import CTASection from "@/components/ui/cta-section";
 
 interface SalesFormData {
@@ -109,6 +111,12 @@ export default function SalesPage() {
       tabIndex={-1}
       className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0] pt-28 sm:pt-36 pb-20 overflow-x-hidden"
     >
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "Enterprise Sales", path: "/sales" },
+        ])}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Navigation */}
         <div className="mb-8">

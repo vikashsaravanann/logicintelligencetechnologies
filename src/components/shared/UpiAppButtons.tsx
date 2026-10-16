@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ShieldCheck,
   Copy,
@@ -38,6 +39,22 @@ export function UpiAppButtons({
 }: UpiAppButtonsProps) {
   const [selectedApp, setSelectedApp] = useState<UpiAppInfo | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (selectedApp) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedApp]);
 
   const encPa = encodeURIComponent(beneficiaryVpa);
   const encPn = encodeURIComponent(payeeName);
@@ -125,15 +142,15 @@ export function UpiAppButtons({
       </div>
 
       {/* ── High-End Animated App Confirmation Modal ── */}
-      {selectedApp && (
+      {selectedApp && mounted && typeof document !== 'undefined' && createPortal(
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto"
           onClick={() => setSelectedApp(null)}
         >
           <div
-            className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 text-left"
+            className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 text-left my-auto relative"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Top Header with Brand Gradient */}
@@ -252,7 +269,8 @@ export function UpiAppButtons({
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

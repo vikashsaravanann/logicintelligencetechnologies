@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { BackButton } from "@/components/navigation/back-button";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import { productsData } from "@/data/productsData";
 import {
   CheckCircle2,
@@ -71,6 +73,13 @@ export default async function ProductDetailPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0] pt-28 sm:pt-36 pb-20">
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "Products", path: "/products" },
+          { name: prod.name, path: `/products/${slug}` },
+        ])}
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
         <BackButton fallbackHref="/products" label="Back to Products" inline />
       </div>

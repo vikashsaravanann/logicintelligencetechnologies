@@ -29,6 +29,7 @@ const NOT_IN_MENU = [
   /^\/terms-of-service$/, // same content as /terms
   /^\/docs\/api$/,
   /^\/roi-calculator$/,
+  /^\/engagement(\/|$)/, // private admin-issued client lifecycle portal, not in public menu
 ];
 
 const menuHrefs = new Set([...PRIMARY_NAV, ...MORE_NAV_GROUPS.flatMap((g) => g.items)].map((i) => i.href));

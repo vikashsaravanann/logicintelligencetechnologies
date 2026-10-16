@@ -1,5 +1,7 @@
 import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { servicesData, getServiceVisual } from "@/data/servicesData";
@@ -68,6 +70,13 @@ export default async function ServiceDetailPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0] pt-28 pb-20">
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+          { name: service.title, path: `/services/${slug}` },
+        ])}
+      />
       <BackToHome href="/services" label="Back to Services" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

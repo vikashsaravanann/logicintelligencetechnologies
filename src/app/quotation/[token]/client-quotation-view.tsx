@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   QuotationRecord,
@@ -57,12 +58,28 @@ export function ClientQuotationView({
 
   // Revision state
   const [isRevisionModalOpen, setIsRevisionModalOpen] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
   const [revisionName, setRevisionName] = useState<string>(quotation.recipient_name || "");
   const [revisionEmail, setRevisionEmail] = useState<string>(quotation.recipient_email || "");
   const [revisionNotes, setRevisionNotes] = useState<string>("");
   const [isSubmittingRevision, setIsSubmittingRevision] = useState<boolean>(false);
   const [revisionSuccess, setRevisionSuccess] = useState<boolean>(false);
   const [revisionError, setRevisionError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isRevisionModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isRevisionModalOpen]);
 
   // Formal acceptance state
   const [signerName, setSignerName] = useState<string>(quotation.recipient_name || "");
@@ -838,15 +855,15 @@ export function ClientQuotationView({
       )}
 
       {/* Revision Request Modal */}
-      {isRevisionModalOpen && (
+      {isRevisionModalOpen && mounted && typeof document !== 'undefined' && createPortal(
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto"
           onClick={() => setIsRevisionModalOpen(false)}
         >
           <div
-            className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 my-auto flex flex-col max-h-[92vh] text-left"
+            className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 my-auto flex flex-col max-h-[90vh] text-left relative"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Top Decorative Banner */}
@@ -1015,7 +1032,8 @@ export function ClientQuotationView({
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

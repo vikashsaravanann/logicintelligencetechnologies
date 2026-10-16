@@ -84,7 +84,6 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
       { href: "/ai-discovery", label: "AI DISCOVERY", description: "DISCOVERY WORKSHOP" },
       { href: "/discovery", label: "PROJECT QUESTIONNAIRE", description: "SCOPE YOUR PROJECT" },
       { href: "/checklist", label: "PROJECT CHECKLIST", description: "PROJECT READINESS" },
-      { href: "/engagement", label: "CLIENT ENGAGEMENT HUB", description: "13-STAGE LIFECYCLE & MILESTONES" },
     ],
   },
   {

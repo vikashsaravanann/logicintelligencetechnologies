@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import StageDocumentCard from '../components/StageDocumentCard';
 
@@ -20,9 +21,25 @@ export default function DevelopmentStageClient({
   document,
 }: DevelopmentStageClientProps) {
   const [showRfcModal, setShowRfcModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [rfcTitle, setRfcTitle] = useState('');
   const [rfcDescription, setRfcDescription] = useState('');
   const [rfcImpact, setRfcImpact] = useState<'low' | 'medium' | 'high'>('low');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (showRfcModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showRfcModal]);
   const [isSubmittingRfc, setIsSubmittingRfc] = useState(false);
   const [rfcSubmitted, setRfcSubmitted] = useState(false);
   const [rfcAuditHash, setRfcAuditHash] = useState<string | null>(null);
@@ -315,15 +332,15 @@ export default function DevelopmentStageClient({
       </div>
 
       {/* Proportional Enterprise RFC Modal */}
-      {showRfcModal && (
+      {showRfcModal && mounted && typeof document !== 'undefined' && createPortal(
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
+          className="fixed inset-0 z-[99999] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
           onClick={() => setShowRfcModal(false)}
         >
           <div
-            className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 my-auto flex flex-col max-h-[92vh] text-left"
+            className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 my-auto flex flex-col max-h-[90vh] text-left relative"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Top Decorative Header */}
@@ -474,7 +491,8 @@ export default function DevelopmentStageClient({
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

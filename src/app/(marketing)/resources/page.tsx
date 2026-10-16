@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import BackButton from "@/components/navigation/back-button";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import { PDF_RESOURCES } from "@/config/pdfs";
 import { BookOpen, MessageSquare, Sparkles, UserCheck, FileText, DownloadCloud } from "lucide-react";
 import PageShell from "@/components/layout/page-shell";
@@ -52,6 +54,12 @@ export default function ResourcesPage() {
         tabIndex={-1}
         className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0] pt-28 sm:pt-36 pb-20 overflow-x-hidden"
       >
+        <JsonLd
+          data={breadcrumb([
+            { name: "Home", path: "/" },
+            { name: "Resources", path: "/resources" },
+          ])}
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Navigation */}
           <div className="mb-6">

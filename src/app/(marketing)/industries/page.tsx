@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import BackButton from "@/components/navigation/back-button";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import { industriesData, getIndustryVisual } from "@/data/industriesData";
 import { ArrowRight, Building2, CheckCircle2, Cpu } from "lucide-react";
 import IndustryCardAnimation from "@/components/industries/industry-card-animation";
@@ -17,6 +19,12 @@ export const metadata: Metadata = {
 export default function IndustriesPage() {
   return (
     <main id="main-content" tabIndex={-1} className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0] pt-28 sm:pt-36 pb-20 overflow-x-hidden">
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "Industries", path: "/industries" },
+        ])}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="mb-6">
           <BackButton fallbackHref="/" label="Back to Home" inline />

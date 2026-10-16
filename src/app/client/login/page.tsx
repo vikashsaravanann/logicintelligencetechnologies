@@ -7,10 +7,21 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+type Props = {
+  searchParams?: Promise<{ ref?: string; next?: string }>;
+};
+
 /**
  * Client Portal Login Gateway (Page 071).
  * Canonical redirect to unified secure login route with portal dashboard destination.
  */
-export default function ClientLoginPage() {
-  redirect("/login?next=/client/dashboard");
+export default async function ClientLoginPage({ searchParams }: Props) {
+  const sp = searchParams ? await searchParams : {};
+  let destination = "/client/dashboard";
+  if (sp.next) {
+    destination = sp.next;
+  } else if (sp.ref) {
+    destination = `/client/dashboard?ref=${encodeURIComponent(sp.ref)}`;
+  }
+  redirect(`/login?next=${encodeURIComponent(destination)}`);
 }

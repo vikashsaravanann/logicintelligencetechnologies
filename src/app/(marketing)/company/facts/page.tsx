@@ -20,6 +20,8 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import CTASection from "@/components/ui/cta-section";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 
 export const metadata: Metadata = {
   title: "Company Facts | Logic Intelligence Technologies",
@@ -30,6 +32,13 @@ export const metadata: Metadata = {
 export default function CompanyFactsPage() {
   return (
     <div className="min-h-screen bg-white text-[var(--lit-ink)] pt-28 pb-20 px-4 sm:px-6 lg:px-8 selection:bg-[#E7F3FF] selection:text-[#1565C0]">
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "Company", path: "/about" },
+          { name: "Company Facts", path: "/company/facts" },
+        ])}
+      />
       <div className="max-w-5xl mx-auto space-y-12">
         <BackToHome />
 

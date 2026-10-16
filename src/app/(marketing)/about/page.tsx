@@ -4,6 +4,8 @@ import FloatingElements from "@/components/motion/floating-elements";
 import BackToHome from "@/components/ui/back-to-home";
 import { COMPANY } from "@/config/company";
 import { FOUNDER } from "@/config/founder";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import {
   ExternalLink,
   Mail,
@@ -92,6 +94,12 @@ const focusAreas = [
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white text-[var(--lit-ink)] selection:bg-[#E7F3FF] selection:text-[#1565C0]">
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "About Us", path: "/about" },
+        ])}
+      />
       <BackToHome />
 
       {/* Hero Section */}

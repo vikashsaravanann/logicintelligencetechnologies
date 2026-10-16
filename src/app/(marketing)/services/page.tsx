@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import BackToHome from "@/components/ui/back-to-home";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import { servicesData, getServiceVisual } from "@/data/servicesData";
 import {
   LucideIcon,
@@ -95,6 +97,12 @@ const SERVICE_TAGS: Record<string, string> = {
 export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0]">
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+        ])}
+      />
       <BackToHome href="/" label="Back to Home" />
 
       {/* Hero Section */}

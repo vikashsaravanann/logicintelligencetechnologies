@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { COMPANY } from "@/config/company";
-import { logicVoiceProductNode } from "@/lib/seo/schema";
+import { logicVoiceProductNode, breadcrumb } from "@/lib/seo/schema";
 import BackButton from "@/components/navigation/back-button";
 import LogicVoiceConsole from "@/components/logic-voice/logic-voice-console";
 import {
@@ -51,7 +51,14 @@ export default function LogicVoiceProductPage() {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@graph": [logicVoiceProductNode()],
+            "@graph": [
+              logicVoiceProductNode(),
+              breadcrumb([
+                { name: "Home", path: "/" },
+                { name: "Products", path: "/products" },
+                { name: "Logic Voice", path: "/products/logic-voice" },
+              ]),
+            ],
           }),
         }}
       />

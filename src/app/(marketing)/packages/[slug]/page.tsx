@@ -3,6 +3,8 @@ import { servicesData, getServiceVisual } from "@/data/servicesData";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import BackButton from "@/components/navigation/back-button";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import { CheckCircle2, ChevronRight, Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { 
@@ -63,6 +65,13 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
         tabIndex={-1}
         className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0] pt-28 sm:pt-36 pb-20 overflow-x-hidden"
       >
+        <JsonLd
+          data={breadcrumb([
+            { name: "Home", path: "/" },
+            { name: "Packages", path: "/packages" },
+            { name: pkg.title, path: `/packages/${slug}` },
+          ])}
+        />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Navigation Breadcrumb */}
           <div className="mb-6">
@@ -199,6 +208,13 @@ export default async function PackageOrServiceDetailPage({ params }: { params: P
         tabIndex={-1}
         className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0] pt-28 sm:pt-36 pb-20 overflow-x-hidden"
       >
+        <JsonLd
+          data={breadcrumb([
+            { name: "Home", path: "/" },
+            { name: "Packages", path: "/packages" },
+            { name: srv.title, path: `/packages/${slug}` },
+          ])}
+        />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Navigation Breadcrumb */}
           <div className="mb-6">

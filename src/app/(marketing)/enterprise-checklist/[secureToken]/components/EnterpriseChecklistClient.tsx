@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import {
   CheckCircle2,
   FileText,
@@ -69,6 +70,23 @@ export default function EnterpriseChecklistClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (showPdfModal || showReviewModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showPdfModal, showReviewModal]);
+
   const [clientNotes, setClientNotes] = useState(initialResponse?.client_notes || "");
   const [agreeDisclaimer, setAgreeDisclaimer] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -641,15 +659,15 @@ export default function EnterpriseChecklistClient({
       )}
 
       {/* PDF View Modal */}
-      {showPdfModal && (
+      {showPdfModal && mounted && typeof document !== 'undefined' && createPortal(
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
           onClick={() => setShowPdfModal(false)}
         >
           <div
-            className="bg-white rounded-3xl w-full max-w-5xl h-[88vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200/90 my-auto animate-in zoom-in-95 duration-200"
+            className="bg-white rounded-3xl w-full max-w-5xl h-[88vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200/90 my-auto animate-in zoom-in-95 duration-200 text-left relative"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-6 py-4 sm:px-7 sm:py-5 bg-gradient-to-r from-[#0B2545] via-[#123663] to-[#1565C0] text-white shrink-0">
@@ -696,7 +714,8 @@ export default function EnterpriseChecklistClient({
               />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Review & Submit Modal */}

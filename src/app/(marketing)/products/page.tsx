@@ -1,5 +1,7 @@
 import { Metadata } from "next";
 import BackToHome from "@/components/ui/back-to-home";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import Link from "next/link";
 import { productsData } from "@/data/productsData";
 import {
@@ -42,6 +44,12 @@ export default function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0]">
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "Products", path: "/products" },
+        ])}
+      />
       <BackToHome href="/" label="Back to Home" />
 
       {/* Hero Section */}

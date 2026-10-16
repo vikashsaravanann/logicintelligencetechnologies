@@ -1,11 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createEngagement, listAllEngagements } from '@/lib/engagements/db';
 import { COMPANY } from '@/config/company';
+import { isRouteCallerSuperAdmin } from '@/lib/auth/is-super-admin';
+import { requireCapabilityApi } from '@/lib/auth/session';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const isSuperAdmin = await isRouteCallerSuperAdmin();
+    if (!isSuperAdmin) {
+      const auth = await requireCapabilityApi(req, 'clients.read');
+      if (!auth.ok) {
+        return NextResponse.json(
+          { success: false, error: 'Unauthorized: Admin access required.' },
+          { status: 403 }
+        );
+      }
+    }
+
     const engagements = await listAllEngagements();
     return NextResponse.json({ success: true, engagements });
   } catch (err: unknown) {
@@ -16,6 +29,17 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const isSuperAdmin = await isRouteCallerSuperAdmin();
+    if (!isSuperAdmin) {
+      const auth = await requireCapabilityApi(req, 'clients.write');
+      if (!auth.ok) {
+        return NextResponse.json(
+          { success: false, error: 'Unauthorized: Admin privileges required to issue client engagements.' },
+          { status: 403 }
+        );
+      }
+    }
+
     const body = await req.json();
     const {
       companyName,
@@ -80,12 +104,14 @@ export async function POST(req: NextRequest) {
 
     const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || COMPANY.websiteUrl).replace(/\/$/, '');
     const portalUrl = `${siteUrl}/engagement/${result.engagement.engagement_ref}`;
+    const workspaceUrl = `${siteUrl}/client/login?ref=${result.engagement.engagement_ref}`;
 
     return NextResponse.json(
       {
         success: true,
         engagement: result.engagement,
         portalUrl,
+        workspaceUrl,
         emailDispatched: result.emailDispatched,
         emailMessage: result.emailMessage,
       },

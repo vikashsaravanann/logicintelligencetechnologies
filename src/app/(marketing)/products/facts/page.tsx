@@ -2,6 +2,8 @@ import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import BackButton from "@/components/navigation/back-button";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import { COMPANY } from "@/config/company";
 import {
   Mic,
@@ -25,6 +27,13 @@ export const metadata: Metadata = {
 export default function ProductFactsPage() {
   return (
     <main id="main-content" tabIndex={-1} className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0] pt-28 sm:pt-36 pb-20 overflow-x-hidden">
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "Products", path: "/products" },
+          { name: "Product Facts & Register", path: "/products/facts" },
+        ])}
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-12">
         <div>
           <BackButton fallbackHref="/products" label="Back to Products" inline />

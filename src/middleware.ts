@@ -46,7 +46,8 @@ export async function middleware(req: NextRequest) {
     (path.startsWith("/enterprise-checklist/") && path.length > "/enterprise-checklist/".length) ||
     (path.startsWith("/payment/") && path.length > "/payment/".length) ||
     (path.startsWith("/onboarding/") && path.length > "/onboarding/".length) ||
-    (path.startsWith("/handover/") && path.length > "/handover/".length)
+    (path.startsWith("/handover/") && path.length > "/handover/".length) ||
+    (path.startsWith("/engagement/") && path.length > "/engagement/".length)
   ) {
     return res;
   }

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { aiWebsiteAgentsProductNode } from '@/lib/seo/schema';
+import { aiWebsiteAgentsProductNode, breadcrumb } from '@/lib/seo/schema';
 import {
   ArrowRight,
   Bot,
@@ -36,7 +36,14 @@ export default function AIWebsiteAgentsPage() {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             '@context': 'https://schema.org',
-            '@graph': [aiWebsiteAgentsProductNode()],
+            '@graph': [
+              aiWebsiteAgentsProductNode(),
+              breadcrumb([
+                { name: 'Home', path: '/' },
+                { name: 'Products', path: '/products' },
+                { name: 'AI Website Agents', path: '/products/ai-website-agents' },
+              ]),
+            ],
           }),
         }}
       />

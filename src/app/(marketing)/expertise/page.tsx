@@ -4,6 +4,8 @@ import { BackButton } from "@/components/navigation/back-button";
 import FloatingElements from "@/components/motion/floating-elements";
 import { FOUNDER } from "@/config/founder";
 import CTASection from "@/components/ui/cta-section";
+import JsonLd from "@/components/seo/json-ld";
+import { breadcrumb } from "@/lib/seo/schema";
 import {
   Code2,
   Database,
@@ -136,6 +138,12 @@ const ARCHITECTURAL_PILLARS = [
 export default function ExpertisePage() {
   return (
     <div className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] selection:bg-[#E7F3FF] selection:text-[#1565C0]">
+      <JsonLd
+        data={breadcrumb([
+          { name: "Home", path: "/" },
+          { name: "Technical Expertise", path: "/expertise" },
+        ])}
+      />
       {/* Hero Section */}
       <section className="relative pt-28 sm:pt-36 pb-16 sm:pb-20 px-6 lg:px-8 overflow-hidden bg-gradient-to-b from-[#F0F7FF] via-[#FAFBFF] to-[#FFFFFF] border-b border-[#E2E8F0]">
         <div className="max-w-7xl mx-auto mb-6">

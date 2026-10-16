@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { aiVoiceAgentsProductNode } from '@/lib/seo/schema';
+import { aiVoiceAgentsProductNode, breadcrumb } from '@/lib/seo/schema';
 import {
   ArrowRight,
   PhoneCall,
@@ -36,7 +36,14 @@ export default function AIVoiceAgentsPage() {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             '@context': 'https://schema.org',
-            '@graph': [aiVoiceAgentsProductNode()],
+            '@graph': [
+              aiVoiceAgentsProductNode(),
+              breadcrumb([
+                { name: 'Home', path: '/' },
+                { name: 'Products', path: '/products' },
+                { name: 'AI Voice Agents', path: '/products/ai-voice-agents' },
+              ]),
+            ],
           }),
         }}
       />

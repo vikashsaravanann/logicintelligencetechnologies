@@ -1,7 +1,6 @@
 import Navbar from '@/components/layout/navbar';
 import Footer from '@/components/layout/footer';
 import ClientWidgets from '@/components/shared/client-widgets';
-import InitialLoader from '@/components/motion/initial-loader';
 
 export default function MarketingLayout({
   children,
@@ -10,7 +9,6 @@ export default function MarketingLayout({
 }) {
   return (
     <>
-      <InitialLoader />
       <Navbar />
       <main
         id="main-content"

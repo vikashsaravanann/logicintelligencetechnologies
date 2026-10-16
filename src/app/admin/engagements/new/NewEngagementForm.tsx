@@ -53,12 +53,14 @@ export default function NewEngagementForm() {
   const [createdResult, setCreatedResult] = useState<{
     engagement: ClientEngagement;
     portalUrl: string;
+    workspaceUrl: string;
     emailDispatched: boolean;
     emailMessage?: string;
   } | null>(null);
 
   // Clipboard copy states
   const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedWorkspaceLink, setCopiedWorkspaceLink] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedWhatsApp, setCopiedWhatsApp] = useState(false);
 
@@ -98,9 +100,13 @@ export default function NewEngagementForm() {
         throw new Error(data.error || "Failed to create client engagement portal.");
       }
 
+      const siteUrl = typeof window !== 'undefined' ? window.location.origin : '';
+      const fallbackWorkspaceUrl = `${siteUrl}/client/login?ref=${data.engagement.engagement_ref}`;
+
       setCreatedResult({
         engagement: data.engagement,
         portalUrl: data.portalUrl,
+        workspaceUrl: data.workspaceUrl || fallbackWorkspaceUrl,
         emailDispatched: data.emailDispatched,
         emailMessage: data.emailMessage,
       });
@@ -118,6 +124,13 @@ export default function NewEngagementForm() {
     navigator.clipboard.writeText(createdResult.portalUrl);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);
+  };
+
+  const handleCopyWorkspaceLink = () => {
+    if (!createdResult?.workspaceUrl) return;
+    navigator.clipboard.writeText(createdResult.workspaceUrl);
+    setCopiedWorkspaceLink(true);
+    setTimeout(() => setCopiedWorkspaceLink(false), 2500);
   };
 
   const handleCopyEmailText = () => {
@@ -238,11 +251,21 @@ export default function NewEngagementForm() {
             </div>
           </div>
 
-          {/* Direct Link Banner */}
+          {/* Link 1: 13-Stage Milestone Portal */}
           <div className="p-4 rounded-2xl bg-white border border-[#B9DCFF] space-y-2">
-            <span className="text-[11px] font-bold text-[#1565C0] uppercase tracking-wider block">
-              Client Portal URL (Share with Client)
-            </span>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-[#1565C0] uppercase tracking-wider block">
+                1. 13-Stage Engagement Milestone Portal (Private Client Link)
+              </span>
+              <Link
+                href={createdResult.portalUrl}
+                target="_blank"
+                className="inline-flex items-center gap-1 text-[11px] font-bold text-[#1565C0] hover:underline"
+              >
+                <span>Preview</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
+            </div>
             <div className="flex items-center gap-2">
               <input
                 type="text"
@@ -252,10 +275,42 @@ export default function NewEngagementForm() {
               />
               <button
                 onClick={handleCopyLink}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#1565C0] text-white text-xs font-bold transition-all shadow-xs shrink-0"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#1565C0] text-white text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
               >
                 {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedLink ? "Copied!" : "Copy Link"}</span>
+                <span>{copiedLink ? "Copied!" : "Copy Portal Link"}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Link 2: Client Portal Workspace */}
+          <div className="p-4 rounded-2xl bg-white border border-emerald-300 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider block">
+                2. Client Portal Workspace (Enterprise Dashboard &amp; Team Workspace)
+              </span>
+              <Link
+                href={createdResult.workspaceUrl}
+                target="_blank"
+                className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:underline"
+              >
+                <span>Open Workspace</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                readOnly
+                value={createdResult.workspaceUrl}
+                className="w-full bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] rounded-xl px-3 py-2 text-xs font-mono text-emerald-900 select-all"
+              />
+              <button
+                onClick={handleCopyWorkspaceLink}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
+              >
+                {copiedWorkspaceLink ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedWorkspaceLink ? "Copied!" : "Copy Workspace Link"}</span>
               </button>
             </div>
           </div>
@@ -294,32 +349,41 @@ export default function NewEngagementForm() {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               onClick={handleCopyEmailText}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-xs font-bold text-[var(--lit-navy,#0B2545)] transition-all shadow-2xs"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-xs font-bold text-[var(--lit-navy,#0B2545)] transition-all shadow-2xs cursor-pointer"
             >
               {copiedEmail ? <Check className="w-4 h-4 text-emerald-600" /> : <Mail className="w-4 h-4 text-[#1565C0]" />}
-              <span>{copiedEmail ? "Email Copied!" : "Copy Formatted Email"}</span>
+              <span>{copiedEmail ? "Email Copied!" : "Copy Email Draft (Dual Links)"}</span>
             </button>
 
             <button
               onClick={handleCopyWhatsApp}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-xs font-bold text-[var(--lit-navy,#0B2545)] transition-all shadow-2xs"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-xs font-bold text-[var(--lit-navy,#0B2545)] transition-all shadow-2xs cursor-pointer"
             >
               {copiedWhatsApp ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4 text-emerald-600" />}
               <span>{copiedWhatsApp ? "WhatsApp Text Copied!" : "Copy WhatsApp Message"}</span>
             </button>
 
             <Link
+              href={createdResult.workspaceUrl}
+              target="_blank"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition-all shadow-xs"
+            >
+              <span>Launch Workspace</span>
+              <ExternalLink className="w-4 h-4" />
+            </Link>
+
+            <Link
               href={createdResult.portalUrl}
               target="_blank"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--lit-blue,#1565C0)] hover:bg-[#0B2545] text-white text-xs font-bold transition-all shadow-xs"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--lit-blue,#1565C0)] hover:bg-[#0B2545] text-white text-xs font-bold transition-all shadow-xs"
             >
-              <span>Open Client Portal</span>
+              <span>Open 13-Stage Portal</span>
               <ExternalLink className="w-4 h-4" />
             </Link>
 
             <button
               onClick={handleResetForm}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition-all ml-auto"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition-all ml-auto cursor-pointer"
             >
               <PlusCircle className="w-4 h-4" />
               <span>Create Another Portal</span>
