@@ -438,7 +438,7 @@ describe("Milestone 3 (FORMS01 - FORMS06 & WS01 - WS05) Forms, Workspaces & Comm
         const clientId = "client-uuid-777";
 
         let assignments: any[] = [];
-        let invitations: any[] = [
+        const invitations: any[] = [
           {
             id: inviteId,
             token_hash: tokenHash,
