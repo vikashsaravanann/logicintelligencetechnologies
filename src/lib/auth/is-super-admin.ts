@@ -14,7 +14,8 @@ export const SUPER_ADMIN_EMAILS = [
 
 /**
  * Server-side check if the currently authenticated session belongs to a Super Admin.
- * Verifies email against allowlist or database profile role === 'super_admin'.
+ * Verifies verified auth user and protected database profile role === 'super_admin'.
+ * Email suffixes, user-editable metadata, and hardcoded allowlists never grant privileges.
  * Fails safely and returns false on error or unauthenticated state.
  */
 export async function isCurrentUserSuperAdmin(): Promise<boolean> {
@@ -28,10 +29,6 @@ export async function isCurrentUserSuperAdmin(): Promise<boolean> {
     const { data: { user }, error: authErr } = await supabase.auth.getUser();
     if (authErr || !user) return false;
     if (user.is_anonymous || !user.email_confirmed_at) return false;
-
-    if (user.email && SUPER_ADMIN_EMAILS.includes(user.email.toLowerCase())) {
-      return true;
-    }
 
     const { data: profile, error: profErr } = await supabase
       .from("profiles")
@@ -48,6 +45,7 @@ export async function isCurrentUserSuperAdmin(): Promise<boolean> {
 
 /**
  * Route handler check for API requests.
+ * Derives super_admin status strictly from authenticated session and database profiles.role.
  */
 export async function isRouteCallerSuperAdmin(): Promise<boolean> {
   try {
@@ -60,10 +58,6 @@ export async function isRouteCallerSuperAdmin(): Promise<boolean> {
     const { data: { user }, error: authErr } = await supabase.auth.getUser();
     if (authErr || !user) return false;
     if (user.is_anonymous || !user.email_confirmed_at) return false;
-
-    if (user.email && SUPER_ADMIN_EMAILS.includes(user.email.toLowerCase())) {
-      return true;
-    }
 
     const { data: profile } = await supabase
       .from("profiles")

@@ -31,17 +31,8 @@ async function resolveAdmin(supabase: SupabaseClient): Promise<AdminApiAuth> {
   if (user.is_anonymous || !user.email_confirmed_at) {
     return { ok: false, status: 403, message: "Forbidden: Admin access required" };
   }
-  const SUPER_ADMINS = [
-    "createwithvikash@gmail.com",
-    "vikash@logicintelligencetechnologies.in",
-    "founder@logicintelligencetechnologies.in",
-    "admin@logicintelligencetechnologies.in",
-    "hello@logicintelligencetechnologies.in",
-    "platform_owner@healthcare.lit",
-  ];
-  if (user.email && SUPER_ADMINS.includes(user.email.toLowerCase())) {
-    return { ok: true, userId: user.id, email: user.email, role: "super_admin" };
-  }
+  // HARDENED: Removed hardcoded email allowlist bypass.
+  // Privilege strictly derives from protected database profiles.role.
   const { data: profile, error } = await supabase
     .from("profiles")
     .select("role")
@@ -69,12 +60,12 @@ export async function requireAdminApi(req?: Request): Promise<AdminApiAuth> {
       const token = authHeader.substring(7).trim();
       const adminSecret = process.env.LIT_ADMIN_SECRET || process.env.AGENT_METRICS_SECRET;
       if (adminSecret && token === adminSecret) {
-        return { ok: true, userId: "system-agent", email: "system@logicintelligencetechnologies.in", role: "super_admin" };
+        return { ok: true, userId: "system-agent", email: "system@logicintelligencetechnologies.in", role: "system_agent" };
       }
     }
     const agentHeader = req.headers.get("x-agent-metrics-secret");
     if (agentHeader && process.env.AGENT_METRICS_SECRET && agentHeader === process.env.AGENT_METRICS_SECRET) {
-      return { ok: true, userId: "system-agent", email: "agent@logicintelligencetechnologies.in", role: "super_admin" };
+      return { ok: true, userId: "system-agent", email: "agent@logicintelligencetechnologies.in", role: "system_agent" };
     }
   }
   try {

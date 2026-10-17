@@ -26,32 +26,29 @@ export async function GET(request: Request) {
       const { data: { session } } = await supabase.auth.exchangeCodeForSession(code);
 
       if (session?.user?.email) {
-        // Automatically ensure super_admin role for createwithvikash@gmail.com and LIT staff
-        const emailLower = session.user.email.toLowerCase().trim();
-        const isSuperAdminEmail =
-          emailLower === "createwithvikash@gmail.com" ||
-          emailLower === "vikash@logicintelligencetechnologies.in" ||
-          emailLower === "admin@logicintelligencetechnologies.in" ||
-          emailLower.endsWith("@logicintelligencetechnologies.in");
+        // Security Hardened: Never auto-elevate role based on email domain or string.
+        // Role is strictly managed through protected database governance.
+        try {
+          const { data: existingProfile } = await supabaseAdmin
+            .from("profiles")
+            .select("id")
+            .eq("id", session.user.id)
+            .maybeSingle();
 
-        if (isSuperAdminEmail) {
-          try {
-            await supabaseAdmin.from("profiles").upsert(
-              {
-                id: session.user.id,
-                email: session.user.email,
-                role: "super_admin",
-                full_name:
-                  (session.user.user_metadata?.full_name as string | undefined) ||
-                  (session.user.user_metadata?.name as string | undefined) ||
-                  "Super Admin",
-                updated_at: new Date().toISOString(),
-              },
-              { onConflict: "id" }
-            );
-          } catch (profileErr) {
-            console.error("[Auth Callback] Failed to sync super_admin role:", profileErr);
+          if (!existingProfile) {
+            await supabaseAdmin.from("profiles").insert({
+              id: session.user.id,
+              email: session.user.email,
+              role: "user",
+              full_name:
+                (session.user.user_metadata?.full_name as string | undefined) ||
+                (session.user.user_metadata?.name as string | undefined) ||
+                null,
+              updated_at: new Date().toISOString(),
+            });
           }
+        } catch (profileErr) {
+          console.error("[Auth Callback] Failed to ensure profile:", profileErr);
         }
         try {
           await ensureWelcomeEmail({

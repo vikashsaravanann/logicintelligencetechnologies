@@ -39,6 +39,7 @@ import EngagementPortalInvitationEmail from "@/emails/engagement-portal-invitati
 import StageApprovedClientEmail from "@/emails/stage-approved-client-email";
 import StageSubmissionAdminAlertEmail from "@/emails/stage-submission-admin-alert-email";
 import StageSubmissionClientReceiptEmail from "@/emails/stage-submission-client-receipt-email";
+import StaffWorkspaceInvitationEmail from "@/emails/staff-workspace-invitation-email";
 
 export interface TemplateDefinition {
   key: string;
@@ -690,6 +691,26 @@ export const EMAIL_TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
         ]}
         portalUrl="https://www.logicintelligencetechnologies.in/portal"
         nextStageTitle="Commercial Invoice & Settlement"
+      />
+    ),
+  },
+  "staff-workspace-invitation": {
+    key: "staff-workspace-invitation",
+    name: "Staff Workspace Provisioning Invitation",
+    category: "operational",
+    description: "Invites provisioned LIT staff member to their private admin workspace with secure login instructions.",
+    defaultSender: "operations@logicintelligencetechnologies.in",
+    replyTo: "support@logicintelligencetechnologies.in",
+    subject: "Your LIT Staff Admin Workspace Has Been Provisioned",
+    getElement: () => (
+      <StaffWorkspaceInvitationEmail
+        recipientName="Arun Kumar"
+        recipientEmail="arun.kumar@logicintelligencetechnologies.in"
+        jobTitle="Senior Full-Stack Engineer"
+        department="Engineering"
+        systemRole="developer"
+        workspaceUrl="https://www.logicintelligencetechnologies.in/login?next=/admin/workspaces/e0000000-0000-0000-0000-000000000001"
+        workspaceUuid="e0000000-0000-0000-0000-000000000001"
       />
     ),
   },

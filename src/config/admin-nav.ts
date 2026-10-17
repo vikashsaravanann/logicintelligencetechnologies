@@ -96,6 +96,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     label: "Governance",
     items: [
       { label: "Company", href: "/admin/company", capability: "dashboard.view", match: startsWith("/admin/company") },
+      { label: "Staff Workspaces", href: "/admin/workspaces", capability: "team.read", match: startsWith("/admin/workspaces") },
       { label: "Team", href: "/admin/team", capability: "team.read", match: startsWith("/admin/team") },
       { label: "Audit Log", href: "/admin/audit", capability: "audit.read", match: startsWith("/admin/audit") },
     ],

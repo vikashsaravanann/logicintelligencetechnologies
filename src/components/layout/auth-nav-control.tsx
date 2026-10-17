@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ChevronDown, LogIn, LogOut, User, Sparkles } from "lucide-react";
+import { ChevronDown, LogIn, LogOut, User, Sparkles, Briefcase, Shield } from "lucide-react";
 import { getClientSupabase } from "@/lib/supabase/client";
 
 type AuthUser = {
@@ -13,6 +13,13 @@ type AuthUser = {
   displayName: string;
   avatarUrl: string | null;
 };
+
+interface StaffEntitlement {
+  hasActiveWorkspace: boolean;
+  workspaceId: string | null;
+  isSuperAdmin: boolean;
+  safeRoleLabel?: string | null;
+}
 
 function resolveDisplayName(
   profileName: string | null | undefined,
@@ -43,25 +50,16 @@ function initialsFrom(name: string): string {
   return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
 }
 
-function isStaffUser(email: string | null | undefined): boolean {
-  if (!email) return false;
-  const lower = email.toLowerCase().trim();
-  return (
-    lower.endsWith("@logicintelligencetechnologies.in") ||
-    lower === "createwithvikash@gmail.com" ||
-    lower === "platform_owner@healthcare.lit"
-  );
-}
-
 /**
  * Global header auth control.
- * Logged out → LOGIN. Logged in → avatar + name + menu (Profile, AI, Sign out).
+ * Logged out → LOGIN. Logged in → avatar + name + menu (Profile, AI, Admin Workspace, Sign out).
  * Avoids LOGIN ↔ name flicker with a stable loading skeleton.
  */
 export default function AuthNavControl({ mobile = false }: { mobile?: boolean }) {
   const router = useRouter();
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [entitlement, setEntitlement] = useState<StaffEntitlement | null>(null);
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -111,8 +109,22 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
         displayName,
         avatarUrl,
       });
+
+      // Fetch staff entitlement for verified workspace access
+      try {
+        const entRes = await fetch("/api/me/staff-workspace");
+        if (entRes.ok) {
+          const entData = await entRes.json();
+          setEntitlement(entData);
+        } else {
+          setEntitlement(null);
+        }
+      } catch {
+        setEntitlement(null);
+      }
     } catch {
       setUser(null);
+      setEntitlement(null);
     } finally {
       setReady(true);
     }
@@ -156,6 +168,7 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
     const supabase = getClientSupabase();
     await supabase.auth.signOut();
     setUser(null);
+    setEntitlement(null);
     router.refresh();
   };
 
@@ -243,12 +256,20 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
           >
             <Sparkles className="w-4 h-4 text-[var(--lit-teal)]" /> AI Assistant
           </Link>
-          {isStaffUser(user.email) && (
+          {entitlement?.hasActiveWorkspace && entitlement?.workspaceId && (
             <Link
-              href="/admin/command-center"
+              href={`/admin/workspaces/${entitlement.workspaceId}`}
               className="flex items-center gap-2 py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-[var(--lit-blue)] hover:bg-white min-h-[44px]"
             >
-              <Sparkles className="w-4 h-4" /> Admin Dashboard
+              <Briefcase className="w-4 h-4 text-[var(--lit-blue)]" /> Admin Workspace
+            </Link>
+          )}
+          {entitlement?.isSuperAdmin && (
+            <Link
+              href="/admin/command-center"
+              className="flex items-center gap-2 py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-[var(--lit-navy)] hover:bg-white min-h-[44px]"
+            >
+              <Shield className="w-4 h-4 text-[var(--lit-blue)]" /> Command Center
             </Link>
           )}
           <button
@@ -318,14 +339,24 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
           >
             <Sparkles className="w-3.5 h-3.5 text-[var(--lit-teal)]" /> AI Assistant
           </Link>
-          {isStaffUser(user.email) && (
+          {entitlement?.hasActiveWorkspace && entitlement?.workspaceId && (
+            <Link
+              role="menuitem"
+              href={`/admin/workspaces/${entitlement.workspaceId}`}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--lit-blue)] hover:bg-[var(--lit-cloud)]"
+            >
+              <Briefcase className="w-3.5 h-3.5 text-[var(--lit-blue)]" /> Admin Workspace
+            </Link>
+          )}
+          {entitlement?.isSuperAdmin && (
             <Link
               role="menuitem"
               href="/admin/command-center"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--lit-blue)] hover:bg-[var(--lit-cloud)]"
+              className="flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--lit-navy)] hover:bg-[var(--lit-cloud)]"
             >
-              <Sparkles className="w-3.5 h-3.5" /> Admin Dashboard
+              <Shield className="w-3.5 h-3.5 text-[var(--lit-blue)]" /> Command Center
             </Link>
           )}
           <button
