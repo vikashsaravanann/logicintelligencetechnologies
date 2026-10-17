@@ -40,6 +40,8 @@ import StageApprovedClientEmail from "@/emails/stage-approved-client-email";
 import StageSubmissionAdminAlertEmail from "@/emails/stage-submission-admin-alert-email";
 import StageSubmissionClientReceiptEmail from "@/emails/stage-submission-client-receipt-email";
 import StaffWorkspaceInvitationEmail from "@/emails/staff-workspace-invitation-email";
+import ProjectInvitationEmail from "@/emails/project-invitation-email";
+import ClientRequestRoutedEmail from "@/emails/client-request-routed-email";
 
 export interface TemplateDefinition {
   key: string;
@@ -711,6 +713,44 @@ export const EMAIL_TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
         systemRole="developer"
         workspaceUrl="https://www.logicintelligencetechnologies.in/login?next=/admin/workspaces/e0000000-0000-0000-0000-000000000001"
         workspaceUuid="e0000000-0000-0000-0000-000000000001"
+      />
+    ),
+  },
+  "project-invitation": {
+    key: "project-invitation",
+    name: "Project Collaboration Invitation",
+    category: "operational",
+    description: "Invites verified LIT staff member to collaborate on a client project team with cryptographic token.",
+    defaultSender: "operations@logicintelligencetechnologies.in",
+    replyTo: "support@logicintelligencetechnologies.in",
+    subject: "Project Collaboration Invitation: Client Engineering Engagement | LIT",
+    getElement: () => (
+      <ProjectInvitationEmail
+        recipientName="Arun Kumar"
+        recipientEmail="arun.kumar@logicintelligencetechnologies.in"
+        projectTitle="Enterprise Healthcare AI Deployment"
+        requestedRole="Technical Collaborator"
+        invitationUrl="https://www.logicintelligencetechnologies.in/admin/invitations/sample-token/accept"
+        inviterName="Engineering Leadership"
+        expiresInDays={7}
+      />
+    ),
+  },
+  "client-request-routed": {
+    key: "client-request-routed",
+    name: "Client Request Routed Notification",
+    category: "operational",
+    description: "Notifies assigned staff lead of incoming client message, change request, meeting, or ticket.",
+    defaultSender: "notifications@logicintelligencetechnologies.in",
+    replyTo: "support@logicintelligencetechnologies.in",
+    subject: "[Client Request] New Message Assigned to You | LIT",
+    getElement: () => (
+      <ClientRequestRoutedEmail
+        staffName="Arun Kumar"
+        requestType="CLIENT MESSAGE"
+        summary="Client submitted architecture requirements for authentication flow."
+        clientEmail="client@enterprise.com"
+        actionUrl="https://www.logicintelligencetechnologies.in/admin/command-center"
       />
     ),
   },

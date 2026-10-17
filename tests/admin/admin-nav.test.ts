@@ -32,6 +32,7 @@ const NAV_HIDDEN: Record<string, string> = {
   "/admin/quotations/coupons": "reached from the Quotations page",
   "/admin/engagements/new": "reached from Engagements",
   "/admin/workspaces/new": "reached from Staff Workspaces",
+  "/admin/profile": "redirects to user's own workspace profile",
   "/admin/invoices/new": "reached from the Invoices page",
   "/admin/clients/[id]": "reached from Clients",
   "/admin/checklists": "redirects to /admin/checklist-invitations",

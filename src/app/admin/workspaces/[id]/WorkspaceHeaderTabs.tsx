@@ -17,6 +17,8 @@ import {
   CheckCircle2,
   PauseCircle,
   ExternalLink,
+  Wallet,
+  User,
 } from "lucide-react";
 import { SafeEmployeeWorkspaceDTO } from "@/lib/workspaces/types";
 
@@ -55,6 +57,18 @@ export default function WorkspaceHeaderTabs({ workspace }: Props) {
       href: `/admin/workspaces/${workspace.workspaceId}/projects`,
       label: `Assigned Projects (${workspace.assignedEngagements.length})`,
       icon: Briefcase,
+      exact: false,
+    },
+    {
+      href: `/admin/workspaces/${workspace.workspaceId}/wallet`,
+      label: "Document Wallet",
+      icon: Wallet,
+      exact: false,
+    },
+    {
+      href: `/admin/workspaces/${workspace.workspaceId}/profile`,
+      label: "Profile",
+      icon: User,
       exact: false,
     },
     {

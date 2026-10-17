@@ -14,9 +14,11 @@ import {
   GitBranch,
   Layers,
   Sparkles,
+  Users,
 } from "lucide-react";
 import { getPortalContext, getOwnRow, listOwnRows } from "@/lib/client-portal/data";
 import { formatINR, formatIST } from "@/lib/format/datetime";
+import { getDeliveryTeamForClientProject } from "@/lib/collaboration/project-collaboration-service";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -33,9 +35,10 @@ export default async function ClientProjectDetailPage({ params }: Props) {
   const { id } = await params;
 
   const portal = await getPortalContext(`/client/projects/${id}`);
-  const [project, allInvoices] = await Promise.all([
+  const [project, allInvoices, deliveryTeam] = await Promise.all([
     getOwnRow(portal, "projects", id),
     listOwnRows(portal, "invoices"),
+    getDeliveryTeamForClientProject(id, portal.user.id),
   ]);
 
   if (!project) {
@@ -288,6 +291,98 @@ export default async function ClientProjectDetailPage({ params }: Props) {
             );
           })}
         </div>
+      </div>
+
+      {/* Assigned LIT Delivery Team */}
+      <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 sm:p-8 space-y-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[var(--lit-border-light,#DFE7EF)]">
+          <div>
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4 text-teal-600" />
+              <h2 className="text-lg font-bold text-[var(--lit-navy,#0B2545)] font-poppins tracking-tight">
+                Assigned LIT Delivery Team
+              </h2>
+            </div>
+            <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-0.5">
+              Dedicated cloud architects and AI engineers assigned to this engagement.
+            </p>
+          </div>
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-[var(--lit-navy,#0B2545)] border border-slate-200 self-start sm:self-auto font-mono">
+            {deliveryTeam.length} {deliveryTeam.length === 1 ? "Specialist" : "Specialists"} Assigned
+          </span>
+        </div>
+
+        {deliveryTeam.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-slate-200 bg-[var(--lit-cloud,#F7F9FC)]/50 p-6 text-center text-xs text-[var(--lit-text-muted,#52677C)] space-y-1.5">
+            <Users className="w-6 h-6 text-slate-400 mx-auto" />
+            <p className="font-medium text-[var(--lit-navy,#0B2545)]">Logic Intelligence Engineering Squad</p>
+            <p>Core engineering lead assignment in progress. Your consultation architect remains your interim point of contact.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {deliveryTeam.map((member) => (
+              <div
+                key={member.userId}
+                className="p-5 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]/30 hover:bg-white transition-all space-y-3"
+              >
+                <div className="flex items-start gap-3.5">
+                  <div className="relative w-12 h-15 rounded-lg overflow-hidden border border-[var(--lit-border-light,#DFE7EF)] bg-slate-100 shrink-0 aspect-[4/5] flex items-center justify-center">
+                    {member.portraitUrl || member.avatarUrl ? (
+                      <img
+                        src={member.portraitUrl || member.avatarUrl || ""}
+                        alt={member.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center font-bold text-xs text-[var(--lit-navy,#0B2545)] bg-slate-200">
+                        {member.name.slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)] font-poppins truncate">
+                        {member.name}
+                      </h3>
+                      {member.isPrimaryLead && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-teal-50 text-[var(--lit-teal,#1FA9A2)] border border-teal-200 shrink-0 font-mono">
+                          Team Lead
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs font-medium text-[var(--lit-teal,#1FA9A2)] mt-0.5">
+                      {member.role}
+                    </p>
+                    {member.bio && (
+                      <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1 line-clamp-2">
+                        {member.bio}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {member.skills && member.skills.length > 0 && (
+                  <div className="pt-2 border-t border-[var(--lit-border-light,#DFE7EF)] flex flex-wrap gap-1.5">
+                    {member.skills.slice(0, 4).map((skill, sIdx) => (
+                      <span
+                        key={sIdx}
+                        className="px-2 py-0.5 rounded text-[10px] bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] font-mono"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                    {member.skills.length > 4 && (
+                      <span className="px-1.5 py-0.5 text-[10px] text-[var(--lit-text-muted,#52677C)] font-mono">
+                        +{member.skills.length - 4}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Associated Invoices Section */}

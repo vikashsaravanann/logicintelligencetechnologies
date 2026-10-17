@@ -143,10 +143,10 @@ export default async function WorkspaceProjectsPage({
                   Ref: {eng.engagementId.slice(0, 8)}...
                 </span>
                 <Link
-                  href={`/admin/engagements?search=${encodeURIComponent(eng.clientName)}`}
+                  href={`/admin/workspaces/${id}/projects/${eng.engagementId}`}
                   className="text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1"
                 >
-                  <span>Technical View</span>
+                  <span>Technical Inspection</span>
                   <ExternalLink className="w-3 h-3" />
                 </Link>
               </div>
