@@ -342,6 +342,10 @@ export async function submitBillingDetails(input: SubmitBillingInput): Promise<P
     throw new Error("Payment request not found");
   }
 
+  if (input.secureToken && req.secure_token !== input.secureToken.trim()) {
+    throw new Error("Unauthorized: Invalid payment token for this request");
+  }
+
   if (new Date(req.expires_at).getTime() < Date.now()) {
     throw new Error("Payment request has expired");
   }
@@ -447,12 +451,16 @@ export async function recordPaymentAttempt(input: RecordPaymentAttemptInput): Pr
 
   const { data: req, error: reqErr } = await supabaseAdmin
     .from("engagement_payment_requests")
-    .select("status, expires_at")
+    .select("status, expires_at, secure_token")
     .eq("id", input.paymentRequestId)
     .maybeSingle();
 
   if (reqErr || !req) {
     throw new Error("Payment request not found");
+  }
+
+  if (input.secureToken && req.secure_token !== input.secureToken.trim()) {
+    throw new Error("Unauthorized: Invalid payment token for this request");
   }
 
   if (new Date(req.expires_at).getTime() < Date.now()) {

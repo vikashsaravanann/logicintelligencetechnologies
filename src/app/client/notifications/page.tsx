@@ -158,26 +158,46 @@ export default function ClientNotificationsPage() {
   };
 
   const handleMarkRead = async (id: string) => {
+    const prevNotifications = [...notifications];
+    const prevUnreadCount = unreadCount;
+
+    // Optimistic UI update
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, readAt: n.readAt || new Date().toISOString() } : n))
+    );
+    setUnreadCount((c) => Math.max(0, c - 1));
+
     try {
       const res = await fetch("/api/client/notifications", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "mark_read", notificationId: id }),
       });
-      if (res.ok) {
-        setNotifications((prev) =>
-          prev.map((n) => (n.id === id ? { ...n, readAt: new Date().toISOString() } : n))
-        );
-        setUnreadCount((c) => Math.max(0, c - 1));
+      if (!res.ok) {
+        // Rollback on server error
+        setNotifications(prevNotifications);
+        setUnreadCount(prevUnreadCount);
       }
     } catch (err) {
       console.error("Mark read error:", err);
+      // Rollback on network failure
+      setNotifications(prevNotifications);
+      setUnreadCount(prevUnreadCount);
     }
   };
 
   const handleMarkAllRead = async () => {
     if (unreadCount === 0 || isMarkingAll) return;
     setIsMarkingAll(true);
+
+    const prevNotifications = [...notifications];
+    const prevUnreadCount = unreadCount;
+    const now = new Date().toISOString();
+
+    // Optimistic UI update
+    setNotifications((prev) => prev.map((n) => ({ ...n, readAt: n.readAt || now })));
+    setUnreadCount(0);
+
     try {
       const res = await fetch("/api/client/notifications", {
         method: "POST",
@@ -185,14 +205,18 @@ export default function ClientNotificationsPage() {
         body: JSON.stringify({ action: "mark_all_read" }),
       });
       if (res.ok) {
-        const now = new Date().toISOString();
-        setNotifications((prev) => prev.map((n) => ({ ...n, readAt: n.readAt || now })));
-        setUnreadCount(0);
         setFeedback("All notifications marked as read.");
         setTimeout(() => setFeedback(null), 3000);
+      } else {
+        // Rollback on server error
+        setNotifications(prevNotifications);
+        setUnreadCount(prevUnreadCount);
       }
     } catch (err) {
       console.error("Mark all read error:", err);
+      // Rollback on network failure
+      setNotifications(prevNotifications);
+      setUnreadCount(prevUnreadCount);
     } finally {
       setIsMarkingAll(false);
     }

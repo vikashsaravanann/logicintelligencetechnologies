@@ -1,8 +1,6 @@
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { env } from "@/config/env";
+import { getVerifiedClientUser } from "@/lib/auth/client-auth";
 import {
   listClientNotifications,
   getUnreadNotificationCount,
@@ -13,66 +11,26 @@ import {
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-import { getEngagementByRef } from "@/lib/engagements/db";
-
-async function resolveClientEmail(req: NextRequest): Promise<{ email: string | null; ref: string | null }> {
-  const ref = req.nextUrl.searchParams.get("ref")?.trim() || null;
-
-  try {
-    const cookieStore = await cookies();
-    const supabase = createRouteHandlerClient(
-      { cookies: () => cookieStore as any },
-      { supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL, supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY }
-    );
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user?.email) {
-      return { email: user.email.toLowerCase(), ref };
-    }
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user?.email) {
-      return { email: session.user.email.toLowerCase(), ref };
-    }
-  } catch (err) {
-    console.warn("[api/client/notifications] Session extraction failed:", err);
-  }
-
-  const authHeader = req.headers.get("x-client-email");
-  if (authHeader && authHeader.includes("@")) {
-    return { email: authHeader.toLowerCase(), ref };
-  }
-
-  if (ref) {
-    try {
-      const eng = await getEngagementByRef(ref);
-      if (eng && eng.contact_email) {
-        return { email: eng.contact_email.toLowerCase(), ref };
-      }
-    } catch (err) {
-      console.warn("[api/client/notifications] Engagement ref lookup failed:", err);
-    }
-  }
-
-  return { email: null, ref };
-}
-
 export async function GET(req: NextRequest) {
   try {
-    const { email: clientEmail, ref } = await resolveClientEmail(req);
-    if (!clientEmail) {
+    const client = await getVerifiedClientUser();
+    if (!client) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
         { status: 401 }
       );
     }
 
+    const ref = req.nextUrl.searchParams.get("ref")?.trim() || null;
+
     const [notifications, unreadCount] = await Promise.all([
-      listClientNotifications(clientEmail, ref),
-      getUnreadNotificationCount(clientEmail, ref),
+      listClientNotifications(client.email, ref || undefined),
+      getUnreadNotificationCount(client.email, ref || undefined),
     ]);
 
     return NextResponse.json({
       success: true,
-      clientEmail,
+      clientEmail: client.email,
       engagementRef: ref,
       unreadCount,
       notifications,
@@ -88,8 +46,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { email: clientEmail } = await resolveClientEmail(req);
-    if (!clientEmail) {
+    const client = await getVerifiedClientUser();
+    if (!client) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
         { status: 401 }
@@ -100,7 +58,7 @@ export async function POST(req: NextRequest) {
     const action = body?.action || "mark_read";
 
     if (action === "mark_all_read") {
-      const ok = await markAllNotificationsAsRead(clientEmail);
+      const ok = await markAllNotificationsAsRead(client.email);
       return NextResponse.json({ success: ok });
     }
 
@@ -112,7 +70,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const ok = await markNotificationAsRead(clientEmail, notificationId);
+    const ok = await markNotificationAsRead(client.email, notificationId);
     return NextResponse.json({ success: ok });
   } catch (err) {
     console.error("[api/client/notifications] POST error:", err);

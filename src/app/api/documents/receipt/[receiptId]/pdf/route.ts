@@ -1,7 +1,12 @@
+import "server-only";
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { env } from "@/config/env";
 import { supabaseAdmin, isAdminClientConfigured } from "@/lib/supabase/admin";
 import { DOCUMENTS_BUCKET } from "@/lib/documents/storage";
 import { generatePaymentReceiptPdf, PaymentReceiptData } from "@/lib/pdf/invoice-receipt-generator";
+import { isStaffRole } from "@/config/roles";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -26,6 +31,7 @@ export async function GET(
   const { receiptId } = await context.params;
   const isInline = request.nextUrl.searchParams.get("inline") === "true";
   const disposition = isInline ? "inline" : "attachment";
+  const tokenParam = request.nextUrl.searchParams.get("token")?.trim() || "";
 
   if (!receiptId || receiptId.trim().length === 0) {
     return NextResponse.json({ error: "Missing receipt identifier" }, { status: 400 });
@@ -33,8 +39,15 @@ export async function GET(
 
   const id = receiptId.trim();
 
-  // Test / Sample shortcut for quick validation
+  // Test / Sample shortcut strictly gated to non-production environments
   if (id === "sample" || id === "test") {
+    if (process.env.NODE_ENV === "production" && process.env.VERCEL_ENV === "production") {
+      return NextResponse.json(
+        { error: "Sample receipts are disabled in production" },
+        { status: 404 }
+      );
+    }
+
     const sampleReceipt: PaymentReceiptData = {
       receiptNumber: "LIT-REC-2026-0001",
       invoiceNumber: "LIT-INV-2026-0001",
@@ -88,9 +101,35 @@ export async function GET(
         "Content-Length": res.bytes.length.toString(),
         "x-document-sha256": res.sha256,
         "X-Content-Sha256": res.sha256,
-        "Cache-Control": "public, max-age=3600, s-maxage=3600",
+        "Cache-Control": "private, no-cache, no-store, must-revalidate",
+        Pragma: "no-cache",
       },
     });
+  }
+
+  // Authenticate session if available
+  let authenticatedUser: { id: string; email?: string } | null = null;
+  let isStaff = false;
+  try {
+    const cookieStore = await cookies();
+    const supabase = createRouteHandlerClient(
+      { cookies: () => cookieStore as any },
+      { supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL, supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY }
+    );
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user && !user.is_anonymous) {
+      authenticatedUser = { id: user.id, email: user.email };
+      const { data: profile } = await supabaseAdmin
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (profile && isStaffRole(profile.role)) {
+        isStaff = true;
+      }
+    }
+  } catch {
+    // Non-fatal if authorized via secure payment token
   }
 
   // 1. If DB configured, check financial_documents table for receipt
@@ -98,7 +137,7 @@ export async function GET(
     try {
       let query = supabaseAdmin
         .from("financial_documents")
-        .select("id, document_number, title, storage_path, sha256_hash, byte_size, status, doc_type, payment_request_id")
+        .select("id, document_number, title, storage_path, sha256_hash, byte_size, status, doc_type, payment_request_id, client_id")
         .eq("doc_type", "receipt");
 
       if (UUID_REGEX.test(id)) {
@@ -110,7 +149,34 @@ export async function GET(
       const { data: doc } = await query.maybeSingle();
 
       if (doc && doc.status === "issued" && doc.storage_path) {
-        // Attempt to stream stored PDF
+        // Enforce authorization: staff, matching client user, or valid token
+        let authorized = isStaff;
+        if (!authorized && authenticatedUser && doc.client_id === authenticatedUser.id) {
+          authorized = true;
+        }
+        if (!authorized && doc.payment_request_id) {
+          const { data: pr } = await supabaseAdmin
+            .from("engagement_payment_requests")
+            .select("secure_token, client_id")
+            .eq("id", doc.payment_request_id)
+            .maybeSingle();
+          if (pr) {
+            if (pr.secure_token === id || (tokenParam && pr.secure_token === tokenParam)) {
+              authorized = true;
+            } else if (authenticatedUser && pr.client_id === authenticatedUser.id) {
+              authorized = true;
+            }
+          }
+        }
+
+        if (!authorized) {
+          return NextResponse.json(
+            { error: "Forbidden: You do not have permission to view this receipt" },
+            { status: 403 }
+          );
+        }
+
+        // Stream stored PDF
         const { data: blob, error: downloadError } = await supabaseAdmin.storage
           .from(DOCUMENTS_BUCKET)
           .download(doc.storage_path);
@@ -122,11 +188,12 @@ export async function GET(
             status: 200,
             headers: {
               "Content-Type": "application/pdf",
-              "Content-Disposition": `inline; filename="Receipt-${doc.document_number}.pdf"`,
+              "Content-Disposition": `${disposition}; filename="Receipt-${doc.document_number}.pdf"`,
               "Content-Length": buffer.length.toString(),
               "x-document-sha256": doc.sha256_hash,
               "X-Content-Sha256": doc.sha256_hash,
-              "Cache-Control": "public, max-age=86400, s-maxage=86400",
+              "Cache-Control": "private, no-cache, no-store, must-revalidate",
+              Pragma: "no-cache",
             },
           });
         }
@@ -156,6 +223,30 @@ export async function GET(
           .select("*")
           .eq("payment_request_id", paymentReq.id)
           .maybeSingle();
+
+        // Enforce authorization: matching secure token, staff role, or client ownership
+        let authorized = isStaff;
+        if (!authorized && (paymentReq.secure_token === id || (tokenParam && paymentReq.secure_token === tokenParam))) {
+          authorized = true;
+        }
+        if (!authorized && authenticatedUser) {
+          if (paymentReq.client_id === authenticatedUser.id) {
+            authorized = true;
+          } else if (
+            billing?.email &&
+            authenticatedUser.email &&
+            billing.email.toLowerCase() === authenticatedUser.email.toLowerCase()
+          ) {
+            authorized = true;
+          }
+        }
+
+        if (!authorized) {
+          return NextResponse.json(
+            { error: "Forbidden: You do not have permission to view this payment receipt" },
+            { status: 403 }
+          );
+        }
 
         // Fetch reconciliation record
         const { data: reconciliation } = await supabaseAdmin
@@ -243,11 +334,12 @@ export async function GET(
           status: 200,
           headers: {
             "Content-Type": "application/pdf",
-            "Content-Disposition": `inline; filename="Receipt-${docReceiptNum}.pdf"`,
+            "Content-Disposition": `${disposition}; filename="Receipt-${docReceiptNum}.pdf"`,
             "Content-Length": res.bytes.length.toString(),
             "x-document-sha256": res.sha256,
             "X-Content-Sha256": res.sha256,
-            "Cache-Control": "public, max-age=3600, s-maxage=3600",
+            "Cache-Control": "private, no-cache, no-store, must-revalidate",
+            Pragma: "no-cache",
           },
         });
       }

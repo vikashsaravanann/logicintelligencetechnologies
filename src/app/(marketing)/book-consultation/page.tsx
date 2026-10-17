@@ -23,6 +23,7 @@ import CTASection from "@/components/ui/cta-section";
 import JsonLd from "@/components/seo/json-ld";
 import { breadcrumb } from "@/lib/seo/schema";
 import { trackEvent } from "@/lib/analytics";
+import { convertZonedDateTimeToUtcIso } from "@/lib/calendar/consultation-ics";
 
 const CONSULTATION_TYPES = [
   {
@@ -101,8 +102,7 @@ export default function BookConsultationPage() {
     setLoading(true);
     setError(null);
 
-    const timePart = parseSlotToTime(selectedSlot);
-    const slotDateTime = `${selectedDate}T${timePart}Z`;
+    const slotDateTime = convertZonedDateTimeToUtcIso(selectedDate, selectedSlot, selectedTimezone);
 
     try {
       const res = await fetch("/api/booking", {

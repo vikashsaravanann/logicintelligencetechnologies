@@ -24,6 +24,8 @@ export type AssignableRole = (typeof ASSIGNABLE_ROLES)[number];
 
 export const CAPABILITIES = [
   "dashboard.view",
+  "tasks.manage",
+  "projects.assigned.read",
   "leads.read",
   "leads.write",
   "bookings.read",
@@ -145,6 +147,8 @@ const ADMIN: readonly Capability[] = CAPABILITIES.filter(
 
 const OPERATIONS: readonly Capability[] = [
   "dashboard.view",
+  "tasks.manage",
+  "projects.assigned.read",
   "leads.read", "leads.write",
   "bookings.read", "bookings.write",
   "proposals.read",
@@ -176,6 +180,8 @@ const OPERATIONS: readonly Capability[] = [
 
 const SUPPORT: readonly Capability[] = [
   "dashboard.view",
+  "tasks.manage",
+  "projects.assigned.read",
   "support.read", "support.reply",
   "support.assigned_client.read",
   "support.assigned_client.assist",
@@ -189,6 +195,8 @@ const SUPPORT: readonly Capability[] = [
 
 const DEVELOPER: readonly Capability[] = [
   "dashboard.view",
+  "tasks.manage",
+  "projects.assigned.read",
   "status.read",
   "automations.read", "automations.retry", "automations.manage",
   "seo.read", "seo.manage",
@@ -200,6 +208,7 @@ const DEVELOPER: readonly Capability[] = [
 
 const VIEWER: readonly Capability[] = [
   "dashboard.view",
+  "projects.assigned.read",
   "analytics.read",
   "status.read",
   "proposals.read",

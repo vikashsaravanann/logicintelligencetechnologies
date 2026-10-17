@@ -92,6 +92,21 @@ export default function WorkspaceHeaderTabs({ workspace }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* Suspended / Inactive State Alert Banner */}
+      {(workspace.status === "suspended" || workspace.status === "revoked" || workspace.status === "archived") && (
+        <div className="rounded-2xl border border-red-500/40 bg-red-950/40 p-4 text-xs text-red-200 flex items-start gap-3 shadow-lg">
+          <ShieldAlert className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <p className="font-bold uppercase tracking-wider text-red-300">
+              Workspace Access {workspace.status === "suspended" ? "Suspended" : workspace.status === "revoked" ? "Revoked" : "Archived"}
+            </p>
+            <p className="leading-relaxed">
+              This staff workspace is currently <strong>{workspace.status}</strong>. Direct employee access, API operations, and active assignment permissions are halted until reactivated by a Super Admin.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Super Admin Management View Alert Banner */}
       {workspace.isSuperAdminManagementView && (
         <div className="rounded-2xl border border-amber-500/30 bg-amber-950/30 p-4 text-xs text-amber-200 flex items-start gap-3 shadow-lg">
@@ -140,6 +155,10 @@ export default function WorkspaceHeaderTabs({ workspace }: Props) {
             ) : workspace.status === "suspended" ? (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-300 border border-red-500/30">
                 <PauseCircle className="w-3.5 h-3.5" /> Suspended
+              </span>
+            ) : workspace.status === "revoked" || workspace.status === "archived" ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-300 border border-red-500/30">
+                <ShieldAlert className="w-3.5 h-3.5" /> {workspace.status === "revoked" ? "Revoked" : "Archived"}
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">

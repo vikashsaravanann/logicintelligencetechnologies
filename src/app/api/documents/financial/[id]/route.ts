@@ -1,10 +1,15 @@
+import "server-only";
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { env } from "@/config/env";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { DOCUMENTS_BUCKET } from "@/lib/documents/storage";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function GET(
   _request: NextRequest,
@@ -19,10 +24,25 @@ export async function GET(
     );
   }
 
-  // Fetch document metadata
+  // 1. Enforce authenticated session
+  const cookieStore = await cookies();
+  const supabase = createRouteHandlerClient(
+    { cookies: () => cookieStore as any },
+    { supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL, supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY }
+  );
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user || user.is_anonymous) {
+    return NextResponse.json(
+      { error: "Authentication required to access financial documents" },
+      { status: 401 }
+    );
+  }
+
+  // 2. Fetch document metadata
   const { data: doc, error: docError } = await supabaseAdmin
     .from("financial_documents")
-    .select("id, document_number, title, storage_path, sha256_hash, byte_size, status")
+    .select("id, document_number, title, storage_path, sha256_hash, byte_size, status, client_id, payment_request_id")
     .eq("id", id)
     .maybeSingle();
 
@@ -40,7 +60,38 @@ export async function GET(
     );
   }
 
-  // Download raw PDF from storage bucket
+  // 3. Verify authorization: caller must be super_admin/admin or document owner
+  const { data: profile } = await supabaseAdmin
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const isStaffAdmin = profile && (profile.role === "super_admin" || profile.role === "admin");
+  const isDirectOwner = doc.client_id === user.id;
+
+  if (!isStaffAdmin && !isDirectOwner) {
+    let isPaymentOwner = false;
+    if (doc.payment_request_id) {
+      const { data: pr } = await supabaseAdmin
+        .from("engagement_payment_requests")
+        .select("client_id")
+        .eq("id", doc.payment_request_id)
+        .maybeSingle();
+      if (pr && pr.client_id === user.id) {
+        isPaymentOwner = true;
+      }
+    }
+
+    if (!isPaymentOwner) {
+      return NextResponse.json(
+        { error: "Forbidden: You do not have permission to view this document" },
+        { status: 403 }
+      );
+    }
+  }
+
+  // 4. Download raw PDF from secure storage bucket
   const { data: blob, error: downloadError } = await supabaseAdmin.storage
     .from(DOCUMENTS_BUCKET)
     .download(doc.storage_path);
@@ -62,7 +113,8 @@ export async function GET(
       "Content-Disposition": `inline; filename="${doc.document_number}.pdf"`,
       "Content-Length": buffer.length.toString(),
       "X-Content-Sha256": doc.sha256_hash,
-      "Cache-Control": "public, max-age=86400, s-maxage=86400",
+      "Cache-Control": "private, no-cache, no-store, must-revalidate",
+      "Pragma": "no-cache",
     },
   });
 }

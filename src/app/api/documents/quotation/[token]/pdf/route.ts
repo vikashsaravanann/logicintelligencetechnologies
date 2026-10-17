@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { env } from "@/config/env";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getQuotationByToken, getQuotationById, getQuotationLineItems } from "@/lib/quotations/db";
 import { projectPublicQuotation } from "@/lib/quotations/pricing";
 import {
@@ -38,8 +42,8 @@ export async function GET(
 
     const trimmed = token.trim();
 
-    // Sample/test shortcut for rapid testing and visual smoke validation
-    if (trimmed === "sample" || trimmed === "test") {
+    // Sample/test shortcut for rapid local testing and visual smoke validation only in non-production
+    if (process.env.NODE_ENV !== "production" && (trimmed === "sample" || trimmed === "test")) {
       const samplePdfData: QuotationPdfData = {
         quotationRef: "LIT-QT-2026-0001",
         versionNumber: 1,
@@ -118,10 +122,41 @@ export async function GET(
       });
     }
 
-    // 1. Resolve quotation by token (or fallback to UUID if passed by admin)
-    let quotation = await getQuotationByToken(trimmed);
-    if (!quotation && UUID_REGEX.test(trimmed)) {
+    // Check optional authenticated staff session
+    let isStaff = false;
+    try {
+      const cookieStore = await cookies();
+      const supabase = createRouteHandlerClient(
+        { cookies: () => cookieStore as any },
+        { supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL, supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY }
+      );
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user && !user.is_anonymous) {
+        const { data: profile } = await supabaseAdmin
+          .from("profiles")
+          .select("id, role")
+          .eq("id", user.id)
+          .maybeSingle();
+        if (profile && ["super_admin", "admin"].includes(profile.role)) {
+          isStaff = true;
+        }
+      }
+    } catch {
+      // Unauthenticated caller
+    }
+
+    // 1. Resolve quotation by token (or fallback to UUID ONLY if authenticated staff)
+    let quotation = null;
+    if (UUID_REGEX.test(trimmed)) {
+      if (!isStaff) {
+        return NextResponse.json(
+          { error: "Forbidden: Internal UUID access requires authenticated staff privileges." },
+          { status: 403 }
+        );
+      }
       quotation = await getQuotationById(trimmed);
+    } else {
+      quotation = await getQuotationByToken(trimmed);
     }
 
     if (!quotation) {
@@ -131,10 +166,26 @@ export async function GET(
       );
     }
 
-    // 2. Enforce access restrictions: revoked quotations cannot be viewed
+    // 2. Enforce access restrictions
     if (quotation.status === "revoked") {
       return NextResponse.json(
         { error: "This quotation has been revoked and is no longer accessible." },
+        { status: 410 }
+      );
+    }
+
+    // Non-staff callers cannot view draft quotations
+    if (quotation.status === "draft" && !isStaff) {
+      return NextResponse.json(
+        { error: "Forbidden: Quotations in draft status are not available for client access." },
+        { status: 403 }
+      );
+    }
+
+    // Non-staff callers cannot access expired quotations
+    if (!isStaff && quotation.valid_until && new Date(quotation.valid_until).getTime() < Date.now()) {
+      return NextResponse.json(
+        { error: "This quotation has expired and is no longer accessible." },
         { status: 410 }
       );
     }

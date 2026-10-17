@@ -96,6 +96,7 @@ export async function createStaffWorkspace(
     .maybeSingle();
 
   let authUserId: string;
+  let isNewlyCreatedAuthUser = false;
 
   if (existingProfile) {
     // If user already exists in profiles, do not overwrite silently if it's already a privileged staff member
@@ -140,148 +141,172 @@ export async function createStaffWorkspace(
     }
 
     authUserId = authUser.user.id;
+    isNewlyCreatedAuthUser = true;
   }
 
-  // 5. Update or insert public.profiles role
-  const { error: profileError } = await supabaseAdmin.from("profiles").upsert(
-    {
-      id: authUserId,
-      email: normalizedEmail,
-      full_name: parsed.fullName,
-      role: parsed.systemRole,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "id" }
-  );
-
-  if (profileError) {
-    console.error("[staff-workspace] Profile upsert failed:", profileError.message);
-    throw new Error(`PROFILE_CREATION_FAILED: ${profileError.message}`);
-  }
-
-  // 6. Generate server-side UUID for the employee's private workspace
+  // Generate server-side UUID for the employee's private workspace
   const workspaceId = crypto.randomUUID();
 
-  // 7. Insert staff_employees
-  const { data: employeeRecord, error: employeeError } = await supabaseAdmin
-    .from("staff_employees")
-    .insert({
-      auth_user_id: authUserId,
-      full_name: parsed.fullName,
-      email_normalized: normalizedEmail,
-      phone_e164: normalizedPhone,
-      department: parsed.department,
-      job_title: parsed.jobTitle,
-      employment_type: parsed.employmentType,
-      manager_user_id: parsed.managerUserId || null,
-      employment_status: "active",
+  try {
+    // 5. Update or insert public.profiles role
+    const { error: profileError } = await supabaseAdmin.from("profiles").upsert(
+      {
+        id: authUserId,
+        email: normalizedEmail,
+        full_name: parsed.fullName,
+        role: parsed.systemRole,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "id" }
+    );
+
+    if (profileError) {
+      console.error("[staff-workspace] Profile upsert failed:", profileError.message);
+      throw new Error(`PROFILE_CREATION_FAILED: ${profileError.message}`);
+    }
+
+    // 6. Insert staff_employees
+    const { data: employeeRecord, error: employeeError } = await supabaseAdmin
+      .from("staff_employees")
+      .insert({
+        auth_user_id: authUserId,
+        full_name: parsed.fullName,
+        email_normalized: normalizedEmail,
+        phone_e164: normalizedPhone,
+        department: parsed.department,
+        job_title: parsed.jobTitle,
+        employment_type: parsed.employmentType,
+        manager_user_id: parsed.managerUserId || null,
+        employment_status: "active",
+        created_by: actorUserId,
+      })
+      .select()
+      .single();
+
+    if (employeeError) {
+      console.error("[staff-workspace] staff_employees insert failed:", employeeError.message);
+      throw new Error(`STAFF_EMPLOYEE_INSERT_FAILED: ${employeeError.message}`);
+    }
+
+    // 7. Insert staff_workspaces
+    const { error: wsError } = await supabaseAdmin.from("staff_workspaces").insert({
+      id: workspaceId,
+      owner_user_id: authUserId,
+      name: `${parsed.fullName}'s Workspace`,
+      status: "pending_email_verification",
+      role_snapshot: parsed.systemRole,
       created_by: actorUserId,
-    })
-    .select()
-    .single();
+    });
 
-  if (employeeError) {
-    console.error("[staff-workspace] staff_employees insert failed:", employeeError.message);
-    throw new Error(`STAFF_EMPLOYEE_INSERT_FAILED: ${employeeError.message}`);
-  }
+    if (wsError) {
+      console.error("[staff-workspace] staff_workspaces insert failed:", wsError.message);
+      throw new Error(`STAFF_WORKSPACE_INSERT_FAILED: ${wsError.message}`);
+    }
 
-  // 8. Insert staff_workspaces
-  const { error: wsError } = await supabaseAdmin.from("staff_workspaces").insert({
-    id: workspaceId,
-    owner_user_id: authUserId,
-    name: `${parsed.fullName}'s Workspace`,
-    status: "pending_email_verification",
-    role_snapshot: parsed.systemRole,
-    created_by: actorUserId,
-  });
+    // 8. Insert staff_workspace_permissions
+    if (parsed.allowedModules && parsed.allowedModules.length > 0) {
+      const permInserts = parsed.allowedModules.map((capId) => ({
+        workspace_id: workspaceId,
+        capability_id: capId,
+        granted_by: actorUserId,
+        reason: `Assigned during workspace provisioning by ${actor.email}`,
+      }));
 
-  if (wsError) {
-    console.error("[staff-workspace] staff_workspaces insert failed:", wsError.message);
-    throw new Error(`STAFF_WORKSPACE_INSERT_FAILED: ${wsError.message}`);
-  }
+      const { error: permError } = await supabaseAdmin
+        .from("staff_workspace_permissions")
+        .insert(permInserts);
 
-  // 9. Insert staff_workspace_permissions
-  if (parsed.allowedModules && parsed.allowedModules.length > 0) {
-    const permInserts = parsed.allowedModules.map((capId) => ({
+      if (permError) {
+        console.warn("[staff-workspace] Permissions insert warning:", permError.message);
+      }
+    }
+
+    // 9. Link client/project assignments if any
+    if (parsed.clientAssignments && parsed.clientAssignments.length > 0) {
+      const canQuotation = parsed.allowedModules.includes("quotation.technical_draft.create") || parsed.allowedModules.includes("quotations.technical_draft.create");
+      const canInvoice = parsed.allowedModules.includes("invoice.preparation.create") || parsed.allowedModules.includes("invoices.preparation.create");
+
+      const assignmentInserts = parsed.clientAssignments.map((engagementId) => ({
+        staff_user_id: authUserId,
+        engagement_id: engagementId,
+        assignment_role: "delivery_engineer",
+        status: "active",
+        can_view_technical_stages: true,
+        can_prepare_technical_quotation: canQuotation,
+        can_prepare_invoice_request: canInvoice,
+        assigned_by: actorUserId,
+        assignment_reason: "Initial assignment during staff workspace creation",
+      }));
+
+      const { error: assignError } = await supabaseAdmin
+        .from("staff_client_assignments")
+        .insert(assignmentInserts);
+
+      if (assignError) {
+        console.warn("[staff-workspace] Client assignments insert warning:", assignError.message);
+      }
+    }
+
+    // 10. Create initial onboarding task
+    await supabaseAdmin.from("staff_tasks").insert({
       workspace_id: workspaceId,
-      capability_id: capId,
-      granted_by: actorUserId,
-      reason: `Assigned during workspace provisioning by ${actor.email}`,
-    }));
+      assignee_user_id: authUserId,
+      title: "Complete Workspace Onboarding & Password Rotation",
+      description_safe: "Verify official email, change temporary password to a personal password, and review assigned modules.",
+      priority: "high",
+      state: "todo",
+      created_by: actorUserId,
+    });
 
-    const { error: permError } = await supabaseAdmin
-      .from("staff_workspace_permissions")
-      .insert(permInserts);
+    // 11. Record immutable audit event in staff_workspace_events (NO SECRETS)
+    await supabaseAdmin.from("staff_workspace_events").insert({
+      workspace_id: workspaceId,
+      actor_auth_id: actorUserId,
+      target_user_id: authUserId,
+      event_key: "workspace.created",
+      details: {
+        department: parsed.department,
+        job_title: parsed.jobTitle,
+        system_role: parsed.systemRole,
+        modules_count: parsed.allowedModules.length,
+        assignments_count: parsed.clientAssignments.length,
+      },
+    });
 
-    if (permError) {
-      console.warn("[staff-workspace] Permissions insert warning:", permError.message);
+    // 12. Record append-only admin audit log
+    await recordAdminAction({
+      actor: { userId: actor.id, email: actor.email, role: actor.role },
+      action: "team.workspace_created",
+      capability: "team.manage",
+      target: { type: "staff_workspace", id: workspaceId },
+      outcome: "succeeded",
+      metadata: {
+        recipient_email: normalizedEmail,
+        system_role: parsed.systemRole,
+        job_title: parsed.jobTitle,
+        department: parsed.department,
+      },
+      request,
+    });
+  } catch (err: any) {
+    console.error("[staff-workspace] Provisioning failed, executing compensation rollback:", err);
+    if (isNewlyCreatedAuthUser) {
+      try {
+        await supabaseAdmin.auth.admin.deleteUser(authUserId);
+      } catch (delErr) {
+        console.warn("[staff-workspace] Rollback auth deletion failed:", delErr);
+      }
+      try {
+        await supabaseAdmin.from("staff_workspace_permissions").delete().eq("workspace_id", workspaceId);
+        await supabaseAdmin.from("staff_workspaces").delete().eq("id", workspaceId);
+        await supabaseAdmin.from("staff_employees").delete().eq("auth_user_id", authUserId);
+        await supabaseAdmin.from("profiles").delete().eq("id", authUserId);
+      } catch (cleanErr) {
+        console.warn("[staff-workspace] Rollback DB cleanup failed:", cleanErr);
+      }
     }
+    throw err;
   }
-
-  // 10. Link client/project assignments if any
-  if (parsed.clientAssignments && parsed.clientAssignments.length > 0) {
-    const assignmentInserts = parsed.clientAssignments.map((engagementId) => ({
-      staff_user_id: authUserId,
-      engagement_id: engagementId,
-      assignment_role: "delivery_engineer",
-      status: "active",
-      can_view_technical_stages: true,
-      can_prepare_technical_quotation: parsed.allowedModules.includes("quotations.technical_draft.create"),
-      can_prepare_invoice_request: parsed.allowedModules.includes("invoices.preparation.create"),
-      assigned_by: actorUserId,
-      assignment_reason: "Initial assignment during staff workspace creation",
-    }));
-
-    const { error: assignError } = await supabaseAdmin
-      .from("staff_client_assignments")
-      .insert(assignmentInserts);
-
-    if (assignError) {
-      console.warn("[staff-workspace] Client assignments insert warning:", assignError.message);
-    }
-  }
-
-  // 11. Create initial onboarding task
-  await supabaseAdmin.from("staff_tasks").insert({
-    workspace_id: workspaceId,
-    assignee_user_id: authUserId,
-    title: "Complete Workspace Onboarding & Password Rotation",
-    description_safe: "Verify official email, change temporary password to a personal password, and review assigned modules.",
-    priority: "high",
-    state: "todo",
-    created_by: actorUserId,
-  });
-
-  // 12. Record immutable audit event in staff_workspace_events (NO SECRETS)
-  await supabaseAdmin.from("staff_workspace_events").insert({
-    workspace_id: workspaceId,
-    actor_auth_id: actorUserId,
-    target_user_id: authUserId,
-    event_key: "workspace.created",
-    details: {
-      department: parsed.department,
-      job_title: parsed.jobTitle,
-      system_role: parsed.systemRole,
-      modules_count: parsed.allowedModules.length,
-      assignments_count: parsed.clientAssignments.length,
-    },
-  });
-
-  // 13. Record append-only admin audit log
-  await recordAdminAction({
-    actor: { userId: actor.id, email: actor.email, role: actor.role },
-    action: "team.workspace_created",
-    capability: "team.manage",
-    target: { type: "staff_workspace", id: workspaceId },
-    outcome: "succeeded",
-    metadata: {
-      recipient_email: normalizedEmail,
-      system_role: parsed.systemRole,
-      job_title: parsed.jobTitle,
-      department: parsed.department,
-    },
-    request,
-  });
 
   // 14. Enqueue staff workspace invitation email via transactional outbox
   const baseUrl = (
@@ -494,6 +519,10 @@ export async function getStaffWorkspace(
 
   if (!isOwner && !isSuperAdmin) {
     throw new Error("FORBIDDEN: You do not have permission to access this staff workspace.");
+  }
+
+  if (!isSuperAdmin && ["suspended", "revoked", "archived"].includes(ws.status)) {
+    throw new Error(`FORBIDDEN: Workspace is currently ${ws.status}. Please contact the Super Admin.`);
   }
 
   // Update last access timestamp if owner accessed

@@ -1,48 +1,22 @@
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { env } from "@/config/env";
+import { getVerifiedClientUser } from "@/lib/auth/client-auth";
 import { listClientMessages, postClientMessage } from "@/lib/client-portal/messages";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-async function resolveClientEmail(req: NextRequest): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const supabase = createRouteHandlerClient(
-      { cookies: () => cookieStore as any },
-      { supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL, supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY }
-    );
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user?.email) {
-      return session.user.email.toLowerCase();
-    }
-  } catch (err) {
-    console.warn("[api/client/messages] Session extraction failed:", err);
-  }
-
-  // Fallback for verified test / authorized demo requests
-  const authHeader = req.headers.get("x-client-email");
-  if (authHeader && authHeader.includes("@")) {
-    return authHeader.toLowerCase();
-  }
-
-  return null;
-}
-
 export async function GET(req: NextRequest) {
   try {
-    const clientEmail = await resolveClientEmail(req);
-    if (!clientEmail) {
+    const client = await getVerifiedClientUser();
+    if (!client) {
       return NextResponse.json(
         { success: false, error: "Authentication required to access client stream" },
         { status: 401 }
       );
     }
 
-    const thread = await listClientMessages(clientEmail);
+    const thread = await listClientMessages(client.email);
     return NextResponse.json({
       success: true,
       threadId: thread.threadId,
@@ -60,8 +34,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const clientEmail = await resolveClientEmail(req);
-    if (!clientEmail) {
+    const client = await getVerifiedClientUser();
+    if (!client) {
       return NextResponse.json(
         { success: false, error: "Authentication required to send client stream messages" },
         { status: 401 }
@@ -92,7 +66,7 @@ export async function POST(req: NextRequest) {
     }
 
     const senderName = typeof body.senderName === "string" ? body.senderName : undefined;
-    const message = await postClientMessage(clientEmail, content, senderName);
+    const message = await postClientMessage(client.email, content, senderName);
 
     return NextResponse.json({
       success: true,

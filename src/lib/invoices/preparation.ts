@@ -185,7 +185,7 @@ export async function createInvoicePreparationRequest(params: {
 
   const supabase = getServiceClient();
   if (supabase) {
-    await supabase
+    const { error: insertError } = await supabase
       .from('invoice_preparation_requests')
       .insert({
         id: reqRecord.id,
@@ -201,11 +201,10 @@ export async function createInvoicePreparationRequest(params: {
         prepared_by: reqRecord.prepared_by,
         prepared_by_email: reqRecord.prepared_by_email,
         prepared_by_role: reqRecord.prepared_by_role,
-      })
-      .then(
-        () => undefined,
-        () => undefined
-      );
+      });
+    if (insertError) {
+      console.error('[invoice-prep] Supabase insert failed:', insertError.message);
+    }
   }
 
   await recordAdminAction({
@@ -247,20 +246,26 @@ export async function getInvoicePreparationRequestById(params: {
     };
   }
 
-  let reqRecord = inMemoryInvoicePreps.get(params.requestId) ?? null;
-  if (!reqRecord) {
-    const supabase = getServiceClient();
-    if (supabase) {
-      const { data } = await supabase
+  let reqRecord: InvoicePreparationRequest | null = null;
+  const supabase = getServiceClient();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
         .from('invoice_preparation_requests')
         .select('*')
         .eq('id', params.requestId)
         .maybeSingle();
-      if (data) {
+      if (!error && data) {
         reqRecord = data as InvoicePreparationRequest;
         inMemoryInvoicePreps.set(reqRecord.id, reqRecord);
       }
+    } catch (e) {
+      console.warn('[invoice-prep] Supabase lookup error:', e);
     }
+  }
+
+  if (!reqRecord) {
+    reqRecord = inMemoryInvoicePreps.get(params.requestId) ?? null;
   }
 
   if (!reqRecord) {
@@ -308,7 +313,33 @@ export async function listInvoicePreparationRequests(params: {
     };
   }
 
-  const all = Array.from(inMemoryInvoicePreps.values());
+  let all: InvoicePreparationRequest[] = [];
+  const supabase = getServiceClient();
+  if (supabase) {
+    try {
+      let query = supabase.from('invoice_preparation_requests').select('*');
+      if (params.engagementId) {
+        query = query.eq('engagement_id', params.engagementId);
+      }
+      if (params.status) {
+        query = query.eq('status', params.status);
+      }
+      const { data, error } = await query.order('created_at', { ascending: false });
+      if (!error && data && data.length > 0) {
+        all = data as InvoicePreparationRequest[];
+        for (const r of all) {
+          inMemoryInvoicePreps.set(r.id, r);
+        }
+      }
+    } catch (e) {
+      console.warn('[invoice-prep] Supabase list error:', e);
+    }
+  }
+
+  if (all.length === 0) {
+    all = Array.from(inMemoryInvoicePreps.values());
+  }
+
   const out: InvoicePreparationRequest[] = [];
 
   for (const r of all) {
@@ -403,6 +434,23 @@ export async function updateInvoicePreparationRequest(params: {
   reqRecord.updated_at = new Date().toISOString();
   inMemoryInvoicePreps.set(reqRecord.id, reqRecord);
 
+  const supabase = getServiceClient();
+  if (supabase) {
+    try {
+      await supabase
+        .from('invoice_preparation_requests')
+        .update({
+          deliverable_summary: reqRecord.deliverable_summary,
+          evidence_links: reqRecord.evidence_links,
+          stage_verification_notes: reqRecord.stage_verification_notes,
+          updated_at: reqRecord.updated_at,
+        })
+        .eq('id', reqRecord.id);
+    } catch (e) {
+      console.warn('[invoice-prep] Supabase update error:', e);
+    }
+  }
+
   return {
     ok: true,
     request:
@@ -442,6 +490,22 @@ export async function submitInvoicePreparationRequest(params: {
   reqRecord.submitted_at = now;
   reqRecord.updated_at = now;
   inMemoryInvoicePreps.set(reqRecord.id, reqRecord);
+
+  const supabaseClient = getServiceClient();
+  if (supabaseClient) {
+    try {
+      await supabaseClient
+        .from('invoice_preparation_requests')
+        .update({
+          status: reqRecord.status,
+          submitted_at: reqRecord.submitted_at,
+          updated_at: reqRecord.updated_at,
+        })
+        .eq('id', reqRecord.id);
+    } catch (e) {
+      console.warn('[invoice-prep] Supabase submit error:', e);
+    }
+  }
 
   return {
     ok: true,
@@ -502,6 +566,25 @@ export async function approveAndIssueInvoiceFromPreparation(params: {
     reqRecord.approval_notes = params.approvalNotes ?? null;
     reqRecord.updated_at = now;
     inMemoryInvoicePreps.set(reqRecord.id, reqRecord);
+
+    const supabaseClient = getServiceClient();
+    if (supabaseClient) {
+      try {
+        await supabaseClient
+          .from('invoice_preparation_requests')
+          .update({
+            status: reqRecord.status,
+            approved_by: reqRecord.approved_by,
+            approved_at: reqRecord.approved_at,
+            approval_notes: reqRecord.approval_notes,
+            updated_at: reqRecord.updated_at,
+          })
+          .eq('id', reqRecord.id);
+      } catch (e) {
+        console.warn('[invoice-prep] Supabase decision error:', e);
+      }
+    }
+
     return { ok: true, decision: params.decision, request: reqRecord };
   }
 
@@ -530,6 +613,25 @@ export async function approveAndIssueInvoiceFromPreparation(params: {
   reqRecord.issued_amount_paise = amountPaise;
   reqRecord.updated_at = now;
   inMemoryInvoicePreps.set(reqRecord.id, reqRecord);
+
+  const supabaseClient = getServiceClient();
+  if (supabaseClient) {
+    try {
+      await supabaseClient
+        .from('invoice_preparation_requests')
+        .update({
+          status: reqRecord.status,
+          approved_by: reqRecord.approved_by,
+          approved_at: reqRecord.approved_at,
+          approval_notes: reqRecord.approval_notes,
+          issued_invoice_id: reqRecord.issued_invoice_id,
+          updated_at: reqRecord.updated_at,
+        })
+        .eq('id', reqRecord.id);
+    } catch (e) {
+      console.warn('[invoice-prep] Supabase approval error:', e);
+    }
+  }
 
   await recordAdminAction({
     actor: {

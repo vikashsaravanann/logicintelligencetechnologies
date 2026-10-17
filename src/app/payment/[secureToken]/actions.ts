@@ -111,6 +111,7 @@ export async function submitBillingFormAction(
   try {
     await submitBillingDetails({
       paymentRequestId,
+      secureToken: token,
       customerType,
       legalName,
       companyName: customerType === "company" ? companyName : null,
@@ -188,6 +189,7 @@ export async function submitPaymentAttemptAction(
   try {
     await recordPaymentAttempt({
       paymentRequestId,
+      secureToken: token,
       utr,
       payerUpiId,
       payerBankName,

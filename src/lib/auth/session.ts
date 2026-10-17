@@ -34,6 +34,34 @@ async function resolveStaff(supabase: SupabaseClient): Promise<StaffSession | nu
     .eq("id", userId)
     .maybeSingle();
   if (error || !profile || !isStaffRole(profile.role)) return null;
+
+  // For non-super_admin staff members, verify workspace and employment status are not suspended/revoked
+  if (profile.role !== "super_admin") {
+    try {
+      const { data: ws } = await supabase
+        .from("staff_workspaces")
+        .select("status")
+        .eq("owner_user_id", userId)
+        .maybeSingle();
+
+      if (ws && ["suspended", "revoked", "archived"].includes(ws.status)) {
+        return null;
+      }
+
+      const { data: emp } = await supabase
+        .from("staff_employees")
+        .select("employment_status")
+        .eq("auth_user_id", userId)
+        .maybeSingle();
+
+      if (emp && ["suspended", "offboarded"].includes(emp.employment_status)) {
+        return null;
+      }
+    } catch {
+      // If table query fails, continue with profile check
+    }
+  }
+
   return { userId, email, role: profile.role };
 }
 

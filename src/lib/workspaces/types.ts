@@ -68,13 +68,13 @@ export const MODULE_CAPABILITIES: { id: string; label: string; description: stri
     defaultRoles: ["admin", "operations", "support", "developer"],
   },
   {
-    id: "quotations.technical_draft.create",
+    id: "quotation.technical_draft.create",
     label: "Technical Quotation Preparation",
     description: "Prepare technical architecture scope drafts (commercial pricing strictly reserved for Super Admin)",
     defaultRoles: ["admin", "operations", "developer"],
   },
   {
-    id: "invoices.preparation.create",
+    id: "invoice.preparation.create",
     label: "Invoice Preparation Requests",
     description: "Draft technical milestone completion notes for invoicing (issuance strictly reserved for Super Admin)",
     defaultRoles: ["admin", "operations"],
@@ -86,7 +86,7 @@ export const MODULE_CAPABILITIES: { id: string; label: string; description: stri
     defaultRoles: ["admin", "operations", "support", "developer"],
   },
   {
-    id: "documents.technical.review",
+    id: "documents.review",
     label: "Technical Documents",
     description: "Review engineering specifications, architecture diagrams, and QA verification evidence",
     defaultRoles: ["admin", "operations", "developer", "support"],

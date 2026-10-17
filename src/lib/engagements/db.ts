@@ -774,15 +774,23 @@ export async function getEngagementStages(engagementId: string): Promise<Engagem
         .eq('engagement_id', engagementId)
         .order('ordinal', { ascending: true });
 
-      if (!error && data && data.length > 0) {
-        return data as EngagementStage[];
+      if (!error && data) {
+        if (data.length > 0) {
+          return data as EngagementStage[];
+        }
+        if (engagementId !== FALLBACK_SAMPLE_ENGAGEMENT.id) {
+          return [];
+        }
       }
     } catch (err) {
       console.warn('[getEngagementStages] DB query failed, using fallback:', err);
     }
   }
 
-  return FALLBACK_SAMPLE_STAGES.map((s) => ({ ...s, engagement_id: engagementId }));
+  if (engagementId === FALLBACK_SAMPLE_ENGAGEMENT.id || !isAdminClientConfigured()) {
+    return FALLBACK_SAMPLE_STAGES.map((s) => ({ ...s, engagement_id: engagementId }));
+  }
+  return [];
 }
 
 /**
@@ -813,18 +821,26 @@ export async function getEngagementDocumentLinks(
       }
 
       const { data, error } = await query;
-      if (!error && data && data.length > 0) {
-        return data as EngagementDocumentLink[];
+      if (!error && data) {
+        if (data.length > 0) {
+          return data as EngagementDocumentLink[];
+        }
+        if (engagementId !== FALLBACK_SAMPLE_ENGAGEMENT.id) {
+          return [];
+        }
       }
     } catch (err) {
       console.warn('[getEngagementDocumentLinks] DB query failed, using fallback:', err);
     }
   }
 
-  if (stageKey) {
-    return FALLBACK_SAMPLE_DOCS.filter((d) => d.stage_key === stageKey);
+  if (engagementId === FALLBACK_SAMPLE_ENGAGEMENT.id || !isAdminClientConfigured()) {
+    if (stageKey) {
+      return FALLBACK_SAMPLE_DOCS.filter((d) => d.stage_key === stageKey);
+    }
+    return FALLBACK_SAMPLE_DOCS;
   }
-  return FALLBACK_SAMPLE_DOCS;
+  return [];
 }
 
 /**

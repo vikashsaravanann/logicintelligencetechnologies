@@ -11,24 +11,7 @@
 BEGIN;
 
 -- -----------------------------------------------------------------------------
--- 1. Helper function: is_staff_workspace_owner
--- -----------------------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION public.is_staff_workspace_owner(ws_id UUID)
-RETURNS BOOLEAN
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM public.staff_workspaces
-    WHERE id = ws_id AND owner_user_id = auth.uid()
-  );
-$$;
-
--- -----------------------------------------------------------------------------
--- 2. Staff Employees (Protected personnel profile extension)
+-- 1. Staff Employees (Protected personnel profile extension)
 -- -----------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS public.staff_employees (
@@ -57,7 +40,7 @@ CREATE INDEX IF NOT EXISTS idx_staff_employees_email_normalized ON public.staff_
 CREATE INDEX IF NOT EXISTS idx_staff_employees_department ON public.staff_employees(department);
 
 -- -----------------------------------------------------------------------------
--- 3. Staff Workspaces (Person-specific private workspace)
+-- 2. Staff Workspaces (Person-specific private workspace)
 -- -----------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS public.staff_workspaces (
@@ -88,6 +71,23 @@ CREATE TABLE IF NOT EXISTS public.staff_workspaces (
 
 CREATE INDEX IF NOT EXISTS idx_staff_workspaces_owner_user_id ON public.staff_workspaces(owner_user_id);
 CREATE INDEX IF NOT EXISTS idx_staff_workspaces_status ON public.staff_workspaces(status);
+
+-- -----------------------------------------------------------------------------
+-- 3. Helper function: is_staff_workspace_owner
+-- -----------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION public.is_staff_workspace_owner(ws_id UUID)
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.staff_workspaces
+    WHERE id = ws_id AND owner_user_id = auth.uid()
+  );
+$$;
 
 -- -----------------------------------------------------------------------------
 -- 4. Staff Workspace Permissions (Explicit capability grants)

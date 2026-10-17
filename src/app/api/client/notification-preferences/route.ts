@@ -1,8 +1,6 @@
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { env } from "@/config/env";
+import { getVerifiedClientUser } from "@/lib/auth/client-auth";
 import {
   getNotificationPreferences,
   updateNotificationPreferences,
@@ -11,42 +9,17 @@ import {
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-async function resolveClientEmail(req: NextRequest): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const supabase = createRouteHandlerClient(
-      { cookies: () => cookieStore as any },
-      { supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL, supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY }
-    );
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (session?.user?.email) {
-      return session.user.email.toLowerCase();
-    }
-  } catch (err) {
-    console.warn("[api/client/notification-preferences] Session extraction failed:", err);
-  }
-
-  const authHeader = req.headers.get("x-client-email");
-  if (authHeader && authHeader.includes("@")) {
-    return authHeader.toLowerCase();
-  }
-
-  return null;
-}
-
 export async function GET(req: NextRequest) {
   try {
-    const clientEmail = await resolveClientEmail(req);
-    if (!clientEmail) {
+    const client = await getVerifiedClientUser();
+    if (!client) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
         { status: 401 }
       );
     }
 
-    const preferences = await getNotificationPreferences(clientEmail);
+    const preferences = await getNotificationPreferences(client.email);
     return NextResponse.json({
       success: true,
       preferences,
@@ -62,8 +35,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const clientEmail = await resolveClientEmail(req);
-    if (!clientEmail) {
+    const client = await getVerifiedClientUser();
+    if (!client) {
       return NextResponse.json(
         { success: false, error: "Authentication required" },
         { status: 401 }
@@ -78,7 +51,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const ok = await updateNotificationPreferences(clientEmail, {
+    const ok = await updateNotificationPreferences(client.email, {
       emailCriticalAlerts: typeof body.emailCriticalAlerts === "boolean" ? body.emailCriticalAlerts : undefined,
       emailStageMilestones: typeof body.emailStageMilestones === "boolean" ? body.emailStageMilestones : undefined,
       emailMessages: typeof body.emailMessages === "boolean" ? body.emailMessages : undefined,
@@ -92,7 +65,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const updated = await getNotificationPreferences(clientEmail);
+    const updated = await getNotificationPreferences(client.email);
     return NextResponse.json({
       success: true,
       preferences: updated,

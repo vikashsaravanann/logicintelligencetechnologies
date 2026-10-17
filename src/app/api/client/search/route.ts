@@ -1,49 +1,10 @@
+import "server-only";
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { env } from "@/config/env";
+import { getVerifiedClientUser } from "@/lib/auth/client-auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-async function resolveClientSession(req: NextRequest): Promise<{ email: string; userId: string | null } | null> {
-  const headerEmail = req.headers.get("x-client-email");
-  let email = headerEmail && headerEmail.includes("@") ? headerEmail.trim().toLowerCase() : null;
-  let userId: string | null = null;
-
-  try {
-    const cookieStore = await cookies();
-    const supabase = createServerComponentClient(
-      { cookies: () => cookieStore as any },
-      { supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL, supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY }
-    );
-    const { data } = await supabase.auth.getUser();
-    if (data.user) {
-      if (!email) {
-        email = data.user.email?.trim().toLowerCase() || null;
-      }
-      userId = data.user.id;
-    }
-  } catch {
-    // Session extraction fallback
-  }
-
-  if (email && !userId) {
-    try {
-      const { data } = await supabaseAdmin.auth.admin.listUsers();
-      const match = data?.users?.find((u) => u.email?.toLowerCase() === email);
-      if (match) {
-        userId = match.id;
-      }
-    } catch {
-      // User id resolution fallback
-    }
-  }
-
-  if (!email) return null;
-  return { email, userId };
-}
 
 export interface SearchResultItem {
   id: string;
@@ -56,15 +17,16 @@ export interface SearchResultItem {
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await resolveClientSession(req);
-    if (!session || !session.email) {
+    const client = await getVerifiedClientUser();
+    if (!client) {
       return NextResponse.json(
         { success: false, error: "Unauthorized client session" },
         { status: 401 }
       );
     }
 
-    const { email, userId } = session;
+    const { email, user } = client;
+    const userId = user.id;
     const { searchParams } = new URL(req.url);
     const query = (searchParams.get("q") || "").trim().toLowerCase();
 

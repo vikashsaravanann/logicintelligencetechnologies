@@ -994,28 +994,57 @@ export async function acceptQuotation(
     return { ok: false, error: "Signer name and email are required" };
   }
 
-  let quote = inMemoryQuotations.find((q) => q.secure_token === token);
-  if (!quote && isAdminClientConfigured()) {
+  let quote: QuotationRecord | null = null;
+  if (isAdminClientConfigured()) {
     try {
-      const { data } = await supabaseAdmin
+      const { data, error } = await supabaseAdmin
         .from("quotations")
         .select("*")
         .eq("secure_token", token)
         .maybeSingle();
-      if (data) quote = data as QuotationRecord;
+      if (error) {
+        console.warn("[quotations-service] Supabase quote lookup failed:", error);
+      } else if (data) {
+        quote = data as QuotationRecord;
+      }
     } catch (e) {
-      console.warn("[quotations-service] Supabase quote lookup failed:", e);
+      console.warn("[quotations-service] Supabase quote lookup exception:", e);
     }
   }
+
+  // Fallback to in-memory if DB did not yield record (test / mock runs)
+  if (!quote) {
+    quote = inMemoryQuotations.find((q) => q.secure_token === token) || null;
+  }
+
   if (!quote) return { ok: false, error: "Quotation not found" };
+
+  if (quote.status === "draft") {
+    return { ok: false, error: "Cannot accept an unpublished draft quotation" };
+  }
+  if (quote.status === "revoked") {
+    return { ok: false, error: "This quotation has been revoked and can no longer be accepted" };
+  }
+  if (quote.status === "expired" || (quote.valid_until && new Date(quote.valid_until).getTime() < Date.now())) {
+    return { ok: false, error: "This quotation has expired and can no longer be accepted" };
+  }
 
   if (quote.status === "accepted") {
     return { ok: true }; // already accepted
   }
 
+  const previousStatus = quote.status;
   quote.status = "accepted";
   quote.accepted_at = new Date().toISOString();
   quote.updated_at = new Date().toISOString();
+
+  // Also sync in-memory record if it exists
+  const inMem = inMemoryQuotations.find((q) => q.id === quote!.id || q.secure_token === token);
+  if (inMem) {
+    inMem.status = "accepted";
+    inMem.accepted_at = quote.accepted_at;
+    inMem.updated_at = quote.updated_at;
+  }
 
   const auditEntry = {
     id: "log-" + crypto.randomBytes(6).toString("hex"),
@@ -1036,7 +1065,7 @@ export async function acceptQuotation(
 
   if (isAdminClientConfigured()) {
     try {
-      await supabaseAdmin
+      const { error: updateError } = await supabaseAdmin
         .from("quotations")
         .update({
           status: "accepted",
@@ -1044,6 +1073,13 @@ export async function acceptQuotation(
           updated_at: quote.updated_at,
         })
         .eq("id", quote.id);
+
+      if (updateError) {
+        console.error("[quotations-service] DB accept update failed:", updateError);
+        quote.status = previousStatus;
+        if (inMem) inMem.status = previousStatus;
+        return { ok: false, error: "Failed to persist quotation acceptance in database" };
+      }
 
       await supabaseAdmin.from("quotation_acceptances").insert({
         quotation_id: quote.id,
@@ -1061,7 +1097,10 @@ export async function acceptQuotation(
         details: auditEntry.details,
       });
     } catch (e) {
-      console.warn("[quotations-service] DB accept sync error:", e);
+      console.error("[quotations-service] DB accept sync exception:", e);
+      quote.status = previousStatus;
+      if (inMem) inMem.status = previousStatus;
+      return { ok: false, error: "Database error persisting quotation acceptance" };
     }
   }
 

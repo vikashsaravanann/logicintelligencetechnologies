@@ -11,6 +11,7 @@ import ConsultationRegistrationReceivedEmail from "@/emails/consultation-registr
 import {
   formatConsultationDateTime,
   getConsultationDurationMinutes,
+  convertZonedDateTimeToUtcIso,
 } from "@/lib/calendar/consultation-ics";
 
 export const dynamic = "force-dynamic";
@@ -55,31 +56,21 @@ export async function POST(req: NextRequest) {
     const notes = sanitizeMultilineText(parsed.data.notes || "", 2000);
 
     // Defensively normalize any input slotTime to valid ISO 8601 UTC timestamp
-    function normalizeSlotTimeToIso(raw: string): string {
-      // 1. Try standard Date parsing if no AM/PM
-      if (!raw.includes("AM") && !raw.includes("PM")) {
+    function normalizeSlotTimeToIso(raw: string, tz = "Asia/Kolkata"): string {
+      // 1. If already contains explicit UTC or timezone offset, parse directly
+      if (raw.endsWith("Z") || /[+-]\d{2}:\d{2}$/.test(raw)) {
         const d = new Date(raw);
         if (!isNaN(d.getTime())) return d.toISOString();
       }
-      // 2. Parse date and 12-hour or 24-hour time components
+      // 2. Parse date and 12-hour or 24-hour time components with client timezone
       const dateMatch = raw.match(/(\d{4}-\d{2}-\d{2})/);
-      const timeMatch = raw.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?/i);
+      const timeMatch = raw.match(/(\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM)?)/i);
       const dateStr = dateMatch ? dateMatch[1] : new Date().toISOString().slice(0, 10);
-      let hours = 10;
-      let mins = "00";
-      if (timeMatch) {
-        hours = parseInt(timeMatch[1], 10);
-        mins = timeMatch[2];
-        const modifier = timeMatch[4];
-        if (modifier) {
-          if (modifier.toUpperCase() === "PM" && hours < 12) hours += 12;
-          if (modifier.toUpperCase() === "AM" && hours === 12) hours = 0;
-        }
-      }
-      return `${dateStr}T${String(hours).padStart(2, "0")}:${mins}:00.000Z`;
+      const timeStr = timeMatch ? timeMatch[1] : "10:00:00";
+      return convertZonedDateTimeToUtcIso(dateStr, timeStr, tz);
     }
 
-    const normalizedSlotTime = normalizeSlotTimeToIso(rawSlotTime);
+    const normalizedSlotTime = normalizeSlotTimeToIso(rawSlotTime, timezone);
 
     // Initial status is 'Pending' awaiting admin review and meeting confirmation
     const stored = await insertLead("bookings", {

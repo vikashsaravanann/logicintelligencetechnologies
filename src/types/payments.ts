@@ -189,6 +189,7 @@ export interface CreatePaymentRequestInput {
 
 export interface SubmitBillingInput {
   paymentRequestId: string;
+  secureToken?: string;
   customerType: CustomerType;
   legalName: string;
   companyName?: string | null;
@@ -206,6 +207,7 @@ export interface SubmitBillingInput {
 
 export interface RecordPaymentAttemptInput {
   paymentRequestId: string;
+  secureToken?: string;
   utr: string;
   payerUpiId?: string | null;
   payerBankName?: string | null;

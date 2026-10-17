@@ -25,6 +25,79 @@ export function getConsultationDurationMinutes(consultationType: string): number
   return 45; // default 45 mins for Architecture Session and others
 }
 
+/**
+ * Converts a wall-clock date and time in an arbitrary IANA time zone into
+ * an exact UTC ISO 8601 string. Avoids local server vs user offset skew.
+ */
+export function convertZonedDateTimeToUtcIso(
+  dateStr: string,
+  timeStr: string,
+  timeZone = "Asia/Kolkata"
+): string {
+  const timeMatch = (timeStr || "").trim().match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?$/i);
+  let hours = 10;
+  let mins = 0;
+  let secs = 0;
+  if (timeMatch) {
+    hours = parseInt(timeMatch[1], 10);
+    mins = parseInt(timeMatch[2], 10);
+    secs = timeMatch[3] ? parseInt(timeMatch[3], 10) : 0;
+    const modifier = timeMatch[4];
+    if (modifier) {
+      if (modifier.toUpperCase() === "PM" && hours < 12) hours += 12;
+      if (modifier.toUpperCase() === "AM" && hours === 12) hours = 0;
+    }
+  }
+
+  const dateMatch = (dateStr || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!dateMatch) {
+    const fallback = new Date();
+    return fallback.toISOString();
+  }
+  const year = parseInt(dateMatch[1], 10);
+  const month = parseInt(dateMatch[2], 10);
+  const day = parseInt(dateMatch[3], 10);
+
+  const initialUtc = Date.UTC(year, month - 1, day, hours, mins, secs);
+
+  function getTzParts(utcMs: number, tz: string): number {
+    const d = new Date(utcMs);
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: tz,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+    const parts = formatter.formatToParts(d);
+    const map: Record<string, string> = {};
+    for (const p of parts) map[p.type] = p.value;
+    const h = parseInt(map.hour, 10) === 24 ? 0 : parseInt(map.hour, 10);
+    return Date.UTC(
+      parseInt(map.year, 10),
+      parseInt(map.month, 10) - 1,
+      parseInt(map.day, 10),
+      h,
+      parseInt(map.minute, 10),
+      parseInt(map.second, 10)
+    );
+  }
+
+  let offsetMs = 0;
+  try {
+    const tzUtc = getTzParts(initialUtc, timeZone);
+    offsetMs = tzUtc - initialUtc;
+  } catch {
+    offsetMs = 0;
+  }
+
+  const resultUtc = initialUtc - offsetMs;
+  return new Date(resultUtc).toISOString();
+}
+
 export function formatConsultationDateTime(
   isoDateStr: string | Date,
   timeZone = "Asia/Kolkata"

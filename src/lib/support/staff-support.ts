@@ -461,7 +461,7 @@ export async function listStaffClientAssignments(filter?: {
     if (filter?.onlyActive) query = query.eq('status', 'active');
 
     const { data, error } = await query;
-    if (!error && Array.isArray(data) && data.length > 0) {
+    if (!error && Array.isArray(data)) {
       return data as StaffClientAssignment[];
     }
   }
@@ -534,11 +534,17 @@ export async function verifyStaffClientAssignment(params: {
   const matched = activeAssignments.find((a) => {
     if (a.status !== 'active') return false;
     if (a.expires_at && new Date(a.expires_at).getTime() <= nowMs) return false;
-    const matchesClient = Boolean(params.clientId && a.client_id === params.clientId);
-    const matchesEngagement = Boolean(
-      params.engagementId && a.engagement_id === params.engagementId
-    );
-    return matchesClient || matchesEngagement;
+    // Strict conjunction when both are supplied to prevent split-identifier authorization bypass
+    if (params.clientId && params.engagementId) {
+      return a.client_id === params.clientId && (!a.engagement_id || a.engagement_id === params.engagementId);
+    }
+    if (params.clientId) {
+      return a.client_id === params.clientId;
+    }
+    if (params.engagementId) {
+      return a.engagement_id === params.engagementId;
+    }
+    return false;
   });
 
   if (!matched) {
