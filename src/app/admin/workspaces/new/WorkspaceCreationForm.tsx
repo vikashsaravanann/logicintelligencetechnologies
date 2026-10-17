@@ -2,21 +2,17 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { AdminBackLink } from "@/app/admin/components/AdminBackLink";
 import {
   User,
   Mail,
-  Phone,
   Briefcase,
-  Building,
   KeyRound,
   ShieldCheck,
   Eye,
   EyeOff,
   Copy,
   Check,
-  ExternalLink,
   Loader2,
   AlertCircle,
   CheckCircle2,
@@ -25,7 +21,6 @@ import {
   Sparkles,
   ArrowRight,
   Shield,
-  HelpCircle,
 } from "lucide-react";
 import { StaffRole, StaffWorkspaceCreatedResult } from "@/lib/workspaces/types";
 
@@ -63,7 +58,6 @@ const AVAILABLE_MODULES = [
 ];
 
 export default function WorkspaceCreationForm({ engagements }: WorkspaceCreationFormProps) {
-  const router = useRouter();
 
   // Employee Identity
   const [fullName, setFullName] = useState("");
