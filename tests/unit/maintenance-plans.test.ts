@@ -43,14 +43,16 @@ test("Maintenance Plan 1: FREE_TRIAL (₹0 subscription, ₹20 refundable verifi
 
 test("Maintenance Plan 2: STANDARD (₹999/mo + 18% GST = ₹1,178.82)", () => {
   const plan = MAINTENANCE_PLANS.STANDARD;
-  assert.ok(plan);
+  assert.ok(plan, "STANDARD plan must exist");
   assert.equal(plan.basePricePaise, 99900);
+  assert.equal(plan.refundablePaise, 0);
+  assert.equal(plan.planType, "paid", "Must be flagged as paid");
+  assert.equal(plan.durationDays, 30);
   assert.equal(plan.enhancementHoursMonthly, 0);
   assert.equal(plan.ctaButtonText, "Choose Standard");
 
   const monthly = calculatePlanPricing("STANDARD", "monthly");
   assert.equal(monthly.basePricePaise, 99900);
-  // 999 * 0.18 = 179.82 -> 17982 paise
   assert.equal(monthly.taxPaise, 17982);
   assert.equal(monthly.totalPayablePaise, 117882, "99900 + 17982 = 117882 paise (₹1,178.82)");
   assert.equal(monthly.isRefundableTrialVerification, false);

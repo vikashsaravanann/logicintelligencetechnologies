@@ -582,40 +582,40 @@ export default function SupportStageClient({
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tier 1 · Evaluation</div>
-              <div className="font-bold text-slate-900 text-xs mt-0.5">30-Day Free Trial</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Option 1 · Evaluation</div>
+              <div className="font-bold text-slate-900 text-xs mt-0.5">FREE TRIAL</div>
               <div className="font-mono font-bold text-sm text-slate-900 mt-1">₹0 <span className="text-[10px] font-normal text-emerald-600">/ 30 Days</span></div>
-              <div className="text-[10px] text-slate-500 mt-0.5">₹20 refundable verification</div>
-              <p className="text-[10px] text-slate-500 mt-2">Self-service knowledge base, FAQs, and trial evaluation dashboard.</p>
+              <div className="text-[10px] text-emerald-700 font-semibold mt-0.5">₹20 refundable verification</div>
+              <p className="text-[10px] text-slate-500 mt-2">30 consecutive days of trial access. Self-service knowledge base, FAQs, and ticket preparation. No auto-conversion or recurring debit.</p>
             </div>
 
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tier 2 · Entry Care</div>
-              <div className="font-bold text-slate-900 text-xs mt-0.5">Standard Care</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Option 2 · Entry Care</div>
+              <div className="font-bold text-slate-900 text-xs mt-0.5">STANDARD</div>
               <div className="font-mono font-bold text-sm text-slate-900 mt-1">₹999 <span className="text-[10px] font-normal text-slate-500">/mo</span></div>
               <div className="text-[10px] text-slate-500 mt-0.5">₹1,178.82 incl. 18% GST</div>
-              <p className="text-[10px] text-slate-500 mt-2">Basic ticketing, monthly health summary, and business-hours email support.</p>
+              <p className="text-[10px] text-slate-500 mt-2">Entry-level paid maintenance support: basic support ticketing, business-hours assistance, and monthly project health summary.</p>
             </div>
 
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tier 3 · Routine</div>
-              <div className="font-bold text-slate-900 text-xs mt-0.5">Basic Care</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Option 3 · Routine Care</div>
+              <div className="font-bold text-slate-900 text-xs mt-0.5">BASIC</div>
               <div className="font-mono font-bold text-sm text-slate-900 mt-1">₹4,999 <span className="text-[10px] font-normal text-slate-500">/mo</span></div>
               <div className="text-[10px] text-slate-500 mt-0.5">₹5,898.82 incl. 18% GST</div>
-              <p className="text-[10px] text-slate-500 mt-2">1 minor enhancement hr/mo, bug remediation, and monthly telemetry review.</p>
+              <p className="text-[10px] text-slate-500 mt-2">Routine bug remediation, basic security updates, monthly telemetry review, and 1 minor enhancement hr/mo.</p>
             </div>
 
             <div className="p-3 bg-blue-50/50 rounded-xl border border-blue-200">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-blue-700">Tier 4 · Most Popular</div>
-              <div className="font-bold text-slate-900 text-xs mt-0.5">Pro Care</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-blue-700">Option 4 · Most Popular</div>
+              <div className="font-bold text-slate-900 text-xs mt-0.5">PRO</div>
               <div className="font-mono font-bold text-sm text-slate-900 mt-1">₹9,999 <span className="text-[10px] font-normal text-slate-500">/mo</span></div>
               <div className="text-[10px] text-slate-500 mt-0.5">₹11,798.82 incl. 18% GST</div>
-              <p className="text-[10px] text-slate-500 mt-2">3 enhancement hrs/mo, weekly health reviews, error monitoring, and priority SLA.</p>
+              <p className="text-[10px] text-slate-500 mt-2">3 enhancement hrs/mo, weekly health reviews, error monitoring, and &lt;8h priority SLA.</p>
             </div>
 
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tier 5 · Mission Critical</div>
-              <div className="font-bold text-slate-900 text-xs mt-0.5">Enterprise Care</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Option 5 · Mission Critical</div>
+              <div className="font-bold text-slate-900 text-xs mt-0.5">ENTERPRISE</div>
               <div className="font-mono font-bold text-sm text-slate-900 mt-1">₹19,999 <span className="text-[10px] font-normal text-slate-500">/mo</span></div>
               <div className="text-[10px] text-slate-500 mt-0.5">₹23,598.82 incl. 18% GST</div>
               <p className="text-[10px] text-slate-500 mt-2">6 enhancement hrs/mo, designated lead, monthly architecture reviews, & &lt;4h SLA.</p>

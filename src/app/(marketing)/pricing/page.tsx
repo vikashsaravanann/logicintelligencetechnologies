@@ -334,6 +334,28 @@ export default function PricingPage() {
           </div>
         </section>
 
+        {/* Maintenance Plans Cross-Link Banner */}
+        <section className="mb-24">
+          <div className="bg-gradient-to-r from-emerald-950 via-[#0B2545] to-[#134074] rounded-3xl p-8 sm:p-10 border border-emerald-500/30 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
+            <div className="space-y-2 max-w-2xl">
+              <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                Post-Delivery Care & SLA
+              </span>
+              <h3 className="text-2xl font-bold font-poppins">Looking for Production Maintenance & Care Plans?</h3>
+              <p className="text-sm text-slate-200 leading-relaxed">
+                Explore our 4 canonical tiers: Standard 30-Day Free Trial (₹20 refundable verification), Basic (₹4,999/mo), Pro (₹9,999/mo), and Enterprise (₹19,999/mo) with guaranteed SLA targets, minor enhancements, and security telemetry.
+              </p>
+            </div>
+            <Link
+              href="/maintenance/plans"
+              className="shrink-0 px-6 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-sm"
+            >
+              <span>View Maintenance Plans</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </section>
+
         {/* FAQs */}
         <section className="max-w-4xl mx-auto">
           <div className="text-center mb-10">

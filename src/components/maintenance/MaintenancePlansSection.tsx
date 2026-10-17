@@ -168,36 +168,40 @@ export default function MaintenancePlansSection({
     <div className="space-y-10">
       {/* 1. Active Subscription / Free Trial Status Banner */}
       {activeSubscription && activeSubscription.status === 'active' && (
-        <div className="bg-gradient-to-r from-emerald-900/90 via-[#0B2545] to-[#134074] text-white rounded-2xl p-6 shadow-md border border-emerald-500/30">
+        <div className="bg-gradient-to-r from-emerald-900/90 via-[#0B2545] to-[#134074] text-white rounded-2xl p-6 shadow-md border border-emerald-500/30 space-y-4">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-400 text-slate-950 uppercase tracking-wider">
-                  Active Subscription
+                  {activeSubscription.plan_id === 'STANDARD' || activeSubscription.plan_id === 'FREE_TRIAL'
+                    ? 'Active 30-Day Free Trial'
+                    : 'Active Subscription'}
                 </span>
-                <span className="text-xs text-emerald-300 font-mono">
-                  {activeSubscription.plan_id}
+                <span className="text-xs text-emerald-300 font-mono font-semibold">
+                  Status: Active ({activeSubscription.plan_id})
                 </span>
               </div>
               <h3 className="text-xl font-bold mt-2">
-                {activeSubscription.planDetails?.name || activeSubscription.plan_id}
+                {activeSubscription.plan_id === 'STANDARD' || activeSubscription.plan_id === 'FREE_TRIAL'
+                  ? 'Standard Free Trial'
+                  : activeSubscription.planDetails?.name || activeSubscription.plan_id}
               </h3>
               <p className="text-xs text-slate-200 mt-1 max-w-xl">
                 Active for <strong>{companyName}</strong>. Standard SLA target:{' '}
                 <span className="text-emerald-300 font-semibold">
-                  {activeSubscription.planDetails?.slaResponseTime || '< 24 Hours'}
-                </span>.
+                  {activeSubscription.planDetails?.slaResponseTime || 'Best-Effort (Community & Knowledge Base)'}
+                </span>. No automatic paid conversion or recurring debit.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-white/10 backdrop-blur-md rounded-xl p-3.5 border border-white/10 text-center shrink-0">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white/10 backdrop-blur-md rounded-xl p-3.5 border border-white/10 text-center shrink-0">
               <div>
                 <div className="text-[10px] text-slate-300 uppercase">Days Left</div>
                 <div className="text-base font-bold text-white mt-0.5 font-mono">
                   {activeSubscription.daysRemaining} Days
                 </div>
               </div>
-              {activeSubscription.plan_id === 'FREE_TRIAL' ? (
+              {activeSubscription.plan_id === 'STANDARD' || activeSubscription.plan_id === 'FREE_TRIAL' ? (
                 <div>
                   <div className="text-[10px] text-slate-300 uppercase">Verification</div>
                   <div className="text-base font-bold text-emerald-400 mt-0.5 font-mono">
@@ -218,8 +222,41 @@ export default function MaintenancePlansSection({
                   {activeSubscription.refund_status?.replace(/_/g, ' ') || 'N/A'}
                 </div>
               </div>
+              <div>
+                <div className="text-[10px] text-slate-300 uppercase">Expires On</div>
+                <div className="text-[11px] font-mono text-slate-200 mt-1">
+                  {activeSubscription.trial_expires_at
+                    ? new Date(activeSubscription.trial_expires_at).toLocaleDateString()
+                    : activeSubscription.current_period_end
+                    ? new Date(activeSubscription.current_period_end).toLocaleDateString()
+                    : '30 Days'}
+                </div>
+              </div>
             </div>
           </div>
+
+          {(activeSubscription.plan_id === 'STANDARD' || activeSubscription.plan_id === 'FREE_TRIAL') && (
+            <div className="pt-3 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-200">
+              <div>
+                <span className="font-semibold text-emerald-300">Available Trial Services:</span>{' '}
+                30-Day Dashboard Access · Architecture Documentation · FAQ Knowledge Base · Ticket Intake Preparation
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <a
+                  href="#plans-catalog"
+                  className="px-3 py-1 bg-white/20 hover:bg-white/30 rounded-lg text-white font-semibold text-[11px] transition-colors"
+                >
+                  Upgrade Options
+                </a>
+                <a
+                  href="mailto:support@logicintelligencetechnologies.in"
+                  className="px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-lg text-[11px] transition-colors"
+                >
+                  Contact Support
+                </a>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -380,15 +417,25 @@ export default function MaintenancePlansSection({
                     </div>
                   )}
                   {selectedPlan.planType === 'free_trial' && (
-                    <div className="flex justify-between py-2 text-emerald-700 font-medium">
-                      <span>One-Time Refundable Verification Deposit</span>
-                      <span className="font-mono font-bold">₹20.00</span>
-                    </div>
+                    <>
+                      <div className="flex justify-between py-2 text-emerald-700 font-medium">
+                        <span>Purpose</span>
+                        <span className="font-semibold text-right">Standard Free Trial — Refundable Verification</span>
+                      </div>
+                      <div className="flex justify-between py-2 text-emerald-700 font-medium">
+                        <span>One-Time Refundable Verification Deposit</span>
+                        <span className="font-mono font-bold">₹20.00</span>
+                      </div>
+                    </>
                   )}
                   <div className="flex justify-between py-3 text-sm font-bold border-t-2 border-slate-200">
-                    <span className="text-[#0B2545]">Total Amount Payable</span>
+                    <span className="text-[#0B2545]">
+                      {selectedPlan.planType === 'free_trial' ? 'Payment Amount' : 'Total Amount Payable'}
+                    </span>
                     <span className="font-mono text-[#0B2545] text-base">
-                      {formatPaiseToInr(selectedPlan.totalPricePaise)}
+                      {selectedPlan.planType === 'free_trial'
+                        ? '₹20.00'
+                        : formatPaiseToInr(selectedPlan.totalPricePaise)}
                     </span>
                   </div>
                 </div>

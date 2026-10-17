@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
     const { data: refundQueue } = await supabaseAdmin
       .from("maintenance_subscriptions")
       .select("*")
-      .eq("plan_id", "FREE_TRIAL")
+      .in("plan_id", ["STANDARD", "FREE_TRIAL"])
       .in("refund_status", ["pending", "processing", "manual_review_required"])
       .order("created_at", { ascending: false });
 

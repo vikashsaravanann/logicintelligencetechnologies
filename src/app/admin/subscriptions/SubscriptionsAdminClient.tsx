@@ -60,7 +60,7 @@ export default function SubscriptionsAdminClient({
         );
         if (data.subscription) {
           setSubscriptions((prev) => [data.subscription, ...prev]);
-          if (data.subscription.plan_id === 'FREE_TRIAL') {
+          if (data.subscription.plan_id === 'FREE_TRIAL' || data.subscription.plan_id === 'STANDARD') {
             setRefundQueue((prev) => [data.subscription, ...prev]);
           }
         }

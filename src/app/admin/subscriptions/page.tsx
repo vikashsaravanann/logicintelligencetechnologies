@@ -33,7 +33,7 @@ export default async function AdminSubscriptionsPage() {
     supabaseAdmin
       .from("maintenance_subscriptions")
       .select("*")
-      .eq("plan_id", "FREE_TRIAL")
+      .in("plan_id", ["STANDARD", "FREE_TRIAL"])
       .order("created_at", { ascending: false }),
   ]);
 

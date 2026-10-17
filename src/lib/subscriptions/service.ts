@@ -57,6 +57,24 @@ export async function createOrGetMaintenanceOrder(params: CreateOrderParams) {
   const { clientId, engagementId, planId, consentConfirmed = true } = params;
   const pricing = calculatePlanPricing(planId);
 
+  const planDef = MAINTENANCE_PLANS[planId];
+  const isFreeTrial = planDef.planType === 'free_trial' || planId === 'FREE_TRIAL';
+
+  // If selecting Free Trial, verify eligibility: cannot have an existing active trial
+  if (isFreeTrial) {
+    const { data: activeTrials } = await supabaseAdmin
+      .from('maintenance_subscriptions')
+      .select('id, plan_id, status, trial_expires_at')
+      .eq('engagement_id', engagementId)
+      .eq('plan_id', 'FREE_TRIAL')
+      .in('status', ['active', 'pending_verification'])
+      .limit(1);
+
+    if (activeTrials && activeTrials.length > 0) {
+      throw new Error('An active or pending 30-Day Free Trial already exists for this engagement. Duplicate trial orders are prohibited.');
+    }
+  }
+
   // Check if there is an active pending order with same plan and client
   const { data: existingOrders, error: findError } = await supabaseAdmin
     .from('maintenance_orders')
@@ -84,7 +102,7 @@ export async function createOrGetMaintenanceOrder(params: CreateOrderParams) {
   const randShort = crypto.randomBytes(3).toString('hex').toUpperCase();
   const orderRef = `LIT-MNT-${timestampShort}-${randShort}`;
 
-  const orderType = planId === 'FREE_TRIAL' ? 'trial_verification' : 'subscription_initial';
+  const orderType = isFreeTrial ? 'trial_verification' : 'subscription_initial';
 
   // Construct NPCI UPI URI
   const upiUri = buildUpiUri({
@@ -92,7 +110,9 @@ export async function createOrGetMaintenanceOrder(params: CreateOrderParams) {
     payeeName: LIT_PAYEE_CONFIG.accountHolder,
     amount: pricing.totalPricePaise / 100,
     transactionRef: orderRef,
-    transactionNote: `${MAINTENANCE_PLANS[planId].name} (${orderRef})`,
+    transactionNote: isFreeTrial
+      ? `Free Trial — Refundable Verification (${orderRef})`
+      : `${MAINTENANCE_PLANS[planId].name} (${orderRef})`,
   });
 
   const { data: newOrder, error: insertError } = await supabaseAdmin
@@ -116,6 +136,7 @@ export async function createOrGetMaintenanceOrder(params: CreateOrderParams) {
         plan_name: pricing.name,
         refundable_paise: pricing.refundablePaise,
         sla_target: pricing.slaResponseTime,
+        purpose: isFreeTrial ? 'Free Trial — Refundable Verification' : 'Maintenance Subscription',
       },
     })
     .select('*')
@@ -126,16 +147,21 @@ export async function createOrGetMaintenanceOrder(params: CreateOrderParams) {
   }
 
   // Queue initial order registration acknowledgment email in outbox
+  const emailSubject = isFreeTrial
+    ? 'Free Trial Registration Received'
+    : `New Maintenance Order Registered: ${orderRef} (${pricing.name})`;
+
   await supabaseAdmin.from('email_outbox').insert({
-    recipient_email: 'hello@logicintelligencetechnologies.in', // Admin copy
-    template_id: 'maintenance-order-registered',
-    subject: `New Maintenance Order Registered: ${orderRef} (${pricing.name})`,
+    recipient_email: 'hello@logicintelligencetechnologies.in',
+    template_id: isFreeTrial ? 'trial-registration-received' : 'maintenance-order-registered',
+    subject: emailSubject,
     status: 'queued',
     payload: {
       orderRef,
       planId,
       planName: pricing.name,
       totalFormatted: pricing.formattedTotal,
+      verificationAmount: isFreeTrial ? '₹20.00 (Refundable)' : undefined,
       clientId,
       engagementId,
     },
@@ -239,8 +265,9 @@ export async function getClientActiveSubscription(engagementId: string) {
   let daysRemaining = 0;
 
   if (sub.status === 'active') {
-    const expiryDate = sub.plan_id === 'FREE_TRIAL'
-      ? new Date(sub.trial_expires_at || now)
+    const isTrial = sub.plan_id === 'FREE_TRIAL' || sub.plan_id === 'STANDARD';
+    const expiryDate = isTrial
+      ? new Date(sub.trial_expires_at || sub.current_period_end || now)
       : new Date(sub.current_period_end || now);
 
     const diffMs = expiryDate.getTime() - now.getTime();
@@ -280,6 +307,12 @@ export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParam
     throw new Error(`Unrecognized plan ID: ${order.plan_id}`);
   }
 
+  const isFreeTrialPlan = plan.planType === 'free_trial' || order.plan_id === 'FREE_TRIAL';
+
+  if (isFreeTrialPlan && order.total_amount_paise !== 2000) {
+    throw new Error(`Invalid verification payment amount: expected 2000 paise (₹20.00), found ${order.total_amount_paise} paise.`);
+  }
+
   // Update order to verified
   const { error: orderUpdateErr } = await supabaseAdmin
     .from('maintenance_orders')
@@ -305,8 +338,6 @@ export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParam
   const expiryDate = new Date();
   expiryDate.setDate(startDate.getDate() + plan.durationDays);
 
-  const isFreeTrial = plan.planType === 'free_trial';
-
   // Upsert subscription
   const subscriptionPayload = {
     client_id: order.client_id,
@@ -314,18 +345,18 @@ export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParam
     plan_id: order.plan_id,
     plan_version: 'v1.0',
     status: 'active',
-    trial_started_at: isFreeTrial ? nowIso : null,
-    trial_expires_at: isFreeTrial ? expiryDate.toISOString() : null,
-    started_at: !isFreeTrial ? nowIso : null,
+    trial_started_at: isFreeTrialPlan ? nowIso : null,
+    trial_expires_at: isFreeTrialPlan ? expiryDate.toISOString() : null,
+    started_at: !isFreeTrialPlan ? nowIso : null,
     current_period_start: nowIso,
     current_period_end: expiryDate.toISOString(),
-    next_invoice_date: !isFreeTrial ? expiryDate.toISOString() : null,
-    payment_due_date: !isFreeTrial ? expiryDate.toISOString() : null,
+    next_invoice_date: !isFreeTrialPlan ? expiryDate.toISOString() : null,
+    payment_due_date: !isFreeTrialPlan ? expiryDate.toISOString() : null,
     enhancement_hours_allocated: plan.enhancementHoursMonthly,
     enhancement_hours_used: 0.00,
     verification_payment_request_id: order.id,
-    refund_status: isFreeTrial ? 'pending' : 'not_applicable',
-    refund_notes: isFreeTrial ? 'Pending Super Admin ₹20 refund dispatch' : null,
+    refund_status: isFreeTrialPlan ? 'pending' : 'not_applicable',
+    refund_notes: isFreeTrialPlan ? 'Pending Super Admin ₹20 refund dispatch' : null,
     updated_at: nowIso,
   };
 
@@ -348,9 +379,9 @@ export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParam
   // Queue activation confirmation email
   await supabaseAdmin.from('email_outbox').insert({
     recipient_email: 'hello@logicintelligencetechnologies.in',
-    template_id: isFreeTrial ? 'trial-activated' : 'subscription-activated',
-    subject: isFreeTrial
-      ? `Standard Free Trial Activated — 30 Days (Order ${order.order_ref})`
+    template_id: isFreeTrialPlan ? 'trial-activated' : 'subscription-activated',
+    subject: isFreeTrialPlan
+      ? `Free Trial Activated — 30 Days (Order ${order.order_ref})`
       : `${plan.name} Activated (Order ${order.order_ref})`,
     status: 'queued',
     payload: {
@@ -359,7 +390,7 @@ export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParam
       planId: plan.id,
       activationDate: nowIso,
       expiryDate: expiryDate.toISOString(),
-      refundable: isFreeTrial ? '₹20.00 (Queued for Refund)' : 'N/A',
+      refundable: isFreeTrialPlan ? '₹20.00 (Queued for Refund)' : 'N/A',
     },
     metadata: { orderId: order.id, subscriptionId: sub.id },
   });
@@ -403,7 +434,20 @@ export async function processSubscriptionRefund(params: ProcessRefundParams) {
     throw new Error(`Failed to update refund status: ${error?.message || 'Database error'}`);
   }
 
-  if (refundStatus === 'completed') {
+  if (refundStatus === 'processing') {
+    await supabaseAdmin.from('email_outbox').insert({
+      recipient_email: 'hello@logicintelligencetechnologies.in',
+      template_id: 'trial-refund-initiated',
+      subject: `₹20 Verification Refund Initiated (Subscription ${updatedSub.id})`,
+      status: 'queued',
+      payload: {
+        subscriptionId: updatedSub.id,
+        refundReference: updatedSub.refund_reference || 'In Progress',
+        initiatedAt: nowIso,
+      },
+      metadata: { subscriptionId },
+    });
+  } else if (refundStatus === 'completed') {
     await supabaseAdmin.from('email_outbox').insert({
       recipient_email: 'hello@logicintelligencetechnologies.in',
       template_id: 'trial-refund-completed',
@@ -419,6 +463,69 @@ export async function processSubscriptionRefund(params: ProcessRefundParams) {
   }
 
   return updatedSub;
+}
+
+/**
+ * Server-side automatic trial expiration workflow
+ * Idempotently checks active trials where trial_expires_at <= NOW() and sets status to 'expired'.
+ * Never auto-converts or auto-debits.
+ */
+export async function checkAndExpireStandardTrials(): Promise<{ expiredCount: number; expiredIds: string[] }> {
+  const nowIso = new Date().toISOString();
+
+  // Find active trials that have reached or passed their expiration timestamp
+  const { data: expiredSubs, error: fetchErr } = await supabaseAdmin
+    .from('maintenance_subscriptions')
+    .select('id, client_id, engagement_id, plan_id, trial_expires_at')
+    .in('plan_id', ['FREE_TRIAL', 'STANDARD'])
+    .eq('status', 'active')
+    .not('trial_expires_at', 'is', null)
+    .lte('trial_expires_at', nowIso);
+
+  if (fetchErr || !expiredSubs || expiredSubs.length === 0) {
+    return { expiredCount: 0, expiredIds: [] };
+  }
+
+  const expiredIds: string[] = [];
+
+  for (const sub of expiredSubs) {
+    const { error: updateErr } = await supabaseAdmin
+      .from('maintenance_subscriptions')
+      .update({
+        status: 'expired',
+        updated_at: nowIso,
+      })
+      .eq('id', sub.id);
+
+    if (!updateErr) {
+      expiredIds.push(sub.id);
+
+      // Queue trial expiration notification email
+      await supabaseAdmin.from('email_outbox').insert({
+        recipient_email: 'hello@logicintelligencetechnologies.in',
+        template_id: 'trial-ended',
+        subject: 'Your 30-Day Free Trial Has Ended',
+        status: 'queued',
+        payload: {
+          subscriptionId: sub.id,
+          engagementId: sub.engagement_id,
+          expiredAt: nowIso,
+          availablePlans: [
+            'Standard Care (₹999/mo)',
+            'Basic Care (₹4,999/mo)',
+            'Pro Care (₹9,999/mo)',
+            'Enterprise Care (₹19,999/mo)',
+          ],
+        },
+        metadata: { subscriptionId: sub.id, event: 'trial_expired' },
+      });
+    }
+  }
+
+  return {
+    expiredCount: expiredIds.length,
+    expiredIds,
+  };
 }
 
 /**
