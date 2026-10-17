@@ -6,6 +6,7 @@ import StageDocumentCard from '../components/StageDocumentCard';
 import { UpiAppButtons } from '@/components/shared/UpiAppButtons';
 import { BankTransferCard } from '@/components/shared/BankTransferCard';
 import { calculateEngagementFinancials, formatInr } from '@/lib/engagements/financials';
+import PdfPreviewModal from '@/components/pdf/PdfPreviewModal';
 
 interface FinalPaymentStageClientProps {
   engagementRef: string;
@@ -53,6 +54,29 @@ export default function FinalPaymentStageClient({
     !isVerified &&
     (['under_review', 'customer_claimed_paid'].includes(initialStatus) || isReported);
   const [auditHash, setAuditHash] = useState<string | null>(initialData?.last_audit_hash || null);
+  const [previewDoc, setPreviewDoc] = useState<{
+    isOpen: boolean;
+    title: string;
+    url: string;
+    filename: string;
+    versionLabel?: string;
+  } | null>(null);
+
+  const invoicePdfUrl =
+    initialData?.invoice_url ||
+    (initialData?.invoice_id
+      ? `/api/documents/invoice/${initialData.invoice_id}/pdf`
+      : initialData?.invoice_number
+      ? `/api/documents/invoice/${encodeURIComponent(initialData.invoice_number)}/pdf`
+      : `/api/documents/invoice/${encodeURIComponent(engagementRef)}/pdf`);
+
+  const receiptPdfUrl =
+    initialData?.receipt_url ||
+    (initialData?.receipt_id
+      ? `/api/documents/receipt/${initialData.receipt_id}/pdf`
+      : initialData?.receipt_number
+      ? `/api/documents/receipt/${encodeURIComponent(initialData.receipt_number)}/pdf`
+      : `/api/documents/receipt/${encodeURIComponent(engagementRef)}/pdf`);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
@@ -536,61 +560,119 @@ export default function FinalPaymentStageClient({
                     )}
                   </div>
 
-                  {/* Dual Document Download Cards */}
+                  {/* Dual Document Download & Preview Cards */}
                   <div className="space-y-2 relative z-10">
                     <span className="font-bold text-[11px] uppercase tracking-wider text-emerald-900 block">
                       Official Financial Documents Issued:
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      <a
-                        href={initialData?.invoice_url || `/api/documents/invoice/${initialData?.invoice_id || 'latest'}/pdf`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between p-3 bg-white hover:bg-emerald-50/50 border border-emerald-200 rounded-xl transition-all shadow-2xs group cursor-pointer"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <span className="w-8 h-8 rounded-lg bg-blue-50 text-[#1565C0] flex items-center justify-center font-bold text-xs">
+                      <div className="flex items-center justify-between p-3 bg-white hover:bg-emerald-50/50 border border-emerald-200 rounded-xl transition-all shadow-2xs group">
+                        <div
+                          onClick={() =>
+                            setPreviewDoc({
+                              isOpen: true,
+                              title: 'Stage 11 Final Tax Invoice (GST Rule 46)',
+                              url: invoicePdfUrl,
+                              filename: `Final-Tax-Invoice-${initialData?.invoice_number || engagementRef}.pdf`,
+                              versionLabel: 'v1.0 (Verified)',
+                            })
+                          }
+                          className="flex items-center gap-2.5 flex-1 cursor-pointer min-w-0 mr-2"
+                        >
+                          <span className="w-8 h-8 rounded-lg bg-blue-50 text-[#1565C0] flex items-center justify-center font-bold text-xs shrink-0">
                             PDF
                           </span>
-                          <div>
-                            <span className="font-bold text-slate-900 block text-xs group-hover:text-[#1565C0]">
+                          <div className="min-w-0">
+                            <span className="font-bold text-slate-900 block text-xs group-hover:text-[#1565C0] truncate">
                               Final Tax Invoice
                             </span>
-                            <span className="text-[10px] text-slate-500 block font-mono">
+                            <span className="text-[10px] text-slate-500 block font-mono truncate">
                               {initialData?.invoice_number || 'LIT-INV-2026'}
                             </span>
                           </div>
                         </div>
-                        <span className="text-xs font-semibold text-[#1565C0] flex items-center gap-1">
-                          <span>View</span>
-                          <span>↓</span>
-                        </span>
-                      </a>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPreviewDoc({
+                                isOpen: true,
+                                title: 'Stage 11 Final Tax Invoice (GST Rule 46)',
+                                url: invoicePdfUrl,
+                                filename: `Final-Tax-Invoice-${initialData?.invoice_number || engagementRef}.pdf`,
+                                versionLabel: 'v1.0 (Verified)',
+                              })
+                            }
+                            className="px-2 py-1 rounded-md text-[11px] font-semibold text-[#1565C0] hover:bg-blue-50 transition-colors cursor-pointer"
+                          >
+                            Preview
+                          </button>
+                          <a
+                            href={invoicePdfUrl}
+                            download={`Final-Tax-Invoice-${initialData?.invoice_number || engagementRef}.pdf`}
+                            className="p-1.5 rounded-md text-slate-400 hover:text-[#1565C0] hover:bg-blue-50 transition-colors"
+                            title="Download PDF"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                          </a>
+                        </div>
+                      </div>
 
-                      <a
-                        href={initialData?.receipt_url || `/api/documents/receipt/${initialData?.receipt_id || 'latest'}/pdf`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between p-3 bg-white hover:bg-emerald-50/50 border border-emerald-200 rounded-xl transition-all shadow-2xs group cursor-pointer"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <span className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">
+                      <div className="flex items-center justify-between p-3 bg-white hover:bg-emerald-50/50 border border-emerald-200 rounded-xl transition-all shadow-2xs group">
+                        <div
+                          onClick={() =>
+                            setPreviewDoc({
+                              isOpen: true,
+                              title: 'Stage 11 Settlement Receipt & Reconciliation',
+                              url: receiptPdfUrl,
+                              filename: `Settlement-Receipt-${initialData?.receipt_number || engagementRef}.pdf`,
+                              versionLabel: 'v1.0 (Verified)',
+                            })
+                          }
+                          className="flex items-center gap-2.5 flex-1 cursor-pointer min-w-0 mr-2"
+                        >
+                          <span className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs shrink-0">
                             PDF
                           </span>
-                          <div>
-                            <span className="font-bold text-slate-900 block text-xs group-hover:text-emerald-700">
+                          <div className="min-w-0">
+                            <span className="font-bold text-slate-900 block text-xs group-hover:text-emerald-700 truncate">
                               Settlement Receipt
                             </span>
-                            <span className="text-[10px] text-slate-500 block font-mono">
+                            <span className="text-[10px] text-slate-500 block font-mono truncate">
                               {initialData?.receipt_number || 'LIT-REC-2026'}
                             </span>
                           </div>
                         </div>
-                        <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1">
-                          <span>View</span>
-                          <span>↓</span>
-                        </span>
-                      </a>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPreviewDoc({
+                                isOpen: true,
+                                title: 'Stage 11 Settlement Receipt & Reconciliation',
+                                url: receiptPdfUrl,
+                                filename: `Settlement-Receipt-${initialData?.receipt_number || engagementRef}.pdf`,
+                                versionLabel: 'v1.0 (Verified)',
+                              })
+                            }
+                            className="px-2 py-1 rounded-md text-[11px] font-semibold text-emerald-700 hover:bg-emerald-50 transition-colors cursor-pointer"
+                          >
+                            Preview
+                          </button>
+                          <a
+                            href={receiptPdfUrl}
+                            download={`Settlement-Receipt-${initialData?.receipt_number || engagementRef}.pdf`}
+                            className="p-1.5 rounded-md text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition-colors"
+                            title="Download PDF"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -984,6 +1066,17 @@ export default function FinalPaymentStageClient({
           </div>
         </div>
       </div>
+
+      {previewDoc && (
+        <PdfPreviewModal
+          isOpen={previewDoc.isOpen}
+          onClose={() => setPreviewDoc(null)}
+          documentTitle={previewDoc.title}
+          pdfUrl={previewDoc.url}
+          downloadFilename={previewDoc.filename}
+          versionLabel={previewDoc.versionLabel}
+        />
+      )}
     </div>
   );
 }

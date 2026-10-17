@@ -3,7 +3,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { isSupabaseLive } from "./config";
 import { EMAIL_MAX_ATTEMPTS, isExhausted, nextAttemptAt } from "./retry";
 import { emailLog, maskEmail } from "./logger";
-import type { EmailCategory, EmailDeliveryStatus, EmailErrorCategory } from "./types";
+import type { AttachmentRef, EmailCategory, EmailDeliveryStatus, EmailErrorCategory } from "./types";
 import { renderOperationalNoticeEmail } from "./render-operational-notice";
 import { escapeHtml } from "./validation";
 
@@ -19,6 +19,8 @@ export type OutboxInsert = {
   text?: string;
   idempotencyKey: string;
   correlationId?: string;
+  attachmentRefs?: AttachmentRef[];
+  templateData?: Record<string, unknown>;
 };
 
 export type OutboxRow = {
@@ -35,7 +37,10 @@ export type OutboxRow = {
   category: EmailCategory;
   event_type: string;
   provider_message_id: string | null;
+  attachment_refs?: AttachmentRef[] | null;
+  template_data?: Record<string, unknown> | null;
 };
+
 
 export type EnqueueEmailParams = {
   recipient: string;
@@ -88,26 +93,35 @@ export async function claimOutbox(
 ): Promise<{ id: string; duplicate: boolean; alreadySent: boolean } | null> {
   if (!isSupabaseLive()) return null;
   try {
+    const insertPayload: Record<string, unknown> = {
+      event_type: input.eventType,
+      template_key: input.templateKey || null,
+      category: input.category,
+      recipient: input.recipient,
+      sender: input.sender,
+      reply_to: input.replyTo || null,
+      subject: input.subject,
+      html: input.html || null,
+      text: input.text || null,
+      idempotency_key: input.idempotencyKey,
+      correlation_id: input.correlationId || null,
+      status: "processing",
+      attempt_count: 1,
+      next_attempt_at: new Date().toISOString(),
+    };
+    if (input.attachmentRefs && input.attachmentRefs.length > 0) {
+      insertPayload.attachment_refs = input.attachmentRefs;
+    }
+    if (input.templateData && Object.keys(input.templateData).length > 0) {
+      insertPayload.template_data = input.templateData;
+    }
+
     const { data, error } = await supabaseAdmin
       .from("email_outbox")
-      .insert({
-        event_type: input.eventType,
-        template_key: input.templateKey || null,
-        category: input.category,
-        recipient: input.recipient,
-        sender: input.sender,
-        reply_to: input.replyTo || null,
-        subject: input.subject,
-        html: input.html || null,
-        text: input.text || null,
-        idempotency_key: input.idempotencyKey,
-        correlation_id: input.correlationId || null,
-        status: "processing",
-        attempt_count: 1,
-        next_attempt_at: new Date().toISOString(),
-      })
+      .insert(insertPayload)
       .select("id, status")
       .single();
+
 
     if (!error && data) {
       return { id: data.id as string, duplicate: false, alreadySent: false };
@@ -233,9 +247,9 @@ export async function loadDueOutbox(limit = 10): Promise<OutboxRow[]> {
   const { data, error } = await supabaseAdmin
     .from("email_outbox")
     .select(
-      "id, status, attempt_count, idempotency_key, recipient, sender, reply_to, subject, html, text, category, event_type, provider_message_id"
+      "id, status, attempt_count, idempotency_key, recipient, sender, reply_to, subject, html, text, category, event_type, provider_message_id, attachment_refs, template_data"
     )
-    .in("status", ["pending", "retrying"])
+    .in("status", ["pending", "queued", "retrying"])
     .lte("next_attempt_at", new Date().toISOString())
     .order("next_attempt_at", { ascending: true })
     .limit(limit);
@@ -255,4 +269,61 @@ export async function claimDueRow(id: string, expectedStatus: string): Promise<b
   return !error && Boolean(data);
 }
 
+export async function enqueueTransactionalEmail(params: {
+  eventType: string;
+  recipient: string;
+  sender?: string;
+  replyTo?: string;
+  subject: string;
+  idempotencyKey: string;
+  templateKey?: string;
+  category?: EmailCategory;
+  templateData?: Record<string, unknown>;
+  attachmentRefs?: AttachmentRef[];
+  html?: string;
+  text?: string;
+  correlationId?: string;
+}): Promise<{ id: string; duplicate: boolean; alreadySent: boolean }> {
+  const category: EmailCategory = params.category || "transactional";
+  const sender = params.sender || "no-reply@logicintelligencetechnologies.in";
+
+  let html = params.html;
+  let text = params.text;
+
+  if (!html) {
+    const rendered = await renderOperationalNoticeEmail({
+      title: params.subject,
+      text: params.text || (params.templateData
+        ? `${params.subject}\n\n${escapeHtml(JSON.stringify(params.templateData, null, 2))}`
+        : params.subject),
+      design: "notification",
+    });
+    html = rendered.html;
+    text = text || rendered.text;
+  }
+
+  const res = await claimOutbox({
+    eventType: params.eventType,
+    templateKey: params.templateKey,
+    category,
+    recipient: params.recipient,
+    sender,
+    replyTo: params.replyTo,
+    subject: params.subject,
+    html,
+    text,
+    idempotencyKey: params.idempotencyKey,
+    correlationId: params.correlationId,
+    attachmentRefs: params.attachmentRefs,
+    templateData: params.templateData,
+  });
+
+  if (!res) {
+    throw new Error(`Failed to enqueue email for ${params.recipient}`);
+  }
+
+  return res;
+}
+
 export { EMAIL_MAX_ATTEMPTS };
+

@@ -35,14 +35,27 @@ function extractStageDetails(stageKey: StageKey, payload: Record<string, any>, a
     if (payload.revisionNotes || payload.notes) {
       details.push({ label: 'Revision Notes', value: String(payload.revisionNotes || payload.notes) });
     }
+    return { summary, details };
   } else if (action === 'ask_question') {
     summary = 'Question / clarification inquiry submitted by client';
     if (payload.question || payload.notes) {
       details.push({ label: 'Inquiry', value: String(payload.question || payload.notes) });
     }
+    return { summary, details };
+  } else if (action === 'decline') {
+    summary = 'Declined by client';
+    if (payload.notes || payload.reason) {
+      details.push({ label: 'Reason', value: String(payload.notes || payload.reason) });
+    }
+    return { summary, details };
   } else if (action === 'report_payment') {
     summary = 'Payment reported with UTR; pending Super Admin verification';
+    if (payload.utr || payload.transaction_ref) {
+      details.push({ label: 'UTR Reference', value: String(payload.utr || payload.transaction_ref) });
+    }
+    return { summary, details };
   }
+
 
   switch (stageKey) {
     case 'checklist': {
@@ -262,6 +275,9 @@ export async function notifyStageSubmitted(input: NotifyStageSubmissionInput): P
     subjectPrefix = 'Payment Reported (Pending Verification)';
   }
 
+  const isAdvancing = input.action !== 'request_revision' && input.action !== 'ask_question' && input.action !== 'decline';
+  const nextStageTitle = isAdvancing && nextDef ? nextDef.title : undefined;
+
   // 1. Email to Client
   if (engagement.contact_email) {
     try {
@@ -281,7 +297,7 @@ export async function notifyStageSubmitted(input: NotifyStageSubmissionInput): P
           submittedSummary: summary,
           detailsList: details,
           portalUrl,
-          nextStageTitle: nextDef ? nextDef.title : undefined,
+          nextStageTitle,
         }),
       });
       clientEmailed = res.success;
@@ -352,7 +368,10 @@ export async function notifyStageApproved(input: NotifyStageApprovalInput): Prom
 
   const subject = isFinalStage
     ? `LIT | Stage 13 Approved · Project Completed & Handed Over (${engagement.engagement_ref})`
-    : `LIT | Stage ${approvedDef.ordinal} Approved! Unlock Stage ${nextDef ? nextDef.ordinal : ''}: ${nextDef ? nextDef.shortTitle : 'Next Milestone'}`;
+    : nextDef
+      ? `LIT | Stage ${approvedDef.ordinal} Approved! Unlock Stage ${nextDef.ordinal}: ${nextDef.shortTitle}`
+      : `LIT | Stage ${approvedDef.ordinal} Approved (${engagement.engagement_ref})`;
+
 
   try {
     const res = await sendEmail({

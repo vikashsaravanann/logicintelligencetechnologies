@@ -12,9 +12,11 @@ export type DocumentCode =
   | 'LIT-00-CHECKLIST'
   | 'LIT-01-SOW'
   | 'LIT-02-NDA'
+  | 'LIT-02-PROPOSAL'
   | 'LIT-03-ONBOARDING'
   | 'LIT-04-TECH-SPEC'
   | 'LIT-05-CHANGE-REQUEST'
+  | 'LIT-05-DELIVERY'
   | 'LIT-06-HANDOVER'
   | 'LIT-07-MAINTENANCE'
   | 'LIT-QUOTATION'
@@ -787,6 +789,204 @@ export const MASTER_DOCUMENT_FIELD_REGISTRY: Record<DocumentCode, DocumentFieldS
       lockedAfterApproval: true,
     },
   ],
+
+  'LIT-02-PROPOSAL': [
+    {
+      key: 'proposalReference',
+      label: 'Project Proposal Reference',
+      documentCode: 'LIT-02-PROPOSAL',
+      stageKey: 'proposal',
+      section: 'Document Control',
+      owner: 'system',
+      autoPopulateFrom: 'system_generated',
+      required: true,
+      financialSensitive: false,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'clientLegalName',
+      label: 'Client Legal Entity Name',
+      documentCode: 'LIT-02-PROPOSAL',
+      stageKey: 'proposal',
+      section: 'Client Information',
+      owner: 'client',
+      autoPopulateFrom: 'enquiry_submission',
+      required: true,
+      financialSensitive: false,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'projectSummary',
+      label: 'Executive Summary & Proposed Architecture',
+      documentCode: 'LIT-02-PROPOSAL',
+      stageKey: 'proposal',
+      section: 'Executive Summary',
+      owner: 'lit_staff_technical',
+      autoPopulateFrom: 'stage_snapshot:checklist',
+      required: true,
+      financialSensitive: false,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'technicalScopeItems',
+      label: 'Proposed Modules & Deliverables',
+      documentCode: 'LIT-02-PROPOSAL',
+      stageKey: 'proposal',
+      section: 'Technical Scope',
+      owner: 'lit_staff_technical',
+      autoPopulateFrom: 'stage_snapshot:checklist',
+      required: true,
+      financialSensitive: false,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'deliveryTimelineWeeks',
+      label: 'Estimated Delivery Timeline (Weeks)',
+      documentCode: 'LIT-02-PROPOSAL',
+      stageKey: 'proposal',
+      section: 'Timeline',
+      owner: 'lit_staff_technical',
+      autoPopulateFrom: 'stage_snapshot:proposal',
+      required: true,
+      financialSensitive: false,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'contractSubtotalPaise',
+      label: 'Subtotal Amount (Excl. Tax)',
+      documentCode: 'LIT-02-PROPOSAL',
+      stageKey: 'proposal',
+      section: 'Commercial Investment',
+      owner: 'super_admin_commercial',
+      autoPopulateFrom: 'approved_commercial_quotation',
+      required: true,
+      financialSensitive: true,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'gstAmountPaise',
+      label: '18% GST Amount (Paise)',
+      documentCode: 'LIT-02-PROPOSAL',
+      stageKey: 'proposal',
+      section: 'Commercial Investment',
+      owner: 'super_admin_commercial',
+      autoPopulateFrom: 'approved_commercial_quotation',
+      required: true,
+      financialSensitive: true,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'totalContractValuePaise',
+      label: 'Total Investment (Incl. GST)',
+      documentCode: 'LIT-02-PROPOSAL',
+      stageKey: 'proposal',
+      section: 'Commercial Investment',
+      owner: 'super_admin_commercial',
+      autoPopulateFrom: 'approved_commercial_quotation',
+      required: true,
+      financialSensitive: true,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'milestone1DepositPaise',
+      label: 'Milestone 1 Deposit (50%)',
+      documentCode: 'LIT-02-PROPOSAL',
+      stageKey: 'proposal',
+      section: 'Payment Terms',
+      owner: 'super_admin_commercial',
+      autoPopulateFrom: 'approved_commercial_quotation',
+      required: true,
+      financialSensitive: true,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'milestone2SettlementPaise',
+      label: 'Milestone 2 Final Settlement (50%)',
+      documentCode: 'LIT-02-PROPOSAL',
+      stageKey: 'proposal',
+      section: 'Payment Terms',
+      owner: 'super_admin_commercial',
+      autoPopulateFrom: 'approved_commercial_quotation',
+      required: true,
+      financialSensitive: true,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'clientSignatoryName',
+      label: 'Client Authorized Acceptance Signatory',
+      documentCode: 'LIT-02-PROPOSAL',
+      stageKey: 'proposal',
+      section: 'Acceptance Block',
+      owner: 'client',
+      autoPopulateFrom: 'client_identity',
+      required: true,
+      financialSensitive: false,
+      lockedAfterApproval: true,
+    },
+  ],
+
+  'LIT-05-DELIVERY': [
+    {
+      key: 'deliveryReportRef',
+      label: 'Delivery & Acceptance Report Reference',
+      documentCode: 'LIT-05-DELIVERY',
+      stageKey: 'acceptance',
+      section: 'Document Control',
+      owner: 'system',
+      autoPopulateFrom: 'system_generated',
+      required: true,
+      financialSensitive: false,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'clientLegalName',
+      label: 'Client Legal Entity Name',
+      documentCode: 'LIT-05-DELIVERY',
+      stageKey: 'acceptance',
+      section: 'Client Information',
+      owner: 'client',
+      autoPopulateFrom: 'client_identity',
+      required: true,
+      financialSensitive: false,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'deliveredModulesInventory',
+      label: 'Delivered Scope & Verified Deployments',
+      documentCode: 'LIT-05-DELIVERY',
+      stageKey: 'acceptance',
+      section: 'Deliverables Verification',
+      owner: 'lit_staff_technical',
+      autoPopulateFrom: 'stage_snapshot:delivery-acceptance',
+      required: true,
+      financialSensitive: false,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'acceptanceCriteriaVerified',
+      label: 'Acceptance Criteria & Test Matrix Verification',
+      documentCode: 'LIT-05-DELIVERY',
+      stageKey: 'acceptance',
+      section: 'QA & Compliance Sign-Off',
+      owner: 'lit_staff_technical',
+      autoPopulateFrom: 'system_generated',
+      required: true,
+      financialSensitive: false,
+      lockedAfterApproval: true,
+    },
+    {
+      key: 'clientFinalAcceptanceSignoff',
+      label: 'Client Final Delivery Acceptance Sign-Off',
+      documentCode: 'LIT-05-DELIVERY',
+      stageKey: 'acceptance',
+      section: 'Formal Acceptance Execution',
+      owner: 'client',
+      autoPopulateFrom: 'client_identity',
+      required: true,
+      financialSensitive: false,
+      lockedAfterApproval: true,
+    },
+  ],
 };
 
 export function getDocumentFieldDefinitions(
@@ -863,6 +1063,8 @@ export function resolveAutoPopulatedDocumentFields(
       case 'handoverCertificateRef':
       case 'retainerAgreementRef':
       case 'quotationNumber':
+      case 'proposalReference':
+      case 'deliveryReportRef':
         resolved[spec.key] = `${docCode}-${context.engagementRef}`;
         break;
       case 'effectiveDate':
@@ -882,6 +1084,14 @@ export function resolveAutoPopulatedDocumentFields(
         resolved[spec.key] =
           context.projectSummary ??
           `Enterprise architecture, engineering, and software delivery for ${context.companyName}`;
+        break;
+      case 'projectSummary':
+        resolved[spec.key] =
+          context.projectSummary ??
+          `Enterprise software engineering and digital infrastructure architecture for ${context.companyName}`;
+        break;
+      case 'acceptanceCriteriaVerified':
+        resolved[spec.key] = true;
         break;
       case 'confidentialityTermYears':
         resolved[spec.key] = 3;

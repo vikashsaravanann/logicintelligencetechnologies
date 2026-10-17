@@ -16,6 +16,7 @@ import { sendEngagementInvitationEmail } from './invitations';
 import { notifyStageSubmitted, notifyStageApproved } from './stage-notifications';
 import { calculateEngagementFinancials } from './financials';
 import { generateTaxInvoicePdf, generatePaymentReceiptPdf } from '@/lib/pdf/invoice-receipt-generator';
+import { DOCUMENTS_BUCKET } from '@/lib/documents/storage';
 
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -752,29 +753,34 @@ export async function submitStageAction(input: {
   }
   const refreshedStage = refreshedStages.find((s) => s.stage_key === stageKey);
 
-  // Trigger transactional notifications asynchronously
+  // Trigger transactional notifications and await durable enqueue
   if (actorRole === 'client' && action !== 'save_draft') {
-    notifyStageSubmitted({
-      engagement,
-      stageKey,
-      action,
-      payload,
-    }).catch((notifErr) => {
+    try {
+      await notifyStageSubmitted({
+        engagement,
+        stageKey,
+        action,
+        payload,
+      });
+    } catch (notifErr) {
       console.warn('[submitStageAction] Client submission notification error:', notifErr);
-    });
+    }
   } else if (
     (actorRole === 'admin' || action === 'admin_override_status' || action === 'admin_approve_stage' || action === 'verify_bank_credit' || action === 'approve_stage') &&
     (newStatus === 'approved' || newStatus === 'verified' || newStatus === 'completed')
   ) {
-    notifyStageApproved({
-      engagement,
-      approvedStageKey: stageKey,
-      nextStageKey: nextStageToUnlock,
-      adminNotes: payload?.notes,
-    }).catch((notifErr) => {
+    try {
+      await notifyStageApproved({
+        engagement,
+        approvedStageKey: stageKey,
+        nextStageKey: nextStageToUnlock,
+        adminNotes: payload?.notes,
+      });
+    } catch (notifErr) {
       console.warn('[submitStageAction] Admin approval notification error:', notifErr);
-    });
+    }
   }
+
 
   return {
     success: true,
@@ -1558,7 +1564,36 @@ export async function reconcileEngagementStagePayment(input: {
       }
 
       const docsToInsert = [];
+      const nowIso = new Date().toISOString();
+
       if (invoicePdfResult) {
+        const invoiceStoragePath = `financial/invoices/${invoiceDocNumber}.pdf`;
+        try {
+          await supabaseAdmin.storage
+            .from(DOCUMENTS_BUCKET)
+            .upload(invoiceStoragePath, Buffer.from(invoicePdfResult.bytes), {
+              contentType: 'application/pdf',
+              upsert: true,
+            });
+
+          await supabaseAdmin.from('financial_documents').insert({
+            payment_request_id: null,
+            doc_type: 'invoice',
+            document_number: invoiceDocNumber,
+            title: isInitial
+              ? 'Stage 06 Advance Tax Invoice (GST Rule 46)'
+              : 'Stage 11 Final Tax Invoice (GST Rule 46)',
+            storage_path: invoiceStoragePath,
+            sha256_hash: invoicePdfResult.sha256,
+            byte_size: invoicePdfResult.bytes.byteLength,
+            client_id: engagement.client_id || null,
+            status: 'issued',
+            issued_at: nowIso,
+          });
+        } catch (storageErr) {
+          console.warn('[reconcileEngagementStagePayment] Invoice storage/financial_documents warning:', storageErr);
+        }
+
         docsToInsert.push({
           engagement_id: engagement.id,
           stage_key: stageKey,
@@ -1577,6 +1612,33 @@ export async function reconcileEngagementStagePayment(input: {
       }
 
       if (receiptPdfResult) {
+        const receiptStoragePath = `financial/receipts/${receiptDocNumber}.pdf`;
+        try {
+          await supabaseAdmin.storage
+            .from(DOCUMENTS_BUCKET)
+            .upload(receiptStoragePath, Buffer.from(receiptPdfResult.bytes), {
+              contentType: 'application/pdf',
+              upsert: true,
+            });
+
+          await supabaseAdmin.from('financial_documents').insert({
+            payment_request_id: null,
+            doc_type: 'receipt',
+            document_number: receiptDocNumber,
+            title: isInitial
+              ? 'Stage 06 Payment Receipt & Reconciliation Certificate'
+              : 'Stage 11 Settlement Receipt & Reconciliation Certificate',
+            storage_path: receiptStoragePath,
+            sha256_hash: receiptPdfResult.sha256,
+            byte_size: receiptPdfResult.bytes.byteLength,
+            client_id: engagement.client_id || null,
+            status: 'issued',
+            issued_at: nowIso,
+          });
+        } catch (storageErr) {
+          console.warn('[reconcileEngagementStagePayment] Receipt storage/financial_documents warning:', storageErr);
+        }
+
         docsToInsert.push({
           engagement_id: engagement.id,
           stage_key: stageKey,
@@ -1599,6 +1661,7 @@ export async function reconcileEngagementStagePayment(input: {
           .from('engagement_document_links')
           .insert(docsToInsert);
       }
+
 
     } catch (dbErr: any) {
       console.error('[reconcileEngagementStagePayment] DB write error:', dbErr);

@@ -20,7 +20,8 @@ import { isSuppressed } from "@/lib/email/suppression";
 import { isEmailDryRun, isSupabaseLive, SEND_MAIL_TIMEOUT_MS } from "@/lib/email/config";
 import { emailLog, maskEmail } from "@/lib/email/logger";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import type { SenderKey } from "@/lib/email/types";
+import type { AttachmentRef, EmailAttachment, SenderKey } from "@/lib/email/types";
+import { resolveAndVerifyAttachments } from "@/lib/email/attachments";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -173,6 +174,25 @@ export async function GET(request: Request) {
     }
 
     try {
+      let attachments: EmailAttachment[] | undefined = undefined;
+      if (row.attachment_refs && Array.isArray(row.attachment_refs) && row.attachment_refs.length > 0) {
+        try {
+          attachments = await resolveAndVerifyAttachments(row.attachment_refs as AttachmentRef[]);
+        } catch (attErr) {
+          emailLog("error", "attachment_verification_failed", {
+            id: row.id,
+            error: (attErr as Error)?.message,
+          });
+          await markOutboxFailure(row.id, row.attempt_count + 1, {
+            category: "permanent",
+            retryable: false,
+            message: `Attachment verification failed: ${(attErr as Error)?.message || "Unknown error"}`,
+          });
+          processed.push({ id: row.id, status: "failed" });
+          continue;
+        }
+      }
+
       const transporter = getSmtpTransporter(sender);
       const result = await withTimeout(
         transporter.sendMail({
@@ -182,9 +202,11 @@ export async function GET(request: Request) {
           html: row.html,
           text: row.text ?? undefined,
           replyTo: row.reply_to ?? COMPANY.emails.support,
+          attachments: attachments && attachments.length > 0 ? attachments : undefined,
         }),
         SEND_MAIL_TIMEOUT_MS
       );
+
       await recordAttempt({
         outboxId: row.id,
         attempt: row.attempt_count + 1,

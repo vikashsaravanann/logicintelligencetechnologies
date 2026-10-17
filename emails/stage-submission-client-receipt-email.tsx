@@ -113,13 +113,15 @@ export default function StageSubmissionClientReceiptEmail({
             border: "1px solid #FCD34D",
           }}
         >
-          <div style={{ fontSize: "12px", fontWeight: "bold", color: "#92400E", marginBottom: "4px" }}>
-            Under Senior Engineering Verification
-          </div>
-          <div style={{ fontSize: "12px", color: "#78350F", lineHeight: "18px" }}>
-            Our team will review and approve your submission. Once verified, you will receive an approval notification and {nextStageTitle ? `Stage ${stageOrdinal + 1}: ${nextStageTitle}` : "the next stage"} will automatically unlock in your portal.
+          <div style={{ fontSize: "12px", color: "#92400E", lineHeight: "1.5" }}>
+            {stageOrdinal === 13
+              ? "Our team will review your project feedback. Ongoing technical support and SLA coverage will remain active in your portal."
+              : nextStageTitle
+                ? `Our team will review and approve your submission. Once verified, you will receive an approval notification and Stage ${stageOrdinal + 1}: ${nextStageTitle} will automatically unlock in your portal.`
+                : "Our engineering team has received your submission and will review your notes promptly."}
           </div>
         </div>
+
 
         <EmailButton href={portalUrl} variant="primary">
           Open Your Client Portal

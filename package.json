@@ -7,7 +7,7 @@
     "emails:reference": "tsx scripts/render-reference-emails.tsx",
     "emails:all": "tsx scripts/render-reference-emails.tsx --all",
     "emails:reference:artwork": "node scripts/generate-reference-email-assets.mjs",
-    "build": "NODE_OPTIONS=\"--max-old-space-size=4096\" next build --webpack",
+    "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "NODE_OPTIONS=\"--max-old-space-size=8192\" tsc --noEmit",
