@@ -14,7 +14,6 @@ export const PUBLIC_MARKETING_PREFIXES: readonly string[] = [
   "/book-consultation",
   "/booking",
   "/careers",
-  "/certifications",
   "/checklist",
   "/community",
   "/contact",

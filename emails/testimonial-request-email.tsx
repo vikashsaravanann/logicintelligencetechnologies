@@ -22,7 +22,7 @@ export default function TestimonialRequestEmail({
   reviewLink,
 }: TestimonialRequestEmailProps) {
   return (
-    <EmailLayout preview="How did we do? We would value your feedback">
+    <EmailLayout design="support" preview="How did we do? We would value your feedback">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>We would value your feedback</EmailTitle>

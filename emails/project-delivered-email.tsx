@@ -24,7 +24,7 @@ export default function ProjectDeliveredEmail({
   liveUrl,
 }: ProjectDeliveredEmailProps) {
   return (
-    <EmailLayout preview={`Project delivered: ${projectName}`}>
+    <EmailLayout design="milestone" preview={`Project delivered: ${projectName}`}>
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Project delivered</EmailTitle>

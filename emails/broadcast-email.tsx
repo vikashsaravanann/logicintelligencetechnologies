@@ -25,7 +25,7 @@ export const BroadcastEmail = ({
   const body = (messageBody || "").slice(0, 8000);
   const title = (subjectLine || "Message from Logic Intelligence Technologies").slice(0, 200);
   return (
-    <EmailLayout preview={title}>
+    <EmailLayout design="transactional" preview={title}>
       <EmailHeader />
       <EmailContent>
         <EmailTitle>{title}</EmailTitle>

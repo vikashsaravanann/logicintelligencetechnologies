@@ -6,37 +6,45 @@ export const contentPad = { padding: "32px 32px 12px 32px" };
 
 export const titleStyle = {
   color: EMAIL.colors.inkPrimary,
-  fontSize: "24px",
-  fontWeight: "700" as const,
-  lineHeight: "32px",
+  fontSize: "36px",
+  fontWeight: "800" as const,
+  lineHeight: "42px",
   margin: "0 0 16px 0",
-  fontFamily: EMAIL.fontSerif,
-  letterSpacing: "-0.01em",
+  fontFamily: EMAIL.fontSans,
+  letterSpacing: "-0.025em",
+  overflowWrap: "anywhere" as const,
+  wordBreak: "break-word" as const,
+  textAlign: "center" as const,
 };
 
 export const greetingStyle = {
   color: EMAIL.colors.inkPrimary,
-  fontSize: "15px",
+  fontSize: "16px",
   fontWeight: "600" as const,
-  lineHeight: "24px",
+  lineHeight: "26px",
   margin: "0 0 16px 0",
   fontFamily: EMAIL.fontSans,
+  textAlign: "center" as const,
 };
 
 export const bodyStyle = {
   color: EMAIL.colors.body,
-  fontSize: "14.5px",
-  lineHeight: "24px",
+  fontSize: "16px",
+  lineHeight: "28px",
   margin: "0 0 16px 0",
   fontFamily: EMAIL.fontSans,
+  overflowWrap: "anywhere" as const,
+  wordBreak: "break-word" as const,
+  textAlign: "center" as const,
 };
 
 export const mutedStyle = {
   color: EMAIL.colors.muted,
   fontSize: "13px",
-  lineHeight: "20px",
+  lineHeight: "22px",
   margin: "0 0 12px 0",
   fontFamily: EMAIL.fontSans,
+  textAlign: "center" as const,
 };
 
 export const dividerStyle = {
@@ -48,13 +56,13 @@ export const dividerStyle = {
 export const softBoxStyle = {
   backgroundColor: EMAIL.colors.surfaceMuted,
   border: `1px solid ${EMAIL.colors.surfaceBorder}`,
-  borderRadius: "8px",
-  padding: "16px 20px",
+  borderRadius: "12px",
+  padding: "18px 20px",
   margin: "0 0 20px 0",
 };
 
 export function EmailTitle({ children }: { children: React.ReactNode }) {
-  return <Text style={titleStyle}>{children}</Text>;
+  return <Text className="ref-heading" style={titleStyle}>{children}</Text>;
 }
 
 export function EmailGreeting({ name }: { name?: string }) {
@@ -66,11 +74,11 @@ export function EmailHighlight({ children }: { children: React.ReactNode }) {
   return (
     <span
       style={{
-        backgroundColor: EMAIL.colors.highlightBg,
-        color: EMAIL.colors.highlightText,
-        padding: "2px 6px",
-        borderRadius: "4px",
-        fontWeight: 600,
+        backgroundColor: EMAIL.colors.softYellow,
+        color: EMAIL.colors.inkPrimary,
+        padding: "2px 8px",
+        borderRadius: "999px",
+        fontWeight: 700,
       }}
     >
       {children}
@@ -91,7 +99,7 @@ export function EmailDivider() {
 }
 
 export function EmailContent({ children }: { children: React.ReactNode }) {
-  return <Section style={contentPad}>{children}</Section>;
+  return <Section className="ref-content" style={contentPad}>{children}</Section>;
 }
 
 export function EmailNotice({
@@ -124,7 +132,7 @@ export function EmailNotice({
       style={{
         backgroundColor: bg,
         border: `1px solid ${border}`,
-        borderRadius: "8px",
+        borderRadius: "12px",
         padding: "16px 20px",
         margin: "16px 0 20px 0",
       }}
@@ -136,6 +144,7 @@ export function EmailNotice({
           lineHeight: "22px",
           margin: 0,
           fontFamily: EMAIL.fontSans,
+          textAlign: "center",
         }}
       >
         {children}
@@ -153,9 +162,10 @@ export function EmailInfoGrid({ children }: { children: React.ReactNode }) {
       cellSpacing={0}
       style={{
         borderCollapse: "collapse",
+        tableLayout: "fixed",
         backgroundColor: EMAIL.colors.surfaceMuted,
         border: `1px solid ${EMAIL.colors.surfaceBorder}`,
-        borderRadius: "8px",
+        borderRadius: "12px",
         margin: "16px 0 20px 0",
         overflow: "hidden",
       }}
@@ -184,10 +194,10 @@ export function EmailInfoRow({
         style={{
           padding: "12px 16px",
           color: EMAIL.colors.muted,
-          fontSize: "13px",
-          fontWeight: 600,
+          fontSize: "12px",
+          fontWeight: 700,
           fontFamily: EMAIL.fontSans,
-          width: "35%",
+          width: "38%",
           verticalAlign: "top",
         }}
       >
@@ -197,10 +207,12 @@ export function EmailInfoRow({
         style={{
           padding: "12px 16px",
           color: EMAIL.colors.inkPrimary,
-          fontSize: "14px",
-          fontWeight: 500,
+          fontSize: "13px",
+          fontWeight: 600,
           fontFamily: EMAIL.fontSans,
           verticalAlign: "top",
+          wordBreak: "break-word",
+          overflowWrap: "anywhere",
         }}
       >
         {value}
@@ -222,9 +234,10 @@ export function EmailStepList({
             style={{
               margin: 0,
               fontSize: "14px",
-              lineHeight: "22px",
+              lineHeight: "24px",
               fontFamily: EMAIL.font,
               color: EMAIL.colors.body,
+              textAlign: "left",
             }}
           >
             <strong style={{ color: EMAIL.colors.text }}>
@@ -247,9 +260,10 @@ export function EmailBulletList({ items }: { items: string[] }) {
           style={{
             margin: "0 0 6px 0",
             fontSize: "14px",
-            lineHeight: "22px",
+            lineHeight: "24px",
             fontFamily: EMAIL.font,
             color: EMAIL.colors.body,
+            textAlign: "left",
           }}
         >
           • {it}

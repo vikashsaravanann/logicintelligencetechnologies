@@ -23,7 +23,7 @@ export default function ResourceDeliveryEmail({
   downloadUrl = "https://www.logicintelligencetechnologies.in/resources",
 }: Props) {
   return (
-    <EmailLayout preview={`${resourceTitle} from Logic Intelligence Technologies`}>
+    <EmailLayout design="documents" preview={`${resourceTitle} from Logic Intelligence Technologies`}>
       <EmailHeader />
       <EmailContent>
         <EmailTitle>{resourceTitle} is ready</EmailTitle>

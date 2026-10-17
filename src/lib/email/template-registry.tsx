@@ -1,5 +1,7 @@
 import * as React from "react";
+import { OPERATIONAL_NOTICE_PREVIEWS } from "@/emails/operational-notice-previews";
 import { render } from "@react-email/components";
+import { REFERENCE_EMAIL_PREVIEWS } from "@/emails/reference-design/previews";
 
 // Template Imports
 import AdminGenericEmail from "@/emails/admin-generic-email";
@@ -55,6 +57,17 @@ export interface TemplateDefinition {
 }
 
 export const EMAIL_TEMPLATE_REGISTRY: Record<string, TemplateDefinition> = {
+  ...Object.fromEntries(OPERATIONAL_NOTICE_PREVIEWS.map(template => [template.key, template])),
+  ...Object.fromEntries(REFERENCE_EMAIL_PREVIEWS.map((template) => [template.key, {
+    key: template.key,
+    name: template.name,
+    category: template.category,
+    description: `${template.reference}. Reference design preview with fictional example data.`,
+    defaultSender: template.category === "marketing" ? "hello@logicintelligencetechnologies.in" : "no-reply@logicintelligencetechnologies.in",
+    replyTo: "support@logicintelligencetechnologies.in",
+    subject: template.subject,
+    getElement: () => template.element,
+  }])),
   "enterprise-checklist-invitation": {
     key: "enterprise-checklist-invitation",
     name: "Enterprise Checklist Invitation",

@@ -21,7 +21,7 @@ export default function ChecklistDownloadEmail({
   downloadUrl = "https://www.logicintelligencetechnologies.in/checklist",
 }: Props) {
   return (
-    <EmailLayout preview="Your 50-point enterprise deployment checklist is ready">
+    <EmailLayout design="documents" preview="Your 50-point enterprise deployment checklist is ready">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Your 50-Point Enterprise Deployment Checklist is Ready</EmailTitle>

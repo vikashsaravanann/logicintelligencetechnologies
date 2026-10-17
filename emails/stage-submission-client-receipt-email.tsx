@@ -1,4 +1,5 @@
 import * as React from "react";
+import { EMAIL } from "./components/email-styles";
 import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
@@ -40,7 +41,7 @@ export default function StageSubmissionClientReceiptEmail({
   nextStageTitle,
 }: StageSubmissionClientReceiptEmailProps) {
   return (
-    <EmailLayout preview={`Submission Confirmed: Stage ${stageOrdinal} (${stageTitle}) - ${engagementRef}`}>
+    <EmailLayout design="transactional" preview={`Submission Confirmed: Stage ${stageOrdinal} (${stageTitle}) - ${engagementRef}`}>
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Submission Confirmed · Stage {stageOrdinal}</EmailTitle>
@@ -54,16 +55,16 @@ export default function StageSubmissionClientReceiptEmail({
           style={{
             margin: "20px 0",
             padding: "18px 20px",
-            backgroundColor: "#F7F9FC",
+            backgroundColor: EMAIL.colors.surfaceMuted,
             borderRadius: "12px",
-            border: "1px solid #DFE7EF",
+            border: `1px solid ${EMAIL.colors.border}`,
           }}
         >
           <div
             style={{
               fontSize: "11px",
               fontWeight: "bold",
-              color: "#1565C0",
+              color: EMAIL.colors.primary,
               textTransform: "uppercase",
               letterSpacing: "1px",
               marginBottom: "8px",
@@ -75,27 +76,27 @@ export default function StageSubmissionClientReceiptEmail({
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
             <tbody>
               <tr>
-                <td style={{ padding: "6px 0", color: "#52677C", width: "140px" }}>Project Ref:</td>
-                <td style={{ padding: "6px 0", fontWeight: "bold", color: "#0B2545", fontFamily: "monospace" }}>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.body, width: "140px" }}>Project Ref:</td>
+                <td style={{ padding: "6px 0", fontWeight: "bold", color: EMAIL.colors.inkPrimary, fontFamily: "monospace" }}>
                   {engagementRef}
                 </td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#52677C" }}>Current Stage:</td>
-                <td style={{ padding: "6px 0", fontWeight: "bold", color: "#0B2545" }}>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.body }}>Current Stage:</td>
+                <td style={{ padding: "6px 0", fontWeight: "bold", color: EMAIL.colors.inkPrimary }}>
                   Stage {stageOrdinal}: {stageTitle}
                 </td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#52677C" }}>Summary:</td>
-                <td style={{ padding: "6px 0", color: "#0B2545" }}>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.body }}>Summary:</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.inkPrimary }}>
                   {submittedSummary}
                 </td>
               </tr>
               {detailsList.map((item, idx) => (
                 <tr key={idx}>
-                  <td style={{ padding: "6px 0", color: "#52677C" }}>{item.label}:</td>
-                  <td style={{ padding: "6px 0", color: "#0B2545", fontWeight: "500" }}>{item.value}</td>
+                  <td style={{ padding: "6px 0", color: EMAIL.colors.body }}>{item.label}:</td>
+                  <td style={{ padding: "6px 0", color: EMAIL.colors.inkPrimary, fontWeight: "500" }}>{item.value}</td>
                 </tr>
               ))}
             </tbody>

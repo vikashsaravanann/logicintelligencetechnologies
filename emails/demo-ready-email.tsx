@@ -9,7 +9,7 @@ interface Props { fullName?: string; demoUrl?: string; }
 
 export default function DemoReadyEmail({ fullName = "there", demoUrl = "https://www.logicintelligencetechnologies.in" }: Props) {
   return (
-    <EmailLayout preview="Your demo is ready">
+    <EmailLayout design="milestone" preview="Your demo is ready">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Your demo is ready</EmailTitle>

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { EMAIL } from "./components/email-styles";
 import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
@@ -30,7 +31,7 @@ export default function EnterpriseChecklistAdminAlertEmail({
   clientNotes = "None",
 }: EnterpriseChecklistAdminAlertEmailProps) {
   return (
-    <EmailLayout preview={`New Checklist Selection: ${company} (${selectedCount} points)`}>
+    <EmailLayout design="notification" preview={`New Checklist Selection: ${company} (${selectedCount} points)`}>
       <EmailHeader />
       <EmailContent>
         <EmailTitle>New Enterprise Checklist Submission</EmailTitle>
@@ -42,41 +43,41 @@ export default function EnterpriseChecklistAdminAlertEmail({
           style={{
             margin: "20px 0",
             padding: "16px 20px",
-            backgroundColor: "#F7F9FC",
+            backgroundColor: EMAIL.colors.surfaceMuted,
             borderRadius: "12px",
-            border: "1px solid #DFE7EF",
+            border: `1px solid ${EMAIL.colors.border}`,
           }}
         >
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
             <tbody>
               <tr>
-                <td style={{ padding: "6px 0", color: "#52677C", width: "140px" }}>Reference:</td>
-                <td style={{ padding: "6px 0", fontWeight: "bold", color: "#0B2545", fontFamily: "monospace" }}>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.body, width: "140px" }}>Reference:</td>
+                <td style={{ padding: "6px 0", fontWeight: "bold", color: EMAIL.colors.inkPrimary, fontFamily: "monospace" }}>
                   {confirmationReference}
                 </td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#52677C" }}>Client Name:</td>
-                <td style={{ padding: "6px 0", fontWeight: "bold", color: "#0B2545" }}>{recipientName}</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.body }}>Client Name:</td>
+                <td style={{ padding: "6px 0", fontWeight: "bold", color: EMAIL.colors.inkPrimary }}>{recipientName}</td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#52677C" }}>Company:</td>
-                <td style={{ padding: "6px 0", color: "#0B2545" }}>{company}</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.body }}>Company:</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.inkPrimary }}>{company}</td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#52677C" }}>Email:</td>
-                <td style={{ padding: "6px 0", color: "#1565C0" }}>{recipientEmail}</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.body }}>Email:</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.primary }}>{recipientEmail}</td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#52677C" }}>Checkpoints Selected:</td>
-                <td style={{ padding: "6px 0", fontWeight: "bold", color: "#1565C0" }}>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.body }}>Checkpoints Selected:</td>
+                <td style={{ padding: "6px 0", fontWeight: "bold", color: EMAIL.colors.primary }}>
                   {selectedCount} of 50
                 </td>
               </tr>
               {clientNotes && clientNotes !== "None" && (
                 <tr>
-                  <td style={{ padding: "6px 0", color: "#52677C", verticalAlign: "top" }}>Client Notes:</td>
-                  <td style={{ padding: "6px 0", color: "#0B2545", whiteSpace: "pre-wrap" }}>{clientNotes}</td>
+                  <td style={{ padding: "6px 0", color: EMAIL.colors.body, verticalAlign: "top" }}>Client Notes:</td>
+                  <td style={{ padding: "6px 0", color: EMAIL.colors.inkPrimary, whiteSpace: "pre-wrap" }}>{clientNotes}</td>
                 </tr>
               )}
             </tbody>

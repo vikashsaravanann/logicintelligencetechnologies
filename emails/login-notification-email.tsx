@@ -39,7 +39,7 @@ export default function LoginNotificationEmail({
   const tz = timezone || timeZone;
 
   return (
-    <EmailLayout preview="Login activity notification">
+    <EmailLayout design="security" preview="Login activity notification">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Login activity</EmailTitle>

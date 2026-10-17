@@ -41,6 +41,7 @@ export const NewLeadNotificationEmail = ({
 
   return (
     <EmailLayout
+      design="notification"
       preview={`New lead: ${fullName || "unknown"}${service ? ` — ${service}` : ""}`}
     >
       <EmailHeader />
@@ -93,13 +94,13 @@ const labelText = {
   color: EMAIL.colors.muted,
   fontSize: "13px",
   margin: "0",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
 };
 const valueText = {
   color: EMAIL.colors.text,
   fontSize: "13px",
   margin: "0",
-  fontFamily: EMAIL.font,
+  fontFamily: EMAIL.fontSans,
   wordBreak: "break-word" as const,
 };
 

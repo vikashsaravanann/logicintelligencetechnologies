@@ -36,7 +36,7 @@ export default function QuotationEmail({
   customMessage,
 }: QuotationEmailProps) {
   return (
-    <EmailLayout preview={`Project quotation ${quotationRef} for ${projectTitle} from Logic Intelligence Technologies`}>
+    <EmailLayout design="documents" preview={`Project quotation ${quotationRef} for ${projectTitle} from Logic Intelligence Technologies`}>
       <EmailHeader subBrand="Commercial Engineering & Quotations" />
       <EmailContent>
         <EmailTitle>Your Project Quotation is Ready</EmailTitle>
@@ -47,8 +47,8 @@ export default function QuotationEmail({
           <strong>{projectTitle}</strong> under reference{" "}
           <code
             style={{
-              backgroundColor: "#E7F3FF",
-              color: "#1565C0",
+              backgroundColor: EMAIL.colors.surfaceMuted,
+              color: EMAIL.colors.primary,
               padding: "2px 6px",
               borderRadius: "4px",
               fontFamily: "monospace",
@@ -65,11 +65,11 @@ export default function QuotationEmail({
             style={{
               margin: "16px 0",
               padding: "12px 16px",
-              backgroundColor: "#F7F9FC",
-              borderLeft: "3px solid #1565C0",
+              backgroundColor: EMAIL.colors.surfaceMuted,
+              borderLeft: `3px solid ${EMAIL.colors.primary}`,
               borderRadius: "4px",
               fontSize: "13px",
-              color: "#0B2545",
+              color: EMAIL.colors.inkPrimary,
               lineHeight: "1.5",
             }}
           >
@@ -81,41 +81,41 @@ export default function QuotationEmail({
           style={{
             margin: "20px 0",
             padding: "18px 20px",
-            backgroundColor: "#F7F9FC",
+            backgroundColor: EMAIL.colors.surfaceMuted,
             borderRadius: "12px",
-            border: "1px solid #DFE7EF",
+            border: `1px solid ${EMAIL.colors.border}`,
           }}
         >
-          <div style={{ fontSize: "13px", fontWeight: "bold", color: "#0B2545", marginBottom: "10px" }}>
+          <div style={{ fontSize: "13px", fontWeight: "bold", color: EMAIL.colors.inkPrimary, marginBottom: "10px" }}>
             Quotation Specification & Terms:
           </div>
-          <table style={{ width: "100%", fontSize: "13px", color: "#121826", borderCollapse: "collapse" }}>
+          <table style={{ width: "100%", fontSize: "13px", color: EMAIL.colors.inkPrimary, borderCollapse: "collapse" }}>
             <tbody>
               <tr>
-                <td style={{ padding: "5px 0", color: "#52677C", width: "35%" }}>Organization:</td>
-                <td style={{ padding: "5px 0", fontWeight: 600, color: "#0B2545" }}>{companyName}</td>
+                <td style={{ padding: "5px 0", color: EMAIL.colors.body, width: "35%" }}>Organization:</td>
+                <td style={{ padding: "5px 0", fontWeight: 600, color: EMAIL.colors.inkPrimary }}>{companyName}</td>
               </tr>
               <tr>
-                <td style={{ padding: "5px 0", color: "#52677C" }}>Project Title:</td>
-                <td style={{ padding: "5px 0", fontWeight: 600, color: "#0B2545" }}>{projectTitle}</td>
+                <td style={{ padding: "5px 0", color: EMAIL.colors.body }}>Project Title:</td>
+                <td style={{ padding: "5px 0", fontWeight: 600, color: EMAIL.colors.inkPrimary }}>{projectTitle}</td>
               </tr>
               {selectedServicesCount !== undefined && (
                 <tr>
-                  <td style={{ padding: "5px 0", color: "#52677C" }}>Selected Services:</td>
-                  <td style={{ padding: "5px 0", fontWeight: 600, color: "#0B2545" }}>
+                  <td style={{ padding: "5px 0", color: EMAIL.colors.body }}>Selected Services:</td>
+                  <td style={{ padding: "5px 0", fontWeight: 600, color: EMAIL.colors.inkPrimary }}>
                     {selectedServicesCount} scoped {selectedServicesCount === 1 ? "service" : "services"}
                   </td>
                 </tr>
               )}
               {totalFormatted && (
                 <tr>
-                  <td style={{ padding: "5px 0", color: "#52677C" }}>Total Approved:</td>
-                  <td style={{ padding: "5px 0", fontWeight: 700, color: "#1565C0" }}>{totalFormatted}</td>
+                  <td style={{ padding: "5px 0", color: EMAIL.colors.body }}>Total Approved:</td>
+                  <td style={{ padding: "5px 0", fontWeight: 700, color: EMAIL.colors.primary }}>{totalFormatted}</td>
                 </tr>
               )}
               <tr>
-                <td style={{ padding: "5px 0", color: "#52677C" }}>Quotation Validity:</td>
-                <td style={{ padding: "5px 0", color: "#0B2545" }}>{validUntil}</td>
+                <td style={{ padding: "5px 0", color: EMAIL.colors.body }}>Quotation Validity:</td>
+                <td style={{ padding: "5px 0", color: EMAIL.colors.inkPrimary }}>{validUntil}</td>
               </tr>
             </tbody>
           </table>
@@ -127,13 +127,13 @@ export default function QuotationEmail({
             padding: "16px 20px",
             backgroundColor: "#FFFFFF",
             borderRadius: "12px",
-            border: "1px solid #DFE7EF",
+            border: `1px solid ${EMAIL.colors.border}`,
           }}
         >
-          <div style={{ fontSize: "13px", fontWeight: "bold", color: "#0B2545", marginBottom: "8px" }}>
+          <div style={{ fontSize: "13px", fontWeight: "bold", color: EMAIL.colors.inkPrimary, marginBottom: "8px" }}>
             Two Contractual Payment Milestones:
           </div>
-          <div style={{ fontSize: "12.5px", color: "#52677C", lineHeight: "1.6" }}>
+          <div style={{ fontSize: "12.5px", color: EMAIL.colors.body, lineHeight: "1.6" }}>
             <div style={{ marginBottom: "6px" }}>
               • <strong>Milestone 1 (50%):</strong> Due after executed Statement of Work (SOW) and before active project
               work commences.
@@ -147,9 +147,9 @@ export default function QuotationEmail({
             style={{
               marginTop: "10px",
               fontSize: "11.5px",
-              color: "#738A9C",
+              color: EMAIL.colors.muted,
               fontStyle: "italic",
-              borderTop: "1px dashed #E2E8F0",
+              borderTop: `1px dashed ${EMAIL.colors.border}`,
               paddingTop: "8px",
             }}
           >

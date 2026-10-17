@@ -391,7 +391,6 @@ export const MODULE_CATEGORIES: ModuleCategory[] = [
       { href: "/industries", label: "Industry Verticals", badge: "Verticals", desc: "Domain solutions for Healthcare, Finance, Logistics & Retail", isExternalPreview: true },
       { href: "/work", label: "Case Studies & Client Work", badge: "Portfolio", desc: "Production delivery case studies, architecture & ROI results", isExternalPreview: true },
       { href: "/architecture", label: "System Architecture Blueprints", badge: "Engineering", desc: "High-concurrency microservices, Edge CDN & Supabase topologies", isExternalPreview: true },
-      { href: "/certifications", label: "Security & Compliance Standards", badge: "Audited", desc: "ISO 27001, SOC 2, HIPAA & MSME statutory compliance", isExternalPreview: true },
       { href: "/expertise", label: "Core Technical Competencies", badge: "Tech Stack", desc: "Distributed systems, PyTorch, Next.js & enterprise databases", isExternalPreview: true },
       { href: "/ai-assistant", label: "Conversational AI Assistant", badge: "Interactive", desc: "Live conversational AI agent demo & interactive benchmark", isExternalPreview: true },
       { href: "/ai-discovery", label: "AI Discovery Framework", badge: "Advisory", desc: "Structured enterprise AI adoption & scoping methodology", isExternalPreview: true },

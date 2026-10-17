@@ -34,7 +34,7 @@ export default function EnterpriseChecklistInvitationEmail({
     : null;
 
   return (
-    <EmailLayout preview="Review the technical checklist and select the areas for your project.">
+    <EmailLayout design="onboarding" preview="Review the technical checklist and select the areas for your project.">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Your 50-Point Enterprise Deployment Checklist</EmailTitle>
@@ -50,15 +50,15 @@ export default function EnterpriseChecklistInvitationEmail({
           style={{
             margin: "20px 0",
             padding: "16px 20px",
-            backgroundColor: "#F7F9FC",
+            backgroundColor: EMAIL.colors.surfaceMuted,
             borderRadius: "12px",
-            border: "1px solid #DFE7EF",
+            border: `1px solid ${EMAIL.colors.border}`,
           }}
         >
-          <div style={{ fontSize: "13px", fontWeight: "bold", color: "#0B2545", marginBottom: "8px" }}>
+          <div style={{ fontSize: "13px", fontWeight: "bold", color: EMAIL.colors.inkPrimary, marginBottom: "8px" }}>
             How it works:
           </div>
-          <ol style={{ margin: 0, paddingLeft: "18px", fontSize: "13px", color: "#52677C", lineHeight: "1.6" }}>
+          <ol style={{ margin: 0, paddingLeft: "18px", fontSize: "13px", color: EMAIL.colors.body, lineHeight: "1.6" }}>
             <li><strong>Open</strong> your private checklist invitation link below.</li>
             <li><strong>Review</strong> the full 50-point engineering specification or embedded 21-page PDF.</li>
             <li><strong>Select</strong> the checkpoints you want our engineering team to consider for your scope.</li>

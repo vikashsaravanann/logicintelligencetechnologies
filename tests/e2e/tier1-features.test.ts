@@ -662,9 +662,9 @@ describe("Tier 1: Feature Coverage — Operations & QA (OPS01–OPS02, QA01–QA
   });
 });
 
-describe("Tier 1: Feature Coverage — Full Route Coverage Inventory (194 Routes)", () => {
-  it("Inventory contains all 194 routes from MASTER_ROUTE_COVERAGE.csv and all files exist", () => {
-    assert.ok(parsedRoutes.length >= 194, `Expected >= 194 routes, found ${parsedRoutes.length}`);
+describe("Tier 1: Feature Coverage — Full Route Coverage Inventory (193 Routes)", () => {
+  it("Inventory contains all 193 routes from MASTER_ROUTE_COVERAGE.csv and all files exist", () => {
+    assert.ok(parsedRoutes.length >= 193, `Expected >= 193 routes, found ${parsedRoutes.length}`);
 
     for (const r of parsedRoutes) {
       assert.ok(r.route, "Route path must be defined");

@@ -8,6 +8,7 @@ import {
 } from '@/config/maintenance-plans';
 import { buildUpiUri, LIT_PAYEE_CONFIG } from '@/lib/payments/upi';
 import { recordAdminAction } from '@/lib/admin/audit';
+import { renderOperationalNoticeEmail } from '@/lib/email/render-operational-notice';
 
 export interface CreateOrderParams {
   clientId: string;
@@ -164,7 +165,11 @@ export async function createOrGetMaintenanceOrder(params: CreateOrderParams) {
     subject: emailSubject,
     idempotency_key: idempotencyKey,
     status: 'pending',
-    text: `Maintenance order ${orderRef} registered for ${pricing.name}. Total payable: ${pricing.formattedTotal}.`,
+    ...(await renderOperationalNoticeEmail({
+      title: emailSubject,
+      text: `Maintenance order ${orderRef} registered for ${pricing.name}. Total payable: ${pricing.formattedTotal}.`,
+      design: 'maintenance',
+    })),
   });
 
   if (outboxErr) {
@@ -252,7 +257,11 @@ export async function submitMaintenanceUtr(params: SubmitUtrParams) {
     subject: `[ACTION REQUIRED] Maintenance Payment Reported: ${cleanUtr} (${orderRef})`,
     idempotency_key: utrIdempotency,
     status: 'pending',
-    text: `Payment reported for order ${orderRef} (${order.plan_id}) with UTR ${cleanUtr}. Amount: ${formatPaiseToInr(order.total_amount_paise)}.`,
+    ...(await renderOperationalNoticeEmail({
+      title: `[ACTION REQUIRED] Maintenance Payment Reported: ${cleanUtr} (${orderRef})`,
+      text: `Payment reported for order ${orderRef} (${order.plan_id}) with UTR ${cleanUtr}. Amount: ${formatPaiseToInr(order.total_amount_paise)}.`,
+      design: 'payment',
+    })),
   });
 
   if (outboxErr) {
@@ -482,7 +491,13 @@ export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParam
       : `${plan.name} Activated (Order ${order.order_ref})`,
     idempotency_key: activationIdempotency,
     status: 'pending',
-    text: `${isFreeTrialPlan ? 'Free Trial' : plan.name} activated for order ${order.order_ref}. Expiry: ${expiryDate.toISOString()}.`,
+    ...(await renderOperationalNoticeEmail({
+      title: isFreeTrialPlan
+        ? `Free Trial Activated — 30 Days (Order ${order.order_ref})`
+        : `${plan.name} Activated (Order ${order.order_ref})`,
+      text: `${isFreeTrialPlan ? 'Free Trial' : plan.name} activated for order ${order.order_ref}. Expiry: ${expiryDate.toISOString()}.`,
+      design: 'maintenance',
+    })),
   });
 
   if (outboxErr) {
@@ -608,7 +623,11 @@ export async function processSubscriptionRefund(params: ProcessRefundParams) {
       subject: `₹20 Verification Refund Initiated (Subscription ${updatedSub.id})`,
       idempotency_key: processingIdempotency,
       status: 'pending',
-      text: `₹20 verification refund initiated for subscription ${updatedSub.id}.`,
+      ...(await renderOperationalNoticeEmail({
+        title: `₹20 Verification Refund Initiated (Subscription ${updatedSub.id})`,
+        text: `₹20 verification refund initiated for subscription ${updatedSub.id}.`,
+        design: 'payment',
+      })),
     });
     if (outboxErr) {
       console.warn('[email-outbox] Refund initiated enqueue warning:', outboxErr.message);
@@ -624,7 +643,11 @@ export async function processSubscriptionRefund(params: ProcessRefundParams) {
       subject: `₹20 Verification Refund Completed (Ref: ${updatedSub.refund_reference})`,
       idempotency_key: completedIdempotency,
       status: 'pending',
-      text: `₹20 verification refund completed for subscription ${updatedSub.id}. Bank reference: ${updatedSub.refund_reference}.`,
+      ...(await renderOperationalNoticeEmail({
+        title: `₹20 Verification Refund Completed (Ref: ${updatedSub.refund_reference})`,
+        text: `₹20 verification refund completed for subscription ${updatedSub.id}. Bank reference: ${updatedSub.refund_reference}.`,
+        design: 'payment',
+      })),
     });
     if (outboxErr) {
       console.warn('[email-outbox] Refund completed enqueue warning:', outboxErr.message);
@@ -680,7 +703,11 @@ export async function checkAndExpireStandardTrials(): Promise<{ expiredCount: nu
         subject: 'Your 30-Day Free Trial Has Ended',
         idempotency_key: expiryIdempotency,
         status: 'pending',
-        text: `Your 30-Day Free Trial for engagement ${sub.engagement_id} has concluded. Please choose a paid maintenance care plan to continue coverage.`,
+        ...(await renderOperationalNoticeEmail({
+          title: 'Your 30-Day Free Trial Has Ended',
+          text: `Your 30-Day Free Trial for engagement ${sub.engagement_id} has concluded. Please choose a paid maintenance care plan to continue coverage.`,
+          design: 'maintenance',
+        })),
       });
       if (outboxErr) {
         console.warn('[email-outbox] Trial expired enqueue warning:', outboxErr.message);
@@ -746,7 +773,11 @@ export async function createClientCorrectionRequest(params: CreateCorrectionPara
     subject: `[CHANGE CONTROL] Correction Requested: ${requestRef} (${affectedField})`,
     idempotency_key: corrIdempotency,
     status: 'pending',
-    text: `Client correction request ${requestRef} submitted for engagement ${engagementId}. Affected field: ${affectedField}.`,
+    ...(await renderOperationalNoticeEmail({
+      title: `[CHANGE CONTROL] Correction Requested: ${requestRef} (${affectedField})`,
+      text: `Client correction request ${requestRef} submitted for engagement ${engagementId}. Affected field: ${affectedField}.`,
+      design: 'support',
+    })),
   });
 
   if (outboxErr) {

@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "emails:reference": "tsx scripts/render-reference-emails.tsx",
+    "emails:all": "tsx scripts/render-reference-emails.tsx --all",
+    "emails:reference:artwork": "node scripts/generate-reference-email-assets.mjs",
     "build": "NODE_OPTIONS=\"--max-old-space-size=4096\" next build --webpack",
     "start": "next start",
     "lint": "eslint",
@@ -25,7 +28,8 @@
     "seed:knowledge": "node scripts/seed-knowledge.mjs",
     "backfill:embeddings": "node scripts/backfill-embeddings.mjs",
     "prebuild": "node scripts/decode-founder-images.cjs",
-    "test:db": "bash scripts/db-test.sh"
+    "test:db": "bash scripts/db-test.sh",
+    "emails:auth": "tsx scripts/render-auth-email-templates.tsx"
   },
   "dependencies": {
     "@gradio/client": "^2.5.1",

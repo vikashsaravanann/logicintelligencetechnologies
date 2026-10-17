@@ -290,15 +290,8 @@ export default function ExpertisePage() {
                 href="/about/founder"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--lit-navy,#0B2545)] hover:bg-[#133966] text-white text-sm font-semibold transition-all shadow-xs"
               >
-                <span>View Founder Credentials</span>
+                <span>Meet the Founder</span>
                 <ArrowRight className="w-4 h-4 text-[#45D9D2]" />
-              </Link>
-              <Link
-                href="/certifications"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-[#F7F9FC] border border-[#DFE7EF] text-sm font-semibold text-[var(--lit-navy,#0B2545)] transition-all"
-              >
-                <span>Verified Certifications</span>
-                <ArrowRight className="w-4 h-4 text-[#1FA9A2]" />
               </Link>
             </div>
           </div>

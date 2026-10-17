@@ -25,7 +25,7 @@ export default function ResourceAccessEmail({
   expiresInMinutes = 15,
 }: Props) {
   return (
-    <EmailLayout preview={`Your resource is ready: ${resourceTitle}`}>
+    <EmailLayout design="documents" preview={`Your resource is ready: ${resourceTitle}`}>
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Your resource is ready</EmailTitle>

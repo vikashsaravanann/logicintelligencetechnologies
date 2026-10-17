@@ -23,7 +23,7 @@ export default function NewsletterDoubleOptinEmail({
   requestedAt,
 }: Props) {
   return (
-    <EmailLayout preview="Confirm your subscription">
+    <EmailLayout design="verification" preview="Confirm your subscription">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Confirm your subscription</EmailTitle>

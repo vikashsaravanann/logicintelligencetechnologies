@@ -20,7 +20,7 @@ export const LeadConfirmationEmail = ({
   service = "your enquiry",
 }: LeadConfirmationEmailProps) => {
   return (
-    <EmailLayout preview="We've received your request — Logic Intelligence Technologies">
+    <EmailLayout design="transactional" preview="We've received your request — Logic Intelligence Technologies">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>We've received your request</EmailTitle>

@@ -20,7 +20,7 @@ interface WelcomeEmailProps {
 export const WelcomeEmail = ({ fullName, email }: WelcomeEmailProps) => {
   const name = fullName || (email ? email.split("@")[0] : undefined);
   return (
-    <EmailLayout preview="Welcome to Logic Intelligence Technologies">
+    <EmailLayout design="welcome" preview="Welcome to Logic Intelligence Technologies">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Welcome</EmailTitle>

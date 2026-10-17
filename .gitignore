@@ -80,3 +80,6 @@ __pycache__/
 *.b64.part*
 *.patch
 backups/
+artifacts/email-reference-designs/
+
+artifacts/email-all-designs/

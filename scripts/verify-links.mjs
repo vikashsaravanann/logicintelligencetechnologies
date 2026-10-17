@@ -78,7 +78,6 @@ const CANONICAL_LINKS_TO_CHECK = [
   '/',
   '/about',
   '/about/founder',
-  '/certifications',
   '/expertise',
   '/services',
   '/industries',

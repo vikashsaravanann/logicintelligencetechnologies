@@ -24,7 +24,7 @@ export default function PaymentReceivedEmail({
   invoiceNumber = "—",
 }: PaymentReceivedEmailProps) {
   return (
-    <EmailLayout preview="Payment received — thank you">
+    <EmailLayout design="payment" preview="Payment received — thank you">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Payment received</EmailTitle>

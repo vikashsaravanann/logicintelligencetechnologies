@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Section, Text, Link } from "@react-email/components";
+import { Section, Text } from "@react-email/components";
+import { EmailButton } from "./components/email-button";
 import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
@@ -62,7 +63,7 @@ export default function PaymentVerifiedDualDocumentEmail({
   const targetNextStageUrl = nextStageUrl || defaultNextStageUrl;
 
   return (
-    <EmailLayout preview="Payment Verified & Official Financial Documents Issued">
+    <EmailLayout design="payment" preview="Payment Verified & Official Financial Documents Issued">
       <EmailHeader subBrand="Financial Operations & Ledger Reconciliation" />
 
       <EmailContent>
@@ -133,18 +134,18 @@ export default function PaymentVerifiedDualDocumentEmail({
                 {invoiceDownloadUrl ? (
                   <tr>
                     <td align="center" style={{ padding: "8px 0" }}>
-                      <Link href={invoiceDownloadUrl} style={btnPrimary}>
+                      <EmailButton href={invoiceDownloadUrl}>
                         Download Tax Invoice (PDF)
-                      </Link>
+                      </EmailButton>
                     </td>
                   </tr>
                 ) : null}
                 {receiptDownloadUrl ? (
                   <tr>
                     <td align="center" style={{ padding: "4px 0 12px 0" }}>
-                      <Link href={receiptDownloadUrl} style={btnSecondary}>
+                      <EmailButton href={receiptDownloadUrl} variant="secondary">
                         Download Payment Receipt (PDF)
-                      </Link>
+                      </EmailButton>
                     </td>
                   </tr>
                 ) : null}
@@ -154,9 +155,9 @@ export default function PaymentVerifiedDualDocumentEmail({
         ) : (
           <Section style={dualButtonContainer}>
             <div style={{ textAlign: "center", padding: "8px 0" }}>
-              <Link href={targetNextStageUrl} style={btnPrimary}>
+              <EmailButton href={targetNextStageUrl}>
                 Access Official Documents in Client Portal &rarr;
-              </Link>
+              </EmailButton>
             </div>
           </Section>
         )}
@@ -175,9 +176,9 @@ export default function PaymentVerifiedDualDocumentEmail({
               the client intake onboarding to begin phase sprint execution.
             </Text>
             <div style={{ textAlign: "center", marginTop: "16px" }}>
-              <Link href={targetNextStageUrl} style={btnUnlock}>
+              <EmailButton href={targetNextStageUrl}>
                 Proceed to Stage 7: Client Onboarding &rarr;
-              </Link>
+              </EmailButton>
             </div>
           </Section>
         ) : isStage11 ? (
@@ -193,9 +194,9 @@ export default function PaymentVerifiedDualDocumentEmail({
               Stage 12 to finalize production release credentials, source repositories, and warranties.
             </Text>
             <div style={{ textAlign: "center", marginTop: "16px" }}>
-              <Link href={targetNextStageUrl} style={btnUnlock}>
+              <EmailButton href={targetNextStageUrl}>
                 Proceed to Stage 12: Production Handover &rarr;
-              </Link>
+              </EmailButton>
             </div>
           </Section>
         ) : (
@@ -206,9 +207,9 @@ export default function PaymentVerifiedDualDocumentEmail({
               and milestone progress from your client portal.
             </Text>
             <div style={{ textAlign: "center", marginTop: "16px" }}>
-              <Link href={targetNextStageUrl} style={btnUnlock}>
+              <EmailButton href={targetNextStageUrl}>
                 View Client Portal &rarr;
-              </Link>
+              </EmailButton>
             </div>
           </Section>
         )}
@@ -231,35 +232,6 @@ export default function PaymentVerifiedDualDocumentEmail({
 
 const dualButtonContainer = {
   margin: "12px 0 24px 0",
-  textAlign: "center" as const,
-};
-
-const btnPrimary = {
-  backgroundColor: EMAIL.colors.primary,
-  color: "#FFFFFF",
-  display: "inline-block",
-  fontSize: "14px",
-  fontWeight: "700" as const,
-  lineHeight: "20px",
-  padding: "13px 28px",
-  borderRadius: "6px",
-  textDecoration: "none",
-  fontFamily: EMAIL.fontSans,
-  textAlign: "center" as const,
-};
-
-const btnSecondary = {
-  backgroundColor: EMAIL.colors.surfaceMuted,
-  color: EMAIL.colors.inkPrimary,
-  border: `1px solid ${EMAIL.colors.surfaceBorder}`,
-  display: "inline-block",
-  fontSize: "13px",
-  fontWeight: "600" as const,
-  lineHeight: "20px",
-  padding: "11px 26px",
-  borderRadius: "6px",
-  textDecoration: "none",
-  fontFamily: EMAIL.fontSans,
   textAlign: "center" as const,
 };
 
@@ -290,7 +262,7 @@ const unlockTitle = {
   fontWeight: "700" as const,
   lineHeight: "24px",
   margin: "8px 0 6px 0",
-  fontFamily: EMAIL.fontSerif,
+  fontFamily: EMAIL.fontSans,
 };
 
 const unlockDesc = {
@@ -298,18 +270,5 @@ const unlockDesc = {
   fontSize: "13px",
   lineHeight: "20px",
   margin: "0 0 12px 0",
-  fontFamily: EMAIL.fontSans,
-};
-
-const btnUnlock = {
-  backgroundColor: EMAIL.colors.primary,
-  color: "#FFFFFF",
-  display: "inline-block",
-  fontSize: "13px",
-  fontWeight: "700" as const,
-  lineHeight: "18px",
-  padding: "11px 22px",
-  borderRadius: "6px",
-  textDecoration: "none",
   fontFamily: EMAIL.fontSans,
 };

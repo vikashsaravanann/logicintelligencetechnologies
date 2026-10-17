@@ -35,7 +35,7 @@ import TestimonialRequestEmail from "../../emails/testimonial-request-email";
 import WeeklyRecognitionEmail from "../../emails/weekly-recognition-email";
 import WelcomeEmail from "../../emails/welcome-email";
 
-describe("LIT EMAIL v2 Enterprise Template Suite", () => {
+describe("LIT EMAIL v3 Reference-Family Template Suite", () => {
   const templates: Array<{ name: string; element: React.ReactElement }> = [
     {
       name: "AdminGenericEmail",
@@ -345,27 +345,27 @@ describe("LIT EMAIL v2 Enterprise Template Suite", () => {
     },
   ];
 
-  it("verifies all 30 templates exist and are covered", () => {
+  it("verifies the 30 representative legacy templates remain covered", () => {
     assert.equal(templates.length, 30);
   });
 
   for (const { name, element } of templates) {
-    it(`renders ${name} adhering strictly to LIT EMAIL v2 specifications`, async () => {
+    it(`renders ${name} using the LIT EMAIL v3 reference-family design`, async () => {
       const html = await render(element);
       const text = await render(element, { plainText: true });
 
       // 1. Structure & Token Verification
       assert.ok(
-        html.includes("#F7F9FC") || html.includes("rgb(247, 249, 252)") || html.includes("#F8F6F2") || html.includes("rgb(248, 246, 242)"),
-        `${name}: HTML must contain cloud canvas background #F7F9FC or parchment #F8F6F2`
+        html.includes("#F8F6F3") || html.includes("rgb(248, 246, 243)"),
+        `${name}: HTML must contain reference-family warm canvas #F8F6F3`
       );
       assert.ok(
         html.includes("#FFFFFF") || html.includes("#fff") || html.includes("rgb(255, 255, 255)") || html.includes("#FFFEFC") || html.includes("rgb(255, 254, 252)"),
         `${name}: HTML must contain crisp white card background #FFFFFF or soft white #FFFEFC`
       );
       assert.ok(
-        html.includes("#0B2545") || html.includes("rgb(11, 37, 69)") || html.includes("#171717") || html.includes("rgb(23, 23, 23)"),
-        `${name}: HTML must contain brand ink/navy (#0B2545 or #171717)`
+        html.includes("#333333") || html.includes("rgb(51, 51, 51)"),
+        `${name}: HTML must contain reference-family charcoal ink #333333`
       );
 
       // 2. Official Logo & Brand Header

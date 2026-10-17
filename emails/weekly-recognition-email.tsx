@@ -22,7 +22,7 @@ export function WeeklyRecognitionEmail({
   detail,
 }: Props) {
   return (
-    <EmailLayout preview="Weekly recognition">
+    <EmailLayout design="milestone" preview="Weekly recognition">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Weekly recognition</EmailTitle>

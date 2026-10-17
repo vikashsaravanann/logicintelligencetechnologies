@@ -14,7 +14,7 @@ export default function NewsletterConfirmationEmail({
   unsubscribeUrl,
 }: Props) {
   return (
-    <EmailLayout preview="You're subscribed to Logic Intelligence Technologies">
+    <EmailLayout design="welcome" preview="You're subscribed to Logic Intelligence Technologies">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Subscription confirmed</EmailTitle>

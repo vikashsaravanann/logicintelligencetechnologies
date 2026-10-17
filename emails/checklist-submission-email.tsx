@@ -16,7 +16,7 @@ interface Props {
 
 export default function ChecklistSubmissionEmail({ email, type, answers, submissionDate }: Props) {
   return (
-    <EmailLayout preview={`Checklist request: ${email}`}>
+    <EmailLayout design="notification" preview={`Checklist request: ${email}`}>
       <EmailHeader />
       <EmailContent>
         <EmailTitle>New checklist request</EmailTitle>

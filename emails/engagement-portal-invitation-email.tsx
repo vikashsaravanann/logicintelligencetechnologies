@@ -32,7 +32,7 @@ export default function EngagementPortalInvitationEmail({
   customMessage,
 }: EngagementPortalInvitationEmailProps) {
   return (
-    <EmailLayout preview={`Your confidential client portal for ${projectTitle} is ready.`}>
+    <EmailLayout design="workspace" preview={`Your confidential client portal for ${projectTitle} is ready.`}>
       <EmailHeader subBrand="Client Lifecycle Portal" />
       <EmailContent>
         <EmailTitle>Your Client Lifecycle & Project Portal</EmailTitle>
@@ -40,7 +40,7 @@ export default function EngagementPortalInvitationEmail({
 
         <EmailBody>
           Your dedicated client portal for <strong>{companyName}</strong> has been provisioned
-          under engagement reference <code style={{ backgroundColor: "#E7F3FF", color: "#1565C0", padding: "2px 6px", borderRadius: "4px", fontFamily: "monospace", fontWeight: 700 }}>{engagementRef}</code>.
+          under engagement reference <code style={{ backgroundColor: EMAIL.colors.surfaceMuted, color: EMAIL.colors.primary, padding: "2px 6px", borderRadius: "4px", fontFamily: "monospace", fontWeight: 700 }}>{engagementRef}</code>.
         </EmailBody>
 
         {customMessage && (
@@ -48,11 +48,11 @@ export default function EngagementPortalInvitationEmail({
             style={{
               margin: "16px 0",
               padding: "12px 16px",
-              backgroundColor: "#F7F9FC",
-              borderLeft: "3px solid #1565C0",
+              backgroundColor: EMAIL.colors.surfaceMuted,
+              borderLeft: `3px solid ${EMAIL.colors.primary}`,
               borderRadius: "4px",
               fontSize: "13px",
-              color: "#0B2545",
+              color: EMAIL.colors.inkPrimary,
               lineHeight: "1.5",
             }}
           >
@@ -64,30 +64,30 @@ export default function EngagementPortalInvitationEmail({
           style={{
             margin: "20px 0",
             padding: "18px 20px",
-            backgroundColor: "#F7F9FC",
+            backgroundColor: EMAIL.colors.surfaceMuted,
             borderRadius: "12px",
-            border: "1px solid #DFE7EF",
+            border: `1px solid ${EMAIL.colors.border}`,
           }}
         >
-          <div style={{ fontSize: "13px", fontWeight: "bold", color: "#0B2545", marginBottom: "10px" }}>
+          <div style={{ fontSize: "13px", fontWeight: "bold", color: EMAIL.colors.inkPrimary, marginBottom: "10px" }}>
             Engagement Details & Scope:
           </div>
-          <table style={{ width: "100%", fontSize: "13px", color: "#121826", borderCollapse: "collapse" }}>
+          <table style={{ width: "100%", fontSize: "13px", color: EMAIL.colors.inkPrimary, borderCollapse: "collapse" }}>
             <tbody>
               <tr>
-                <td style={{ padding: "4px 0", color: "#52677C", width: "35%" }}>Organization:</td>
-                <td style={{ padding: "4px 0", fontWeight: 600, color: "#0B2545" }}>{companyName}</td>
+                <td style={{ padding: "4px 0", color: EMAIL.colors.body, width: "35%" }}>Organization:</td>
+                <td style={{ padding: "4px 0", fontWeight: 600, color: EMAIL.colors.inkPrimary }}>{companyName}</td>
               </tr>
               <tr>
-                <td style={{ padding: "4px 0", color: "#52677C" }}>Project Scope:</td>
-                <td style={{ padding: "4px 0", fontWeight: 600, color: "#0B2545" }}>{projectTitle}</td>
+                <td style={{ padding: "4px 0", color: EMAIL.colors.body }}>Project Scope:</td>
+                <td style={{ padding: "4px 0", fontWeight: 600, color: EMAIL.colors.inkPrimary }}>{projectTitle}</td>
               </tr>
               <tr>
-                <td style={{ padding: "4px 0", color: "#52677C" }}>Portal Ref:</td>
-                <td style={{ padding: "4px 0", fontWeight: 700, color: "#1565C0", fontFamily: "monospace" }}>{engagementRef}</td>
+                <td style={{ padding: "4px 0", color: EMAIL.colors.body }}>Portal Ref:</td>
+                <td style={{ padding: "4px 0", fontWeight: 700, color: EMAIL.colors.primary, fontFamily: "monospace" }}>{engagementRef}</td>
               </tr>
               <tr>
-                <td style={{ padding: "4px 0", color: "#52677C" }}>Governance:</td>
+                <td style={{ padding: "4px 0", color: EMAIL.colors.body }}>Governance:</td>
                 <td style={{ padding: "4px 0", color: "#065F46" }}>Universal 13-Stage Client Lifecycle</td>
               </tr>
             </tbody>
@@ -100,13 +100,13 @@ export default function EngagementPortalInvitationEmail({
             padding: "16px 20px",
             backgroundColor: "#FFFFFF",
             borderRadius: "12px",
-            border: "1px solid #DFE7EF",
+            border: `1px solid ${EMAIL.colors.border}`,
           }}
         >
-          <div style={{ fontSize: "13px", fontWeight: "bold", color: "#0B2545", marginBottom: "8px" }}>
+          <div style={{ fontSize: "13px", fontWeight: "bold", color: EMAIL.colors.inkPrimary, marginBottom: "8px" }}>
             What you can access inside your portal:
           </div>
-          <ol style={{ margin: 0, paddingLeft: "18px", fontSize: "13px", color: "#52677C", lineHeight: "1.6" }}>
+          <ol style={{ margin: 0, paddingLeft: "18px", fontSize: "13px", color: EMAIL.colors.body, lineHeight: "1.6" }}>
             <li><strong>Stage 01: 50-Point Checklist</strong> — Review technical specifications and select requirements.</li>
             <li><strong>Stage 03 &amp; 04: Proposal &amp; SOW</strong> — Merged commercial terms, deliverables, and service agreement.</li>
             <li><strong>Stage 06 &amp; 11: Milestone Invoices</strong> — Transparent 50/50 payment stages with direct bank UPI transfer audit.</li>
@@ -119,16 +119,16 @@ export default function EngagementPortalInvitationEmail({
           <EmailButton href={workspaceUrl}>Launch Client Workspace</EmailButton>
         </div>
 
-        <div style={{ marginTop: "16px", padding: "14px 16px", backgroundColor: "#F7F9FC", borderRadius: "10px", border: "1px solid #DFE7EF", fontSize: "12px", color: "#52677C" }}>
+        <div style={{ marginTop: "16px", padding: "14px 16px", backgroundColor: EMAIL.colors.surfaceMuted, borderRadius: "10px", border: `1px solid ${EMAIL.colors.border}`, fontSize: "12px", color: EMAIL.colors.body }}>
           <div style={{ marginBottom: "8px" }}>
-            <strong style={{ color: "#0B2545" }}>Client Portal Workspace:</strong><br />
-            <a href={workspaceUrl} style={{ color: "#1565C0", wordBreak: "break-all", textDecoration: "underline" }}>
+            <strong style={{ color: EMAIL.colors.inkPrimary }}>Client Portal Workspace:</strong><br />
+            <a href={workspaceUrl} style={{ color: EMAIL.colors.primary, wordBreak: "break-all", textDecoration: "underline" }}>
               {workspaceUrl}
             </a>
           </div>
           <div>
-            <strong style={{ color: "#0B2545" }}>Direct 13-Stage Milestone Portal:</strong><br />
-            <a href={portalUrl} style={{ color: "#1FA9A2", wordBreak: "break-all", textDecoration: "underline" }}>
+            <strong style={{ color: EMAIL.colors.inkPrimary }}>Direct 13-Stage Milestone Portal:</strong><br />
+            <a href={portalUrl} style={{ color: EMAIL.colors.link, wordBreak: "break-all", textDecoration: "underline" }}>
               {portalUrl}
             </a>
           </div>

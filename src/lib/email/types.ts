@@ -5,6 +5,7 @@ export type EmailCategory =
   | "marketing";
 
 export type EmailDeliveryStatus =
+  | "pending"
   | "queued"
   | "processing"
   | "sent"
@@ -45,3 +46,12 @@ export type EmailAttachment = {
   path?: string;
   contentType?: string;
 };
+
+export interface AttachmentRef {
+  storageBucket: string;
+  storagePath: string;
+  expectedSha256: string;
+  filename: string;
+  contentType?: string;
+}
+

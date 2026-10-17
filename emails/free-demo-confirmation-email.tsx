@@ -18,7 +18,7 @@ export default function FreeDemoConfirmationEmail({
   fullName = "there",
 }: Props) {
   return (
-    <EmailLayout preview="We've received your demo request">
+    <EmailLayout design="transactional" preview="We've received your demo request">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Demo request received</EmailTitle>

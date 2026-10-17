@@ -24,7 +24,7 @@ export default function JobApplicationEmail({
 }: JobApplicationEmailProps) {
   const appliedRole = role || seat || "the role";
   return (
-    <EmailLayout preview="We've received your application">
+    <EmailLayout design="transactional" preview="We've received your application">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Application received</EmailTitle>

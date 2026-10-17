@@ -5,8 +5,8 @@ import { EMAIL } from "./email-styles";
 interface EmailButtonProps {
   href: string;
   children: React.ReactNode;
-  /** primary = corporate blue #1565C0; secondary = outline; teal = #1FA9A2 */
-  variant?: "primary" | "secondary" | "teal";
+  /** primary = reference orange #F57820; secondary = outline/cream; teal/blue = #0755ED; charcoal = #4B5160 */
+  variant?: "primary" | "secondary" | "teal" | "blue" | "charcoal";
   showFallbackUrl?: boolean;
 }
 
@@ -19,13 +19,15 @@ export const EmailButton = ({
   let btnStyle: React.CSSProperties = btnPrimary;
   if (variant === "secondary") {
     btnStyle = btnSecondary;
-  } else if (variant === "teal") {
-    btnStyle = btnTeal;
+  } else if (variant === "teal" || variant === "blue") {
+    btnStyle = btnBlue;
+  } else if (variant === "charcoal") {
+    btnStyle = btnCharcoal;
   }
 
   return (
     <Section style={wrap}>
-      <Link href={href} style={btnStyle}>
+      <Link href={href} className="ref-cta" style={btnStyle}>
         {children}
       </Link>
       {showFallbackUrl ? (
@@ -41,66 +43,61 @@ export const EmailButton = ({
   );
 };
 
-const wrap = { textAlign: "center" as const, margin: "20px 0" };
+const wrap = { textAlign: "center" as const, margin: "28px 0 24px 0" };
 
-const btnPrimary = {
+const baseBtn: React.CSSProperties = {
+  display: "inline-block",
+  fontSize: "15px",
+  fontWeight: "800" as const,
+  lineHeight: "22px",
+  padding: "14px 32px",
+  borderRadius: "9999px",
+  textDecoration: "none",
+  fontFamily: EMAIL.fontSans,
+  textAlign: "center" as const,
+  letterSpacing: "0.015em",
+  boxSizing: "border-box",
+  maxWidth: "100%",
+};
+
+const btnPrimary: React.CSSProperties = {
+  ...baseBtn,
   backgroundColor: EMAIL.colors.primary,
   color: EMAIL.colors.ctaText,
-  display: "inline-block",
-  fontSize: "14px",
-  fontWeight: "700" as const,
-  lineHeight: "20px",
-  padding: "13px 26px",
-  borderRadius: "6px",
-  textDecoration: "none",
-  fontFamily: EMAIL.fontSans,
-  textAlign: "center" as const,
-  letterSpacing: "0.02em",
 };
 
-const btnTeal = {
-  backgroundColor: EMAIL.colors.accent,
+const btnBlue: React.CSSProperties = {
+  ...baseBtn,
+  backgroundColor: EMAIL.colors.blue,
   color: "#FFFFFF",
-  display: "inline-block",
-  fontSize: "14px",
-  fontWeight: "700" as const,
-  lineHeight: "20px",
-  padding: "13px 26px",
-  borderRadius: "6px",
-  textDecoration: "none",
-  fontFamily: EMAIL.fontSans,
-  textAlign: "center" as const,
 };
 
-const btnSecondary = {
+const btnCharcoal: React.CSSProperties = {
+  ...baseBtn,
+  backgroundColor: EMAIL.colors.charcoal,
+  color: "#FFFFFF",
+};
+
+const btnSecondary: React.CSSProperties = {
+  ...baseBtn,
   backgroundColor: EMAIL.colors.surfaceMuted,
   color: EMAIL.colors.inkPrimary,
-  display: "inline-block",
-  fontSize: "13px",
-  fontWeight: "600" as const,
-  lineHeight: "20px",
-  padding: "11px 22px",
-  borderRadius: "6px",
-  textDecoration: "none",
-  fontFamily: EMAIL.fontSans,
-  textAlign: "center" as const,
-  border: `1px solid ${EMAIL.colors.surfaceBorder}`,
+  border: `1px solid ${EMAIL.colors.border}`,
 };
 
 const fallbackText = {
   color: EMAIL.colors.muted,
   fontSize: "12px",
   lineHeight: "18px",
-  margin: "14px 0 0 0",
+  margin: "18px 0 0 0",
   fontFamily: EMAIL.fontSans,
   textAlign: "center" as const,
-  wordBreak: "break-all" as const,
 };
 
 const fallbackLink = {
-  color: EMAIL.colors.linkAccent,
-  textDecoration: "underline",
+  color: EMAIL.colors.link,
   wordBreak: "break-all" as const,
+  textDecoration: "underline",
 };
 
 export default EmailButton;

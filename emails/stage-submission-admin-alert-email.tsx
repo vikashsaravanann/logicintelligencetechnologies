@@ -1,4 +1,5 @@
 import * as React from "react";
+import { EMAIL } from "./components/email-styles";
 import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
@@ -39,7 +40,7 @@ export default function StageSubmissionAdminAlertEmail({
   adminPortalUrl,
 }: StageSubmissionAdminAlertEmailProps) {
   return (
-    <EmailLayout preview={`Action Required: Stage ${stageOrdinal} (${stageTitle}) submitted by ${companyName}`}>
+    <EmailLayout design="notification" preview={`Action Required: Stage ${stageOrdinal} (${stageTitle}) submitted by ${companyName}`}>
       <EmailHeader />
       <EmailContent>
         <EmailTitle>New Client Submission · Action Required</EmailTitle>
@@ -51,17 +52,21 @@ export default function StageSubmissionAdminAlertEmail({
         <div
           style={{
             margin: "20px 0",
+            maxWidth: "100%",
+            boxSizing: "border-box",
+            overflowWrap: "anywhere",
+            wordBreak: "break-word",
             padding: "18px 20px",
-            backgroundColor: "#F7F9FC",
+            backgroundColor: EMAIL.colors.surfaceMuted,
             borderRadius: "12px",
-            border: "1px solid #DFE7EF",
+            border: `1px solid ${EMAIL.colors.border}`,
           }}
         >
           <div
             style={{
               fontSize: "11px",
               fontWeight: "bold",
-              color: "#1565C0",
+              color: EMAIL.colors.primary,
               textTransform: "uppercase",
               letterSpacing: "1px",
               marginBottom: "8px",
@@ -70,38 +75,38 @@ export default function StageSubmissionAdminAlertEmail({
             Client Submission Details
           </div>
 
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+          <table style={{ width: "100%", maxWidth: "100%", tableLayout: "fixed", borderCollapse: "collapse", fontSize: "13px", wordBreak: "break-word", overflowWrap: "anywhere" }}>
             <tbody>
               <tr>
-                <td style={{ padding: "6px 0", color: "#52677C", width: "140px" }}>Company:</td>
-                <td style={{ padding: "6px 0", fontWeight: "bold", color: "#0B2545" }}>{companyName}</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.body, width: "38%" }}>Company:</td>
+                <td style={{ padding: "6px 0", fontWeight: "bold", color: EMAIL.colors.inkPrimary }}>{companyName}</td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#52677C" }}>Contact:</td>
-                <td style={{ padding: "6px 0", color: "#0B2545" }}>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.body }}>Contact:</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.inkPrimary }}>
                   {contactName} ({contactEmail})
                 </td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#52677C" }}>Project Ref:</td>
-                <td style={{ padding: "6px 0", fontWeight: "bold", color: "#0B2545", fontFamily: "monospace" }}>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.body }}>Project Ref:</td>
+                <td style={{ padding: "6px 0", fontWeight: "bold", color: EMAIL.colors.inkPrimary, fontFamily: "monospace" }}>
                   {engagementRef}
                 </td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#52677C" }}>Stage:</td>
-                <td style={{ padding: "6px 0", fontWeight: "bold", color: "#1565C0" }}>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.body }}>Stage:</td>
+                <td style={{ padding: "6px 0", fontWeight: "bold", color: EMAIL.colors.primary }}>
                   Stage {stageOrdinal}: {stageTitle}
                 </td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#52677C" }}>Overview:</td>
-                <td style={{ padding: "6px 0", color: "#0B2545" }}>{submittedSummary}</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.body }}>Overview:</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.inkPrimary }}>{submittedSummary}</td>
               </tr>
               {detailsList.map((item, idx) => (
                 <tr key={idx}>
-                  <td style={{ padding: "6px 0", color: "#52677C" }}>{item.label}:</td>
-                  <td style={{ padding: "6px 0", color: "#0B2545", fontWeight: "500" }}>{item.value}</td>
+                  <td style={{ padding: "6px 0", color: EMAIL.colors.body }}>{item.label}:</td>
+                  <td style={{ padding: "6px 0", color: EMAIL.colors.inkPrimary, fontWeight: "500" }}>{item.value}</td>
                 </tr>
               ))}
             </tbody>

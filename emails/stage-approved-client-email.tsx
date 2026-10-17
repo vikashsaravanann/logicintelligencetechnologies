@@ -1,4 +1,5 @@
 import * as React from "react";
+import { EMAIL } from "./components/email-styles";
 import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
@@ -40,7 +41,7 @@ export default function StageApprovedClientEmail({
     : `Stage ${approvedStageOrdinal} Approved! Proceed to Stage ${nextStageOrdinal}: ${nextStageTitle}`;
 
   return (
-    <EmailLayout preview={previewText}>
+    <EmailLayout design="milestone" preview={previewText}>
       <EmailHeader />
       <EmailContent>
         <EmailTitle>
@@ -94,7 +95,7 @@ export default function StageApprovedClientEmail({
                 <td style={{ padding: "6px 0", color: "#047857" }}>
                   {isFinalCompletion ? "Lifecycle Status:" : "Unlocked Next Stage:"}
                 </td>
-                <td style={{ padding: "6px 0", fontWeight: "bold", color: "#1565C0" }}>
+                <td style={{ padding: "6px 0", fontWeight: "bold", color: EMAIL.colors.primary }}>
                   {isFinalCompletion
                     ? nextStageTitle
                     : `Stage ${nextStageOrdinal}: ${nextStageTitle}`}

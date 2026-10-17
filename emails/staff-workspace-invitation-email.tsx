@@ -32,7 +32,7 @@ export default function StaffWorkspaceInvitationEmail({
   workspaceUuid = "e0000000-0000-0000-0000-000000000001",
 }: StaffWorkspaceInvitationEmailProps) {
   return (
-    <EmailLayout preview={`Your private LIT Staff Admin Workspace (${jobTitle}) is ready.`}>
+    <EmailLayout design="workspace" preview={`Your private LIT Staff Admin Workspace (${jobTitle}) is ready.`}>
       <EmailHeader subBrand="Staff Identity & Workspace Provisioning" />
       <EmailContent>
         <EmailTitle>Your Staff Admin Workspace Is Ready</EmailTitle>
@@ -45,29 +45,33 @@ export default function StaffWorkspaceInvitationEmail({
         <div
           style={{
             margin: "20px 0",
+            maxWidth: "100%",
+            boxSizing: "border-box",
+            overflowWrap: "anywhere",
+            wordBreak: "break-word",
             padding: "16px 20px",
-            backgroundColor: "#F7F9FC",
-            border: "1px solid #E2E8F0",
+            backgroundColor: EMAIL.colors.surfaceMuted,
+            border: `1px solid ${EMAIL.colors.border}`,
             borderRadius: "8px",
           }}
         >
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+          <table style={{ width: "100%", maxWidth: "100%", tableLayout: "fixed", borderCollapse: "collapse", fontSize: "13px", wordBreak: "break-word", overflowWrap: "anywhere" }}>
             <tbody>
               <tr>
-                <td style={{ padding: "6px 0", color: "#64748B", fontWeight: 600, width: "140px" }}>Official Account:</td>
-                <td style={{ padding: "6px 0", color: "#0B2545", fontWeight: 700 }}>{recipientEmail}</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.muted, fontWeight: 600, width: "38%" }}>Official Account:</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.inkPrimary, fontWeight: 700 }}>{recipientEmail}</td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#64748B", fontWeight: 600 }}>Designation:</td>
-                <td style={{ padding: "6px 0", color: "#0B2545", fontWeight: 600 }}>{jobTitle} ({department})</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.muted, fontWeight: 600 }}>Designation:</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.inkPrimary, fontWeight: 600 }}>{jobTitle} ({department})</td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#64748B", fontWeight: 600 }}>System Role:</td>
-                <td style={{ padding: "6px 0", color: "#1565C0", fontWeight: 700, textTransform: "uppercase" }}>{systemRole}</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.muted, fontWeight: 600 }}>System Role:</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.primary, fontWeight: 700, textTransform: "uppercase" }}>{systemRole}</td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#64748B", fontWeight: 600 }}>Workspace ID:</td>
-                <td style={{ padding: "6px 0", color: "#0B2545", fontFamily: "monospace", fontSize: "12px" }}>{workspaceUuid}</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.muted, fontWeight: 600 }}>Workspace ID:</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.inkPrimary, fontFamily: "monospace", fontSize: "12px" }}>{workspaceUuid}</td>
               </tr>
             </tbody>
           </table>
@@ -86,6 +90,10 @@ export default function StaffWorkspaceInvitationEmail({
         <div
           style={{
             margin: "20px 0",
+            maxWidth: "100%",
+            boxSizing: "border-box",
+            overflowWrap: "anywhere",
+            wordBreak: "break-word",
             padding: "14px 18px",
             backgroundColor: "#FFFBEB",
             borderLeft: "4px solid #F59E0B",
@@ -107,7 +115,7 @@ export default function StaffWorkspaceInvitationEmail({
           Direct Workspace Link: <br />
           <a
             href={workspaceUrl}
-            style={{ color: "#1565C0", wordBreak: "break-all", fontSize: "12px", textDecoration: "underline" }}
+            style={{ color: EMAIL.colors.primary, wordBreak: "break-all", overflowWrap: "anywhere", fontSize: "12px", textDecoration: "underline" }}
           >
             {workspaceUrl}
           </a>

@@ -37,7 +37,7 @@ export default function OnboardingInvitationEmail({
     : "14 days from issuance";
 
   return (
-    <EmailLayout preview={`Complete technical onboarding for ${companyName} (${projectTitle})`}>
+    <EmailLayout design="onboarding" preview={`Complete technical onboarding for ${companyName} (${projectTitle})`}>
       <EmailHeader subBrand="Client Technical Onboarding" />
       <EmailContent>
         <EmailTitle>Client Technical Onboarding & Systems Setup</EmailTitle>
@@ -53,31 +53,31 @@ export default function OnboardingInvitationEmail({
           style={{
             margin: "20px 0",
             padding: "18px 20px",
-            backgroundColor: "#F7F9FC",
+            backgroundColor: EMAIL.colors.surfaceMuted,
             borderRadius: "12px",
-            border: "1px solid #DFE7EF",
+            border: `1px solid ${EMAIL.colors.border}`,
           }}
         >
-          <div style={{ fontSize: "13px", fontWeight: "bold", color: "#0B2545", marginBottom: "10px" }}>
+          <div style={{ fontSize: "13px", fontWeight: "bold", color: EMAIL.colors.inkPrimary, marginBottom: "10px" }}>
             Onboarding Overview:
           </div>
-          <table style={{ width: "100%", fontSize: "13px", color: "#121826", borderCollapse: "collapse" }}>
+          <table style={{ width: "100%", fontSize: "13px", color: EMAIL.colors.inkPrimary, borderCollapse: "collapse" }}>
             <tbody>
               <tr>
-                <td style={{ padding: "4px 0", color: "#52677C", width: "35%" }}>Organization:</td>
-                <td style={{ padding: "4px 0", fontWeight: 600, color: "#0B2545" }}>{companyName}</td>
+                <td style={{ padding: "4px 0", color: EMAIL.colors.body, width: "35%" }}>Organization:</td>
+                <td style={{ padding: "4px 0", fontWeight: 600, color: EMAIL.colors.inkPrimary }}>{companyName}</td>
               </tr>
               <tr>
-                <td style={{ padding: "4px 0", color: "#52677C" }}>Project Scope:</td>
-                <td style={{ padding: "4px 0", fontWeight: 600, color: "#0B2545" }}>{projectTitle}</td>
+                <td style={{ padding: "4px 0", color: EMAIL.colors.body }}>Project Scope:</td>
+                <td style={{ padding: "4px 0", fontWeight: 600, color: EMAIL.colors.inkPrimary }}>{projectTitle}</td>
               </tr>
               <tr>
-                <td style={{ padding: "4px 0", color: "#52677C" }}>Token Validity:</td>
+                <td style={{ padding: "4px 0", color: EMAIL.colors.body }}>Token Validity:</td>
                 <td style={{ padding: "4px 0", color: "#065F46", fontWeight: 600 }}>Until {expiryFormatted}</td>
               </tr>
               <tr>
-                <td style={{ padding: "4px 0", color: "#52677C" }}>Security:</td>
-                <td style={{ padding: "4px 0", color: "#1565C0" }}>Single-Use Cryptographic Token · SHA-256 Hashed</td>
+                <td style={{ padding: "4px 0", color: EMAIL.colors.body }}>Security:</td>
+                <td style={{ padding: "4px 0", color: EMAIL.colors.primary }}>Single-Use Cryptographic Token · SHA-256 Hashed</td>
               </tr>
             </tbody>
           </table>
@@ -95,9 +95,9 @@ export default function OnboardingInvitationEmail({
             padding: "14px 16px",
             backgroundColor: "#FFFFFF",
             borderRadius: "8px",
-            border: "1px solid #DFE7EF",
+            border: `1px solid ${EMAIL.colors.border}`,
             fontSize: "12px",
-            color: "#52677C",
+            color: EMAIL.colors.body,
             lineHeight: "1.5",
           }}
         >

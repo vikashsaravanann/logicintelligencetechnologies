@@ -1,55 +1,62 @@
-import { Section, Img, Text, Hr } from "@react-email/components";
+import { Section, Img, Text } from "@react-email/components";
 import * as React from "react";
 import { EMAIL } from "./email-styles";
+import { EMAIL_DESIGNS, type EmailDesign } from "./email-design";
 
 interface EmailHeaderProps {
   subBrand?: string;
+  design?: EmailDesign;
 }
 
 /**
- * Centered circular logo (48x48px), single-line non-wrapping wordmark:
- * LOGIC INTELLIGENCE TECHNOLOGIES (12px, tracking 0.14em, bold uppercase)
+ * Centered circular logo (78x78px), single-line non-wrapping wordmark:
+ * LOGIC INTELLIGENCE TECHNOLOGIES (14px, tracking 0.045em, bold uppercase)
  */
-export const EmailHeader = ({ subBrand }: EmailHeaderProps) => {
+export const EmailHeader = ({ subBrand, design: designKey = "transactional" }: EmailHeaderProps) => {
+  const design = EMAIL_DESIGNS[designKey];
   return (
-    <Section style={header}>
+    <>
+    <Section className="ref-header" style={header}>
       <Img
         src={EMAIL.logoUrl}
         alt={EMAIL.company}
-        width="48"
-        height="48"
+        width="78"
+        height="78"
         style={logo}
       />
-      <Text style={brand}>{EMAIL.companyFull}</Text>
+      <Text className="ref-wordmark" style={brand}>{EMAIL.companyFull}</Text>
       {subBrand ? <Text style={subBrandStyle}>{subBrand}</Text> : null}
-      <Hr style={divider} />
     </Section>
+    <Section style={{ padding: design.full ? "0" : "0 20px 4px", textAlign: "center" }}>
+      <Img src={`${EMAIL.assetUrl}/${design.art}.png`} alt="" width={design.full ? "600" : "280"} style={{ display: "block", width: design.full ? "100%" : "70%", maxWidth: design.full ? 600 : 280, height: "auto", margin: "0 auto", borderRadius: design.full ? 0 : 5 }} />
+    </Section>
+    </>
   );
 };
 
 const header = {
-  padding: "32px 32px 16px 32px",
+  padding: "36px 24px 28px",
   textAlign: "center" as const,
   backgroundColor: EMAIL.colors.cardBg,
 };
 
 const logo = {
   display: "block",
-  margin: "0 auto 12px auto",
+  margin: "0 auto 14px auto",
   borderRadius: "50%",
   border: `1px solid ${EMAIL.colors.cardBorder}`,
-  width: "48px",
-  height: "48px",
+  width: "78px",
+  height: "78px",
   objectFit: "cover" as const,
 };
 
 const brand = {
   color: EMAIL.colors.inkPrimary,
-  fontSize: "12px",
+  fontSize: "14px",
   fontWeight: "800" as const,
-  lineHeight: "16px",
+  lineHeight: "20px",
   margin: "0 auto",
-  letterSpacing: "0.14em",
+  letterSpacing: "0.045em",
   textTransform: "uppercase" as const,
   whiteSpace: "nowrap" as const,
   fontFamily: EMAIL.fontSans,
@@ -58,20 +65,14 @@ const brand = {
 
 const subBrandStyle = {
   color: EMAIL.colors.muted,
-  fontSize: "12px",
-  fontWeight: "500" as const,
-  lineHeight: "18px",
+  fontSize: "11px",
+  fontWeight: "700" as const,
+  lineHeight: "16px",
   margin: "6px auto 0 auto",
+  letterSpacing: "0.08em",
+  textTransform: "uppercase" as const,
   fontFamily: EMAIL.fontSans,
   textAlign: "center" as const,
-  letterSpacing: "0.02em",
-};
-
-const divider = {
-  borderColor: EMAIL.colors.divider,
-  borderTop: `1px solid ${EMAIL.colors.divider}`,
-  margin: "20px 0 0 0",
-  width: "100%",
 };
 
 export default EmailHeader;

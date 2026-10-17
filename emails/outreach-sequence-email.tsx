@@ -13,15 +13,15 @@ interface Props {
 
 export default function OutreachSequenceEmail({ bodyHtml }: Props) {
   return (
-    <EmailLayout preview="Message from Logic Intelligence Technologies">
+    <EmailLayout design="campaign" preview="Message from Logic Intelligence Technologies">
       <EmailHeader />
       <EmailContent>
         <Section
           style={{
             color: EMAIL.colors.text,
-            fontSize: "15px",
-            lineHeight: "1.6",
-            fontFamily: EMAIL.font,
+            fontSize: "16px",
+            lineHeight: "28px",
+            fontFamily: EMAIL.fontSans,
           }}
         >
           <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />

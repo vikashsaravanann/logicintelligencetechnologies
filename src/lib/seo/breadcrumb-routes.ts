@@ -223,10 +223,6 @@ const STATIC_REGISTRY: Record<string, BreadcrumbSegment[]> = {
     { name: "Home", path: "/" },
     { name: "Technical Expertise & Capabilities", path: "/expertise" },
   ],
-  "/certifications": [
-    { name: "Home", path: "/" },
-    { name: "Certifications & Compliance", path: "/certifications" },
-  ],
   "/community": [
     { name: "Home", path: "/" },
     { name: "Engineering Community", path: "/community" },

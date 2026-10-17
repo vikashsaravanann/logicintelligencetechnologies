@@ -13,11 +13,8 @@ import {
   Mail,
   Award,
   Sparkles,
-  ShieldCheck,
-  CheckCircle2,
   Calendar,
   Layers,
-  FileCheck,
 } from "lucide-react";
 import { BackButton } from "@/components/navigation/back-button";
 import { COMPANY } from "@/config/company";
@@ -336,53 +333,6 @@ export default function FounderPage() {
         </div>
       </section>
 
-      {/* Verified Certifications & Credentials Gallery */}
-      <section className="py-20 md:py-24 border-b border-[#DFE7EF] bg-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="mb-14 max-w-2xl">
-            <span className="inline-block px-3.5 py-1 rounded-full text-[11px] font-mono font-semibold uppercase tracking-widest text-[#059669] bg-[#ECFDF5] border border-[#A7F3D0] mb-3">
-              Verified Credentials
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-display font-extrabold tracking-tight text-[var(--lit-ink)] mb-4">
-              Accredited Certifications &amp; Diplomas
-            </h2>
-            <p className="text-[var(--lit-text-muted)] text-base">
-              Verified technical credentials across data analytics, Python, machine learning, and systems engineering.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {FOUNDER.credentials.map((cred, idx) => (
-              <div
-                key={idx}
-                className="rounded-2xl border border-[#DFE7EF] bg-white p-5 flex flex-col justify-between hover:border-[#1FA9A2]/40 hover:shadow-md transition-all duration-300 shadow-2xs"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="w-8 h-8 rounded-lg bg-[#E7F3FF] border border-[#BFDBFE] flex items-center justify-center text-[var(--lit-blue)]">
-                      <FileCheck className="w-4 h-4" />
-                    </span>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-semibold">
-                      {cred.type}
-                    </span>
-                  </div>
-
-                  <h3 className="text-sm font-display font-bold text-[var(--lit-ink)] mb-1.5 line-clamp-2">
-                    {cred.title}
-                  </h3>
-                  <p className="text-xs font-mono text-[var(--lit-blue)] font-medium">
-                    {cred.issuingOrganization}
-                  </p>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-[#DFE7EF] flex items-center gap-1.5 text-[11px] font-mono text-[#059669] font-semibold">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#059669]" /> Verified Credential
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Portrait Gallery */}
       <section className="py-20 md:py-24 border-b border-[#DFE7EF] bg-[#F7F9FC]">

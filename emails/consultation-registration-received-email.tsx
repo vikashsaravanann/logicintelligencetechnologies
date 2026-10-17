@@ -42,7 +42,7 @@ export const ConsultationRegistrationReceivedEmail = ({
     : bookingRef;
 
   return (
-    <EmailLayout preview={`Consultation Request Received: ${consultationType} on ${slotFormatted}`}>
+    <EmailLayout design="transactional" preview={`Consultation Request Received: ${consultationType} on ${slotFormatted}`}>
       <EmailHeader subBrand="Engineering Consultation & Technical Briefing" />
       <EmailContent>
         <EmailTitle>We Have Received Your Consultation Request</EmailTitle>
@@ -83,7 +83,7 @@ export const ConsultationRegistrationReceivedEmail = ({
         {notes ? (
           <Section
             style={{
-              backgroundColor: "#F7F9FC",
+              backgroundColor: EMAIL.colors.surfaceMuted,
               border: `1px solid ${EMAIL.colors.border}`,
               borderRadius: "8px",
               padding: "14px 18px",
@@ -94,11 +94,11 @@ export const ConsultationRegistrationReceivedEmail = ({
               style={{
                 fontSize: "12px",
                 fontWeight: 700,
-                color: "#0B2545",
+                color: EMAIL.colors.inkPrimary,
                 textTransform: "uppercase",
                 letterSpacing: "0.05em",
                 margin: "0 0 6px 0",
-                fontFamily: EMAIL.font,
+                fontFamily: EMAIL.fontSans,
               }}
             >
               Your Architecture & Project Notes:
@@ -107,7 +107,7 @@ export const ConsultationRegistrationReceivedEmail = ({
               style={{
                 fontSize: "13px",
                 lineHeight: "20px",
-                color: "#121826",
+                color: EMAIL.colors.inkPrimary,
                 fontFamily: "monospace",
                 margin: 0,
                 whiteSpace: "pre-wrap",

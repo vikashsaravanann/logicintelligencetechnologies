@@ -22,7 +22,7 @@ export default function ProposalSentEmail({
   proposalUrl,
 }: ProposalSentEmailProps) {
   return (
-    <EmailLayout preview="Project proposal from Logic Intelligence Technologies">
+    <EmailLayout design="documents" preview="Project proposal from Logic Intelligence Technologies">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Your proposal is ready</EmailTitle>

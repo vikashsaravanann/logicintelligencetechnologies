@@ -64,7 +64,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/knowledge-base`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${baseUrl}/ai-ethics`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'yearly', priority: 0.5 },
     { url: `${baseUrl}/ai-assistant`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${baseUrl}/certifications`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/community`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/investor-brief`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/ai-discovery`, lastModified: LAST_RELEASE_DATE, changeFrequency: 'monthly', priority: 0.7 },

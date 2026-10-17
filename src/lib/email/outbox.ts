@@ -4,6 +4,7 @@ import { isSupabaseLive } from "./config";
 import { EMAIL_MAX_ATTEMPTS, isExhausted, nextAttemptAt } from "./retry";
 import { emailLog, maskEmail } from "./logger";
 import type { EmailCategory, EmailDeliveryStatus, EmailErrorCategory } from "./types";
+import { renderOperationalNoticeEmail } from "./render-operational-notice";
 import { escapeHtml } from "./validation";
 
 export type OutboxInsert = {
@@ -58,6 +59,15 @@ export async function enqueueEmail(
     params.idempotencyKey ||
     `enqueue_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
   const sender = params.sender || "no-reply@logicintelligencetechnologies.in";
+  const content = params.html
+    ? { html: params.html, text: params.text }
+    : await renderOperationalNoticeEmail({
+        title: params.subject,
+        text: params.text || (params.metadata
+          ? `${params.subject}\n\n${escapeHtml(JSON.stringify(params.metadata, null, 2))}`
+          : params.subject),
+        design: "notification",
+      });
 
   return await claimOutbox({
     eventType: params.templateId || "general_notification",
@@ -67,14 +77,7 @@ export async function enqueueEmail(
     sender,
     replyTo: params.replyTo,
     subject: params.subject,
-    html:
-      params.html ||
-      (params.text
-        ? `<p>${escapeHtml(params.text)}</p>`
-        : params.metadata
-        ? `<p>${escapeHtml(params.subject)}</p><pre>${escapeHtml(JSON.stringify(params.metadata, null, 2))}</pre>`
-        : `<p>${escapeHtml(params.subject)}</p>`),
-    text: params.text,
+    ...content,
     idempotencyKey,
     correlationId: params.correlationId,
   });

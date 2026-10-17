@@ -1,4 +1,5 @@
 import * as React from "react";
+import { EMAIL } from "./components/email-styles";
 import { EmailLayout } from "./components/email-layout";
 import { EmailHeader } from "./components/email-header";
 import { EmailFooter } from "./components/email-footer";
@@ -27,7 +28,7 @@ export default function ClientRequestRoutedEmail({
   actionUrl = "https://www.logicintelligencetechnologies.in/admin/command-center",
 }: ClientRequestRoutedEmailProps) {
   return (
-    <EmailLayout preview={`[Action Required] New ${requestType} from ${clientEmail}`}>
+    <EmailLayout design="support" preview={`[Action Required] New ${requestType} from ${clientEmail}`}>
       <EmailHeader subBrand="Client Request Operations" />
       <EmailContent>
         <EmailTitle>New Client Request Assigned to You</EmailTitle>
@@ -41,24 +42,24 @@ export default function ClientRequestRoutedEmail({
           style={{
             margin: "20px 0",
             padding: "16px 20px",
-            backgroundColor: "#F7F9FC",
-            border: "1px solid #E2E8F0",
+            backgroundColor: EMAIL.colors.surfaceMuted,
+            border: `1px solid ${EMAIL.colors.border}`,
             borderRadius: "8px",
           }}
         >
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
             <tbody>
               <tr>
-                <td style={{ padding: "6px 0", color: "#64748B", fontWeight: 600, width: "140px" }}>Category:</td>
-                <td style={{ padding: "6px 0", color: "#1565C0", fontWeight: 700 }}>{requestType}</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.muted, fontWeight: 600, width: "140px" }}>Category:</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.primary, fontWeight: 700 }}>{requestType}</td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#64748B", fontWeight: 600 }}>Client Email:</td>
-                <td style={{ padding: "6px 0", color: "#0B2545", fontWeight: 600 }}>{clientEmail}</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.muted, fontWeight: 600 }}>Client Email:</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.inkPrimary, fontWeight: 600 }}>{clientEmail}</td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#64748B", fontWeight: 600 }}>Summary:</td>
-                <td style={{ padding: "6px 0", color: "#0B2545" }}>{summary}</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.muted, fontWeight: 600 }}>Summary:</td>
+                <td style={{ padding: "6px 0", color: EMAIL.colors.inkPrimary }}>{summary}</td>
               </tr>
             </tbody>
           </table>
@@ -78,7 +79,7 @@ export default function ClientRequestRoutedEmail({
           Direct Action Link: <br />
           <a
             href={actionUrl}
-            style={{ color: "#1565C0", wordBreak: "break-all", fontSize: "12px", textDecoration: "underline" }}
+            style={{ color: EMAIL.colors.primary, wordBreak: "break-all", fontSize: "12px", textDecoration: "underline" }}
           >
             {actionUrl}
           </a>

@@ -14,7 +14,6 @@ route,file,dynamic,area,status,redirect,coverage,error
 /booking/cancelled,src/app/(marketing)/booking/cancelled/page.tsx,False,Other,200,,HTTP response only; rendering/actions unverified,
 /booking/success,src/app/(marketing)/booking/success/page.tsx,False,Other,200,,HTTP response only; rendering/actions unverified,
 /careers,src/app/(marketing)/careers/page.tsx,False,Other,200,,HTTP response only; rendering/actions unverified,
-/certifications,src/app/(marketing)/certifications/page.tsx,False,Other,200,,HTTP response only; rendering/actions unverified,
 /checklist,src/app/(marketing)/checklist/page.tsx,False,Other,200,,HTTP response only; rendering/actions unverified,
 /community,src/app/(marketing)/community/page.tsx,False,Other,200,,HTTP response only; rendering/actions unverified,
 /company/facts,src/app/(marketing)/company/facts/page.tsx,False,Other,200,,HTTP response only; rendering/actions unverified,

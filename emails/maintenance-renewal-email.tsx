@@ -24,7 +24,7 @@ export default function MaintenanceRenewalEmail({
   renewLink,
 }: MaintenanceRenewalEmailProps) {
   return (
-    <EmailLayout preview="Maintenance and support plan renewal">
+    <EmailLayout design="maintenance" preview="Maintenance and support plan renewal">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Maintenance renewal</EmailTitle>

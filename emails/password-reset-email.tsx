@@ -21,7 +21,7 @@ export const PasswordResetEmail = ({
   resetLink,
 }: PasswordResetEmailProps) => {
   return (
-    <EmailLayout preview="Reset your password — Logic Intelligence Technologies">
+    <EmailLayout design="security" preview="Reset your password — Logic Intelligence Technologies">
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Reset your password</EmailTitle>

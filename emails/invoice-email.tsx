@@ -28,7 +28,7 @@ export default function InvoiceEmail({
   paymentLink,
 }: InvoiceEmailProps) {
   return (
-    <EmailLayout preview={`Invoice ${invoiceNumber} from Logic Intelligence Technologies`}>
+    <EmailLayout design="payment" preview={`Invoice ${invoiceNumber} from Logic Intelligence Technologies`}>
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Invoice {invoiceNumber}</EmailTitle>

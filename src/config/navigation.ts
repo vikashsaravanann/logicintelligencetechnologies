@@ -45,7 +45,6 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
       { href: "/about", label: "ABOUT US", description: "WHO WE ARE" },
       { href: "/about/founder", label: "FOUNDER", description: "VIKASH SARAVANAN PROFILE" },
       { href: "/expertise", label: "EXPERTISE", description: "ENGINEERING CAPABILITIES" },
-      { href: "/certifications", label: "CERTIFICATIONS", description: "PROFESSIONAL CREDENTIALS" },
       { href: "/company/facts", label: "COMPANY FACTS", description: "FACT SHEET" },
       { href: "/careers", label: "CAREERS", description: "CULTURE AND OPEN PATHS" },
       { href: "/jobs", label: "LEADERSHIP JOBS", description: "CEO AND DIRECTOR SEATS" },

@@ -22,7 +22,7 @@ export default function ProjectKickoffEmail({
   projectName = "Your Project",
 }: ProjectKickoffEmailProps) {
   return (
-    <EmailLayout preview={`Project kickoff: ${projectName}`}>
+    <EmailLayout design="onboarding" preview={`Project kickoff: ${projectName}`}>
       <EmailHeader />
       <EmailContent>
         <EmailTitle>Project kickoff</EmailTitle>

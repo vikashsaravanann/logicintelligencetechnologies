@@ -48,7 +48,7 @@ export const ConsultationBookingConfirmationEmail = ({
     : bookingRef;
 
   return (
-    <EmailLayout preview={`Consultation Confirmed: ${consultationType} on ${slotFormatted}`}>
+    <EmailLayout design="transactional" preview={`Consultation Confirmed: ${consultationType} on ${slotFormatted}`}>
       <EmailHeader subBrand="Engineering Consultation & Technical Briefing" />
       <EmailContent>
         <EmailTitle>Your Technical Consultation is Confirmed</EmailTitle>
@@ -100,7 +100,7 @@ export const ConsultationBookingConfirmationEmail = ({
               fontSize: "12px",
               color: EMAIL.colors.muted,
               margin: "8px 0 0 0",
-              fontFamily: EMAIL.font,
+              fontFamily: EMAIL.fontSans,
             }}
           >
             Direct Video Link:{" "}
@@ -114,13 +114,13 @@ export const ConsultationBookingConfirmationEmail = ({
                 fontSize: "12px",
                 color: EMAIL.colors.muted,
                 margin: "6px 0 0 0",
-                fontFamily: EMAIL.font,
+                fontFamily: EMAIL.fontSans,
               }}
             >
               <Link
                 href={calendarAddUrl}
                 style={{
-                  color: "#1FA9A2",
+                  color: EMAIL.colors.link,
                   fontWeight: 600,
                   textDecoration: "underline",
                 }}
@@ -142,7 +142,7 @@ export const ConsultationBookingConfirmationEmail = ({
         {notes ? (
           <Section
             style={{
-              backgroundColor: "#F7F9FC",
+              backgroundColor: EMAIL.colors.surfaceMuted,
               border: `1px solid ${EMAIL.colors.border}`,
               borderRadius: "8px",
               padding: "14px 18px",
@@ -153,11 +153,11 @@ export const ConsultationBookingConfirmationEmail = ({
               style={{
                 fontSize: "12px",
                 fontWeight: 700,
-                color: "#0B2545",
+                color: EMAIL.colors.inkPrimary,
                 textTransform: "uppercase",
                 letterSpacing: "0.05em",
                 margin: "0 0 6px 0",
-                fontFamily: EMAIL.font,
+                fontFamily: EMAIL.fontSans,
               }}
             >
               Submitted Agenda / Architecture Scope:
@@ -168,7 +168,7 @@ export const ConsultationBookingConfirmationEmail = ({
                 lineHeight: "20px",
                 color: EMAIL.colors.body,
                 margin: 0,
-                fontFamily: EMAIL.font,
+                fontFamily: EMAIL.fontSans,
               }}
             >
               {notes}
@@ -181,9 +181,9 @@ export const ConsultationBookingConfirmationEmail = ({
           style={{
             fontSize: "14px",
             fontWeight: 700,
-            color: "#0B2545",
+            color: EMAIL.colors.inkPrimary,
             margin: "24px 0 10px 0",
-            fontFamily: EMAIL.font,
+            fontFamily: EMAIL.fontSans,
           }}
         >
           What to Expect During Your Briefing:

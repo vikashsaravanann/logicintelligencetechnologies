@@ -10,7 +10,7 @@ export interface AdminGenericEmailProps {
 
 export default function AdminGenericEmail({ message }: AdminGenericEmailProps) {
   return (
-    <EmailLayout preview="Message from Logic Intelligence Technologies">
+    <EmailLayout design="notification" preview="Message from Logic Intelligence Technologies">
       <EmailHeader />
       <EmailContent>
         <EmailBody>
