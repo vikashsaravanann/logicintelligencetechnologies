@@ -166,6 +166,22 @@ export default async function AdminCommandCenterPage() {
             <span>Engagements</span>
           </Link>
           <Link
+            href="/admin/workspaces/new"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[var(--lit-teal,#1FA9A2)] text-white font-bold text-xs uppercase tracking-wider hover:bg-[var(--lit-teal,#1FA9A2)]/90 transition-all shadow-2xs"
+            title="Create Staff Admin Workspace"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Staff Workspace</span>
+          </Link>
+          <Link
+            href="/admin/workspaces"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] font-bold text-xs uppercase tracking-wider hover:bg-[var(--lit-cloud,#F7F9FC)] hover:border-slate-300 transition-all shadow-2xs"
+            title="Staff Workspaces Directory"
+          >
+            <Users className="w-4 h-4 text-[var(--lit-teal,#1FA9A2)]" />
+            <span>Workspaces</span>
+          </Link>
+          <Link
             href="/engagement"
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition-all shadow-2xs"
             title="Client 13-Stage Portal Hub"

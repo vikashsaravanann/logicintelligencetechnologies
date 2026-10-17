@@ -16,12 +16,12 @@
 | :--- | :--- | :--- | :--- |
 | **G1: Lint & Code Style** | ESLint compliance | **PASS** | Verified in build and pre-commit checks. |
 | **G2: TypeScript Typing** | `npm run typecheck` (`tsc --noEmit`) | **PASS** | 0 type errors across all files. |
-| **G3: Automated Unit & Integration Tests** | `npm test` (Node.js test runner) | **PASS** | 685 tests passing (71 test suites, 0 failures, 0 skipped). |
-| **G4: Security & Negative Authorization** | `node --import tsx --test tests/security/negative-authorization.test.ts` | **PASS** | 9 of 9 negative security contracts verified. |
+| **G3: Automated Unit & Integration Tests** | `npm test` (Node.js test runner) | **PASS** | 699 tests passing (71 test suites, 0 failures, 0 skipped). |
+| **G4: Security & Negative Authorization** | `node --import tsx --test tests/security/negative-authorization.test.ts tests/security/maintenance-subscriptions-security.test.ts` | **PASS** | All negative authorization and anti-tampering contracts verified. |
 | **G5: Route Link Integrity** | `node scripts/verify-links.mjs` | **PASS** | 44 of 44 corporate routes validated. |
-| **G6: Production Build** | `npm run build` (`next build --webpack`) | **PASS** | Optimized production build generated. |
+| **G6: Production Build** | `npm run build` (`next build --webpack`) | **PASS** | Optimized production build generated with 0 errors. |
 | **G7: Static Asset Integrity** | `file public/assets/og-banner.jpg` | **PASS** | Verified genuine JFIF 1.01 JPEG (2400x1260). |
-| **G8: Database Migrations** | `supabase/migrations/` | **PASS** | Circular FK resolved; RLS & anti-tamper triggers verified. |
+| **G8: Database Migrations** | `supabase/migrations/` | **PASS** | All migrations up to `20261017050000` applied to live Supabase `lcmbwalrupoyparxsnjw`. |
 
 ---
 
@@ -48,14 +48,20 @@
 19. **U04 — Notification Optimistic UI:** Rollback snapshot implemented on network failure.
 20. **U05 — Suspended Workspace Banner:** Added alert banner in `WorkspaceHeaderTabs.tsx`.
 21. **U06 — Quotation Acceptance Legal Consent:** Validated consent checkbox and signer name.
+22. **M01 — Stage 13 Maintenance 5-Option Catalog:** Upgraded Stage 13 with the authoritative 5-tier catalog (Free Trial ₹20 refundable verification, Standard ₹999, Basic ₹4,999, Pro ₹9,999, Enterprise ₹19,999).
+23. **M02 — In-Page PDF Modal Preview:** Implemented accessible 2:3 aspect ratio modal with focus trap and scroll lock, removing `target="_blank"` link navigations.
+24. **M03 — Super Admin Subscription Console:** Built `/admin/subscriptions` console for order verification, bank reconciliation, and ₹20 trial refunds.
+25. **M04 — Legal Agreement & Master PDF Alignment:** Updated LIT-07 Maintenance Agreement (20 sections) to reflect 5 canonical tiers.
+26. **M05 — Public Presentation Page:** Built `/maintenance/plans` with full comparison matrix, roadmap items, and FAQ.
 
 ---
 
 ## 3. Deployment Pre-Flight Checklist
 
-- [x] Working branch: `fix/corporate-platform-comprehensive-repairs`
+- [x] Working branch: `main`
 - [x] Merge target: `main`
 - [x] Remote target: GitHub `vikashsaravanann/logicintelligencetechnologies`
 - [x] Hosting platform: Vercel Project `prj_Oij4lC7BxRmiAcxim3REtNuNms0y` (`logicintelligencetechnologies`)
 - [x] Custom domain: `https://www.logicintelligencetechnologies.in`
 - [x] Database: Supabase target `lcmbwalrupoyparxsnjw`
+- [x] Full Quality Gate Passed: 699/699 tests passing, 0 type errors, clean production build.

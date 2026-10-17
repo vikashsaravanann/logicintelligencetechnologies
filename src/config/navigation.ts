@@ -80,6 +80,7 @@ export const MORE_NAV_GROUPS: NavGroup[] = [
       { href: "/work", label: "OUR WORK", description: "CASE STUDIES" },
       { href: "/packages", label: "PACKAGES", description: "FIXED-SCOPE BUNDLES" },
       { href: "/pricing", label: "PRICING", description: "PLANS IN USD / INR" },
+      { href: "/maintenance/plans", label: "MAINTENANCE PLANS", description: "POST-LAUNCH SERVICE & SUPPORT TIERS" },
       { href: "/free-demo", label: "FREE DEMO", description: "SEE THE WORK BEFORE PAYMENT" },
       { href: "/ai-discovery", label: "AI DISCOVERY", description: "DISCOVERY WORKSHOP" },
       { href: "/discovery", label: "PROJECT QUESTIONNAIRE", description: "SCOPE YOUR PROJECT" },

@@ -116,7 +116,7 @@ export default function StaffProjectDetailClient({
       <div>
         <Link
           href={`/admin/workspaces/${workspace.workspaceId}/projects`}
-          className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Assigned Projects</span>
@@ -124,10 +124,10 @@ export default function StaffProjectDetailClient({
       </div>
 
       {/* Corporate Redaction Policy Alert Banner */}
-      <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-4 text-xs text-amber-200 flex items-start gap-3 shadow-md">
-        <Lock className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900 flex items-start gap-3 shadow-2xs">
+        <Lock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
         <div className="space-y-1">
-          <p className="font-bold uppercase tracking-wider text-amber-300">
+          <p className="font-bold uppercase tracking-wider text-amber-950">
             LIT Corporate Governance Policy 1 — Commercial Redaction Active
           </p>
           <p className="leading-relaxed">
@@ -138,21 +138,21 @@ export default function StaffProjectDetailClient({
       </div>
 
       {/* Engagement Header Card */}
-      <div className="rounded-2xl border border-white/10 bg-neutral-900/60 p-6 space-y-4 shadow-xl">
+      <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 space-y-4 shadow-2xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-50 text-[var(--lit-blue,#1565C0)] border border-blue-200">
                 {engagement.status}
               </span>
-              <span className="text-xs font-mono text-neutral-400">
+              <span className="text-xs font-mono text-[var(--lit-text-muted,#52677C)]">
                 Ref: {engagement.engagement_ref}
               </span>
             </div>
-            <h1 className="text-2xl font-black tracking-tight text-white mt-1">
+            <h1 className="text-2xl font-black tracking-tight text-[var(--lit-navy,#0B2545)] mt-1">
               {engagement.company_name}
             </h1>
-            <p className="text-sm font-medium text-neutral-300 mt-0.5">
+            <p className="text-sm font-medium text-[var(--lit-text-muted,#52677C)] mt-0.5">
               {engagement.project_title}
             </p>
           </div>
@@ -165,7 +165,7 @@ export default function StaffProjectDetailClient({
                   setInviteSuccess(null);
                   setInviteError(null);
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-all shadow-md shadow-indigo-600/20 cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--lit-teal,#1FA9A2)] hover:bg-[var(--lit-teal,#1FA9A2)]/90 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-2xs cursor-pointer"
               >
                 <UserPlus className="w-3.5 h-3.5" />
                 <span>Invite Collaborator</span>
@@ -175,13 +175,13 @@ export default function StaffProjectDetailClient({
         </div>
 
         {/* Tab Controls */}
-        <div className="border-t border-white/10 pt-4 flex items-center gap-2">
+        <div className="border-t border-[var(--lit-border-light,#DFE7EF)] pt-4 flex items-center gap-2 overflow-x-auto">
           <button
             onClick={() => setActiveTab("stages")}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-2xs ${
               activeTab === "stages"
-                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20"
-                : "text-neutral-400 hover:text-white hover:bg-white/5"
+                ? "bg-[var(--lit-navy,#0B2545)] text-white"
+                : "text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-cloud,#F7F9FC)] bg-white border border-[var(--lit-border-light,#DFE7EF)]"
             }`}
           >
             <Briefcase className="w-3.5 h-3.5" />
@@ -190,10 +190,10 @@ export default function StaffProjectDetailClient({
 
           <button
             onClick={() => setActiveTab("team")}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-2xs ${
               activeTab === "team"
-                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20"
-                : "text-neutral-400 hover:text-white hover:bg-white/5"
+                ? "bg-[var(--lit-navy,#0B2545)] text-white"
+                : "text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-cloud,#F7F9FC)] bg-white border border-[var(--lit-border-light,#DFE7EF)]"
             }`}
           >
             <Users className="w-3.5 h-3.5" />
@@ -202,10 +202,10 @@ export default function StaffProjectDetailClient({
 
           <button
             onClick={() => setActiveTab("rfcs")}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-2xs ${
               activeTab === "rfcs"
-                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20"
-                : "text-neutral-400 hover:text-white hover:bg-white/5"
+                ? "bg-[var(--lit-navy,#0B2545)] text-white"
+                : "text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-cloud,#F7F9FC)] bg-white border border-[var(--lit-border-light,#DFE7EF)]"
             }`}
           >
             <GitPullRequest className="w-3.5 h-3.5" />
@@ -217,11 +217,11 @@ export default function StaffProjectDetailClient({
       {/* TAB 1: 13-STAGE LIFECYCLE JOURNEY */}
       {activeTab === "stages" && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <Briefcase className="w-4 h-4 text-indigo-400" /> Canonical Technical Lifecycle Gates
+          <div className="flex items-center justify-between pb-2 border-b border-[var(--lit-border-light,#DFE7EF)]">
+            <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)] flex items-center gap-2">
+              <Briefcase className="w-4 h-4 text-[var(--lit-teal,#1FA9A2)]" /> Canonical Technical Lifecycle Gates
             </h3>
-            <span className="text-xs text-neutral-400">
+            <span className="text-xs text-[var(--lit-text-muted,#52677C)]">
               Stages 6 & 11 Restrict Commercial Billing to Founder
             </span>
           </div>
@@ -235,34 +235,34 @@ export default function StaffProjectDetailClient({
                 return (
                   <div
                     key={st.key || ordinal}
-                    className="rounded-2xl border border-amber-500/30 bg-neutral-900/40 p-5 space-y-3 relative overflow-hidden"
+                    className="rounded-2xl border border-amber-200 bg-amber-50/70 p-5 space-y-3 relative overflow-hidden shadow-2xs"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-300 font-bold text-xs flex items-center justify-center font-mono">
+                        <div className="w-7 h-7 rounded-lg bg-amber-100 border border-amber-300 text-amber-800 font-bold text-xs flex items-center justify-center font-mono">
                           {String(ordinal).padStart(2, "0")}
                         </div>
                         <div>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800">
                             Founder Governance Gate
                           </span>
-                          <h4 className="text-sm font-bold text-white">
+                          <h4 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">
                             {st.title || (ordinal === 6 ? "Initial Advance Invoice & Payment" : "Final Balance Invoice & Payment")}
                           </h4>
                         </div>
                       </div>
 
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                        <Lock className="w-3 h-3" />
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
+                        <Lock className="w-3 h-3 text-amber-700" />
                         <span>Restricted</span>
                       </span>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-neutral-950/60 border border-white/5 space-y-1">
-                      <p className="text-xs text-amber-200/90 font-medium">
+                    <div className="p-3 rounded-xl bg-white border border-amber-200 space-y-1 shadow-2xs">
+                      <p className="text-xs text-amber-950 font-bold">
                         This stage is restricted to the Founder / Super Admin.
                       </p>
-                      <p className="text-[11px] text-neutral-400">
+                      <p className="text-[11px] text-[var(--lit-text-muted,#52677C)]">
                         Commercial pricing, bank accounts, and invoice approval are handled exclusively via the Super Admin Command Center.
                       </p>
                     </div>
@@ -277,26 +277,26 @@ export default function StaffProjectDetailClient({
               return (
                 <div
                   key={st.key || ordinal}
-                  className="rounded-2xl border border-white/10 bg-neutral-900/60 p-5 space-y-3 hover:border-white/20 transition-all shadow-sm"
+                  className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 space-y-3 hover:border-[var(--lit-teal,#1FA9A2)]/40 transition-all shadow-2xs"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2.5">
                       <div
                         className={`w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center font-mono ${
                           isDone
-                            ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-400"
+                            ? "bg-emerald-50 border border-emerald-200 text-emerald-700"
                             : isInProgress
-                            ? "bg-indigo-500/20 border border-indigo-500/30 text-indigo-400"
-                            : "bg-neutral-800 border border-white/10 text-neutral-400"
+                            ? "bg-blue-50 border border-blue-200 text-[var(--lit-blue,#1565C0)]"
+                            : "bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] text-slate-500"
                         }`}
                       >
                         {String(ordinal).padStart(2, "0")}
                       </div>
                       <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)]">
                           {st.badgeText || `Stage ${ordinal}`}
                         </span>
-                        <h4 className="text-sm font-bold text-white">
+                        <h4 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">
                           {st.title || st.shortTitle}
                         </h4>
                       </div>
@@ -305,23 +305,23 @@ export default function StaffProjectDetailClient({
                     <span
                       className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
                         isDone
-                          ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                          ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                           : isInProgress
-                          ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30"
-                          : "bg-neutral-800 text-neutral-400 border-white/10"
+                          ? "bg-blue-50 text-[var(--lit-blue,#1565C0)] border border-blue-200"
+                          : "bg-slate-100 text-slate-700 border-slate-200"
                       }`}
                     >
                       {st.status?.replace("_", " ") || "Scheduled"}
                     </span>
                   </div>
 
-                  <p className="text-xs text-neutral-300 line-clamp-2">
+                  <p className="text-xs text-[var(--lit-text-muted,#52677C)] line-clamp-2">
                     {st.description || st.summary}
                   </p>
 
-                  <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-neutral-500">
+                  <div className="pt-2 border-t border-[var(--lit-border-light,#DFE7EF)] flex items-center justify-between text-[11px] text-[var(--lit-text-muted,#52677C)]">
                     <span>Gate: {st.key}</span>
-                    <span className="text-indigo-400 font-medium">Technical Review</span>
+                    <span className="text-[var(--lit-teal,#1FA9A2)] font-bold">Technical Review</span>
                   </div>
                 </div>
               );
@@ -333,12 +333,12 @@ export default function StaffProjectDetailClient({
       {/* TAB 2: DELIVERY TEAM & COLLABORATION */}
       {activeTab === "team" && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pb-2 border-b border-[var(--lit-border-light,#DFE7EF)]">
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Users className="w-4 h-4 text-indigo-400" /> Authorized Project Team Members
+              <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)] flex items-center gap-2">
+                <Users className="w-4 h-4 text-[var(--lit-blue,#1565C0)]" /> Authorized Project Team Members
               </h3>
-              <p className="text-xs text-neutral-400 mt-0.5">
+              <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-0.5">
                 Staff members explicitly authorized to collaborate on this engagement.
               </p>
             </div>
@@ -346,7 +346,7 @@ export default function StaffProjectDetailClient({
             {canInvite && (
               <button
                 onClick={() => setShowInviteModal(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 text-xs font-bold border border-indigo-500/30 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-[var(--lit-blue,#1565C0)] text-xs font-bold uppercase tracking-wider border border-blue-200 transition-all cursor-pointer shadow-2xs"
               >
                 <UserPlus className="w-3.5 h-3.5" />
                 <span>Invite Colleague</span>
@@ -358,36 +358,36 @@ export default function StaffProjectDetailClient({
             {teamMembers.map((member) => (
               <div
                 key={member.assignmentId}
-                className="rounded-2xl border border-white/10 bg-neutral-900/60 p-5 space-y-3 shadow-sm"
+                className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 space-y-3 shadow-2xs"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 font-bold flex items-center justify-center text-sm">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 text-[var(--lit-blue,#1565C0)] font-bold flex items-center justify-center text-sm shadow-2xs">
                       {member.name.slice(0, 2).toUpperCase()}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-bold text-white">{member.name}</h4>
+                        <h4 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">{member.name}</h4>
                         {member.isPrimaryLead && (
-                          <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
                             Primary Lead
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-neutral-400">{member.email}</p>
+                      <p className="text-xs text-[var(--lit-text-muted,#52677C)]">{member.email}</p>
                     </div>
                   </div>
 
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-neutral-800 text-neutral-300 border border-white/5">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
                     {member.role.replace("_", " ")}
                   </span>
                 </div>
 
-                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs text-neutral-400">
+                <div className="pt-2 border-t border-[var(--lit-border-light,#DFE7EF)] flex items-center justify-between text-xs text-[var(--lit-text-muted,#52677C)]">
                   <div className="flex items-center gap-2">
                     <CheckCircle2
                       className={`w-3.5 h-3.5 ${
-                        member.canInviteCollaborators ? "text-indigo-400" : "text-neutral-600"
+                        member.canInviteCollaborators ? "text-[var(--lit-blue,#1565C0)]" : "text-slate-300"
                       }`}
                     />
                     <span>
@@ -395,7 +395,7 @@ export default function StaffProjectDetailClient({
                     </span>
                   </div>
 
-                  <span className="text-[11px] text-neutral-500">
+                  <span className="text-[11px] text-[var(--lit-text-muted,#52677C)]">
                     Assigned: {new Date(member.assignedAt).toLocaleDateString()}
                   </span>
                 </div>
@@ -408,20 +408,20 @@ export default function StaffProjectDetailClient({
       {/* TAB 3: CHANGE REQUESTS (RFCs) */}
       {activeTab === "rfcs" && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pb-2 border-b border-[var(--lit-border-light,#DFE7EF)]">
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <GitPullRequest className="w-4 h-4 text-indigo-400" /> Client Change Requests (RFCs)
+              <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)] flex items-center gap-2">
+                <GitPullRequest className="w-4 h-4 text-indigo-700" /> Client Change Requests (RFCs)
               </h3>
-              <p className="text-xs text-neutral-400 mt-0.5">
+              <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-0.5">
                 Scope modifications requested by client. Commercial impact is sanitized.
               </p>
             </div>
           </div>
 
           {changeRequests.length === 0 ? (
-            <div className="rounded-2xl border border-white/10 bg-neutral-900/40 p-12 text-center text-neutral-400 space-y-2">
-              <GitPullRequest className="w-8 h-8 text-neutral-600 mx-auto" />
+            <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-12 text-center text-[var(--lit-text-muted,#52677C)] space-y-2 shadow-2xs">
+              <GitPullRequest className="w-8 h-8 text-slate-300 mx-auto" />
               <p className="text-xs">No active change requests recorded for this engagement.</p>
             </div>
           ) : (
@@ -429,30 +429,30 @@ export default function StaffProjectDetailClient({
               {changeRequests.map((rfc: any) => (
                 <div
                   key={rfc.id}
-                  className="rounded-2xl border border-white/10 bg-neutral-900/60 p-5 space-y-3"
+                  className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-5 space-y-3 shadow-2xs"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700">
                         RFC #{rfc.id.slice(0, 8)}
                       </span>
-                      <h4 className="text-sm font-bold text-white mt-0.5">
+                      <h4 className="text-sm font-bold text-[var(--lit-navy,#0B2545)] mt-0.5">
                         {rfc.title || "Technical Scope Modification"}
                       </h4>
                     </div>
 
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-neutral-800 text-neutral-300 border border-white/5">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
                       {rfc.status || "Under Review"}
                     </span>
                   </div>
 
-                  <p className="text-xs text-neutral-300">
+                  <p className="text-xs text-[var(--lit-text-muted,#52677C)]">
                     {rfc.description || rfc.justification}
                   </p>
 
-                  <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs text-neutral-500">
-                    <span className="flex items-center gap-1.5 text-amber-300/80">
-                      <Lock className="w-3 h-3 text-amber-400" />
+                  <div className="pt-2 border-t border-[var(--lit-border-light,#DFE7EF)] flex items-center justify-between text-xs text-[var(--lit-text-muted,#52677C)]">
+                    <span className="flex items-center gap-1.5 text-amber-800">
+                      <Lock className="w-3 h-3 text-amber-700" />
                       <span>Commercial Cost: Restricted to Founder</span>
                     </span>
                     <span>Requested: {new Date(rfc.created_at).toLocaleDateString()}</span>
@@ -466,42 +466,42 @@ export default function StaffProjectDetailClient({
 
       {/* INVITE COLLABORATOR MODAL */}
       {showInviteModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-neutral-900 p-6 space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-lg rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 space-y-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--lit-border-light,#DFE7EF)] pb-3">
               <div className="flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-indigo-400" />
-                <h3 className="text-base font-bold text-white">Invite Colleague to Project</h3>
+                <UserPlus className="w-4 h-4 text-[var(--lit-teal,#1FA9A2)]" />
+                <h3 className="text-base font-bold text-[var(--lit-navy,#0B2545)]">Invite Colleague to Project</h3>
               </div>
               <button
                 onClick={() => setShowInviteModal(false)}
-                className="text-neutral-400 hover:text-white text-sm"
+                className="text-slate-400 hover:text-[var(--lit-navy,#0B2545)] text-sm font-bold"
               >
                 ✕
               </button>
             </div>
 
             {inviteError && (
-              <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
+              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
                 <span>{inviteError}</span>
               </div>
             )}
 
             {inviteSuccess ? (
               <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs space-y-2">
+                <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs space-y-2">
                   <div className="flex items-center gap-2 font-bold">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     <span>Invitation Dispatched to {inviteSuccess.recipient}</span>
                   </div>
-                  <p className="text-neutral-300">
+                  <p className="text-[var(--lit-text-muted,#52677C)]">
                     A secure 256-bit single-use invitation link was sent via official tracked email. Valid for 7 days.
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-neutral-400 mb-1">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] mb-1">
                     Direct Invitation URL (Single-Use Token)
                   </label>
                   <div className="flex items-center gap-2">
@@ -509,11 +509,11 @@ export default function StaffProjectDetailClient({
                       type="text"
                       readOnly
                       value={inviteSuccess.url}
-                      className="w-full text-xs font-mono rounded-xl border border-white/10 bg-neutral-950 p-2.5 text-neutral-300"
+                      className="w-full text-xs font-mono rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] p-2.5 text-[var(--lit-navy,#0B2545)]"
                     />
                     <button
                       onClick={copyInviteUrl}
-                      className="px-3 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shrink-0 cursor-pointer"
+                      className="px-3 py-2.5 rounded-xl bg-[var(--lit-teal,#1FA9A2)] hover:bg-[var(--lit-teal,#1FA9A2)]/90 text-white font-bold text-xs shrink-0 cursor-pointer shadow-2xs"
                     >
                       {copiedUrl ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                     </button>
@@ -526,7 +526,7 @@ export default function StaffProjectDetailClient({
                       setShowInviteModal(false);
                       setInviteSuccess(null);
                     }}
-                    className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-bold cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-white border border-[var(--lit-border-light,#DFE7EF)] hover:bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] text-xs font-bold uppercase tracking-wider cursor-pointer shadow-2xs"
                   >
                     Close
                   </button>
@@ -535,7 +535,7 @@ export default function StaffProjectDetailClient({
             ) : (
               <form onSubmit={handleSendInvite} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] mb-1.5">
                     Colleague Corporate Email
                   </label>
                   <input
@@ -544,21 +544,21 @@ export default function StaffProjectDetailClient({
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="colleague@logicintelligencetechnologies.in"
-                    className="w-full text-xs rounded-xl border border-white/10 bg-neutral-950 p-2.5 text-neutral-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-2.5 text-[var(--lit-ink,#121826)] focus:outline-none focus:border-[var(--lit-teal,#1FA9A2)] shadow-2xs"
                   />
-                  <p className="text-[11px] text-neutral-500 mt-1">
+                  <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1">
                     Must be an active employee registered in the LIT directory.
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] mb-1.5">
                     Project Collaboration Role
                   </label>
                   <select
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value as ProjectStaffRole)}
-                    className="w-full text-xs rounded-xl border border-white/10 bg-neutral-950 p-2.5 text-neutral-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-2.5 text-[var(--lit-ink,#121826)] focus:outline-none focus:border-[var(--lit-teal,#1FA9A2)] shadow-2xs cursor-pointer"
                   >
                     <option value="collaborator">Collaborator (General Engineering)</option>
                     <option value="technical_specialist">Technical Specialist (Architecture / ML)</option>
@@ -569,7 +569,7 @@ export default function StaffProjectDetailClient({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] mb-1.5">
                     Invitation Note / Scope Assignment (Optional)
                   </label>
                   <textarea
@@ -577,7 +577,7 @@ export default function StaffProjectDetailClient({
                     value={inviteNotes}
                     onChange={(e) => setInviteNotes(e.target.value)}
                     placeholder="e.g., Assigned to sprint deliverables for PostgreSQL RLS architecture and Supabase triggers..."
-                    className="w-full text-xs rounded-xl border border-white/10 bg-neutral-950 p-2.5 text-neutral-200 focus:outline-none focus:border-indigo-500"
+                    className="w-full text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-2.5 text-[var(--lit-ink,#121826)] focus:outline-none focus:border-[var(--lit-teal,#1FA9A2)] resize-none shadow-2xs"
                   />
                 </div>
 
@@ -585,7 +585,7 @@ export default function StaffProjectDetailClient({
                   <button
                     type="button"
                     onClick={() => setShowInviteModal(false)}
-                    className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-white border border-[var(--lit-border-light,#DFE7EF)] hover:bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] text-xs font-bold uppercase tracking-wider cursor-pointer shadow-2xs"
                   >
                     Cancel
                   </button>
@@ -593,7 +593,7 @@ export default function StaffProjectDetailClient({
                   <button
                     type="submit"
                     disabled={inviting}
-                    className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold disabled:opacity-50 transition-all cursor-pointer shadow-md shadow-indigo-600/20"
+                    className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-[var(--lit-teal,#1FA9A2)] hover:bg-[var(--lit-teal,#1FA9A2)]/90 text-white text-xs font-bold uppercase tracking-wider disabled:opacity-50 transition-all cursor-pointer shadow-2xs"
                   >
                     {inviting ? (
                       <>

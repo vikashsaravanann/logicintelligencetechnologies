@@ -1,4 +1,7 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
+import PdfPreviewModal from '@/components/pdf/PdfPreviewModal';
 
 interface StageDocumentCardProps {
   title: string;
@@ -29,6 +32,7 @@ export default function StageDocumentCard({
   requiresSignature = false,
   status,
 }: StageDocumentCardProps) {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const resolvedFilename = filename || documentRef || 'document.pdf';
   const resolvedUrl = fileUrl || documentMasterPath || '';
   const isAvailable = Boolean(resolvedUrl && resolvedUrl !== '#');
@@ -81,17 +85,17 @@ export default function StageDocumentCard({
         <div className="flex items-center gap-2.5 shrink-0">
           {isAvailable ? (
             <>
-              <a
-                href={resolvedUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-[#DFE7EF] bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-2xs transition-colors"
+              <button
+                type="button"
+                onClick={() => setIsPreviewOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-[#DFE7EF] bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-2xs transition-colors cursor-pointer"
               >
                 <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
                 <span>Preview PDF</span>
-              </a>
+              </button>
               <a
                 href={resolvedUrl}
                 download={resolvedFilename}
@@ -102,6 +106,16 @@ export default function StageDocumentCard({
                 </svg>
                 <span>Download Master</span>
               </a>
+
+              {/* In-page 2:3 PDF Preview Modal */}
+              <PdfPreviewModal
+                isOpen={isPreviewOpen}
+                onClose={() => setIsPreviewOpen(false)}
+                documentTitle={title}
+                pdfUrl={resolvedUrl}
+                downloadFilename={resolvedFilename}
+                versionLabel={version}
+              />
             </>
           ) : (
             <div className="flex items-center gap-2">

@@ -3,9 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import StageDocumentCard from '../components/StageDocumentCard';
+import MaintenancePlansSection from '@/components/maintenance/MaintenancePlansSection';
+import CorrectionRequestModal from '@/components/maintenance/CorrectionRequestModal';
 
 interface SupportStageClientProps {
   engagementRef: string;
+  engagementId?: string;
   companyName: string;
   contactName: string;
   contactEmail: string;
@@ -34,6 +37,7 @@ interface SupportTicket {
 
 export default function SupportStageClient({
   engagementRef,
+  engagementId,
   companyName,
   contactName,
   contactEmail,
@@ -41,7 +45,8 @@ export default function SupportStageClient({
   initialData = {},
   document,
 }: SupportStageClientProps) {
-  const [activeTab, setActiveTab] = useState<'agreement' | 'tickets' | 'new-ticket'>('new-ticket');
+  const [activeTab, setActiveTab] = useState<'plans' | 'agreement' | 'tickets' | 'new-ticket'>('plans');
+  const [isCorrectionModalOpen, setIsCorrectionModalOpen] = useState(false);
   const [expandedSection, setExpandedSection] = useState<number | null>(1);
 
   // Ticket Form States
@@ -567,28 +572,56 @@ export default function SupportStageClient({
       number: 15,
       title: '15. Maintenance Charges & Service Plan Tiers',
       content: (
-        <div className="space-y-3 text-xs text-slate-700">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="p-3 bg-emerald-50/60 rounded-xl border-2 border-emerald-500">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Active Tier</div>
-              <div className="font-bold text-slate-900 text-sm mt-0.5">Standard 90-Day Warranty</div>
-              <div className="font-mono font-bold text-base text-emerald-800 mt-1">₹0 / Included</div>
-              <p className="text-[11px] text-slate-600 mt-2">Comprehensive defect remediation for all delivered components under approved SOW scope.</p>
-            </div>
+        <div className="space-y-4 text-xs text-slate-700">
+          <div className="p-3 bg-emerald-50/60 rounded-xl border-2 border-emerald-500">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Default Project Inclusions</div>
+            <div className="font-bold text-slate-900 text-sm mt-0.5">Standard 90-Day Production Warranty</div>
+            <div className="font-mono font-bold text-base text-emerald-800 mt-1">₹0 / Included in Contract</div>
+            <p className="text-[11px] text-slate-600 mt-1">Comprehensive defect remediation for all delivered components under approved SOW scope.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Optional Plan A</div>
-              <div className="font-bold text-slate-900 text-sm mt-0.5">Basic Care Plan</div>
-              <div className="font-mono font-bold text-base text-slate-900 mt-1">₹25,000 / month <span className="text-[10px] font-normal text-slate-500">+ 18% GST</span></div>
-              <p className="text-[11px] text-slate-600 mt-2">Includes 2 hrs/mo enhancement allowance, S2-S4 SLA guarantees, and monthly telemetry review.</p>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tier 1 · Evaluation</div>
+              <div className="font-bold text-slate-900 text-xs mt-0.5">30-Day Free Trial</div>
+              <div className="font-mono font-bold text-sm text-slate-900 mt-1">₹0 <span className="text-[10px] font-normal text-emerald-600">/ 30 Days</span></div>
+              <div className="text-[10px] text-slate-500 mt-0.5">₹20 refundable verification</div>
+              <p className="text-[10px] text-slate-500 mt-2">Self-service knowledge base, FAQs, and trial evaluation dashboard.</p>
             </div>
+
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Optional Plan B</div>
-              <div className="font-bold text-slate-900 text-sm mt-0.5">Enterprise Care Plan</div>
-              <div className="font-mono font-bold text-base text-slate-900 mt-1">₹60,000 / month <span className="text-[10px] font-normal text-slate-500">+ 18% GST</span></div>
-              <p className="text-[11px] text-slate-600 mt-2">Includes 10 hrs/mo enhancement allowance, 24/7 S1 emergency hotline, 30m response guarantee, and dedicated Slack bridge.</p>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tier 2 · Entry Care</div>
+              <div className="font-bold text-slate-900 text-xs mt-0.5">Standard Care</div>
+              <div className="font-mono font-bold text-sm text-slate-900 mt-1">₹999 <span className="text-[10px] font-normal text-slate-500">/mo</span></div>
+              <div className="text-[10px] text-slate-500 mt-0.5">₹1,178.82 incl. 18% GST</div>
+              <p className="text-[10px] text-slate-500 mt-2">Basic ticketing, monthly health summary, and business-hours email support.</p>
+            </div>
+
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tier 3 · Routine</div>
+              <div className="font-bold text-slate-900 text-xs mt-0.5">Basic Care</div>
+              <div className="font-mono font-bold text-sm text-slate-900 mt-1">₹4,999 <span className="text-[10px] font-normal text-slate-500">/mo</span></div>
+              <div className="text-[10px] text-slate-500 mt-0.5">₹5,898.82 incl. 18% GST</div>
+              <p className="text-[10px] text-slate-500 mt-2">1 minor enhancement hr/mo, bug remediation, and monthly telemetry review.</p>
+            </div>
+
+            <div className="p-3 bg-blue-50/50 rounded-xl border border-blue-200">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-blue-700">Tier 4 · Most Popular</div>
+              <div className="font-bold text-slate-900 text-xs mt-0.5">Pro Care</div>
+              <div className="font-mono font-bold text-sm text-slate-900 mt-1">₹9,999 <span className="text-[10px] font-normal text-slate-500">/mo</span></div>
+              <div className="text-[10px] text-slate-500 mt-0.5">₹11,798.82 incl. 18% GST</div>
+              <p className="text-[10px] text-slate-500 mt-2">3 enhancement hrs/mo, weekly health reviews, error monitoring, and priority SLA.</p>
+            </div>
+
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tier 5 · Mission Critical</div>
+              <div className="font-bold text-slate-900 text-xs mt-0.5">Enterprise Care</div>
+              <div className="font-mono font-bold text-sm text-slate-900 mt-1">₹19,999 <span className="text-[10px] font-normal text-slate-500">/mo</span></div>
+              <div className="text-[10px] text-slate-500 mt-0.5">₹23,598.82 incl. 18% GST</div>
+              <p className="text-[10px] text-slate-500 mt-2">6 enhancement hrs/mo, designated lead, monthly architecture reviews, & &lt;4h SLA.</p>
             </div>
           </div>
-          <p className="text-[11px] text-slate-500 italic">Note: Optional care plans can be activated at any time prior to or upon completion of the 90-day complimentary warranty period.</p>
+          <p className="text-[11px] text-slate-500 italic">Note: Care plans can be activated at any time prior to or upon conclusion of the 90-day complimentary warranty period. Advance monthly billing applies for paid tiers.</p>
         </div>
       ),
     },
@@ -718,50 +751,100 @@ export default function SupportStageClient({
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-slate-200 gap-4 text-xs font-semibold">
-        <button
-          type="button"
-          onClick={() => setActiveTab('new-ticket')}
-          className={`pb-3 px-1 border-b-2 transition-colors flex items-center gap-1.5 ${
-            activeTab === 'new-ticket'
-              ? 'border-[#1565C0] text-[#1565C0]'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Log Support Incident
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('tickets')}
-          className={`pb-3 px-1 border-b-2 transition-colors flex items-center gap-1.5 ${
-            activeTab === 'tickets'
-              ? 'border-[#1565C0] text-[#1565C0]'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          Incident Tickets ({tickets.length})
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('agreement')}
-          className={`pb-3 px-1 border-b-2 transition-colors flex items-center gap-1.5 ${
-            activeTab === 'agreement'
-              ? 'border-[#1565C0] text-[#1565C0]'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          LIT-07 Maintenance Agreement (20 Sections)
-        </button>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 gap-3">
+        <div className="flex items-center gap-4 text-xs font-semibold overflow-x-auto">
+          <button
+            type="button"
+            onClick={() => setActiveTab('plans')}
+            className={`pb-3 px-1 border-b-2 transition-colors flex items-center gap-1.5 shrink-0 ${
+              activeTab === 'plans'
+                ? 'border-[#1565C0] text-[#1565C0]'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Care Plans & 30-Day Trial
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('new-ticket')}
+            className={`pb-3 px-1 border-b-2 transition-colors flex items-center gap-1.5 shrink-0 ${
+              activeTab === 'new-ticket'
+                ? 'border-[#1565C0] text-[#1565C0]'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Log Support Incident
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('tickets')}
+            className={`pb-3 px-1 border-b-2 transition-colors flex items-center gap-1.5 shrink-0 ${
+              activeTab === 'tickets'
+                ? 'border-[#1565C0] text-[#1565C0]'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Incident Tickets ({tickets.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('agreement')}
+            className={`pb-3 px-1 border-b-2 transition-colors flex items-center gap-1.5 shrink-0 ${
+              activeTab === 'agreement'
+                ? 'border-[#1565C0] text-[#1565C0]'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            LIT-07 Maintenance Agreement (20 Sections)
+          </button>
+        </div>
+
+        {/* Phase 8 Structured Change Control Action Button */}
+        <div className="pb-2.5 sm:pb-0 shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsCorrectionModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors"
+          >
+            <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Request Data Correction
+          </button>
+        </div>
       </div>
+
+      {/* Tab 0: Maintenance Plans & 30-Day Free Trial */}
+      {activeTab === 'plans' && (
+        <MaintenancePlansSection
+          engagementRef={engagementRef}
+          engagementId={engagementId || engagementRef}
+          companyName={companyName}
+          contactEmail={contactEmail}
+        />
+      )}
+
+      {/* Phase 8 Structured Correction Request Modal */}
+      <CorrectionRequestModal
+        isOpen={isCorrectionModalOpen}
+        onClose={() => setIsCorrectionModalOpen(false)}
+        engagementId={engagementId || engagementRef}
+        stageNumber={13}
+        documentRef="LIT-07-Maintenance-Agreement"
+        companyName={companyName}
+      />
 
       {/* Tab 1: Log New Ticket */}
       {activeTab === 'new-ticket' && (

@@ -43,6 +43,7 @@ export default async function SupportStagePage({ params }: SupportPageProps) {
 
       <SupportStageClient
         engagementRef={engagementRef}
+        engagementId={engagement.id}
         companyName={engagement.company_name}
         contactName={engagement.contact_name}
         contactEmail={engagement.contact_email}

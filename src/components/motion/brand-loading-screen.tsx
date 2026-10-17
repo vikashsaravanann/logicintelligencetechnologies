@@ -18,7 +18,7 @@ export default function BrandLoadingScreen({
 }: BrandLoadingScreenProps) {
   return (
     <div
-      className={`fixed inset-0 z-[999999] w-screen h-screen min-h-screen flex flex-col items-center justify-center bg-[#050608] text-white select-none ${className}`}
+      className={`fixed inset-0 z-[999999] w-screen h-screen h-[100dvh] min-h-[100dvh] flex flex-col items-center justify-center bg-[#050608] text-white select-none ${className}`}
       role="status"
       aria-live="polite"
       aria-label="Loading Logic Intelligence Technologies"

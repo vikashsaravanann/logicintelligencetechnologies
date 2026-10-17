@@ -105,15 +105,15 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
       });
 
       const data = await res.json();
-      if (!res.ok || !data.task) {
-        throw new Error(data.error || "Failed to update task state");
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to update task");
       }
 
       setTasks((prev) =>
         prev.map((t) => (t.id === taskId ? { ...t, state: newState } : t))
       );
-    } catch (err: any) {
-      console.error("Task state update failed:", err);
+    } catch (err) {
+      console.error("Task update failed:", err);
     } finally {
       setUpdatingTaskId(null);
     }
@@ -124,17 +124,17 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
       {/* Action Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-            <CheckSquare className="w-5 h-5 text-blue-400" /> Task Management
+          <h2 className="text-xl font-bold tracking-tight text-[var(--lit-navy,#0B2545)] flex items-center gap-2">
+            <CheckSquare className="w-5 h-5 text-[var(--lit-teal,#1FA9A2)]" /> Task Management
           </h2>
-          <p className="text-xs text-neutral-400 mt-0.5">
+          <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-0.5">
             Track technical responsibilities, architecture milestones, and delivery tickets.
           </p>
         </div>
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white transition-all shadow-md self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[var(--lit-teal,#1FA9A2)] hover:bg-[var(--lit-teal,#1FA9A2)]/90 text-xs font-bold uppercase tracking-wider text-white transition-all shadow-2xs self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Add Task</span>
@@ -142,9 +142,9 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
       </div>
 
       {/* Filter Toolbar */}
-      <div className="rounded-2xl border border-white/10 bg-neutral-900/60 p-4 flex flex-wrap items-center justify-between gap-4">
+      <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-4 flex flex-wrap items-center justify-between gap-4 shadow-2xs">
         <div className="flex items-center gap-1.5 overflow-x-auto">
-          <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mr-2">
+          <span className="text-[11px] font-bold text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider mr-2">
             Status:
           </span>
           {[
@@ -152,29 +152,32 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
             { id: "todo", label: "To Do" },
             { id: "in_progress", label: "In Progress" },
             { id: "completed", label: "Completed" },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setStateFilter(tab.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                stateFilter === tab.id
-                  ? "bg-blue-600 text-white"
-                  : "bg-black/30 text-neutral-400 hover:text-white"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          ].map((tab) => {
+            const isSelected = stateFilter === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setStateFilter(tab.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors shadow-2xs cursor-pointer ${
+                  isSelected
+                    ? "bg-[var(--lit-navy,#0B2545)] text-white"
+                    : "bg-white border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-text-muted,#52677C)] hover:bg-[var(--lit-cloud,#F7F9FC)]"
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
+          <span className="text-[11px] font-bold text-[var(--lit-text-muted,#52677C)] uppercase tracking-wider">
             Priority:
           </span>
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="bg-black/50 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-neutral-300 focus:outline-none"
+            className="bg-white border border-[var(--lit-border-light,#DFE7EF)] rounded-xl px-3 py-1.5 text-xs text-[var(--lit-navy,#0B2545)] focus:outline-none focus:border-[var(--lit-teal,#1FA9A2)] transition-colors shadow-2xs cursor-pointer"
           >
             <option value="all">All Priorities</option>
             <option value="urgent">Urgent</option>
@@ -187,10 +190,10 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
 
       {/* Task List */}
       {filteredTasks.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-neutral-900/40 p-12 text-center space-y-3">
-          <CheckCircle2 className="w-10 h-10 text-neutral-600 mx-auto" />
-          <h3 className="text-sm font-semibold text-white">No tasks matching current filter</h3>
-          <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+        <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-12 text-center space-y-3 shadow-2xs">
+          <CheckCircle2 className="w-10 h-10 text-slate-300 mx-auto" />
+          <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">No tasks matching current filter</h3>
+          <p className="text-xs text-[var(--lit-text-muted,#52677C)] max-w-sm mx-auto">
             Try switching filters or click &apos;Add Task&apos; to create a new delivery task.
           </p>
         </div>
@@ -203,10 +206,10 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
             return (
               <div
                 key={task.id}
-                className={`p-4 rounded-2xl border transition-all ${
+                className={`p-4 rounded-2xl border transition-all shadow-2xs ${
                   isCompleted
-                    ? "bg-black/20 border-white/5 opacity-75"
-                    : "bg-neutral-900/60 border-white/10 hover:border-white/20"
+                    ? "bg-[var(--lit-cloud,#F7F9FC)] border-[var(--lit-border-light,#DFE7EF)] opacity-75"
+                    : "bg-white border-[var(--lit-border-light,#DFE7EF)] hover:border-[var(--lit-teal,#1FA9A2)]/40"
                 }`}
               >
                 <div className="flex items-start justify-between gap-4">
@@ -220,10 +223,10 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
                       }
                       disabled={isUpdating}
                       title={isCompleted ? "Mark incomplete" : "Mark completed"}
-                      className={`mt-0.5 w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
+                      className={`mt-0.5 w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors cursor-pointer ${
                         isCompleted
-                          ? "bg-emerald-500 border-emerald-500 text-white"
-                          : "border-white/20 bg-black/40 hover:border-white/40 text-transparent"
+                          ? "bg-emerald-600 border-emerald-600 text-white"
+                          : "border-[var(--lit-border-light,#DFE7EF)] bg-white hover:border-[var(--lit-teal,#1FA9A2)] text-transparent"
                       }`}
                     >
                       {isCompleted && <Check className="w-3.5 h-3.5" />}
@@ -232,19 +235,19 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
                     <div className="min-w-0 space-y-1">
                       <p
                         className={`text-sm font-bold ${
-                          isCompleted ? "text-neutral-400 line-through" : "text-white"
+                          isCompleted ? "text-slate-400 line-through" : "text-[var(--lit-navy,#0B2545)]"
                         }`}
                       >
                         {task.title}
                       </p>
                       {task.description && (
-                        <p className="text-xs text-neutral-400 leading-relaxed">
+                        <p className="text-xs text-[var(--lit-text-muted,#52677C)] leading-relaxed">
                           {task.description}
                         </p>
                       )}
                       {task.dueAt && (
-                        <p className="text-[11px] text-neutral-500 flex items-center gap-1 font-mono pt-1">
-                          <Calendar className="w-3 h-3" />
+                        <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] flex items-center gap-1 font-mono pt-1">
+                          <Calendar className="w-3 h-3 text-[var(--lit-teal,#1FA9A2)]" />
                           <span>Due: {new Date(task.dueAt).toLocaleDateString()}</span>
                         </p>
                       )}
@@ -255,10 +258,10 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                         task.priority === "urgent"
-                          ? "bg-red-500/20 text-red-300 border border-red-500/30"
+                          ? "bg-rose-50 text-rose-800 border border-rose-200"
                           : task.priority === "high"
-                          ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                          : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                          ? "bg-amber-50 text-amber-800 border border-amber-200"
+                          : "bg-blue-50 text-[var(--lit-blue,#1565C0)] border border-blue-200"
                       }`}
                     >
                       {task.priority}
@@ -270,7 +273,7 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
                       onChange={(e) =>
                         handleUpdateTaskState(task.id, e.target.value as any)
                       }
-                      className="bg-black/50 border border-white/10 rounded-lg px-2 py-1 text-[11px] text-neutral-300 focus:outline-none capitalize"
+                      className="bg-white border border-[var(--lit-border-light,#DFE7EF)] rounded-lg px-2 py-1 text-[11px] font-semibold text-[var(--lit-navy,#0B2545)] focus:outline-none capitalize shadow-2xs cursor-pointer"
                     >
                       <option value="todo">To Do</option>
                       <option value="in_progress">In Progress</option>
@@ -288,31 +291,31 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
 
       {/* Add Task Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-neutral-900 p-6 space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Plus className="w-5 h-5 text-blue-400" /> Create Delivery Task
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-lg rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 space-y-5 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[var(--lit-border-light,#DFE7EF)] pb-4">
+              <h3 className="text-base font-bold text-[var(--lit-navy,#0B2545)] flex items-center gap-2">
+                <Plus className="w-5 h-5 text-[var(--lit-teal,#1FA9A2)]" /> Create Delivery Task
               </h3>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-neutral-400 hover:text-white text-sm font-bold"
+                className="text-slate-400 hover:text-[var(--lit-navy,#0B2545)] text-sm font-bold"
               >
                 ✕
               </button>
             </div>
 
             {error && (
-              <div className="p-3 rounded-xl border border-red-500/30 bg-red-950/20 text-xs text-red-300 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-red-400" />
+              <div className="p-3 rounded-xl border border-rose-200 bg-rose-50 text-xs text-rose-800 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-600" />
                 <span>{error}</span>
               </div>
             )}
 
             <form onSubmit={handleCreateTask} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1">
-                  Task Title <span className="text-red-400">*</span>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] mb-1">
+                  Task Title <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -320,12 +323,12 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
                   placeholder="e.g. Conduct Stage 8 technical architecture review"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] rounded-xl px-4 py-2.5 text-xs text-[var(--lit-ink,#121826)] placeholder:text-slate-400 focus:outline-none focus:border-[var(--lit-teal,#1FA9A2)] shadow-2xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] mb-1">
                   Description / Technical Notes (Optional)
                 </label>
                 <textarea
@@ -333,19 +336,19 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
                   placeholder="Details, acceptance criteria, or relevant file links..."
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
-                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 resize-none"
+                  className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] rounded-xl px-4 py-2.5 text-xs text-[var(--lit-ink,#121826)] placeholder:text-slate-400 focus:outline-none focus:border-[var(--lit-teal,#1FA9A2)] resize-none shadow-2xs"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] mb-1">
                     Priority
                   </label>
                   <select
                     value={newPriority}
                     onChange={(e) => setNewPriority(e.target.value as any)}
-                    className="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 capitalize"
+                    className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] rounded-xl px-3 py-2 text-xs text-[var(--lit-ink,#121826)] focus:outline-none focus:border-[var(--lit-teal,#1FA9A2)] capitalize shadow-2xs cursor-pointer"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -355,30 +358,30 @@ export default function TasksManagerClient({ workspaceId, initialTasks }: Props)
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] mb-1">
                     Due Date (Optional)
                   </label>
                   <input
                     type="date"
                     value={newDueDate}
                     onChange={(e) => setNewDueDate(e.target.value)}
-                    className="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] rounded-xl px-3 py-2 text-xs text-[var(--lit-ink,#121826)] focus:outline-none focus:border-[var(--lit-teal,#1FA9A2)] shadow-2xs"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--lit-border-light,#DFE7EF)]">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 rounded-xl border border-white/10 text-xs font-semibold text-neutral-400 hover:text-white transition-colors"
+                  className="px-4 py-2 rounded-xl border border-[var(--lit-border-light,#DFE7EF)] text-xs font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-cloud,#F7F9FC)] transition-colors shadow-2xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white transition-all shadow-md"
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-[var(--lit-teal,#1FA9A2)] hover:bg-[var(--lit-teal,#1FA9A2)]/90 text-xs font-bold uppercase tracking-wider text-white transition-all shadow-2xs cursor-pointer"
                 >
                   {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>Save Task</span>

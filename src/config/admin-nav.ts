@@ -65,6 +65,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { label: "Quotations", href: "/admin/quotations", capability: "proposals.read", match: startsWith("/admin/quotations") },
       { label: "Invoices", href: "/admin/invoices", capability: "invoices.read", match: startsWith("/admin/invoices") },
       { label: "Payments", href: "/admin/payments", capability: "payment.verify", match: startsWith("/admin/payments") },
+      { label: "Subscriptions", href: "/admin/subscriptions", capability: "payment.verify", match: startsWith("/admin/subscriptions") },
     ],
   },
   {

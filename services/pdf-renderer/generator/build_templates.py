@@ -718,7 +718,7 @@ def support(d):
                         "All service levels in this template are placeholders. " + TEMPLATE_NOTE)
     d.new_page()
     d.h1(1, "Agreement Summary")
-    d.kv([["Provider", LEGAL_NAME], ["Client", "[Client Company]"], ["Plan", "[Essential / Standard / Priority]"],
+    d.kv([["Provider", LEGAL_NAME], ["Client", "[Client Company]"], ["Plan", "[Free Trial / Standard / Basic / Pro / Enterprise]"],
           ["Start date", "[Date]"], ["Term", "[12 months]"], ["Related project", "[PROJECT-ID]"]])
     d.h1(2, "Covered Systems")
     d.table(["System", "Environment", "Platform"], [["[Web application]", "Production", "[Vercel]"],
@@ -733,8 +733,8 @@ def support(d):
                "Third-party service outages and fees.", "Content entry and data clean-up unless agreed."])
     d.h1(5, "Support Channels")
     d.table(["Channel", "Use for", "Contact"], [["Email", "All requests and incident reports", EMAIL],
-                                               ["Phone", "Severity 1 incidents only", PHONE],
-                                               ["[Ticket portal]", "[Tracking]", "[URL]"]], [0.2, 0.4, 0.4])
+                                                ["Phone", "Severity 1 incidents only", PHONE],
+                                                ["[Ticket portal]", "[Tracking]", "[URL]"]], [0.2, 0.4, 0.4])
     d.h1(6, "Support Hours")
     d.p("Standard support hours: [Days], [Start – End] IST, excluding public holidays in Tamil Nadu, India. "
         "Out-of-hours coverage: [Not included / Severity 1 only / Included].")
@@ -772,8 +772,12 @@ def support(d):
     d.bullets(["Uptime checks on production URLs.", "Error and log review [weekly].", "Database advisories reviewed [monthly]."])
     d.h1(15, "Monthly / Annual Charges")
     d.table(["Plan", "Includes", "Monthly", "Annual"], [
-        ["[Essential]", "[Inclusions]", "[₹ / $]", "[₹ / $]"], ["[Standard]", "[Inclusions]", "[₹ / $]", "[₹ / $]"],
-        ["[Priority]", "[Inclusions]", "[₹ / $]", "[₹ / $]"]], [0.2, 0.44, 0.18, 0.18], align=["left", "left", "right", "right"])
+        ["Free Trial", "30-day trial, S3-S4 email support, 0h enhancement (₹20 refundable verification)", "₹0 (₹20 verif.)", "N/A"],
+        ["Standard", "Business hrs support, S2-S4 SLA, security patches, 0h enhancement", "₹999 + GST", "₹11,988 + GST"],
+        ["Basic", "Priority email, S2-S4 SLA, monthly audit, 1 hr/mo enhancement", "₹4,999 + GST", "₹59,988 + GST"],
+        ["Pro", "Phone & email support, S1-S4 SLA, bi-weekly audit, 3 hrs/mo enhancement", "₹9,999 + GST", "₹1,19,988 + GST"],
+        ["Enterprise", "24/7 critical coverage, dedicated engineer, weekly audit, 6 hrs/mo enhancement", "₹19,999 + GST", "₹2,39,988 + GST"]],
+        [0.18, 0.46, 0.18, 0.18], align=["left", "left", "right", "right"])
     d.h1(16, "Payment Terms")
     d.p("Charges are invoiced [monthly / annually in advance] and payable within [__] days. Fees exclude applicable taxes. "
         "Services may be suspended for invoices overdue by more than [__] days, after written notice.")

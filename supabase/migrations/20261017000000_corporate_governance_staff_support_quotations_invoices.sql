@@ -618,10 +618,6 @@ BEGIN
   END IF;
 
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'quotation_coupons') THEN
-    -- Ensure discount_type and discount_paise allow NULL for unconfigured inactive seed coupons
-    ALTER TABLE public.quotation_coupons ALTER COLUMN discount_type DROP NOT NULL;
-    ALTER TABLE public.quotation_coupons ALTER COLUMN discount_paise DROP NOT NULL;
-
     -- Deactivate any unapproved FOUNDER10 seed coupon
     UPDATE public.quotation_coupons
     SET is_active = false,
@@ -634,8 +630,7 @@ BEGIN
       campaign_name,
       description,
       discount_type,
-      discount_bps,
-      discount_paise,
+      discount_value,
       min_subtotal_paise,
       max_discount_paise,
       max_redemptions,
@@ -645,20 +640,18 @@ BEGIN
       'WAKEUPINDIA',
       'Support Wake Up India — Initial Launch',
       'Inactive seed campaign awaiting explicit Super Admin parameters before activation.',
-      NULL,
-      NULL,
-      NULL,
+      'percentage',
+      0,
       0,
       NULL,
-      NULL,
+      100,
       false
     )
     ON CONFLICT (code) DO UPDATE SET
       campaign_name = EXCLUDED.campaign_name,
       description = EXCLUDED.description,
-      discount_type = NULL,
-      discount_bps = NULL,
-      discount_paise = NULL,
+      discount_type = 'percentage',
+      discount_value = 0,
       is_active = false,
       updated_at = NOW();
   END IF;

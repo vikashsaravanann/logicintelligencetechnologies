@@ -113,53 +113,53 @@ export default function ManageWorkspaceClient({ workspace }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--lit-border-light,#DFE7EF)]">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-            <Settings className="w-5 h-5 text-blue-400" /> Super Admin Workspace Governance
+          <h2 className="text-xl font-bold tracking-tight text-[var(--lit-navy,#0B2545)] flex items-center gap-2">
+            <Settings className="w-5 h-5 text-[var(--lit-blue,#1565C0)]" /> Super Admin Workspace Governance
           </h2>
-          <p className="text-xs text-neutral-400 mt-0.5">
+          <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-0.5">
             Founder-level administrative controls, credentials status, and access suspension.
           </p>
         </div>
 
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-semibold">
-          <Shield className="w-3.5 h-3.5 text-blue-400" />
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-[var(--lit-blue,#1565C0)] text-xs font-bold uppercase tracking-wider shadow-2xs">
+          <Shield className="w-3.5 h-3.5" />
           <span>Super Admin Access Only</span>
         </div>
       </div>
 
       {feedback && (
         <div
-          className={`rounded-xl border p-4 text-xs flex items-center justify-between ${
+          className={`rounded-2xl border p-4 text-xs font-medium flex items-center justify-between shadow-2xs ${
             feedback.type === "success"
-              ? "border-emerald-500/30 bg-emerald-950/20 text-emerald-300"
-              : "border-red-500/30 bg-red-950/20 text-red-300"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+              : "border-rose-200 bg-rose-50 text-rose-800"
           }`}
         >
           <div className="flex items-center gap-2">
             {feedback.type === "success" ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             ) : (
-              <AlertCircle className="w-4 h-4 text-red-400" />
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
             )}
             <span>{feedback.message}</span>
           </div>
-          <button onClick={() => setFeedback(null)} className="text-neutral-400 hover:text-white">
+          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-slate-700">
             ✕
           </button>
         </div>
       )}
 
       {/* Copyable Routing Links */}
-      <div className="rounded-2xl border border-white/10 bg-neutral-900/60 p-6 space-y-4 shadow-sm">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
+      <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 space-y-4 shadow-2xs">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] flex items-center gap-2 border-b border-[var(--lit-border-light,#DFE7EF)] pb-3">
           Routing & Shareable Links
         </h3>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-neutral-400 mb-1">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] mb-1">
               Direct Workspace Link
             </label>
             <div className="flex items-center gap-2">
@@ -167,11 +167,11 @@ export default function ManageWorkspaceClient({ workspace }: Props) {
                 type="text"
                 readOnly
                 value={wsUrl}
-                className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-xs font-mono text-neutral-200 select-all focus:outline-none"
+                className="flex-1 bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] rounded-xl px-4 py-2 text-xs font-mono text-[var(--lit-navy,#0B2545)] select-all focus:outline-none"
               />
               <button
                 onClick={() => copyText(wsUrl, "link")}
-                className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center gap-1.5 transition-colors"
+                className="px-3.5 py-2 rounded-xl bg-[var(--lit-teal,#1FA9A2)] hover:bg-[var(--lit-teal,#1FA9A2)]/90 text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
               >
                 {copiedLink ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedLink ? "Copied" : "Copy"}</span>
@@ -180,7 +180,7 @@ export default function ManageWorkspaceClient({ workspace }: Props) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-neutral-400 mb-1">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] mb-1">
               Direct Login Redirect Link (Sends employee to workspace upon login)
             </label>
             <div className="flex items-center gap-2">
@@ -188,13 +188,13 @@ export default function ManageWorkspaceClient({ workspace }: Props) {
                 type="text"
                 readOnly
                 value={loginUrl}
-                className="flex-1 bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-xs font-mono text-neutral-200 select-all focus:outline-none"
+                className="flex-1 bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] rounded-xl px-4 py-2 text-xs font-mono text-[var(--lit-navy,#0B2545)] select-all focus:outline-none"
               />
               <button
                 onClick={() => copyText(loginUrl, "login")}
-                className="px-3.5 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 border border-white/10 text-xs font-semibold text-neutral-200 flex items-center gap-1.5 transition-colors"
+                className="px-3.5 py-2 rounded-xl bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] text-xs font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
               >
-                {copiedLogin ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedLogin ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedLogin ? "Copied" : "Copy"}</span>
               </button>
             </div>
@@ -203,29 +203,29 @@ export default function ManageWorkspaceClient({ workspace }: Props) {
       </div>
 
       {/* Resend Invitation Card */}
-      <div className="rounded-2xl border border-white/10 bg-neutral-900/60 p-6 space-y-4 shadow-sm">
-        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+      <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 space-y-4 shadow-2xs">
+        <div className="flex items-center justify-between border-b border-[var(--lit-border-light,#DFE7EF)] pb-4">
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
-              <Mail className="w-4 h-4 text-emerald-400" /> Outbound Email Dispatch
+            <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] flex items-center gap-2">
+              <Mail className="w-4 h-4 text-emerald-700" /> Outbound Email Dispatch
             </h3>
-            <p className="text-xs text-neutral-400 mt-0.5">
-              Re-queue official workspace invitation email to <span className="font-mono text-white">{workspace.email}</span>.
+            <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-0.5">
+              Re-queue official workspace invitation email to <span className="font-mono text-[var(--lit-navy,#0B2545)] font-bold">{workspace.email}</span>.
             </p>
           </div>
 
           <button
             onClick={handleResendInvite}
             disabled={resending}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-xs font-bold text-white transition-all shadow-md"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-xs font-bold uppercase tracking-wider text-white transition-all shadow-2xs cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${resending ? "animate-spin" : ""}`} />
             <span>{resending ? "Dispatching..." : "Resend Invitation"}</span>
           </button>
         </div>
 
-        <div className="rounded-xl border border-white/5 bg-black/30 p-3.5 text-xs text-neutral-400 flex items-start gap-2.5">
-          <Lock className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-900 flex items-start gap-2.5 shadow-2xs">
+          <Lock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
           <span>
             Remember: Invitation emails never include the temporary password. You must deliver credentials out-of-band.
           </span>
@@ -233,35 +233,37 @@ export default function ManageWorkspaceClient({ workspace }: Props) {
       </div>
 
       {/* Status Lifecycle Governance Card */}
-      <div className="rounded-2xl border border-white/10 bg-neutral-900/60 p-6 space-y-4 shadow-sm">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 text-amber-400" /> Status Lifecycle Governance
-        </h3>
-        <p className="text-xs text-neutral-400">
-          Current status: <strong className="text-white uppercase">{status}</strong>
-        </p>
+      <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 space-y-4 shadow-2xs">
+        <div className="border-b border-[var(--lit-border-light,#DFE7EF)] pb-3">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 text-amber-700" /> Status Lifecycle Governance
+          </h3>
+          <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-1">
+            Current status: <strong className="text-[var(--lit-navy,#0B2545)] uppercase">{status}</strong>
+          </p>
+        </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-neutral-400 mb-1">
-              Operational Justification / Audit Reason <span className="text-red-400">*</span>
+            <label className="block text-xs font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] mb-1.5">
+              Operational Justification / Audit Reason <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
               placeholder="e.g. Temporary leave of absence / Security review / Reinstated"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500"
+              className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] rounded-xl px-4 py-2.5 text-xs text-[var(--lit-ink,#121826)] placeholder:text-slate-400 focus:outline-none focus:border-[var(--lit-teal,#1FA9A2)] shadow-2xs"
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 pt-2">
+          <div className="flex flex-wrap items-center gap-3 pt-1">
             {status !== "active" && (
               <button
                 type="button"
                 onClick={() => handleUpdateStatus("active")}
                 disabled={updating}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition-all"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold uppercase tracking-wider text-white transition-all shadow-2xs cursor-pointer"
               >
                 <PlayCircle className="w-4 h-4" />
                 <span>Reactivate Workspace</span>
@@ -273,7 +275,7 @@ export default function ManageWorkspaceClient({ workspace }: Props) {
                 type="button"
                 onClick={() => handleUpdateStatus("suspended")}
                 disabled={updating}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-xs font-bold text-white transition-all"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-xs font-bold uppercase tracking-wider text-white transition-all shadow-2xs cursor-pointer"
               >
                 <PauseCircle className="w-4 h-4" />
                 <span>Suspend Workspace</span>
@@ -285,7 +287,7 @@ export default function ManageWorkspaceClient({ workspace }: Props) {
                 type="button"
                 onClick={() => handleUpdateStatus("revoked")}
                 disabled={updating}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-xs font-bold text-white transition-all"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-xs font-bold uppercase tracking-wider text-white transition-all shadow-2xs cursor-pointer"
               >
                 <XCircle className="w-4 h-4" />
                 <span>Revoke Access</span>

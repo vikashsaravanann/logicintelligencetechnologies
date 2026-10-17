@@ -31,6 +31,7 @@ export const PUBLIC_MARKETING_PREFIXES: readonly string[] = [
   "/investors",
   "/jobs",
   "/knowledge-base",
+  "/maintenance",
   "/packages",
   "/press",
   "/privacy",

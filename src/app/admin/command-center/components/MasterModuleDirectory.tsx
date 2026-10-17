@@ -323,6 +323,8 @@ export const MODULE_CATEGORIES: ModuleCategory[] = [
       { href: "/admin/status", label: "System Telemetry & Uptime", badge: "Status", desc: "Database, Redis, Storage & edge latency health checks" },
       { href: "/admin/analytics", label: "Executive Analytics", badge: "KPIs", desc: "Paid revenue, pipeline velocity & cohorts" },
       { href: "/admin/team", label: "Team & Staff Access", badge: "RBAC", desc: "Capability matrix, staff roles & session security" },
+      { href: "/admin/workspaces", label: "Staff Admin Workspaces", badge: "Workspaces", desc: "Person-specific staff workspaces, credential lifecycle & access governance" },
+      { href: "/admin/workspaces/new", label: "Provision Staff Workspace", badge: "+ Action", desc: "Dedicated personnel workspace creator with credentials, role and assignments" },
       { href: "/admin/audit", label: "Cryptographic Audit Log", badge: "SHA-256", desc: "Immutable SHA-256 trail of all administrative actions" },
       { href: "/admin/command-center", label: "Executive Command Center", badge: "Dashboard", desc: "Real-time operations, revenue metrics, KPIs and master module index" },
       { href: "/admin/forbidden", label: "Access Forbidden Safety Screen", badge: "Security", desc: "Capability-denied guard & session safety handling" },
