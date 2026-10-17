@@ -711,7 +711,7 @@ function ProposalBuilderModalDialog({
               type="button"
               disabled={loading}
               onClick={() => handleSave(false)}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              className="px-4 py-2 bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
               {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
               <span>Save Draft</span>

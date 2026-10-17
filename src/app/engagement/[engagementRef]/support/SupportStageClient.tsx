@@ -1285,23 +1285,23 @@ export default function SupportStageClient({
       )}
 
       {/* Emergency Escalation Channel */}
-      <div className="p-5 bg-slate-900 text-white rounded-2xl shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+      <div className="p-5 bg-gradient-to-r from-[var(--lit-navy,#0B2545)] to-[#1565C0] text-white rounded-2xl shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
         <div>
           <span className="font-bold text-white text-sm block">Direct Engineering On-Call Escalation</span>
-          <span className="text-slate-300">
+          <span className="text-slate-200">
             For critical production emergencies (S1 outage): Call our Founder & Principal Architect Hotline immediately.
           </span>
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <a
             href="tel:+919342877474"
-            className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-bold hover:bg-emerald-500 transition-colors"
+            className="px-4 py-2 bg-[var(--lit-teal,#1FA9A2)] text-white rounded-xl font-bold hover:bg-[#188c86] transition-colors shadow-2xs"
           >
             +91 93428 77474
           </a>
           <a
             href="mailto:hello@logicintelligencetechnologies.in?subject=CRITICAL%20S1%20Production%20Outage"
-            className="px-4 py-2 bg-white/10 text-white rounded-lg font-semibold hover:bg-white/20 transition-colors"
+            className="px-4 py-2 bg-white/15 text-white border border-white/20 rounded-xl font-semibold hover:bg-white/25 transition-colors"
           >
             hello@logicintelligencetechnologies.in
           </a>

@@ -229,26 +229,26 @@ export default function DevelopmentStageClient({
       />
 
       {/* Live Preview Environment Card */}
-      <div className="bg-slate-900 rounded-2xl p-6 text-white border border-slate-800 shadow-md">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+      <div className="bg-white rounded-2xl p-6 border border-[var(--lit-border-light,#DFE7EF)] shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--lit-border-light,#DFE7EF)] pb-4">
           <div className="flex items-center gap-3">
-            <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
             <div>
-              <h3 className="font-bold text-sm text-slate-100">Live Production Preview Environment</h3>
-              <p className="text-xs text-slate-400 font-mono">
+              <h3 className="font-bold text-sm text-[var(--lit-navy,#0B2545)]">Live Production Preview Environment</h3>
+              <p className="text-xs text-[var(--lit-text-muted,#4A607A)] font-mono">
                 https://www.logicintelligencetechnologies.in
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-md bg-emerald-950/80 border border-emerald-600/60 text-emerald-300 font-mono text-[11px] font-semibold">
+            <span className="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[11px] font-semibold">
               Edge Status: 200 OK (32ms)
             </span>
             <a
               href="https://www.logicintelligencetechnologies.in"
               target="_blank"
               rel="noreferrer"
-              className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
+              className="px-3 py-1 bg-white border border-[var(--lit-border-light,#DFE7EF)] hover:bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-2xs"
             >
               <span>Visit Site</span>
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,20 +260,20 @@ export default function DevelopmentStageClient({
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 text-xs">
           <div>
-            <span className="text-slate-500 text-[10px] uppercase font-bold block">Active Release Commit</span>
-            <span className="font-mono text-sky-400 font-semibold">d89a999 (main)</span>
+            <span className="text-[var(--lit-text-muted,#4A607A)] text-[10px] uppercase font-bold block">Active Release Commit</span>
+            <span className="font-mono text-[var(--lit-teal,#1FA9A2)] font-semibold">d89a999 (main)</span>
           </div>
           <div>
-            <span className="text-slate-500 text-[10px] uppercase font-bold block">Automated Test Suites</span>
-            <span className="font-semibold text-emerald-400">142 / 142 Passing (100%)</span>
+            <span className="text-[var(--lit-text-muted,#4A607A)] text-[10px] uppercase font-bold block">Automated Test Suites</span>
+            <span className="font-semibold text-emerald-700">142 / 142 Passing (100%)</span>
           </div>
           <div>
-            <span className="text-slate-500 text-[10px] uppercase font-bold block">Current Stage</span>
-            <span className="font-semibold text-slate-200">Sprint 5 / QA Hardening</span>
+            <span className="text-[var(--lit-text-muted,#4A607A)] text-[10px] uppercase font-bold block">Current Stage</span>
+            <span className="font-semibold text-[var(--lit-navy,#0B2545)]">Sprint 5 / QA Hardening</span>
           </div>
           <div>
-            <span className="text-slate-500 text-[10px] uppercase font-bold block">Target Acceptance</span>
-            <span className="font-semibold text-amber-400">Stage 10 Ready</span>
+            <span className="text-[var(--lit-text-muted,#4A607A)] text-[10px] uppercase font-bold block">Target Acceptance</span>
+            <span className="font-semibold text-amber-700">Stage 10 Ready</span>
           </div>
         </div>
       </div>

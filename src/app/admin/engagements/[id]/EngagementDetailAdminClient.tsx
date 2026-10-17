@@ -1066,7 +1066,7 @@ export default function EngagementDetailAdminClient({
             <Link
               href={`/engagement/${engagement.engagement_ref}`}
               target="_blank"
-              className="px-4 py-2 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-lg transition-colors shadow-xs flex items-center gap-1.5"
+              className="px-4 py-2 bg-[var(--lit-navy,#0B2545)] hover:bg-[#123663] text-white text-xs font-semibold rounded-lg transition-colors shadow-xs flex items-center gap-1.5"
             >
               <span>Visit Client Portal</span>
               <ExternalLink className="w-3.5 h-3.5" />

@@ -183,7 +183,7 @@ export default async function AdminCommandCenterPage() {
           </Link>
           <Link
             href="/engagement"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition-all shadow-2xs"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[var(--lit-navy,#0B2545)] text-white font-bold text-xs uppercase tracking-wider hover:bg-[#1565C0] transition-all shadow-2xs"
             title="Client 13-Stage Portal Hub"
           >
             <ExternalLink className="w-4 h-4 text-[var(--lit-teal,#1FA9A2)]" />

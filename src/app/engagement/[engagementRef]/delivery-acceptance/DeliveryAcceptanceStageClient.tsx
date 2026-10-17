@@ -182,22 +182,22 @@ export default function DeliveryAcceptanceStageClient({
         </p>
 
         {/* Chapter 04: Production Deployment Telemetry */}
-        <div className="bg-slate-900 rounded-xl p-4 text-white text-xs font-mono grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] rounded-xl p-4 text-[var(--lit-navy,#0B2545)] text-xs font-mono grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div>
-            <span className="text-slate-500 text-[10px] uppercase font-bold block">Production URL</span>
-            <span className="text-sky-300 font-semibold truncate block">logicintelligencetechnologies.in</span>
+            <span className="text-[var(--lit-text-muted,#4A607A)] text-[10px] uppercase font-bold block">Production URL</span>
+            <span className="text-[var(--lit-blue,#1565C0)] font-semibold truncate block">logicintelligencetechnologies.in</span>
           </div>
           <div>
-            <span className="text-slate-500 text-[10px] uppercase font-bold block">Hosting Network</span>
-            <span className="text-emerald-300 font-semibold block">Vercel Edge (Multi-Region)</span>
+            <span className="text-[var(--lit-text-muted,#4A607A)] text-[10px] uppercase font-bold block">Hosting Network</span>
+            <span className="text-emerald-700 font-semibold block">Vercel Edge (Multi-Region)</span>
           </div>
           <div>
-            <span className="text-slate-500 text-[10px] uppercase font-bold block">Release Commit</span>
-            <span className="text-sky-300 font-semibold block">d89a999 (main)</span>
+            <span className="text-[var(--lit-text-muted,#4A607A)] text-[10px] uppercase font-bold block">Release Commit</span>
+            <span className="text-[var(--lit-teal,#1FA9A2)] font-semibold block">d89a999 (main)</span>
           </div>
           <div>
-            <span className="text-slate-500 text-[10px] uppercase font-bold block">Verification Date</span>
-            <span className="text-slate-300 font-semibold block">2026-10-15</span>
+            <span className="text-[var(--lit-text-muted,#4A607A)] text-[10px] uppercase font-bold block">Verification Date</span>
+            <span className="text-[var(--lit-navy,#0B2545)] font-semibold block">2026-10-15</span>
           </div>
         </div>
       </div>

@@ -113,11 +113,8 @@ export default function HeroSection() {
           </div>
 
           {/* Slogan: Where Logic Meets Innovation in One Single Line */}
-          <h1 className="font-display text-[clamp(1.25rem,3.4vw,3.75rem)] font-extrabold leading-[1.1] tracking-[-0.035em] text-[var(--lit-ink)] mb-6 text-center whitespace-nowrap">
-            WHERE LOGIC MEETS{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--lit-blue)] via-[var(--lit-teal)] to-[#7C3AED]">
-              INNOVATION.
-            </span>
+          <h1 className="font-display text-[clamp(1.25rem,3.4vw,3.75rem)] font-extrabold leading-[1.1] tracking-[-0.035em] text-black mb-6 text-center whitespace-nowrap">
+            WHERE LOGIC MEETS <span className="text-black">INNOVATION.</span>
           </h1>
 
           {/* Sub-headline & Tagline */}

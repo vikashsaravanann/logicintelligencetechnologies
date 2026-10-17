@@ -393,35 +393,35 @@ export default function TechnicalSpecStageClient({
               <h4 className="text-xs font-bold text-[#0B2545] uppercase tracking-wider">
                 Chapter 05 · Production Component Topology
               </h4>
-              <div className="bg-slate-900 rounded-2xl p-6 text-white text-xs font-mono space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] rounded-2xl p-6 text-[var(--lit-navy,#0B2545)] text-xs font-mono space-y-4 shadow-2xs">
+                <div className="flex items-center justify-between border-b border-[var(--lit-border-light,#DFE7EF)] pb-3">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                    <span className="text-slate-300 font-bold">LIT Multi-Tenant Architecture Topology</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span className="text-[var(--lit-navy,#0B2545)] font-bold">LIT Multi-Tenant Architecture Topology</span>
                   </div>
-                  <span className="text-[11px] text-slate-500">TLS 1.3 / HTTP/3 Active</span>
+                  <span className="text-[11px] text-[var(--lit-text-muted,#4A607A)]">TLS 1.3 / HTTP/3 Active</span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-center">
-                  <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
-                    <div className="text-sky-400 font-bold text-[11px] mb-1">CLIENT TIER</div>
-                    <div className="text-slate-300 font-sans text-xs">Next.js 15 App Router</div>
-                    <div className="text-slate-500 text-[10px] mt-1">React 19 Server Components</div>
+                  <div className="p-3 bg-white rounded-xl border border-[var(--lit-border-light,#DFE7EF)] shadow-2xs">
+                    <div className="text-[var(--lit-blue,#1565C0)] font-bold text-[11px] mb-1">CLIENT TIER</div>
+                    <div className="text-[var(--lit-navy,#0B2545)] font-sans text-xs font-semibold">Next.js 15 App Router</div>
+                    <div className="text-[var(--lit-text-muted,#4A607A)] text-[10px] mt-1">React 19 Server Components</div>
                   </div>
-                  <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
-                    <div className="text-sky-400 font-bold text-[11px] mb-1">EDGE GATEWAY</div>
-                    <div className="text-slate-300 font-sans text-xs">Vercel Global Edge</div>
-                    <div className="text-slate-500 text-[10px] mt-1">Route Handlers & SSR</div>
+                  <div className="p-3 bg-white rounded-xl border border-[var(--lit-border-light,#DFE7EF)] shadow-2xs">
+                    <div className="text-[var(--lit-blue,#1565C0)] font-bold text-[11px] mb-1">EDGE GATEWAY</div>
+                    <div className="text-[var(--lit-navy,#0B2545)] font-sans text-xs font-semibold">Vercel Global Edge</div>
+                    <div className="text-[var(--lit-text-muted,#4A607A)] text-[10px] mt-1">Route Handlers & SSR</div>
                   </div>
-                  <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
-                    <div className="text-sky-400 font-bold text-[11px] mb-1">DATA LAYER</div>
-                    <div className="text-slate-300 font-sans text-xs">Supabase PostgreSQL 15</div>
-                    <div className="text-slate-500 text-[10px] mt-1">Row Level Security (RLS)</div>
+                  <div className="p-3 bg-white rounded-xl border border-[var(--lit-border-light,#DFE7EF)] shadow-2xs">
+                    <div className="text-[var(--lit-blue,#1565C0)] font-bold text-[11px] mb-1">DATA LAYER</div>
+                    <div className="text-[var(--lit-navy,#0B2545)] font-sans text-xs font-semibold">Supabase PostgreSQL 15</div>
+                    <div className="text-[var(--lit-text-muted,#4A607A)] text-[10px] mt-1">Row Level Security (RLS)</div>
                   </div>
-                  <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700">
-                    <div className="text-sky-400 font-bold text-[11px] mb-1">AUDIT & VAULT</div>
-                    <div className="text-slate-300 font-sans text-xs">SHA-256 Ledger & PDF</div>
-                    <div className="text-slate-500 text-[10px] mt-1">Automated PITR Backups</div>
+                  <div className="p-3 bg-white rounded-xl border border-[var(--lit-border-light,#DFE7EF)] shadow-2xs">
+                    <div className="text-[var(--lit-blue,#1565C0)] font-bold text-[11px] mb-1">AUDIT & VAULT</div>
+                    <div className="text-[var(--lit-navy,#0B2545)] font-sans text-xs font-semibold">SHA-256 Ledger & PDF</div>
+                    <div className="text-[var(--lit-text-muted,#4A607A)] text-[10px] mt-1">Automated PITR Backups</div>
                   </div>
                 </div>
               </div>

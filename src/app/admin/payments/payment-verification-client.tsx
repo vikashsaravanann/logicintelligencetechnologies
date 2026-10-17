@@ -380,7 +380,7 @@ export default function PaymentVerificationClient({ initialRequests }: Props) {
             onClick={() => setActiveTab("ALL")}
             className={`px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors ${
               activeTab === "ALL"
-                ? "bg-slate-900 text-white shadow-sm"
+                ? "bg-[var(--lit-navy,#0B2545)] text-white shadow-sm"
                 : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
             }`}
           >
