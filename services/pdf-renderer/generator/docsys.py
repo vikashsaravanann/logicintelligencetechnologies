@@ -43,14 +43,94 @@ def wrap(c, s, f, sz, mw):
 
 
 import re as _re
+import threading as _threading
+
 BLANK = "__________"
 KEEP_CHIPS = {"S1", "S2", "S3", "S4"}
+
+_tls = _threading.local()
+
+
+class _ThreadLocalDict:
+    """Thread-safe request-isolated dictionary wrapper."""
+
+    def __init__(self, default_factory=None):
+        self._default_factory = default_factory or (lambda: {})
+
+    def _get_target(self):
+        tid = id(self)
+        if not hasattr(_tls, "dicts"):
+            _tls.dicts = {}
+        if tid not in _tls.dicts:
+            _tls.dicts[tid] = self._default_factory()
+        return _tls.dicts[tid]
+
+    def clear(self):
+        self._get_target().clear()
+
+    def update(self, *args, **kwargs):
+        self._get_target().update(*args, **kwargs)
+
+    def get(self, k, default=None):
+        return self._get_target().get(k, default)
+
+    def __getitem__(self, k):
+        return self._get_target()[k]
+
+    def __setitem__(self, k, v):
+        self._get_target()[k] = v
+
+    def __contains__(self, k):
+        return k in self._get_target()
+
+    def __iter__(self):
+        return iter(self._get_target())
+
+    def __len__(self):
+        return len(self._get_target())
+
+    def items(self):
+        return self._get_target().items()
+
+    def keys(self):
+        return self._get_target().keys()
+
+    def values(self):
+        return self._get_target().values()
+
+
+class _ThreadLocalList:
+    """Thread-safe request-isolated list wrapper."""
+
+    def _get_target(self):
+        tid = id(self)
+        if not hasattr(_tls, "lists"):
+            _tls.lists = {}
+        if tid not in _tls.lists:
+            _tls.lists[tid] = []
+        return _tls.lists[tid]
+
+    def append(self, x):
+        self._get_target().append(x)
+
+    def clear(self):
+        self._get_target().clear()
+
+    def __iter__(self):
+        return iter(self._get_target())
+
+    def __len__(self):
+        return len(self._get_target())
+
+    def __getitem__(self, i):
+        return self._get_target()[i]
 
 
 # Client data. Keys are the placeholder names exactly as written in build_templates.py
 # (without the square brackets), e.g. {"Client Company": "Acme Pvt. Ltd."}.
 # Any placeholder present here is printed with its value; any missing one is left blank.
-FILL = {}
+# Thread-local storage guarantees zero cross-request concurrency contamination (PDF01).
+FILL = _ThreadLocalDict()
 
 
 def set_fill(data):
@@ -60,13 +140,15 @@ def set_fill(data):
         FILL["CLIENT COMPANY"] = FILL["Client Company"].upper()
 
 
-COUNT = {}          # occurrence counter per placeholder name (reset for every document pass)
-RECORD = []         # (section, key) list, filled when building with --list
-CTX = {"section": "Cover / Document control"}
+COUNT = _ThreadLocalDict()          # occurrence counter per placeholder name
+RECORD = _ThreadLocalList()         # (section, key) list, filled when building with --list
+CTX = _ThreadLocalDict(lambda: {"section": "Cover / Document control"})
 
 
 def reset_counts():
-    COUNT.clear(); RECORD.clear(); CTX["section"] = "Cover / Document control"
+    COUNT.clear()
+    RECORD.clear()
+    CTX["section"] = "Cover / Document control"
 
 
 def single(s):

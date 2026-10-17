@@ -49,14 +49,15 @@ export const metadata: Metadata = {
 export const revalidate = 0;
 
 export default async function AdminCommandCenterPage() {
-  await requireCapabilityPage("dashboard.view", "/admin/command-center");
+  const session = await requireCapabilityPage("dashboard.view", "/admin/command-center");
+  const isSuperAdmin = session.role === "super_admin";
 
   const now = new Date();
   const nowIso = now.toISOString();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-  const [invoicesRes, projectsRes, leadsRes, bookingsRes, ticketsRes, newLeadsRes, engagements] = await Promise.all([
-    supabaseAdmin.from("invoices").select("amount, status"),
+  const [invoicesRes, projectsRes, leadsRes, bookingsRes, ticketsRes, newLeadsRes, rawEngagements] = await Promise.all([
+    isSuperAdmin ? supabaseAdmin.from("invoices").select("amount, status") : Promise.resolve({ data: [], error: null }),
     supabaseAdmin
       .from("projects")
       .select("*", { count: "exact", head: true })
@@ -72,27 +73,43 @@ export default async function AdminCommandCenterPage() {
     listAllEngagements().catch(() => []),
   ]);
 
+  // AUTH13: Scope engagements for non-superadmin staff to assigned projects
+  let engagements = rawEngagements;
+  if (!isSuperAdmin) {
+    const { data: assignments } = await supabaseAdmin
+      .from("staff_client_assignments")
+      .select("engagement_id, expires_at")
+      .eq("staff_user_id", session.userId)
+      .eq("status", "active");
+
+    const validEngagementIds = (assignments || [])
+      .filter((a) => !a.expires_at || new Date(a.expires_at).getTime() > Date.now())
+      .map((a) => a.engagement_id);
+
+    engagements = rawEngagements.filter((e: any) => validEngagementIds.includes(e.id));
+  }
+
   const anyError = Boolean(
     invoicesRes.error || projectsRes.error || leadsRes.error || bookingsRes.error || ticketsRes.error || newLeadsRes.error,
   );
 
   const invoices = (invoicesRes.data ?? []) as InvoiceAmountRow[];
-  const settled = paidRevenue(invoices);
-  const outstanding = outstandingRevenue(invoices);
+  const settled = isSuperAdmin ? paidRevenue(invoices) : 0;
+  const outstanding = isSuperAdmin ? outstandingRevenue(invoices) : 0;
   const leads = leadsRes.data ?? [];
 
   const tiles = [
     {
       label: "Settled Revenue",
-      value: invoicesRes.error ? "—" : formatINR(settled),
-      note: "Paid invoices ledger",
+      value: !isSuperAdmin ? "Restricted" : (invoicesRes.error ? "—" : formatINR(settled)),
+      note: !isSuperAdmin ? "Founder / Super Admin only" : "Paid invoices ledger",
       icon: DollarSign,
       tone: "text-emerald-700 bg-emerald-50 border-emerald-200",
     },
     {
       label: "Outstanding",
-      value: invoicesRes.error ? "—" : formatINR(outstanding),
-      note: "Pending + overdue balance",
+      value: !isSuperAdmin ? "Restricted" : (invoicesRes.error ? "—" : formatINR(outstanding)),
+      note: !isSuperAdmin ? "Founder / Super Admin only" : "Pending + overdue balance",
       icon: FileText,
       tone: "text-amber-700 bg-amber-50 border-amber-200",
     },

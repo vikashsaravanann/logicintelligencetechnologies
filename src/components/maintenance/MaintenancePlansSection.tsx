@@ -173,7 +173,7 @@ export default function MaintenancePlansSection({
             <div>
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-400 text-slate-950 uppercase tracking-wider">
-                  {activeSubscription.plan_id === 'STANDARD' || activeSubscription.plan_id === 'FREE_TRIAL'
+                  {activeSubscription.plan_id === 'FREE_TRIAL'
                     ? 'Active 30-Day Free Trial'
                     : 'Active Subscription'}
                 </span>
@@ -182,15 +182,30 @@ export default function MaintenancePlansSection({
                 </span>
               </div>
               <h3 className="text-xl font-bold mt-2">
-                {activeSubscription.plan_id === 'STANDARD' || activeSubscription.plan_id === 'FREE_TRIAL'
-                  ? 'Standard Free Trial'
+                {activeSubscription.plan_id === 'FREE_TRIAL'
+                  ? '30-Day Free Trial'
                   : activeSubscription.planDetails?.name || activeSubscription.plan_id}
               </h3>
               <p className="text-xs text-slate-200 mt-1 max-w-xl">
-                Active for <strong>{companyName}</strong>. Standard SLA target:{' '}
-                <span className="text-emerald-300 font-semibold">
-                  {activeSubscription.planDetails?.slaResponseTime || 'Best-Effort (Community & Knowledge Base)'}
-                </span>. No automatic paid conversion or recurring debit.
+                Active for <strong>{companyName}</strong>.{' '}
+                {activeSubscription.plan_id === 'FREE_TRIAL' ? (
+                  <>
+                    Standard SLA target:{' '}
+                    <span className="text-emerald-300 font-semibold">
+                      {activeSubscription.planDetails?.slaResponseTime || 'Best-Effort (Community & Knowledge Base)'}
+                    </span>. No automatic paid conversion or recurring debit.
+                  </>
+                ) : (
+                  <>
+                    SLA target:{' '}
+                    <span className="text-blue-300 font-semibold">
+                      {activeSubscription.planDetails?.slaResponseTime || '< 24 Business Hours'}
+                    </span>. Included enhancement allowance:{' '}
+                    <span className="text-blue-300 font-semibold">
+                      {activeSubscription.enhancement_hours_allocated || 0} hrs/mo
+                    </span>.
+                  </>
+                )}
               </p>
             </div>
 
@@ -201,7 +216,7 @@ export default function MaintenancePlansSection({
                   {activeSubscription.daysRemaining} Days
                 </div>
               </div>
-              {activeSubscription.plan_id === 'STANDARD' || activeSubscription.plan_id === 'FREE_TRIAL' ? (
+              {activeSubscription.plan_id === 'FREE_TRIAL' ? (
                 <div>
                   <div className="text-[10px] text-slate-300 uppercase">Verification</div>
                   <div className="text-base font-bold text-emerald-400 mt-0.5 font-mono">
@@ -217,9 +232,13 @@ export default function MaintenancePlansSection({
                 </div>
               )}
               <div>
-                <div className="text-[10px] text-slate-300 uppercase">Refund State</div>
+                <div className="text-[10px] text-slate-300 uppercase">
+                  {activeSubscription.plan_id === 'FREE_TRIAL' ? 'Refund State' : 'Renewal'}
+                </div>
                 <div className="text-[11px] font-bold text-amber-300 mt-1 capitalize truncate max-w-[90px]">
-                  {activeSubscription.refund_status?.replace(/_/g, ' ') || 'N/A'}
+                  {activeSubscription.plan_id === 'FREE_TRIAL'
+                    ? (activeSubscription.refund_status?.replace(/_/g, ' ') || 'N/A')
+                    : 'Monthly'}
                 </div>
               </div>
               <div>
@@ -235,7 +254,7 @@ export default function MaintenancePlansSection({
             </div>
           </div>
 
-          {(activeSubscription.plan_id === 'STANDARD' || activeSubscription.plan_id === 'FREE_TRIAL') && (
+          {activeSubscription.plan_id === 'FREE_TRIAL' && (
             <div className="pt-3 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-200">
               <div>
                 <span className="font-semibold text-emerald-300">Available Trial Services:</span>{' '}
@@ -420,7 +439,7 @@ export default function MaintenancePlansSection({
                     <>
                       <div className="flex justify-between py-2 text-emerald-700 font-medium">
                         <span>Purpose</span>
-                        <span className="font-semibold text-right">Standard Free Trial — Refundable Verification</span>
+                        <span className="font-semibold text-right">30-Day Free Trial — Refundable Verification</span>
                       </div>
                       <div className="flex justify-between py-2 text-emerald-700 font-medium">
                         <span>One-Time Refundable Verification Deposit</span>
@@ -632,41 +651,93 @@ export default function MaintenancePlansSection({
         </div>
 
         {showComparison && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-slate-100 border-b border-slate-200 text-slate-700">
-                  <th className="p-3.5 font-bold">Feature / Entitlement</th>
-                  <th className="p-3.5 text-center font-bold">Free Trial</th>
-                  <th className="p-3.5 text-center font-bold">Standard</th>
-                  <th className="p-3.5 text-center font-bold">Basic</th>
-                  <th className="p-3.5 text-center font-bold text-blue-700 bg-blue-50/50">Pro</th>
-                  <th className="p-3.5 text-center font-bold">Enterprise</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {MAINTENANCE_FEATURES_MATRIX.map((row) => (
-                  <tr key={row.id} className="hover:bg-slate-50/60">
-                    <td className="p-3.5 font-medium text-slate-900">{row.name}</td>
-                    <td className="p-3.5 text-center text-slate-600">
-                      {typeof row.freeTrial === 'boolean' ? (row.freeTrial ? '✓' : '—') : row.freeTrial}
-                    </td>
-                    <td className="p-3.5 text-center text-slate-600">
-                      {typeof row.standard === 'boolean' ? (row.standard ? '✓' : '—') : row.standard}
-                    </td>
-                    <td className="p-3.5 text-center text-slate-600">
-                      {typeof row.basic === 'boolean' ? (row.basic ? '✓' : '—') : row.basic}
-                    </td>
-                    <td className="p-3.5 text-center font-semibold text-blue-900 bg-blue-50/30">
-                      {typeof row.pro === 'boolean' ? (row.pro ? '✓' : '—') : row.pro}
-                    </td>
-                    <td className="p-3.5 text-center font-semibold text-slate-900">
-                      {typeof row.enterprise === 'boolean' ? (row.enterprise ? '✓' : '—') : row.enterprise}
-                    </td>
+          <div>
+            {/* Mobile: Stacked Vertical Comparisons (Zero Horizontal Scroll on 320px/375px/390px) */}
+            <div className="block md:hidden p-4 space-y-4">
+              {[
+                { key: 'freeTrial', label: 'Free Trial', price: '₹20 (Refundable)' },
+                { key: 'standard', label: 'Standard', price: '₹999/mo + GST' },
+                { key: 'basic', label: 'Basic', price: '₹4,999/mo + GST' },
+                { key: 'pro', label: 'Pro (Recommended)', price: '₹9,999/mo + GST', highlight: true },
+                { key: 'enterprise', label: 'Enterprise', price: '₹19,999/mo + GST' },
+              ].map((tier) => (
+                <div
+                  key={tier.key}
+                  className={`rounded-xl p-4 border text-xs space-y-3 ${
+                    tier.highlight
+                      ? 'border-blue-300 bg-blue-50/50 shadow-2xs'
+                      : 'border-slate-200 bg-white shadow-2xs'
+                  }`}
+                >
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <span className="font-bold text-slate-900 text-sm">{tier.label}</span>
+                    <span className="font-semibold text-slate-600">{tier.price}</span>
+                  </div>
+                  <div className="space-y-2">
+                    {MAINTENANCE_FEATURES_MATRIX.map((row) => {
+                      const val = (row as any)[tier.key];
+                      const display = typeof val === 'boolean' ? (val ? 'Included' : 'Not included') : val;
+                      const isYes = val === true;
+                      const isNo = val === false;
+                      return (
+                        <div key={row.id} className="flex items-start justify-between gap-2 py-1 border-b border-slate-100 last:border-0">
+                          <span className="text-slate-700 font-medium">{row.name}</span>
+                          <span
+                            className={`font-semibold shrink-0 text-right ${
+                              isYes
+                                ? 'text-emerald-700'
+                                : isNo
+                                ? 'text-slate-400'
+                                : 'text-slate-800'
+                            }`}
+                          >
+                            {display}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: Side-by-side Matrix Table (md:block) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-slate-100 border-b border-slate-200 text-slate-700">
+                    <th className="p-3.5 font-bold">Feature / Entitlement</th>
+                    <th className="p-3.5 text-center font-bold">Free Trial</th>
+                    <th className="p-3.5 text-center font-bold">Standard</th>
+                    <th className="p-3.5 text-center font-bold">Basic</th>
+                    <th className="p-3.5 text-center font-bold text-blue-700 bg-blue-50/50">Pro</th>
+                    <th className="p-3.5 text-center font-bold">Enterprise</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {MAINTENANCE_FEATURES_MATRIX.map((row) => (
+                    <tr key={row.id} className="hover:bg-slate-50/60">
+                      <td className="p-3.5 font-medium text-slate-900">{row.name}</td>
+                      <td className="p-3.5 text-center text-slate-600">
+                        {typeof row.freeTrial === 'boolean' ? (row.freeTrial ? '✓' : '—') : row.freeTrial}
+                      </td>
+                      <td className="p-3.5 text-center text-slate-600">
+                        {typeof row.standard === 'boolean' ? (row.standard ? '✓' : '—') : row.standard}
+                      </td>
+                      <td className="p-3.5 text-center text-slate-600">
+                        {typeof row.basic === 'boolean' ? (row.basic ? '✓' : '—') : row.basic}
+                      </td>
+                      <td className="p-3.5 text-center font-semibold text-blue-900 bg-blue-50/30">
+                        {typeof row.pro === 'boolean' ? (row.pro ? '✓' : '—') : row.pro}
+                      </td>
+                      <td className="p-3.5 text-center font-semibold text-slate-900">
+                        {typeof row.enterprise === 'boolean' ? (row.enterprise ? '✓' : '—') : row.enterprise}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

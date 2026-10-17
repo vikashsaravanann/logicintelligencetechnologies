@@ -29,7 +29,7 @@ const nextConfig: NextConfig = {
       { source: '/booking', destination: '/book-consultation', permanent: true },
       { source: '/company', destination: '/company/facts', permanent: true },
       { source: '/docs', destination: '/docs/api', permanent: true },
-      { source: '/client', destination: '/client/workspace', permanent: false },
+      { source: '/client', destination: '/client/dashboard', permanent: false },
       { source: '/auth', destination: '/login', permanent: false },
       { source: '/enterprise-checklist', destination: '/engagement', permanent: false },
       { source: '/proposal', destination: '/engagement', permanent: false },

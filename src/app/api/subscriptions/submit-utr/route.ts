@@ -21,10 +21,21 @@ export async function POST(req: NextRequest) {
       paymentProofUrl,
     });
 
+    const safeOrder = updatedOrder ? {
+      id: updatedOrder.id,
+      orderRef: updatedOrder.order_ref,
+      planId: updatedOrder.plan_id,
+      status: updatedOrder.status,
+      declaredUtr: updatedOrder.declared_utr,
+      declaredPayeeName: updatedOrder.declared_payee_name,
+      declaredPaymentTime: updatedOrder.declared_payment_time,
+      updatedAt: updatedOrder.updated_at,
+    } : null;
+
     return NextResponse.json({
       success: true,
       message: 'Payment report recorded. Your transaction is now pending Super Admin bank reconciliation.',
-      order: updatedOrder,
+      order: safeOrder,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Internal Server Error';

@@ -19,6 +19,7 @@ import {
   Layers,
   Sparkles,
 } from "lucide-react";
+import AssignProjectsButton from "@/app/admin/workspaces/components/AssignProjectsButton";
 
 export const metadata: Metadata = {
   title: "Staff Workspace Overview | Admin | Logic Intelligence Technologies",
@@ -219,18 +220,41 @@ export default async function WorkspaceOverviewPage({
                 </span>
                 <h2 className="text-base font-bold text-[var(--lit-navy,#0B2545)]">Assigned Client Engagements</h2>
               </div>
-              <span className="text-[11px] text-[var(--lit-text-muted,#52677C)] font-bold uppercase tracking-wider">
-                Strict Technical Scope
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:inline-block text-[11px] text-[var(--lit-text-muted,#52677C)] font-bold uppercase tracking-wider">
+                  Strict Technical Scope
+                </span>
+                {session.role === "super_admin" && (
+                  <AssignProjectsButton
+                    workspaceId={id}
+                    staffUserId={workspace.ownerUserId}
+                    staffEmail={workspace.email}
+                    staffName={workspace.fullName}
+                    variant="header"
+                  />
+                )}
+              </div>
             </div>
 
             {workspace.assignedEngagements.length === 0 ? (
-              <div className="rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] p-8 text-center space-y-2">
+              <div className="rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] p-8 text-center space-y-3">
                 <Briefcase className="w-8 h-8 text-slate-400 mx-auto" />
                 <p className="text-xs text-[var(--lit-navy,#0B2545)] font-bold">No client engagements currently assigned</p>
                 <p className="text-[11px] text-[var(--lit-text-muted,#52677C)]">
                   Super Admin assigns delivery engineers and technical leads to specific engagements.
                 </p>
+                {session.role === "super_admin" && (
+                  <div className="pt-2">
+                    <AssignProjectsButton
+                      workspaceId={id}
+                      staffUserId={workspace.ownerUserId}
+                      staffEmail={workspace.email}
+                      staffName={workspace.fullName}
+                      variant="primary"
+                      label="Assign First Project"
+                    />
+                  </div>
+                )}
               </div>
             ) : (
               <div className="space-y-3">

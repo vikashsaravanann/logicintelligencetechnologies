@@ -141,6 +141,59 @@ export default async function AdminIntakePage({
           });
         }
       }
+
+      // 4. Fetch Checklist & Discovery Questionnaire Leads
+      const { data: checklistLeads } = await supabaseAdmin
+        .from("checklist_leads")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (checklistLeads) {
+        for (const c of checklistLeads) {
+          const ansCount = Array.isArray(c.answers) ? c.answers.length : 0;
+          allItems.push({
+            id: `chk_${c.id}`,
+            reference: `LIT-CHK-${c.id.substring(0, 8).toUpperCase()}`,
+            entity: "corporate",
+            type: ansCount > 0 ? "Discovery Questionnaire" : "Checklist Download",
+            customerName: c.name,
+            customerEmail: c.email,
+            customerPhone: null,
+            companyName: c.company || "Direct Lead",
+            details: ansCount > 0 ? `${ansCount} discovery answers recorded · Role: ${c.role || "N/A"}` : `Checklist resource lead · Role: ${c.role || "N/A"}`,
+            submittedAt: c.created_at,
+            status: "received",
+            notificationState: "sent",
+          });
+        }
+      }
+
+      // 5. Fetch Free Demo Leads
+      const { data: demoLeads } = await supabaseAdmin
+        .from("demo_leads")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (demoLeads) {
+        for (const d of demoLeads) {
+          allItems.push({
+            id: `demo_${d.id}`,
+            reference: `LIT-DEMO-${d.id.substring(0, 8).toUpperCase()}`,
+            entity: "corporate",
+            type: "Free Demo Request",
+            customerName: d.name,
+            customerEmail: d.email,
+            customerPhone: d.phone || null,
+            companyName: d.company || "Demo Prospect",
+            details: `Product / Service: ${d.product || "General"} · Notes: ${d.notes || "None"}`,
+            submittedAt: d.created_at,
+            status: d.status || "new",
+            notificationState: "sent",
+          });
+        }
+      }
     } catch (err) {
       console.error("[Admin Intake Query Error]", err);
     }
@@ -157,7 +210,9 @@ export default async function AdminIntakePage({
     if (currentTab === "logicvoice") return item.entity === "logicvoice";
     if (currentTab === "voiceshield") return item.entity === "voiceshield";
     if (currentTab === "bookings") return item.type.includes("Consultation");
-    if (currentTab === "leads") return item.type.includes("Lead");
+    if (currentTab === "leads") return item.type.includes("Lead") || item.type.includes("Contact");
+    if (currentTab === "checklist") return item.type.includes("Checklist") || item.type.includes("Discovery");
+    if (currentTab === "demo") return item.type.includes("Demo");
     return true;
   });
 
@@ -219,12 +274,15 @@ export default async function AdminIntakePage({
       {/* Navigation Tabs */}
       <div className="flex flex-wrap items-center gap-2 border-b border-[var(--lit-border-light,#DFE7EF)] pb-3">
         {[
-          { id: "all", label: "All Sites", count: totalCount },
+          { id: "all", label: "All Records", count: totalCount },
           { id: "corporate", label: "Corporate LIT", count: corporateCount },
           { id: "healthcare", label: "LIT Healthcare", count: healthcareCount },
           { id: "logicvoice", label: "Logic Voice", count: logicVoiceCount },
           { id: "voiceshield", label: "VoiceShield", count: voiceShieldCount },
-          { id: "bookings", label: "Bookings", count: allItems.filter((i) => i.type.includes("Consultation")).length },
+          { id: "bookings", label: "Consultation Bookings", count: allItems.filter((i) => i.type.includes("Consultation")).length },
+          { id: "leads", label: "Contact Inquiries", count: allItems.filter((i) => i.type.includes("Lead") || i.type.includes("Contact")).length },
+          { id: "checklist", label: "Checklists & Discovery", count: allItems.filter((i) => i.type.includes("Checklist") || i.type.includes("Discovery")).length },
+          { id: "demo", label: "Free Demos", count: allItems.filter((i) => i.type.includes("Demo")).length },
         ].map((tab) => {
           const active = currentTab === tab.id;
           return (

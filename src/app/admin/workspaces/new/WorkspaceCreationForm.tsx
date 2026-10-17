@@ -23,6 +23,7 @@ import {
   Shield,
 } from "lucide-react";
 import { StaffRole, StaffWorkspaceCreatedResult } from "@/lib/workspaces/types";
+import AssignProjectsModal from "../components/AssignProjectsModal";
 
 interface EngagementOption {
   id: string;
@@ -88,6 +89,7 @@ export default function WorkspaceCreationForm({ engagements }: WorkspaceCreation
   const [error, setError] = useState<string | null>(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [createdResult, setCreatedResult] = useState<StaffWorkspaceCreatedResult | null>(null);
+  const [showAssignModal, setShowAssignModal] = useState(false);
 
   // Clipboard states
   const [copiedWsLink, setCopiedWsLink] = useState(false);
@@ -367,6 +369,15 @@ export default function WorkspaceCreationForm({ engagements }: WorkspaceCreation
               <span>+ Create Another Workspace</span>
             </button>
 
+            <button
+              type="button"
+              onClick={() => setShowAssignModal(true)}
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-all shadow-2xs cursor-pointer"
+            >
+              <Briefcase className="w-4 h-4" />
+              <span>Assign Projects</span>
+            </button>
+
             <Link
               href="/admin/workspaces"
               className="inline-flex items-center gap-2 rounded-xl bg-transparent hover:bg-slate-100 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] transition-all"
@@ -375,6 +386,15 @@ export default function WorkspaceCreationForm({ engagements }: WorkspaceCreation
             </Link>
           </div>
         </div>
+
+        <AssignProjectsModal
+          isOpen={showAssignModal}
+          onClose={() => setShowAssignModal(false)}
+          workspaceId={createdResult.workspaceId}
+          staffUserId={createdResult.employee.id}
+          staffEmail={createdResult.employee.email}
+          staffName={createdResult.employee.fullName}
+        />
       </div>
     );
   }

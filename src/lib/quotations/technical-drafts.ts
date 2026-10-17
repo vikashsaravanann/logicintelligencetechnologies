@@ -167,10 +167,12 @@ export async function createQuotationTechnicalDraft(params: {
   actorUserId: string;
   actorEmail: string | null;
   actorRole: StaffRole;
+  clientId?: string | null;
+  engagementId?: string | null;
   rawPayload: Record<string, unknown>;
 }): Promise<
   | { ok: true; draft: QuotationTechnicalDraft }
-  | { ok: false; status: 400 | 403; message: string; forbiddenFields?: string[] }
+  | { ok: false; status: 400 | 403 | 500; message: string; forbiddenFields?: string[] }
 > {
   if (!hasCapability(params.actorRole, 'quotation.technical_draft.create')) {
     return {
@@ -195,17 +197,21 @@ export async function createQuotationTechnicalDraft(params: {
   }
 
   const engagementId =
-    typeof params.rawPayload.engagementId === 'string'
-      ? params.rawPayload.engagementId
-      : typeof params.rawPayload.engagement_id === 'string'
-        ? params.rawPayload.engagement_id
-        : null;
+    typeof params.engagementId === 'string'
+      ? params.engagementId
+      : typeof params.rawPayload.engagementId === 'string'
+        ? params.rawPayload.engagementId
+        : typeof params.rawPayload.engagement_id === 'string'
+          ? params.rawPayload.engagement_id
+          : null;
   const clientId =
-    typeof params.rawPayload.clientId === 'string'
-      ? params.rawPayload.clientId
-      : typeof params.rawPayload.client_id === 'string'
-        ? params.rawPayload.client_id
-        : null;
+    typeof params.clientId === 'string'
+      ? params.clientId
+      : typeof params.rawPayload.clientId === 'string'
+        ? params.rawPayload.clientId
+        : typeof params.rawPayload.client_id === 'string'
+          ? params.rawPayload.client_id
+          : null;
 
   if (!engagementId && !clientId) {
     return {
@@ -315,7 +321,7 @@ export async function createQuotationTechnicalDraft(params: {
 
   const supabase = getServiceClient();
   if (supabase) {
-    await supabase
+    const { error: insertErr } = await supabase
       .from('quotation_technical_drafts')
       .insert({
         id: draft.id,
@@ -334,11 +340,16 @@ export async function createQuotationTechnicalDraft(params: {
         prepared_by: draft.prepared_by,
         prepared_by_email: draft.prepared_by_email,
         prepared_by_role: draft.prepared_by_role,
-      })
-      .then(
-        () => undefined,
-        () => undefined
-      );
+      });
+
+    if (insertErr) {
+      inMemoryTechnicalDrafts.delete(draft.id);
+      return {
+        ok: false,
+        status: 400,
+        message: `Failed to persist technical quotation draft: ${insertErr.message}`,
+      };
+    }
   }
 
   await recordAdminAction({
@@ -381,20 +392,26 @@ export async function getQuotationTechnicalDraftById(params: {
     };
   }
 
-  let draft = inMemoryTechnicalDrafts.get(params.draftId) ?? null;
-  if (!draft) {
-    const supabase = getServiceClient();
-    if (supabase) {
-      const { data } = await supabase
-        .from('quotation_technical_drafts')
-        .select('*')
-        .eq('id', params.draftId)
-        .maybeSingle();
-      if (data) {
-        draft = data as QuotationTechnicalDraft;
-        inMemoryTechnicalDrafts.set(draft.id, draft);
-      }
+  let draft: QuotationTechnicalDraft | null = null;
+  const supabase = getServiceClient();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('quotation_technical_drafts')
+      .select('*')
+      .eq('id', params.draftId)
+      .maybeSingle();
+
+    if (error) {
+      console.warn('[technical-drafts] Database lookup failed:', error.message);
     }
+    if (data) {
+      draft = data as QuotationTechnicalDraft;
+      inMemoryTechnicalDrafts.set(draft.id, draft);
+    }
+  }
+
+  if (!draft) {
+    draft = inMemoryTechnicalDrafts.get(params.draftId) ?? null;
   }
 
   if (!draft) {
@@ -423,7 +440,7 @@ export async function listQuotationTechnicalDrafts(params: {
   status?: TechnicalDraftStatus;
 }): Promise<
   | { ok: true; drafts: QuotationTechnicalDraft[] }
-  | { ok: false; status: 403; message: string }
+  | { ok: false; status: 403 | 500; message: string }
 > {
   if (!hasCapability(params.actorRole, 'quotation.technical_draft.read')) {
     return {
@@ -433,10 +450,38 @@ export async function listQuotationTechnicalDrafts(params: {
     };
   }
 
-  const all = Array.from(inMemoryTechnicalDrafts.values());
+  let drafts: QuotationTechnicalDraft[] = [];
+  const supabase = getServiceClient();
+  if (supabase) {
+    let query = supabase
+      .from('quotation_technical_drafts')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (params.engagementId) query = query.eq('engagement_id', params.engagementId);
+    if (params.status) query = query.eq('status', params.status);
+
+    const { data, error } = await query;
+    if (error) {
+      return {
+        ok: false,
+        status: 500,
+        message: `Database query failed for technical drafts: ${error.message}`,
+      };
+    }
+    if (Array.isArray(data)) {
+      drafts = data as QuotationTechnicalDraft[];
+      for (const d of drafts) {
+        inMemoryTechnicalDrafts.set(d.id, d);
+      }
+    }
+  } else {
+    drafts = Array.from(inMemoryTechnicalDrafts.values());
+  }
+
   const filtered: QuotationTechnicalDraft[] = [];
 
-  for (const d of all) {
+  for (const d of drafts) {
     if (params.engagementId && d.engagement_id !== params.engagementId) continue;
     if (params.status && d.status !== params.status) continue;
     if (params.actorRole === 'super_admin' || d.prepared_by === params.actorUserId) {
@@ -463,7 +508,7 @@ export async function updateQuotationTechnicalDraft(params: {
   rawPayload: Record<string, unknown>;
 }): Promise<
   | { ok: true; draft: QuotationTechnicalDraft }
-  | { ok: false; status: 400 | 403 | 404 | 409; message: string; forbiddenFields?: string[] }
+  | { ok: false; status: 400 | 403 | 404 | 409 | 500; message: string; forbiddenFields?: string[] }
 > {
   if (!hasCapability(params.actorRole, 'quotation.technical_draft.update')) {
     return {
@@ -564,8 +609,32 @@ export async function updateQuotationTechnicalDraft(params: {
   }
 
   draft.updated_at = new Date().toISOString();
-  inMemoryTechnicalDrafts.set(draft.id, draft);
 
+  const supabase = getServiceClient();
+  if (supabase) {
+    const { error: updateErr } = await supabase
+      .from('quotation_technical_drafts')
+      .update({
+        scope_summary: draft.scope_summary,
+        architecture_notes: draft.architecture_notes,
+        timeline_notes: draft.timeline_notes,
+        assumptions: draft.assumptions,
+        exclusions: draft.exclusions,
+        technical_line_items: draft.technical_line_items,
+        updated_at: draft.updated_at,
+      })
+      .eq('id', draft.id);
+
+    if (updateErr) {
+      return {
+        ok: false,
+        status: 500,
+        message: `Failed to persist technical draft update: ${updateErr.message}`,
+      };
+    }
+  }
+
+  inMemoryTechnicalDrafts.set(draft.id, draft);
   return { ok: true, draft };
 }
 
@@ -576,7 +645,7 @@ export async function submitQuotationTechnicalDraftForApproval(params: {
   draftId: string;
 }): Promise<
   | { ok: true; draft: QuotationTechnicalDraft }
-  | { ok: false; status: 400 | 403 | 404 | 409; message: string }
+  | { ok: false; status: 400 | 403 | 404 | 409 | 500; message: string }
 > {
   if (!hasCapability(params.actorRole, 'quotation.technical_draft.submit_for_approval')) {
     return {
@@ -607,22 +676,25 @@ export async function submitQuotationTechnicalDraftForApproval(params: {
   draft.status = 'submitted_for_commercial_review';
   draft.submitted_at = now;
   draft.updated_at = now;
-  inMemoryTechnicalDrafts.set(draft.id, draft);
 
   const supabase = getServiceClient();
   if (supabase) {
-    await supabase
+    const { error: updateErr } = await supabase
       .from('quotation_technical_drafts')
       .update({
         status: draft.status,
         submitted_at: draft.submitted_at,
         updated_at: draft.updated_at,
       })
-      .eq('id', draft.id)
-      .then(
-        () => undefined,
-        () => undefined
-      );
+      .eq('id', draft.id);
+
+    if (updateErr) {
+      return {
+        ok: false,
+        status: 500,
+        message: `Failed to submit technical draft: ${updateErr.message}`,
+      };
+    }
 
     await supabase
       .from('commercial_approval_events')
@@ -635,13 +707,10 @@ export async function submitQuotationTechnicalDraftForApproval(params: {
         actor_role: params.actorRole,
         decision: 'submitted',
         notes: 'Technical quotation draft submitted for Super Admin commercial pricing & approval.',
-      })
-      .then(
-        () => undefined,
-        () => undefined
-      );
+      });
   }
 
+  inMemoryTechnicalDrafts.set(draft.id, draft);
   return { ok: true, draft };
 }
 
@@ -704,6 +773,20 @@ export async function approveAndPriceQuotationBySuperAdmin(params: {
       draft.review_notes = params.commercialNotes ?? null;
       draft.updated_at = now;
       inMemoryTechnicalDrafts.set(draft.id, draft);
+
+      const supabase = getServiceClient();
+      if (supabase) {
+        await supabase
+          .from('quotation_technical_drafts')
+          .update({
+            status: draft.status,
+            reviewed_by: draft.reviewed_by,
+            reviewed_at: draft.reviewed_at,
+            review_notes: draft.review_notes,
+            updated_at: draft.updated_at,
+          })
+          .eq('id', draft.id);
+      }
     }
     return { ok: true, decision: params.decision, draft };
   }
@@ -797,6 +880,21 @@ export async function approveAndPriceQuotationBySuperAdmin(params: {
     draft.review_notes = params.commercialNotes ?? null;
     draft.updated_at = now;
     inMemoryTechnicalDrafts.set(draft.id, draft);
+
+    const supabase = getServiceClient();
+    if (supabase) {
+      await supabase
+        .from('quotation_technical_drafts')
+        .update({
+          quotation_id: draft.quotation_id,
+          status: draft.status,
+          reviewed_by: draft.reviewed_by,
+          reviewed_at: draft.reviewed_at,
+          review_notes: draft.review_notes,
+          updated_at: draft.updated_at,
+        })
+        .eq('id', draft.id);
+    }
   }
 
   await recordAdminAction({

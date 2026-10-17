@@ -30,11 +30,11 @@ export default async function ClientPortalLayout({
               />
             </span>
             <div>
-              <span className="text-xs font-bold tracking-wider text-[var(--lit-navy,#0B2545)] block uppercase font-mono">
-                Client Portal
+              <span className="text-xs font-black tracking-wider text-[var(--lit-navy,#0B2545)] block uppercase font-mono truncate">
+                LOGIC INTELLIGENCE TECHNOLOGIES
               </span>
-              <span className="text-[10px] text-[var(--lit-teal,#1FA9A2)] font-semibold tracking-wider uppercase block">
-                Enterprise Workspace
+              <span className="text-[10px] text-[var(--lit-teal,#1FA9A2)] font-bold tracking-wider uppercase block">
+                Client Portal
               </span>
             </div>
           </Link>

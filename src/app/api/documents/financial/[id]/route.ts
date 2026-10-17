@@ -5,6 +5,7 @@ import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { env } from "@/config/env";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { DOCUMENTS_BUCKET } from "@/lib/documents/storage";
+import { resolveClientIdentity } from "@/lib/auth/client-identity";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -60,15 +61,14 @@ export async function GET(
     );
   }
 
-  // 3. Verify authorization: caller must be super_admin/admin or document owner
-  const { data: profile } = await supabaseAdmin
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
+  // 3. Verify authorization: caller must be super_admin/admin, staff assigned, or document owner
+  const clientContext = await resolveClientIdentity(user.id);
+  const isStaffAdmin = clientContext.role === "super_admin" || clientContext.role === "staff";
 
-  const isStaffAdmin = profile && (profile.role === "super_admin" || profile.role === "admin");
-  const isDirectOwner = doc.client_id === user.id;
+  const isDirectOwner = Boolean(
+    (clientContext.clientId && (doc.client_id === clientContext.clientId || doc.client_id === user.id)) ||
+    doc.client_id === user.id
+  );
 
   if (!isStaffAdmin && !isDirectOwner) {
     let isPaymentOwner = false;
@@ -78,7 +78,11 @@ export async function GET(
         .select("client_id")
         .eq("id", doc.payment_request_id)
         .maybeSingle();
-      if (pr && pr.client_id === user.id) {
+      if (
+        pr &&
+        ((clientContext.clientId && pr.client_id === clientContext.clientId) ||
+          pr.client_id === user.id)
+      ) {
         isPaymentOwner = true;
       }
     }

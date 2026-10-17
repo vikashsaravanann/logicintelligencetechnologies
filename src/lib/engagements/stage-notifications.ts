@@ -26,9 +26,23 @@ interface NotifyStageApprovalInput {
 /**
  * Builds human-readable details list from stage payload for emails
  */
-function extractStageDetails(stageKey: StageKey, payload: Record<string, any>): { summary: string; details: StageDetailItem[] } {
+function extractStageDetails(stageKey: StageKey, payload: Record<string, any>, action?: string): { summary: string; details: StageDetailItem[] } {
   const details: StageDetailItem[] = [];
   let summary = 'Client submitted stage information';
+
+  if (action === 'request_revision') {
+    summary = 'Revision requested by client';
+    if (payload.revisionNotes || payload.notes) {
+      details.push({ label: 'Revision Notes', value: String(payload.revisionNotes || payload.notes) });
+    }
+  } else if (action === 'ask_question') {
+    summary = 'Question / clarification inquiry submitted by client';
+    if (payload.question || payload.notes) {
+      details.push({ label: 'Inquiry', value: String(payload.question || payload.notes) });
+    }
+  } else if (action === 'report_payment') {
+    summary = 'Payment reported with UTR; pending Super Admin verification';
+  }
 
   switch (stageKey) {
     case 'checklist': {
@@ -234,10 +248,19 @@ export async function notifyStageSubmitted(input: NotifyStageSubmissionInput): P
   const portalUrl = `${siteUrl}/engagement/${engagement.engagement_ref}/${stageKey}`;
   const adminPortalUrl = `${siteUrl}/admin/engagements/${engagement.id}`;
 
-  const { summary, details } = extractStageDetails(stageKey, payload);
+  const { summary, details } = extractStageDetails(stageKey, payload, input.action);
 
   let clientEmailed = false;
   let adminEmailed = false;
+
+  let subjectPrefix = 'Submission Confirmed';
+  if (input.action === 'request_revision') {
+    subjectPrefix = 'Revision Requested';
+  } else if (input.action === 'ask_question') {
+    subjectPrefix = 'Question / Inquiry Received';
+  } else if (input.action === 'report_payment') {
+    subjectPrefix = 'Payment Reported (Pending Verification)';
+  }
 
   // 1. Email to Client
   if (engagement.contact_email) {
@@ -245,7 +268,7 @@ export async function notifyStageSubmitted(input: NotifyStageSubmissionInput): P
       const res = await sendEmail({
         to: engagement.contact_email,
         from: 'hello',
-        subject: `LIT | Submission Confirmed: Stage ${stageDef.ordinal} - ${stageDef.shortTitle} (${engagement.engagement_ref})`,
+        subject: `LIT | ${subjectPrefix}: Stage ${stageDef.ordinal} - ${stageDef.shortTitle} (${engagement.engagement_ref})`,
         category: 'transactional',
         eventType: 'client-stage-submission',
         templateKey: 'stage-submission-client-receipt-email',
@@ -272,7 +295,7 @@ export async function notifyStageSubmitted(input: NotifyStageSubmissionInput): P
     const adminRes = await sendEmail({
       to: ADMIN_EMAIL,
       from: 'hello',
-      subject: `[ADMIN ALERT] ${engagement.company_name} submitted Stage ${stageDef.ordinal}: ${stageDef.shortTitle}`,
+      subject: `[ADMIN ALERT] ${engagement.company_name} - ${subjectPrefix}: Stage ${stageDef.ordinal}: ${stageDef.shortTitle}`,
       category: 'transactional',
       eventType: 'admin-stage-submission-alert',
       templateKey: 'stage-submission-admin-alert-email',
@@ -299,31 +322,43 @@ export async function notifyStageSubmitted(input: NotifyStageSubmissionInput): P
 /**
  * Dispatches an email to the client when an Admin approves/verifies a stage,
  * informing them that Stage X was approved and Stage X+1 has unlocked!
+ * Never invents Stage 14 (MAIL03).
  */
 export async function notifyStageApproved(input: NotifyStageApprovalInput): Promise<{ ok: boolean }> {
   const { engagement, approvedStageKey, nextStageKey, adminNotes } = input;
   const approvedDef = CANONICAL_13_STAGES[approvedStageKey];
   if (!approvedDef || !engagement.contact_email) return { ok: false };
 
-  let nextKey = nextStageKey;
-  if (!nextKey) {
-    const currentIndex = ORDERED_STAGE_KEYS.indexOf(approvedStageKey);
-    if (currentIndex >= 0 && currentIndex < ORDERED_STAGE_KEYS.length - 1) {
-      nextKey = ORDERED_STAGE_KEYS[currentIndex + 1];
+  const isFinalStage = approvedDef.ordinal === 13;
+  let nextKey: StageKey | null = null;
+  let nextDef = null;
+
+  if (!isFinalStage && nextStageKey !== null) {
+    if (nextStageKey !== undefined) {
+      nextKey = nextStageKey;
+    } else {
+      const currentIndex = ORDERED_STAGE_KEYS.indexOf(approvedStageKey);
+      if (currentIndex >= 0 && currentIndex < ORDERED_STAGE_KEYS.length - 1) {
+        nextKey = ORDERED_STAGE_KEYS[currentIndex + 1];
+      }
     }
+    nextDef = nextKey ? CANONICAL_13_STAGES[nextKey] : null;
   }
 
-  const nextDef = nextKey ? CANONICAL_13_STAGES[nextKey] : null;
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || COMPANY.websiteUrl).replace(/\/$/, '');
   const nextStageUrl = nextKey
     ? `${siteUrl}/engagement/${engagement.engagement_ref}/${nextKey}`
     : `${siteUrl}/engagement/${engagement.engagement_ref}`;
 
+  const subject = isFinalStage
+    ? `LIT | Stage 13 Approved · Project Completed & Handed Over (${engagement.engagement_ref})`
+    : `LIT | Stage ${approvedDef.ordinal} Approved! Unlock Stage ${nextDef ? nextDef.ordinal : ''}: ${nextDef ? nextDef.shortTitle : 'Next Milestone'}`;
+
   try {
     const res = await sendEmail({
       to: engagement.contact_email,
       from: 'hello',
-      subject: `LIT | Stage ${approvedDef.ordinal} Approved! Unlock Stage ${nextDef ? nextDef.ordinal : ''}: ${nextDef ? nextDef.shortTitle : 'Next Milestone'}`,
+      subject,
       category: 'transactional',
       eventType: 'client-stage-approved',
       templateKey: 'stage-approved-client-email',
@@ -333,8 +368,8 @@ export async function notifyStageApproved(input: NotifyStageApprovalInput): Prom
         engagementRef: engagement.engagement_ref,
         approvedStageOrdinal: approvedDef.ordinal,
         approvedStageTitle: approvedDef.title,
-        nextStageOrdinal: nextDef ? nextDef.ordinal : approvedDef.ordinal + 1,
-        nextStageTitle: nextDef ? nextDef.title : 'Next Milestone',
+        nextStageOrdinal: nextDef ? nextDef.ordinal : null,
+        nextStageTitle: nextDef ? nextDef.title : 'Ongoing Technical Support',
         nextStageUrl,
         adminNotes,
       }),

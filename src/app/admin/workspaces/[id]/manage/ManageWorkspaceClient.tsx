@@ -16,8 +16,10 @@ import {
   CheckCircle2,
   Lock,
   ExternalLink,
+  Briefcase,
 } from "lucide-react";
 import { SafeEmployeeWorkspaceDTO, StaffWorkspaceStatus } from "@/lib/workspaces/types";
+import AssignProjectsModal from "@/app/admin/workspaces/components/AssignProjectsModal";
 
 interface Props {
   workspace: SafeEmployeeWorkspaceDTO;
@@ -29,6 +31,7 @@ export default function ManageWorkspaceClient({ workspace }: Props) {
   const [updating, setUpdating] = useState(false);
   const [resending, setResending] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [showAssignModal, setShowAssignModal] = useState(false);
 
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedLogin, setCopiedLogin] = useState(false);
@@ -232,6 +235,40 @@ export default function ManageWorkspaceClient({ workspace }: Props) {
         </div>
       </div>
 
+      {/* Client Engagements & Assignments */}
+      <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 space-y-4 shadow-2xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--lit-border-light,#DFE7EF)] pb-4">
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] flex items-center gap-2">
+              <Briefcase className="w-4 h-4 text-indigo-700" /> Client Engagements & Assignments
+            </h3>
+            <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-0.5">
+              Assign this staff member to client engagements, change permissions, or revoke project assignments.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowAssignModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-xs font-bold uppercase tracking-wider text-white transition-all shadow-2xs cursor-pointer"
+          >
+            <Briefcase className="w-3.5 h-3.5" />
+            <span>Assign Projects</span>
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between text-xs text-[var(--lit-text-muted,#52677C)]">
+          <span>Currently assigned to <strong className="text-[var(--lit-navy,#0B2545)] font-bold">{workspace.assignedEngagements?.length || 0}</strong> client engagement(s)</span>
+          <a
+            href={`/admin/workspaces/${workspace.workspaceId}/projects`}
+            className="text-indigo-600 hover:text-indigo-800 font-bold uppercase tracking-wider inline-flex items-center gap-1"
+          >
+            <span>View Projects</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
+      </div>
+
       {/* Status Lifecycle Governance Card */}
       <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 space-y-4 shadow-2xs">
         <div className="border-b border-[var(--lit-border-light,#DFE7EF)] pb-3">
@@ -296,6 +333,15 @@ export default function ManageWorkspaceClient({ workspace }: Props) {
           </div>
         </div>
       </div>
+
+      <AssignProjectsModal
+        isOpen={showAssignModal}
+        onClose={() => setShowAssignModal(false)}
+        workspaceId={workspace.workspaceId}
+        staffUserId={workspace.ownerUserId}
+        staffEmail={workspace.email}
+        staffName={workspace.fullName}
+      />
     </div>
   );
 }

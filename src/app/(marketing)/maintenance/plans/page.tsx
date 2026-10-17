@@ -196,41 +196,93 @@ export default function PublicMaintenancePlansPage() {
             </p>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-slate-100 border-b border-slate-200 text-slate-700">
-                  <th className="p-4 font-bold">Service / Entitlement</th>
-                  <th className="p-4 text-center font-bold">Free Trial</th>
-                  <th className="p-4 text-center font-bold">Standard</th>
-                  <th className="p-4 text-center font-bold">Basic</th>
-                  <th className="p-4 text-center font-bold text-blue-700 bg-blue-50/50">Pro</th>
-                  <th className="p-4 text-center font-bold">Enterprise</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {MAINTENANCE_FEATURES_MATRIX.map((row) => (
-                  <tr key={row.id} className="hover:bg-slate-50/60">
-                    <td className="p-4 font-medium text-slate-900">{row.name}</td>
-                    <td className="p-4 text-center text-slate-600">
-                      {typeof row.freeTrial === 'boolean' ? (row.freeTrial ? '✓' : '—') : row.freeTrial}
-                    </td>
-                    <td className="p-4 text-center text-slate-600">
-                      {typeof row.standard === 'boolean' ? (row.standard ? '✓' : '—') : row.standard}
-                    </td>
-                    <td className="p-4 text-center text-slate-600">
-                      {typeof row.basic === 'boolean' ? (row.basic ? '✓' : '—') : row.basic}
-                    </td>
-                    <td className="p-4 text-center font-semibold text-blue-900 bg-blue-50/30">
-                      {typeof row.pro === 'boolean' ? (row.pro ? '✓' : '—') : row.pro}
-                    </td>
-                    <td className="p-4 text-center font-semibold text-slate-900">
-                      {typeof row.enterprise === 'boolean' ? (row.enterprise ? '✓' : '—') : row.enterprise}
-                    </td>
+          <div>
+            {/* Mobile: Stacked Vertical Comparisons (Zero Horizontal Scroll on 320px/375px/390px) */}
+            <div className="block md:hidden p-4 space-y-4">
+              {[
+                { key: 'freeTrial', label: 'Free Trial', price: '₹20 (Refundable)' },
+                { key: 'standard', label: 'Standard', price: '₹999/mo + GST' },
+                { key: 'basic', label: 'Basic', price: '₹4,999/mo + GST' },
+                { key: 'pro', label: 'Pro (Recommended)', price: '₹9,999/mo + GST', highlight: true },
+                { key: 'enterprise', label: 'Enterprise', price: '₹19,999/mo + GST' },
+              ].map((tier) => (
+                <div
+                  key={tier.key}
+                  className={`rounded-xl p-4 border text-xs space-y-3 ${
+                    tier.highlight
+                      ? 'border-blue-300 bg-blue-50/50 shadow-2xs'
+                      : 'border-slate-200 bg-white shadow-2xs'
+                  }`}
+                >
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <span className="font-bold text-slate-900 text-sm">{tier.label}</span>
+                    <span className="font-semibold text-slate-600">{tier.price}</span>
+                  </div>
+                  <div className="space-y-2">
+                    {MAINTENANCE_FEATURES_MATRIX.map((row) => {
+                      const val = (row as any)[tier.key];
+                      const display = typeof val === 'boolean' ? (val ? 'Included' : 'Not included') : val;
+                      const isYes = val === true;
+                      const isNo = val === false;
+                      return (
+                        <div key={row.id} className="flex items-start justify-between gap-2 py-1 border-b border-slate-100 last:border-0">
+                          <span className="text-slate-700 font-medium">{row.name}</span>
+                          <span
+                            className={`font-semibold shrink-0 text-right ${
+                              isYes
+                                ? 'text-emerald-700'
+                                : isNo
+                                ? 'text-slate-400'
+                                : 'text-slate-800'
+                            }`}
+                          >
+                            {display}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: Side-by-side Matrix Table (md:block) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-slate-100 border-b border-slate-200 text-slate-700">
+                    <th className="p-4 font-bold">Service / Entitlement</th>
+                    <th className="p-4 text-center font-bold">Free Trial</th>
+                    <th className="p-4 text-center font-bold">Standard</th>
+                    <th className="p-4 text-center font-bold">Basic</th>
+                    <th className="p-4 text-center font-bold text-blue-700 bg-blue-50/50">Pro</th>
+                    <th className="p-4 text-center font-bold">Enterprise</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {MAINTENANCE_FEATURES_MATRIX.map((row) => (
+                    <tr key={row.id} className="hover:bg-slate-50/60">
+                      <td className="p-4 font-medium text-slate-900">{row.name}</td>
+                      <td className="p-4 text-center text-slate-600">
+                        {typeof row.freeTrial === 'boolean' ? (row.freeTrial ? '✓' : '—') : row.freeTrial}
+                      </td>
+                      <td className="p-4 text-center text-slate-600">
+                        {typeof row.standard === 'boolean' ? (row.standard ? '✓' : '—') : row.standard}
+                      </td>
+                      <td className="p-4 text-center text-slate-600">
+                        {typeof row.basic === 'boolean' ? (row.basic ? '✓' : '—') : row.basic}
+                      </td>
+                      <td className="p-4 text-center font-semibold text-blue-900 bg-blue-50/30">
+                        {typeof row.pro === 'boolean' ? (row.pro ? '✓' : '—') : row.pro}
+                      </td>
+                      <td className="p-4 text-center font-semibold text-slate-900">
+                        {typeof row.enterprise === 'boolean' ? (row.enterprise ? '✓' : '—') : row.enterprise}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 

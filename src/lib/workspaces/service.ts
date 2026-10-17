@@ -166,7 +166,7 @@ export async function createStaffWorkspace(
     }
 
     // 6. Insert staff_employees
-    const { data: employeeRecord, error: employeeError } = await supabaseAdmin
+    const { error: employeeError } = await supabaseAdmin
       .from("staff_employees")
       .insert({
         auth_user_id: authUserId,
@@ -388,7 +388,7 @@ export async function listStaffWorkspaces(
 ): Promise<StaffWorkspaceSummaryDTO[]> {
   await assertSuperAdmin(actorUserId);
 
-  let query = supabaseAdmin
+  const query = supabaseAdmin
     .from("staff_workspaces")
     .select(`
       id,
@@ -560,32 +560,58 @@ export async function getStaffWorkspace(
     .from("staff_client_assignments")
     .select(`
       id,
+      client_id,
       engagement_id,
       assignment_role,
+      status,
+      expires_at,
       can_view_technical_stages,
       can_prepare_technical_quotation,
       can_prepare_invoice_request,
+      clients (
+        id,
+        legal_name,
+        display_name
+      ),
       client_engagements (
         id,
         project_title,
+        company_name,
         clients (
           id,
-          company_name
+          legal_name,
+          display_name
         )
       )
     `)
     .eq("staff_user_id", ws.owner_user_id)
     .eq("status", "active");
 
-  const safeAssignments = (assignments || []).map((a: any) => ({
-    assignmentId: a.id,
-    engagementId: a.engagement_id,
-    clientName: a.client_engagements?.clients?.company_name || a.client_engagements?.project_title || "Assigned Engagement",
-    assignmentRole: a.assignment_role,
-    canViewTechnicalStages: a.can_view_technical_stages,
-    canPrepareTechnicalQuotation: a.can_prepare_technical_quotation,
-    canPrepareInvoiceRequest: a.can_prepare_invoice_request,
-  }));
+  const isSuspendedOrOffboarded = emp && (emp.employment_status === "suspended" || emp.employment_status === "offboarded");
+
+  const safeAssignments = isSuspendedOrOffboarded
+    ? []
+    : (assignments || [])
+        .filter((a: any) => !a.expires_at || new Date(a.expires_at).getTime() > Date.now())
+        .map((a: any) => {
+          const clientName =
+            a.client_engagements?.company_name ||
+            a.client_engagements?.clients?.display_name ||
+            a.client_engagements?.clients?.legal_name ||
+            a.clients?.display_name ||
+            a.clients?.legal_name ||
+            a.client_engagements?.project_title ||
+            "Assigned Engagement";
+          return {
+            assignmentId: a.id,
+            engagementId: a.engagement_id || null,
+            clientName,
+            assignmentRole: a.assignment_role,
+            canViewTechnicalStages: Boolean(a.can_view_technical_stages),
+            canPrepareTechnicalQuotation: Boolean(a.can_prepare_technical_quotation),
+            canPrepareInvoiceRequest: Boolean(a.can_prepare_invoice_request),
+          };
+        });
 
   return {
     workspaceId: ws.id,

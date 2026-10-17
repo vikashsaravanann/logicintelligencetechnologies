@@ -7,13 +7,16 @@ import {
 } from '@/lib/engagements/db';
 import { StageKey, ORDERED_STAGE_KEYS } from '@/lib/engagements/types';
 import { getStaffSession, requireCapabilityApi } from '@/lib/auth/session';
+import { getVerifiedClientUser } from '@/lib/auth/client-auth';
+import { assertClientEngagementAccess } from '@/lib/auth/client-identity';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { hasCapability } from '@/config/roles';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   context: { params: Promise<{ ref: string; stageKey: string }> | { ref: string; stageKey: string } }
 ) {
   try {
@@ -40,6 +43,48 @@ export async function GET(
       return NextResponse.json(
         { success: false, error: 'Engagement not found or unauthorized.' },
         { status: 404 }
+      );
+    }
+
+    // Verify caller authorization: superadmin, assigned staff, verified client owner, or authorized bearer token
+    let isAuthorized = false;
+    const staff = await getStaffSession();
+    if (staff) {
+      if (staff.role === 'super_admin') {
+        isAuthorized = true;
+      } else {
+        const { data: assignment } = await supabaseAdmin
+          .from('staff_client_assignments')
+          .select('id, status, expires_at, can_view_technical_stages')
+          .eq('staff_user_id', staff.userId)
+          .eq('engagement_id', engagement.id)
+          .eq('status', 'active')
+          .maybeSingle();
+
+        if (assignment && (!assignment.expires_at || new Date(assignment.expires_at).getTime() > Date.now())) {
+          isAuthorized = true;
+        }
+      }
+    } else {
+      const client = await getVerifiedClientUser();
+      if (client) {
+        const hasAccess = await assertClientEngagementAccess(client.user.id, engagement.id);
+        if (hasAccess || (engagement.contact_email && engagement.contact_email.toLowerCase() === client.email)) {
+          isAuthorized = true;
+        }
+      } else {
+        const authHeader = req.headers.get('authorization');
+        const token = authHeader?.replace(/^Bearer\s+/i, '') || new URL(req.url).searchParams.get('token');
+        if (token && (engagement.metadata?.secure_token === token || (engagement as any).secure_token === token)) {
+          isAuthorized = true;
+        }
+      }
+    }
+
+    if (!isAuthorized) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Authentication or valid bearer token required to view stage details.' },
+        { status: 401 }
       );
     }
 
@@ -83,8 +128,16 @@ export async function POST(
       );
     }
 
+    const engagement = await getEngagementByRef(ref);
+    if (!engagement) {
+      return NextResponse.json(
+        { success: false, error: 'Engagement not found or unauthorized.' },
+        { status: 404 }
+      );
+    }
+
     const body = await req.json().catch(() => ({}));
-    const { action, payload, actorId, actorRole } = body;
+    const { action, payload, actorRole } = body;
 
     if (!action || typeof action !== 'string') {
       return NextResponse.json(
@@ -93,11 +146,82 @@ export async function POST(
       );
     }
 
-    // Server-derived actor role: check staff session.
-    // Policy 2: Staff cannot impersonate a client or submit client-only signatures/utr/acceptance actions as 'client'.
+    // Resolve authenticated caller strictly server-side
     const staff = await getStaffSession();
-    if (staff) {
-      if (actorRole === 'client') {
+    const verifiedClient = !staff ? await getVerifiedClientUser() : null;
+
+    if (!staff && !verifiedClient) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required to submit stage actions.' },
+        { status: 401 }
+      );
+    }
+
+    let verifiedActorRole: 'client' | 'admin' = 'client';
+    let verifiedActorId: string = '';
+    const sanitizedPayload = { ...(payload || {}) };
+
+    if (verifiedClient) {
+      const hasAccess =
+        (await assertClientEngagementAccess(verifiedClient.user.id, engagement.id)) ||
+        (engagement.contact_email && engagement.contact_email.toLowerCase() === verifiedClient.email);
+
+      if (!hasAccess) {
+        return NextResponse.json(
+          { success: false, error: 'Forbidden: You do not have ownership access to this engagement.' },
+          { status: 403 }
+        );
+      }
+
+      // Reject administrative actions invoked by clients
+      const adminActions = [
+        'admin_approve_stage',
+        'admin_override_status',
+        'admin_unlock_stage',
+        'approve_stage',
+        'verify_bank_credit',
+      ];
+      if (adminActions.includes(action)) {
+        return NextResponse.json(
+          { success: false, error: 'Forbidden: Client session cannot execute administrative actions.' },
+          { status: 403 }
+        );
+      }
+
+      // Disallow arbitrary payload.status state jumps attempted by clients
+      delete sanitizedPayload.status;
+
+      verifiedActorRole = 'client';
+      verifiedActorId = verifiedClient.email;
+    } else if (staff) {
+      // Check staff assignment to engagement
+      if (staff.role !== 'super_admin') {
+        const { data: assignment } = await supabaseAdmin
+          .from('staff_client_assignments')
+          .select('id, status, expires_at, can_view_technical_stages')
+          .eq('staff_user_id', staff.userId)
+          .eq('engagement_id', engagement.id)
+          .eq('status', 'active')
+          .maybeSingle();
+
+        if (!assignment || (assignment.expires_at && new Date(assignment.expires_at).getTime() <= Date.now())) {
+          return NextResponse.json(
+            { success: false, error: 'Forbidden: Staff member is not assigned to this engagement or assignment has expired.' },
+            { status: 403 }
+          );
+        }
+      }
+
+      // Policy 2: Staff cannot impersonate a client or submit client-only signatures/acceptance actions as 'client'
+      const clientOnlyActions = [
+        'client_accept',
+        'client_sign_contract',
+        'client_accept_quote',
+        'confirm_handover_acceptance',
+        'submit_billing_details',
+        'report_payment_utr',
+      ];
+      if (actorRole === 'client' || clientOnlyActions.includes(action)) {
         return NextResponse.json(
           {
             success: false,
@@ -107,7 +231,14 @@ export async function POST(
           { status: 403 }
         );
       }
-      const adminStageOverrideActions = ['admin_approve_stage', 'admin_override_status', 'admin_unlock_stage'];
+
+      const adminStageOverrideActions = [
+        'admin_approve_stage',
+        'admin_override_status',
+        'admin_unlock_stage',
+        'approve_stage',
+        'verify_bank_credit',
+      ];
       if (
         adminStageOverrideActions.includes(action) &&
         !hasCapability(staff.role, 'engagement.stage.approve')
@@ -120,19 +251,34 @@ export async function POST(
           { status: 403 }
         );
       }
-    }
 
-    const isStaff = Boolean(staff && hasCapability(staff.role, 'clients.write'));
-    const verifiedActorRole = isStaff ? 'admin' : 'client';
-    const verifiedActorId = isStaff
-      ? (staff?.email || staff?.userId)
-      : (actorId ? String(actorId) : undefined);
+      // Invariant: Payment stages cannot be verified via generic stage action
+      if (stageKey === 'initial-invoice' || stageKey === 'final-payment') {
+        if (
+          action === 'verify_bank_credit' ||
+          action === 'admin_approve_stage' ||
+          action === 'approve_stage' ||
+          ['paid', 'verified', 'approved'].includes(sanitizedPayload.status)
+        ) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Payment stages (${stageKey}) cannot be marked verified via generic stage action. Reconcile bank credit via /api/admin/payments/reconcile.`,
+            },
+            { status: 400 }
+          );
+        }
+      }
+
+      verifiedActorRole = 'admin';
+      verifiedActorId = staff.email || staff.userId;
+    }
 
     const result = await submitStageAction({
       engagementRef: ref,
       stageKey,
       action,
-      payload: payload || {},
+      payload: sanitizedPayload,
       actorRole: verifiedActorRole,
       actorId: verifiedActorId,
     });

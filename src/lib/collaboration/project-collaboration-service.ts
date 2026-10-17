@@ -234,24 +234,26 @@ export async function acceptProjectInvitation(rawToken: string, callerUserId: st
     throw new Error("ACCOUNT_MISMATCH: You must sign in with the email address this invitation was sent to.");
   }
 
-  // 3. Update invitation status to accepted
+  // 3. Create or upsert assignment first to ensure atomic membership creation
   const now = new Date().toISOString();
-  await supabaseAdmin
-    .from("project_staff_invitations")
-    .update({
-      status: "accepted",
-      accepted_by_user_id: callerUserId,
-      accepted_at: now,
-      updated_at: now,
-    })
-    .eq("id", invite.id);
 
-  // 4. Upsert project assignment
+  // Retrieve client_id from engagement to ensure full relational attribution
+  let clientId: string | null = null;
+  const { data: engRecord } = await supabaseAdmin
+    .from("client_engagements")
+    .select("client_id")
+    .eq("id", invite.engagement_id)
+    .maybeSingle();
+  if (engRecord?.client_id) {
+    clientId = engRecord.client_id;
+  }
+
   const { error: assignErr } = await supabaseAdmin
     .from("staff_client_assignments")
     .upsert(
       {
         staff_user_id: callerUserId,
+        client_id: clientId,
         engagement_id: invite.engagement_id,
         assignment_role: invite.requested_role,
         status: "active",
@@ -268,6 +270,26 @@ export async function acceptProjectInvitation(rawToken: string, callerUserId: st
 
   if (assignErr) {
     throw new Error(`Failed to create assignment: ${assignErr.message}`);
+  }
+
+  // 4. Update invitation status to accepted ONLY after assignment succeeds
+  const { error: inviteErr } = await supabaseAdmin
+    .from("project_staff_invitations")
+    .update({
+      status: "accepted",
+      accepted_by_user_id: callerUserId,
+      accepted_at: now,
+      updated_at: now,
+    })
+    .eq("id", invite.id);
+  if (inviteErr) {
+    // Rollback created assignment to guarantee atomic state
+    await supabaseAdmin
+      .from("staff_client_assignments")
+      .delete()
+      .eq("staff_user_id", callerUserId)
+      .eq("engagement_id", invite.engagement_id);
+    throw new Error(`Failed to update invitation status: ${inviteErr.message}`);
   }
 
   return {

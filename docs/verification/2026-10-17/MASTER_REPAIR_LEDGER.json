@@ -1,0 +1,522 @@
+[
+  {
+    "id": "AUTH01",
+    "priority": "Critical",
+    "title": "Email-based trigger can grant superadmin access",
+    "detail": "Authenticated users may update their own profile email. The later BEFORE trigger assigns super_admin from that editable email after the role guard has run. Catalog grants and both trigger definitions are present in production; no account mutation was attempted.",
+    "file": "supabase/migrations/20261012010000_super_admin_createwithvikash.sql",
+    "line": 8,
+    "action": "Remove ongoing email-based role assignment; preserve existing legitimate superadmin Auth UUIDs and emails; protect privileged fields using verified identity.",
+    "basis": "Live grants and trigger definitions + source"
+  },
+  {
+    "id": "AUTH02",
+    "priority": "Critical",
+    "title": "Authorization trusts user-editable metadata",
+    "detail": "Production advisor flags 27 policies referencing user_metadata. Live is_staff_or_admin also trusts editable metadata and an email suffix.",
+    "file": "supabase/migrations/20261015020000_client_portal_v4_conversations.sql",
+    "line": 67,
+    "action": "Use protected database roles and exact ownership/assignment; remove unsafe legacy helper use.",
+    "basis": "Live advisor + function/policy definitions"
+  },
+  {
+    "id": "AUTH03",
+    "priority": "Critical",
+    "title": "Payment RPC trusts a supplied administrator identity",
+    "detail": "Live SECURITY DEFINER reconcile_and_approve_payment is executable by authenticated and checks p_admin_user_id rather than binding the acting user to auth.uid().",
+    "file": "supabase/migrations/20261014200000_dedicated_upi_payment_portal.sql",
+    "line": 636,
+    "action": "Authorize the actual authenticated caller or restrict RPC to a trusted server role; validate amount and exact project atomically.",
+    "basis": "Live function definition and execute grants"
+  },
+  {
+    "id": "AUTH04",
+    "priority": "High",
+    "title": "Old broad staff policies bypass assignment restrictions",
+    "detail": "ce_auth_staff_all, es_auth_staff_all, edl_auth_staff_all and cicr_auth_staff_all remain alongside narrower assignment policies in production.",
+    "file": "supabase/migrations/20261016140000_harden_engagement_quotation_rls.sql",
+    "line": 116,
+    "action": "Replace all overlapping permissive policies with the intended access model; test roles at SQL and API boundaries.",
+    "basis": "Live pg_policies"
+  },
+  {
+    "id": "AUTH05",
+    "priority": "High",
+    "title": "Engagement reads and forms lack verified client ownership",
+    "detail": "Stage GET uses reference alone; POST treats non-staff callers as clients and accepts supplied actor identity. Identity-correction POST verifies existence rather than caller ownership.",
+    "file": "src/app/api/engagements/[ref]/stages/[stageKey]/route.ts",
+    "line": 38,
+    "action": "Apply one verified engagement access resolver to pages, APIs, document reads and mutations.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "AUTH06",
+    "priority": "High",
+    "title": "Alternate stage actions bypass founder approval controls",
+    "detail": "POST checks only selected action names. Service admin branches accept approval/payment action variants and payload statuses without equivalent capability and assignment gates.",
+    "file": "src/app/api/engagements/[ref]/stages/[stageKey]/route.ts",
+    "line": 110,
+    "action": "Allowlist action/state transitions and authorize every action at the service boundary.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "AUTH07",
+    "priority": "High",
+    "title": "Maintenance status and correction APIs disclose data",
+    "detail": "Subscription status returns full orders including secure_token by engagement ID; correction GET can return recent requests across clients without an engagement filter or caller authentication.",
+    "file": "src/app/api/subscriptions/status/route.ts",
+    "line": 14,
+    "action": "Require identity and exact engagement scope; return explicit safe response fields.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "AUTH08",
+    "priority": "High",
+    "title": "New maintenance mutations accept caller-supplied client identity",
+    "detail": "Order and correction creation fall back to body.clientId after failed authentication and do not verify engagement ownership.",
+    "file": "src/app/api/subscriptions/order/route.ts",
+    "line": 20,
+    "action": "Reject unauthenticated requests; derive identity from session and validate client-engagement relationship.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "AUTH09",
+    "priority": "High",
+    "title": "Client maintenance policies permit financial/status tampering",
+    "detail": "Live order INSERT/UPDATE policies constrain ownership but not the sensitive columns or resulting status. Authenticated users hold INSERT and UPDATE grants.",
+    "file": "supabase/migrations/20261017050000_maintenance_and_subscriptions_five_options.sql",
+    "line": 454,
+    "action": "Use constrained server mutations or precise column grants and immutable transitions; protect plan, amount, owner and verification fields.",
+    "basis": "Live policies and grants + source"
+  },
+  {
+    "id": "AUTH10",
+    "priority": "High",
+    "title": "Assigned staff can delete subscriptions",
+    "detail": "Live FOR ALL policy admits assigned staff in USING; WITH CHECK protects new rows but does not restrict DELETE. Authenticated DELETE grant exists.",
+    "file": "supabase/migrations/20261017050000_maintenance_and_subscriptions_five_options.sql",
+    "line": 433,
+    "action": "Split assigned staff SELECT from founder-only mutations.",
+    "basis": "Live policy and DELETE grant"
+  },
+  {
+    "id": "AUTH11",
+    "priority": "High",
+    "title": "Payment token validation is optional",
+    "detail": "Both billing and UTR checks run only if secureToken is truthy; omitting it bypasses token matching. UTR writes also need terminal-state validation.",
+    "file": "src/lib/payments/db.ts",
+    "line": 345,
+    "action": "Require a nonempty valid token or verified owner context, expiry, state and request association.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "AUTH12",
+    "priority": "High",
+    "title": "Client UUID and login UUID are confused",
+    "detail": "Financial PDF handlers and payment RLS compare clients(id) references directly with auth.users(id), bypassing clients.user_id mapping and denying legitimate owners.",
+    "file": "src/app/api/documents/financial/[id]/route.ts",
+    "line": 71,
+    "action": "Resolve one canonical client identity relationship and use it across PDFs, billing, RLS and payments.",
+    "basis": "Live schema/policies + source"
+  },
+  {
+    "id": "AUTH13",
+    "priority": "High",
+    "title": "Other admin routes expose global project and finance data",
+    "detail": "Command center and engagement/support pages use broad capabilities then privileged global reads; workspace-level redaction does not secure these alternate paths.",
+    "file": "src/app/admin/command-center/page.tsx",
+    "line": 52,
+    "action": "Scope every query and output to assignments; founder-only financial visibility where required.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "AUTH14",
+    "priority": "High",
+    "title": "Expired or restricted assignments can still open project details",
+    "detail": "Workspace assignment mapper filters status only and project detail does not enforce expiry or canViewTechnicalStages.",
+    "file": "src/lib/workspaces/service.ts",
+    "line": 558,
+    "action": "Enforce active state, expiry, employment and resource permissions in one shared resolver.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "AUTH15",
+    "priority": "High",
+    "title": "A credential is embedded in a live database function",
+    "detail": "A live welcome-email trigger definition contains a literal webhook credential. Its value is deliberately omitted from this report.",
+    "file": "supabase/migrations/20260823000000_init_schema.sql",
+    "line": 1,
+    "action": "Locate the owning function, rotate that credential and migrate secret storage to a protected secret facility; examine repository history without printing secrets.",
+    "basis": "Live function definition; source location requires exact owning migration verification"
+  },
+  {
+    "id": "BILL01",
+    "priority": "High",
+    "title": "Maintenance verification does not validate actual credited amount",
+    "detail": "Paid maintenance activation takes no bank-credit amount and does not enforce canonical plan total; milestone paths check only positive credit or use fallback amounts.",
+    "file": "src/lib/subscriptions/service.ts",
+    "line": 312,
+    "action": "Reconcile actual bank credit in integer paise against the approved order and record partial/overpayment explicitly.",
+    "basis": "Source confirmed; isolated agent probe"
+  },
+  {
+    "id": "BILL02",
+    "priority": "High",
+    "title": "Verification and subscription activation are not atomic",
+    "detail": "Order becomes verified before subscription insert. Failure strands the order and retries reject it; concurrent verification is not safely claimed.",
+    "file": "src/lib/subscriptions/service.ts",
+    "line": 317,
+    "action": "Use a locked transaction with idempotency and durable event enqueue.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "BILL03",
+    "priority": "High",
+    "title": "Trial index also blocks paid Standard activation",
+    "detail": "Production unique index includes both STANDARD and FREE_TRIAL for active/pending subscriptions, preventing a trial-to-Standard upgrade.",
+    "file": "supabase/migrations/20261017060000_standard_free_trial_twenty_rupees.sql",
+    "line": 66,
+    "action": "Separate trial consumption from paid subscription renewal/upgrade uniqueness.",
+    "basis": "Live index definition + source"
+  },
+  {
+    "id": "BILL04",
+    "priority": "Medium",
+    "title": "Trials, paid Standard and refunds are conflated",
+    "detail": "Expired trials can be repeated; paid STANDARD is labelled a free trial in UI and can enter refund processing. Refund transitions accept invented references and backward status movement.",
+    "file": "src/components/maintenance/MaintenancePlansSection.tsx",
+    "line": 176,
+    "action": "Use canonical planType throughout; define trial eligibility and evidence-backed terminal refund transitions.",
+    "basis": "Source confirmed; isolated agent probes"
+  },
+  {
+    "id": "BILL05",
+    "priority": "High",
+    "title": "Duplicate bank-credit allocation is not prevented",
+    "detail": "Maintenance UTR and reconciliation references lack an atomic uniqueness/allocation model across orders.",
+    "file": "src/lib/subscriptions/service.ts",
+    "line": 186,
+    "action": "Allocate each verified bank transaction once using database constraints and idempotent operations.",
+    "basis": "Source/schema confirmed"
+  },
+  {
+    "id": "MAIL01",
+    "priority": "High",
+    "title": "Maintenance notifications use the wrong live outbox schema",
+    "detail": "Service writes recipient_email/template_id/payload/metadata and queued; live queue instead requires recipient, sender, event_type, idempotency_key, subject and supported status fields. Errors are ignored.",
+    "file": "src/lib/subscriptions/service.ts",
+    "line": 154,
+    "action": "Use the existing enqueue/send contract, actual client recipients and checked durable writes for every lifecycle event.",
+    "basis": "Live columns + source"
+  },
+  {
+    "id": "MAIL02",
+    "priority": "High",
+    "title": "Retried messages lose required PDF attachments",
+    "detail": "Immediate send includes attachment bytes but durable outbox and retry worker have no attachment references/loading.",
+    "file": "src/lib/email/send-email.ts",
+    "line": 267,
+    "action": "Persist immutable artifact references and verify/download those bytes on every send attempt.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "MAIL03",
+    "priority": "High",
+    "title": "Stage emails can falsely describe acceptance or unlocks",
+    "detail": "Question/revision/decline actions reuse signature/acceptance summaries; null next stage can be replaced by a guessed stage and terminal approval can refer to Stage 14.",
+    "file": "src/lib/engagements/stage-notifications.ts",
+    "line": 94,
+    "action": "Build action-specific emails from committed transitions; omit unlocks that did not occur; no Stage 14.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "MAIL04",
+    "priority": "Medium",
+    "title": "Stage notification work may not be durably enqueued",
+    "detail": "Fire-and-forget notification promises let the request complete before enqueue; UI claims dispatch without checking delivery state.",
+    "file": "src/lib/engagements/db.ts",
+    "line": 727,
+    "action": "Commit outbox events before returning; distinguish saved, queued, provider-accepted and delivered.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "PDF01",
+    "priority": "High",
+    "title": "Concurrent Python renders share client values",
+    "detail": "Renderer mutates process-global fill data, occurrence counters and section context, so concurrent client documents can mix fields.",
+    "file": "services/pdf-renderer/app.py",
+    "line": 69,
+    "action": "Make all render state request-local or serialize the entire operation as an interim containment.",
+    "basis": "Source confirmed; isolated deterministic agent probe"
+  },
+  {
+    "id": "PDF02",
+    "priority": "High",
+    "title": "PDF generation, storage and downloads are disconnected",
+    "detail": "Some milestone generation paths record links/hashes without publishing the generated bytes as the authoritative financial artifact; latest fallbacks are not engagement-specific resolvers.",
+    "file": "src/lib/engagements/db.ts",
+    "line": 1532,
+    "action": "Publish one immutable version and use its bytes/hash for preview, download and every email attempt.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "PDF03",
+    "priority": "Medium",
+    "title": "Stage auto-fill is not fully integrated",
+    "detail": "Registry and render-job helpers are disconnected from stage submission; template IDs/meanings differ across TypeScript and Python and many previews still use blank masters.",
+    "file": "src/lib/documents/master-field-registry.ts",
+    "line": 848,
+    "action": "Unify template IDs and field mappings; generate stage artifacts from validated versioned project snapshots.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "PDF04",
+    "priority": "Medium",
+    "title": "Preview modal lacks reliable geometry and keyboard handling",
+    "detail": "Width plus max-height can break 2:3, native iframe hiding does not guarantee fixed-scale rendering, and focus trapping/initial focus and document state resets are incomplete.",
+    "file": "src/components/pdf/PdfPreviewModal.tsx",
+    "line": 78,
+    "action": "Use a controlled fit-width PDF renderer without custom zoom, correct viewport-derived geometry and accessible dialog behavior.",
+    "basis": "Source confirmed; private modal not browser tested"
+  },
+  {
+    "id": "FORMS01",
+    "priority": "High",
+    "title": "Some successful submissions can lose database writes",
+    "detail": "Stage central writes, checklist child responses, quotation revisions/acceptance evidence and central intake can ignore required database errors.",
+    "file": "src/lib/engagements/db.ts",
+    "line": 650,
+    "action": "Commit required form data atomically and return failure for incomplete persistence; make retries idempotent.",
+    "basis": "Source confirmed; full form audit agent pending"
+  },
+  {
+    "id": "FORMS02",
+    "priority": "Medium",
+    "title": "Messages and project requests lack the promised assigned-staff inbox",
+    "detail": "Client messages persist to conversation_messages while no complete assigned-staff reply consumer is wired; RFC staff view shows identity corrections rather than client change requests.",
+    "file": "src/app/admin/workspaces/[id]/projects/[projectId]/page.tsx",
+    "line": 68,
+    "action": "Implement shared project-scoped conversations and request queues with authorized two-way replies.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "FORMS03",
+    "priority": "Medium",
+    "title": "Support tickets use incompatible stores and ownership",
+    "detail": "Stage tickets are snapshot entries instead of support_tickets; public support submissions lack the user ownership expected by client portal filtering.",
+    "file": "src/lib/engagements/db.ts",
+    "line": 450,
+    "action": "Use canonical support records with project, client and staff assignment links; migrate legacy snapshots.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "FORMS04",
+    "priority": "Medium",
+    "title": "Discovery answers are not fully stored or exposed",
+    "detail": "Checklist API persists only selected answers instead of the submitted discovery array; missing admin reader leaves records outside the intended workflow.",
+    "file": "src/app/api/checklist/route.ts",
+    "line": 56,
+    "action": "Persist all validated answers and provide a form-specific admin view.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "WS01",
+    "priority": "High",
+    "title": "Assignment writes can report success without persistence",
+    "detail": "Assignment service caches before inserting and ignores errors; initial workspace assignments can warn yet report workspace success.",
+    "file": "src/lib/support/staff-support.ts",
+    "line": 319,
+    "action": "Use database-first committed writes, explicit partial outcomes and no production cache fallback success.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "WS02",
+    "priority": "High",
+    "title": "Project invitation acceptance has no matching unique key",
+    "detail": "Production assignment indexes do not contain the staff_user_id,engagement_id unique target used by onConflict. Invitation is accepted before assignment succeeds.",
+    "file": "src/lib/collaboration/project-collaboration-service.ts",
+    "line": 210,
+    "action": "Choose and enforce the intended uniqueness key; accept invitation and create membership atomically.",
+    "basis": "Live indexes + source"
+  },
+  {
+    "id": "WS03",
+    "priority": "Medium",
+    "title": "Post-creation Assign Projects control is missing",
+    "detail": "Existing Assigned Projects page displays assignments; the promised workspace project picker and add/edit/reassign/revoke workflow are not present.",
+    "file": "src/app/admin/workspaces/[id]/projects/page.tsx",
+    "line": 1,
+    "action": "Add founder-only Assign Projects modal with real engagement picker and durable permission/expiry controls.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "WS04",
+    "priority": "Medium",
+    "title": "Client-only assignment can crash project list",
+    "detail": "Schema permits a null engagement ID but project display calls engagementId.slice without a null-safe path.",
+    "file": "src/app/admin/workspaces/[id]/projects/page.tsx",
+    "line": 143,
+    "action": "Model client-only and project-specific assignment types and guard project-detail navigation.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "NAV01",
+    "priority": "Medium",
+    "title": "Portal shells differ from the requested header and white theme",
+    "detail": "Admin/client use separate sidebars, staff tabs differ, branding is stacked, and dark surfaces remain in some portal components.",
+    "file": "src/app/admin/components/AdminShell.tsx",
+    "line": 30,
+    "action": "Use shared white portal chrome with 6–8 primary destinations plus More, a logo and a single-line wordmark.",
+    "basis": "Source confirmed; authenticated rendering unverified"
+  },
+  {
+    "id": "NAV02",
+    "priority": "Medium",
+    "title": "Directory is overbroad and not capability filtered",
+    "detail": "164 entries span 13 categories including public pages, aliases and samples; directory visibility does not apply the canonical role/capability filter.",
+    "file": "src/app/admin/command-center/components/MasterModuleDirectory.tsx",
+    "line": 517,
+    "action": "Retain useful operational modules; move secondary/public links out of daily navigation; remove redundant directory entries and gate every link.",
+    "basis": "Source inventory"
+  },
+  {
+    "id": "NAV03",
+    "priority": "Medium",
+    "title": "Client gateway points to a missing destination",
+    "detail": "/client redirects to /client/workspace, which has no page; client/dashboard is implemented.",
+    "file": "next.config.ts",
+    "line": 32,
+    "action": "Point the gateway to its real authorized landing page and test complete redirect chains.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "NAV04",
+    "priority": "Medium",
+    "title": "Active navigation can select multiple destinations",
+    "detail": "Serialized active matcher discards exact-match exceptions; a hash route can never match pathname for Milestone Journey.",
+    "file": "src/config/admin-nav.ts",
+    "line": 149,
+    "action": "Derive active state from route metadata and handle hash navigation explicitly.",
+    "basis": "Source confirmed; isolated navigation probe"
+  },
+  {
+    "id": "UI01",
+    "priority": "Medium",
+    "title": "Maintenance comparison requires horizontal scrolling on mobile",
+    "detail": "Measured at viewport390: document width390, but comparison container width360 has528px scroll content. It fails the requested vertical-only component layout.",
+    "file": "src/app/(marketing)/maintenance/plans/page.tsx",
+    "line": 1,
+    "action": "Use stacked feature comparisons/cards on narrow screens; test visible controls without root clipping.",
+    "basis": "Live browser measurement"
+  },
+  {
+    "id": "OPS01",
+    "priority": "High",
+    "title": "Trial expiry is not registered in checked schedules",
+    "detail": "Vercel config lists only two unrelated jobs and production has no cron.job table. An external scheduler is not verified. Cron route fails open if CRON_SECRET is missing.",
+    "file": "src/app/api/cron/trial-expiration/route.ts",
+    "line": 16,
+    "action": "Register and verify an authenticated scheduler and enforce expiry during access checks; fail closed on missing secret.",
+    "basis": "Live cron metadata + source; external scheduler unverified"
+  },
+  {
+    "id": "OPS02",
+    "priority": "Medium",
+    "title": "Security hardening configuration remains incomplete",
+    "detail": "Live advisor flags leaked-password protection disabled,10 mutable function search paths and executable SECURITY DEFINER routines requiring review. Root response lacks CSP/frame/content-type/referrer hardening headers.",
+    "file": "next.config.ts",
+    "line": 47,
+    "action": "Review each warning, enforce least privilege, stage a tested CSP and add applicable headers; enable supported password defenses.",
+    "basis": "Live advisor, grants and HTTP headers"
+  },
+  {
+    "id": "QA01",
+    "priority": "Medium",
+    "title": "Lint fails despite successful tests and typecheck",
+    "detail": "Current lint run has one prefer-const error in workspace service391 and835 warnings.",
+    "file": "src/lib/workspaces/service.ts",
+    "line": 391,
+    "action": "Fix the error and triage warnings without disabling protections.",
+    "basis": "Reproduced local lint"
+  },
+  {
+    "id": "QA02",
+    "priority": "High",
+    "title": "Dependency audit still reports affected packages",
+    "detail": "Current registry audit reports13 affected nodes:1critical,10high,2moderate, including development/transitive paths; this is not13 demonstrated live exploits.",
+    "file": "package-lock.json",
+    "line": 1,
+    "action": "Upgrade to compatible patched versions based on current advisories and test; report reachable production risk separately.",
+    "basis": "Reproduced npm audit"
+  },
+  {
+    "id": "QA03",
+    "priority": "Medium",
+    "title": "Passing tests and route report do not establish complete verification",
+    "detail": "Many security tests inspect source strings. verify-links checks44 registered paths while194 page files exist. Prior repair ledger includes absent triggers and remaps earlier finding IDs.",
+    "file": "tests/security/negative-authorization.test.ts",
+    "line": 20,
+    "action": "Use behavioral API/RLS/integration/browser tests and a complete evidence ledger with stable IDs and honest coverage.",
+    "basis": "Source +724 tests passing"
+  },
+  {
+    "id": "AUTH16",
+    "priority": "High",
+    "title": "Notification filters expand beyond the verified client",
+    "detail": "Listing and unread count combine verified email OR supplied engagement reference, so the engagement filter can widen access.",
+    "file": "src/lib/client-portal/v4-actions.ts",
+    "line": 122,
+    "action": "Require verified ownership before adding an engagement filter; never OR an untrusted scope into tenant identity.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "WS05",
+    "priority": "High",
+    "title": "Staff assignment and support queries use wrong column names",
+    "detail": "Workspace query requests clients.company_name; support queries request client_name/client_email and stage_number/display_name/data instead of the committed column names.",
+    "file": "src/lib/workspaces/service.ts",
+    "line": 559,
+    "action": "Align projections with the live schema and surface database errors instead of empty success.",
+    "basis": "Source confirmed; live column confirmation included"
+  },
+  {
+    "id": "BILL06",
+    "priority": "High",
+    "title": "Invoice preparation can claim issuance without a real invoice",
+    "detail": "Approval reads process-local preparation state, generates identifiers and marks approved_and_issued without inserting the corresponding invoice.",
+    "file": "src/lib/invoices/preparation.ts",
+    "line": 555,
+    "action": "Load durable preparation records and transactionally create/link the real invoice before reporting issuance.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "FORMS05",
+    "priority": "Medium",
+    "title": "Staff notes and escalations are not durable",
+    "detail": "Support note/escalation services acknowledge process-local Map records without a persistent review queue.",
+    "file": "src/lib/support/staff-support.ts",
+    "line": 858,
+    "action": "Persist author-attributed project notes and escalation events and verify read-after-write across workers.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "FORMS06",
+    "priority": "Medium",
+    "title": "Technical drafts remain process-dependent",
+    "detail": "Draft listing uses a Map and edits update memory, losing changes across workers or restarts despite an attempted initial database write.",
+    "file": "src/lib/quotations/technical-drafts.ts",
+    "line": 436,
+    "action": "Implement database-backed listing/editing with explicit errors and version control.",
+    "basis": "Source confirmed"
+  },
+  {
+    "id": "UI02",
+    "priority": "Medium",
+    "title": "Support history and operational claims can be fabricated",
+    "detail": "Stage13 creates a resolved baseline ticket when initialData has no tickets; warranty, telemetry and delivered-asset statements also need actual persisted evidence.",
+    "file": "src/app/engagement/[engagementRef]/support/SupportStageClient.tsx",
+    "line": 62,
+    "action": "Use genuine empty states and calculate warranty/support/asset status from approved project records.",
+    "basis": "Source confirmed"
+  }
+]

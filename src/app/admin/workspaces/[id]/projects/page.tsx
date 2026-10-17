@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
+import AssignProjectsButton from "@/app/admin/workspaces/components/AssignProjectsButton";
 
 export const metadata: Metadata = {
   title: "Assigned Projects | Staff Workspace | Logic Intelligence Technologies",
@@ -57,19 +58,43 @@ export default async function WorkspaceProjectsPage({
           </p>
         </div>
 
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs shadow-2xs">
-          <Lock className="w-3.5 h-3.5 text-amber-700" />
-          <span>Financial Data Redacted (Policy 1)</span>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs shadow-2xs">
+            <Lock className="w-3.5 h-3.5 text-amber-700" />
+            <span>Financial Data Redacted (Policy 1)</span>
+          </div>
+
+          {session.role === "super_admin" && (
+            <AssignProjectsButton
+              workspaceId={id}
+              staffUserId={workspace.ownerUserId}
+              staffEmail={workspace.email}
+              staffName={workspace.fullName}
+              variant="header"
+            />
+          )}
         </div>
       </div>
 
       {engagements.length === 0 ? (
-        <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-12 text-center space-y-3 shadow-2xs">
+        <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-12 text-center space-y-4 shadow-2xs">
           <Briefcase className="w-10 h-10 text-slate-300 mx-auto" />
           <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)]">No active client assignments</h3>
           <p className="text-xs text-[var(--lit-text-muted,#52677C)] max-w-sm mx-auto">
             Super Admin has not currently assigned this staff member to any client engagements.
           </p>
+          {session.role === "super_admin" && (
+            <div className="pt-2">
+              <AssignProjectsButton
+                workspaceId={id}
+                staffUserId={workspace.ownerUserId}
+                staffEmail={workspace.email}
+                staffName={workspace.fullName}
+                variant="primary"
+                label="Assign First Project"
+              />
+            </div>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -84,11 +109,11 @@ export default async function WorkspaceProjectsPage({
                     Client Assignment
                   </span>
                   <h3 className="text-base font-bold text-[var(--lit-navy,#0B2545)] truncate mt-0.5">
-                    {eng.clientName}
+                    {eng.clientName || "General Client"}
                   </h3>
                 </div>
                 <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-[var(--lit-blue,#1565C0)] border border-blue-200 shrink-0">
-                  {eng.assignmentRole.replace("_", " ")}
+                  {eng.assignmentRole ? eng.assignmentRole.replace("_", " ") : "Staff Assignment"}
                 </span>
               </div>
 
@@ -140,15 +165,19 @@ export default async function WorkspaceProjectsPage({
 
               <div className="pt-3 border-t border-[var(--lit-border-light,#DFE7EF)] flex items-center justify-between text-xs">
                 <span className="text-[11px] font-mono text-[var(--lit-text-muted,#52677C)]">
-                  Ref: {eng.engagementId.slice(0, 8)}...
+                  {eng.engagementId ? `Ref: ${eng.engagementId.slice(0, 8)}...` : "Client-wide Assignment"}
                 </span>
-                <Link
-                  href={`/admin/workspaces/${id}/projects/${eng.engagementId}`}
-                  className="text-[var(--lit-blue,#1565C0)] hover:underline font-bold text-xs uppercase tracking-wider flex items-center gap-1"
-                >
-                  <span>Technical Inspection</span>
-                  <ExternalLink className="w-3 h-3" />
-                </Link>
+                {eng.engagementId ? (
+                  <Link
+                    href={`/admin/workspaces/${id}/projects/${eng.engagementId}`}
+                    className="text-[var(--lit-blue,#1565C0)] hover:underline font-bold text-xs uppercase tracking-wider flex items-center gap-1"
+                  >
+                    <span>Technical Inspection</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
+                ) : (
+                  <span className="text-slate-400 font-medium text-xs">General Client Scope</span>
+                )}
               </div>
             </div>
           ))}

@@ -11,6 +11,7 @@ The service renders only; it never stores anything and has no database access.
 import os
 import secrets
 import tempfile
+import threading
 
 from fastapi import FastAPI, HTTPException, Depends, Response
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -22,10 +23,11 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "generator"))
 
-from build_templates import DOCS, set_fill, Doc  # noqa: E402
+from build_templates import DOCS, set_fill, reset_counts, Doc  # noqa: E402
 
 app = FastAPI(title="LIT PDF Renderer", docs_url=None, redoc_url=None, openapi_url=None)
 security = HTTPBasic()
+RENDER_LOCK = threading.Lock()
 
 _USER = os.environ.get("PDF_RENDERER_USERNAME", "")
 _PASS = os.environ.get("PDF_RENDERER_PASSWORD", "")
@@ -66,14 +68,20 @@ def render(req: RenderRequest, _: None = Depends(_auth)) -> Response:
     fn, n, short, ref, func = entry
     common = req.data.get("common", {}) if isinstance(req.data, dict) else {}
     block = req.data.get(f"{n:02d}", {}) if isinstance(req.data, dict) else {}
-    set_fill({**common, **block})
 
-    with tempfile.TemporaryDirectory() as tmp:
-        out = os.path.join(tmp, f"{n:02d}.pdf")
-        d = Doc(out, n, short, ref, version="1.0" if n == 3 else "[Version]")
-        d.build(func)
-        with open(out, "rb") as fh:
-            pdf = fh.read()
+    with RENDER_LOCK:
+        reset_counts()
+        set_fill({**common, **block})
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                out = os.path.join(tmp, f"{n:02d}.pdf")
+                d = Doc(out, n, short, ref, version="1.0" if n == 3 else "[Version]")
+                d.build(func)
+                with open(out, "rb") as fh:
+                    pdf = fh.read()
+        finally:
+            reset_counts()
+            set_fill({})
 
     headers = {"Content-Disposition": f'inline; filename="LIT-{n:02d}.pdf"'}
     return Response(content=pdf, media_type="application/pdf", headers=headers)

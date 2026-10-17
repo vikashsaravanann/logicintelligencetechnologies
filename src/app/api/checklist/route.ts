@@ -12,6 +12,8 @@ import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
 import { getLeadNotificationRecipients } from "@/lib/email/recipients";
 import { sanitizeMultilineText, sanitizePersonName } from "@/lib/email/validation";
 import { insertLead } from "@/lib/forms/persist";
+import { getStaffSession } from "@/lib/auth/session";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -58,6 +60,12 @@ export async function POST(req: Request) {
       email: email || "unknown@example.com",
       company: isLeadMagnet ? "Lead Magnet" : answers[1] || "",
       role: isLeadMagnet ? "Downloaded Checklist" : answers[2] || "",
+      answers,
+      metadata: {
+        type: parsed.data.type || (isLeadMagnet ? "lead_magnet" : "checklist"),
+        answer_count: answers.length,
+        submitted_at: new Date().toISOString(),
+      },
     });
 
     if (!stored.ok) {
@@ -176,6 +184,70 @@ export async function POST(req: Request) {
     console.error("Checklist API Error:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Form-specific admin reader to inspect checklist leads and complete answers (FORMS04)
+ */
+export async function GET(req: Request) {
+  try {
+    const session = await getStaffSession();
+    if (!session) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized: Staff or administrator session required" },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    const limit = Math.min(100, Math.max(1, Number(searchParams.get("limit")) || 50));
+
+    if (id) {
+      const { data: lead, error } = await supabaseAdmin
+        .from("checklist_leads")
+        .select("id, name, email, company, role, answers, metadata, created_at")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (error) {
+        return NextResponse.json(
+          { success: false, message: `Database query failed: ${error.message}` },
+          { status: 500 }
+        );
+      }
+
+      if (!lead) {
+        return NextResponse.json(
+          { success: false, message: "Checklist lead not found" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({ success: true, lead });
+    }
+
+    const { data: leads, error } = await supabaseAdmin
+      .from("checklist_leads")
+      .select("id, name, email, company, role, answers, metadata, created_at")
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      return NextResponse.json(
+        { success: false, message: `Database query failed: ${error.message}` },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, leads: leads || [] });
+  } catch (error: any) {
+    console.error("Checklist GET Error:", error);
+    return NextResponse.json(
+      { success: false, message: error?.message || "Internal server error" },
       { status: 500 }
     );
   }

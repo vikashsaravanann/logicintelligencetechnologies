@@ -13,6 +13,7 @@ export function AdminNavLinks({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname() || "";
+  const allHrefs = groups.flatMap((g) => g.items.map((i) => i.href));
   return (
     <div className="flex flex-col gap-6">
       {groups.map((group) => (
@@ -22,7 +23,7 @@ export function AdminNavLinks({
           </p>
           <ul className="space-y-1">
             {group.items.map((item) => {
-              const active = isActiveNav(pathname, item.href);
+              const active = isActiveNav(pathname, item.href, allHrefs);
               return (
                 <li key={item.href}>
                   <Link

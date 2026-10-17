@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, isAdminClientConfigured } from '@/lib/supabase/admin';
-import { requireCapabilityApi } from '@/lib/auth/session';
+import { requireCapabilityApi, getStaffSession } from '@/lib/auth/session';
+import { getVerifiedClientUser } from '@/lib/auth/client-auth';
+import { assertClientEngagementAccess } from '@/lib/auth/client-identity';
 import { recordAdminAction } from '@/lib/admin/audit';
 
 export const dynamic = 'force-dynamic';
@@ -22,12 +24,23 @@ export type AllowedIdentityField = (typeof ALLOWED_IDENTITY_FIELDS)[number];
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { engagementId, targetField, proposedValue, changeReason, requestedBy } = body;
+    const { engagementId, targetField, proposedValue, changeReason } = body;
 
-    if (!proposedValue || !changeReason || !requestedBy || !engagementId) {
+    if (!proposedValue || !changeReason || !engagementId) {
       return NextResponse.json(
-        { success: false, error: 'Missing required correction fields (engagementId, proposedValue, changeReason, requestedBy).' },
+        { success: false, error: 'Missing required correction fields (engagementId, proposedValue, changeReason).' },
         { status: 400 }
+      );
+    }
+
+    // Require verified authentication session
+    const staff = await getStaffSession();
+    const verifiedClient = !staff ? await getVerifiedClientUser() : null;
+
+    if (!staff && !verifiedClient) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required to submit identity correction proposal.' },
+        { status: 401 }
       );
     }
 
@@ -46,10 +59,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify engagement exists before allowing correction proposal
+    // Verify engagement exists and caller has verified access to it
     const { data: engData, error: engErr } = await supabaseAdmin
       .from('client_engagements')
-      .select('id, company_name, contact_email')
+      .select('id, company_name, contact_email, client_id')
       .eq('id', engagementId)
       .maybeSingle();
 
@@ -60,6 +73,45 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    let verifiedRequestedBy: string;
+
+    if (verifiedClient) {
+      const hasAccess =
+        (await assertClientEngagementAccess(verifiedClient.user.id, engagementId)) ||
+        (engData.contact_email && engData.contact_email.toLowerCase() === verifiedClient.email);
+
+      if (!hasAccess) {
+        return NextResponse.json(
+          { success: false, error: 'Forbidden: You do not have ownership access to this engagement.' },
+          { status: 403 }
+        );
+      }
+      verifiedRequestedBy = verifiedClient.email;
+    } else if (staff) {
+      if (staff.role !== 'super_admin') {
+        const { data: assignment } = await supabaseAdmin
+          .from('staff_client_assignments')
+          .select('id, status, expires_at')
+          .eq('staff_user_id', staff.userId)
+          .eq('engagement_id', engagementId)
+          .eq('status', 'active')
+          .maybeSingle();
+
+        if (!assignment || (assignment.expires_at && new Date(assignment.expires_at).getTime() <= Date.now())) {
+          return NextResponse.json(
+            { success: false, error: 'Forbidden: Staff member is not assigned to this engagement.' },
+            { status: 403 }
+          );
+        }
+      }
+      verifiedRequestedBy = staff.email || staff.userId;
+    } else {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Authentication required.' },
+        { status: 401 }
+      );
+    }
+
     const { data, error } = await supabaseAdmin
       .from('client_identity_change_requests')
       .insert({
@@ -67,7 +119,7 @@ export async function POST(req: NextRequest) {
         target_field: field,
         proposed_value: proposedValue.trim(),
         change_reason: changeReason.trim(),
-        requested_by: requestedBy.trim(),
+        requested_by: verifiedRequestedBy,
         status: 'pending',
       })
       .select('id')

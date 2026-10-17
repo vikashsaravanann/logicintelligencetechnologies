@@ -160,3 +160,47 @@ export async function postClientMessage(
     status: "sent",
   };
 }
+
+/**
+ * Appends a new message from assigned staff/team to the conversation thread.
+ */
+export async function postStaffReplyMessage(params: {
+  clientEmail: string;
+  staffEmail: string;
+  staffName: string;
+  staffRole?: string;
+  content: string;
+}): Promise<ClientChatMessage> {
+  const normalizedEmail = params.clientEmail.trim().toLowerCase();
+  const threadId = await getOrCreateThread(normalizedEmail);
+  const messageId = `msg_staff_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+  const now = new Date();
+
+  const { error } = await supabaseAdmin.from("conversation_messages").insert([
+    {
+      message_id: messageId,
+      thread_id: threadId,
+      sender_type: "team",
+      sender_email: params.staffEmail,
+      sender_name: params.staffName,
+      role: params.staffRole || "Solutions Architecture",
+      content: params.content.trim(),
+      status: "sent",
+    },
+  ]);
+
+  if (error) {
+    console.error("[conversations] Failed to insert staff message:", error);
+    throw new Error(`Failed to store staff message: ${error.message}`);
+  }
+
+  return {
+    id: messageId,
+    sender: "team",
+    senderName: params.staffName,
+    role: params.staffRole || "Solutions Architecture",
+    content: params.content.trim(),
+    timestamp: formatIST(now.toISOString(), "datetime"),
+    status: "sent",
+  };
+}

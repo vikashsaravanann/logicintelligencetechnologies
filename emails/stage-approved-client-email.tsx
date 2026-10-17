@@ -17,7 +17,7 @@ export interface StageApprovedClientEmailProps {
   engagementRef: string;
   approvedStageOrdinal: number;
   approvedStageTitle: string;
-  nextStageOrdinal: number;
+  nextStageOrdinal?: number | null;
   nextStageTitle: string;
   nextStageUrl: string;
   adminNotes?: string;
@@ -34,11 +34,20 @@ export default function StageApprovedClientEmail({
   nextStageUrl,
   adminNotes,
 }: StageApprovedClientEmailProps) {
+  const isFinalCompletion = approvedStageOrdinal === 13 || !nextStageOrdinal;
+  const previewText = isFinalCompletion
+    ? `Stage ${approvedStageOrdinal} Approved! Project Completed · Ongoing Support Active`
+    : `Stage ${approvedStageOrdinal} Approved! Proceed to Stage ${nextStageOrdinal}: ${nextStageTitle}`;
+
   return (
-    <EmailLayout preview={`Stage ${approvedStageOrdinal} Approved! Proceed to Stage ${nextStageOrdinal}: ${nextStageTitle}`}>
+    <EmailLayout preview={previewText}>
       <EmailHeader />
       <EmailContent>
-        <EmailTitle>Submission Approved · Milestone Unlocked</EmailTitle>
+        <EmailTitle>
+          {isFinalCompletion
+            ? "Milestone Completed · Handover & Support Active"
+            : "Submission Approved · Milestone Unlocked"}
+        </EmailTitle>
         <EmailGreeting name={recipientName} />
         <EmailBody>
           Great news! Your submission for <strong>Stage {approvedStageOrdinal}: {approvedStageTitle}</strong> has been verified and approved by the Logic Intelligence Technologies engineering leadership team for <strong>{companyName}</strong>.
@@ -82,9 +91,13 @@ export default function StageApprovedClientEmail({
                 </td>
               </tr>
               <tr>
-                <td style={{ padding: "6px 0", color: "#047857" }}>Unlocked Next Stage:</td>
+                <td style={{ padding: "6px 0", color: "#047857" }}>
+                  {isFinalCompletion ? "Lifecycle Status:" : "Unlocked Next Stage:"}
+                </td>
                 <td style={{ padding: "6px 0", fontWeight: "bold", color: "#1565C0" }}>
-                  Stage {nextStageOrdinal}: {nextStageTitle}
+                  {isFinalCompletion
+                    ? nextStageTitle
+                    : `Stage ${nextStageOrdinal}: ${nextStageTitle}`}
                 </td>
               </tr>
               {adminNotes ? (
@@ -98,11 +111,15 @@ export default function StageApprovedClientEmail({
         </div>
 
         <EmailBody>
-          You are now ready to continue to the next milestone in your enterprise project lifecycle. Click below to enter the newly unlocked stage:
+          {isFinalCompletion
+            ? "All 13 project delivery milestones are complete. You can access your client portal at any time to review deliverables, invoices, and support tickets."
+            : "You are now ready to continue to the next milestone in your enterprise project lifecycle. Click below to enter the newly unlocked stage:"}
         </EmailBody>
 
         <EmailButton href={nextStageUrl} variant="primary">
-          Proceed to Stage {nextStageOrdinal}: {nextStageTitle} →
+          {isFinalCompletion
+            ? "View Project Summary & Support Portal →"
+            : `Proceed to Stage ${nextStageOrdinal}: ${nextStageTitle} →`}
         </EmailButton>
 
         <EmailMuted>

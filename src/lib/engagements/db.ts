@@ -661,8 +661,36 @@ export async function submitStageAction(input: {
           console.error('[submitStageAction] Checklist invitation sync error:', syncErr);
         }
       }
-    } catch (err) {
+
+      // 6. If stage 13 support ticket submission, insert into canonical support_tickets table
+      if (stageKey === 'support' && action === 'submit_ticket' && payload.ticket) {
+        try {
+          await supabaseAdmin.from('support_tickets').insert({
+            user_id: engagement.client_id || null,
+            requester_name: engagement.contact_name || payload.ticket.requesterName || 'Client Representative',
+            requester_email: engagement.contact_email || payload.ticket.requesterEmail || null,
+            subject: payload.ticket.subject || payload.ticket.title || `Stage 13 Support: ${engagement.project_title}`,
+            message: payload.ticket.description || payload.ticket.message || JSON.stringify(payload.ticket),
+            priority: payload.ticket.priority || 'Medium',
+            source: 'engagement-stage-13',
+            status: 'Open',
+          });
+        } catch (ticketErr) {
+          console.warn('[submitStageAction] Canonical support ticket insert error:', ticketErr);
+        }
+      }
+    } catch (err: any) {
       console.error('[submitStageAction] DB write error:', err);
+      return {
+        success: false,
+        stageKey,
+        status: currentStage.status,
+        newStatus: currentStage.status,
+        auditHash,
+        nextUnlockedStageKey: null,
+        nextStageToUnlock: null,
+        error: `Database persistence failed: ${err?.message || 'Transaction error'}`,
+      };
     }
   }
 

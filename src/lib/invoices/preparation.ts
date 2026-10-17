@@ -4,7 +4,10 @@ import { verifyStaffClientAssignment } from '@/lib/support/staff-support';
 import { detectForbiddenCommercialFields } from '@/lib/quotations/technical-drafts';
 import { recordAdminAction } from '@/lib/admin/audit';
 
-export type InvoiceMilestoneKey = 'initial_50_advance' | 'final_50_deployment';
+export type InvoiceMilestoneKey =
+  | 'initial_50_advance'
+  | 'final_50_deployment'
+  | 'final_50_completion';
 
 export type InvoicePrepStatus =
   | 'draft'
@@ -109,15 +112,22 @@ export async function createInvoicePreparationRequest(params: {
     params.rawPayload.milestoneKey ?? params.rawPayload.milestone_key ?? 'initial_50_advance';
   if (
     milestoneRaw !== 'initial_50_advance' &&
-    milestoneRaw !== 'final_50_deployment'
+    milestoneRaw !== 'final_50_deployment' &&
+    milestoneRaw !== 'final_50_completion'
   ) {
     return {
       ok: false,
       status: 400,
       message:
-        "milestoneKey must be either 'initial_50_advance' (50% advance) or 'final_50_deployment' (50% final).",
+        "milestoneKey must be either 'initial_50_advance' (50% advance), 'final_50_deployment' (50% final), or 'final_50_completion'.",
     };
   }
+
+  // Type-safe narrowing to InvoiceMilestoneKey with database CHECK constraint normalization
+  const milestoneKey: InvoiceMilestoneKey =
+    milestoneRaw === 'final_50_deployment' || milestoneRaw === 'final_50_completion'
+      ? 'final_50_deployment'
+      : 'initial_50_advance';
 
   const deliverableSummary = String(
     params.rawPayload.deliverableSummary ??
@@ -159,7 +169,7 @@ export async function createInvoicePreparationRequest(params: {
     engagement_id: engagementId,
     client_id: clientId,
     quotation_id: quotationId,
-    milestone_key: milestoneRaw,
+    milestone_key: milestoneKey,
     status: 'draft',
     deliverable_summary: deliverableSummary,
     evidence_links: evidenceLinks,
@@ -552,12 +562,48 @@ export async function approveAndIssueInvoiceFromPreparation(params: {
     };
   }
 
-  const reqRecord = inMemoryInvoicePreps.get(params.requestId);
+  let reqRecord = inMemoryInvoicePreps.get(params.requestId) ?? null;
+  const supabaseClient = getServiceClient();
+  if (supabaseClient) {
+    try {
+      const { data: dbRecord, error: dbFetchErr } = await supabaseClient
+        .from('invoice_preparation_requests')
+        .select('*')
+        .eq('id', params.requestId)
+        .maybeSingle();
+
+      if (!dbFetchErr && dbRecord) {
+        reqRecord = dbRecord as InvoicePreparationRequest;
+        inMemoryInvoicePreps.set(reqRecord.id, reqRecord);
+      }
+    } catch (e) {
+      console.warn('[invoice-prep] Supabase load error in approve:', e);
+    }
+  }
+
   if (!reqRecord) {
     return { ok: false, status: 404, message: 'Invoice preparation request not found.' };
   }
 
   const now = new Date().toISOString();
+
+  // Idempotent handling: if already approved and issued, return existing invoice
+  if (reqRecord.status === 'approved_and_issued' && reqRecord.issued_invoice_id) {
+    return {
+      ok: true,
+      decision: 'approve_and_issue',
+      request: reqRecord,
+      invoice: {
+        id: reqRecord.issued_invoice_id,
+        invoice_number: reqRecord.issued_invoice_number || `LIT-INV-${reqRecord.id.slice(0, 8)}`,
+        milestone_key: reqRecord.milestone_key,
+        amount_paise: reqRecord.issued_amount_paise || (params.approvedAmountPaise ? Math.round(Number(params.approvedAmountPaise)) : 0),
+        issued_by: reqRecord.approved_by || params.actorUserId,
+        issued_at: reqRecord.approved_at || reqRecord.updated_at,
+      },
+    };
+  }
+
   if (params.decision !== 'approve_and_issue') {
     reqRecord.status =
       params.decision === 'changes_requested' ? 'changes_requested' : 'rejected';
@@ -567,7 +613,6 @@ export async function approveAndIssueInvoiceFromPreparation(params: {
     reqRecord.updated_at = now;
     inMemoryInvoicePreps.set(reqRecord.id, reqRecord);
 
-    const supabaseClient = getServiceClient();
     if (supabaseClient) {
       try {
         await supabaseClient
@@ -614,10 +659,54 @@ export async function approveAndIssueInvoiceFromPreparation(params: {
   reqRecord.updated_at = now;
   inMemoryInvoicePreps.set(reqRecord.id, reqRecord);
 
-  const supabaseClient = getServiceClient();
   if (supabaseClient) {
     try {
-      await supabaseClient
+      // 1. Fetch client engagement for company name and contact email
+      const { data: eng } = await supabaseClient
+        .from('client_engagements')
+        .select('id, client_id, company_name, contact_name, contact_email')
+        .eq('id', reqRecord.engagement_id)
+        .maybeSingle();
+
+      let clientUserId: string | null = null;
+      if (eng?.client_id) {
+        const { data: clientRow } = await supabaseClient
+          .from('clients')
+          .select('user_id')
+          .eq('id', eng.client_id)
+          .maybeSingle();
+        clientUserId = clientRow?.user_id ?? null;
+      }
+
+      // 2. Insert real database invoice record into public.invoices
+      const invoiceRow = {
+        id: invoiceId,
+        invoice_code: invoiceNumber,
+        project_id: null,
+        user_id: clientUserId,
+        client_name: eng?.company_name || 'Client',
+        client_email: eng?.contact_email || null,
+        amount: amountPaise / 100,
+        status: 'Pending',
+        due_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        description: `${reqRecord.milestone_key === 'initial_50_advance' ? 'Initial 50% Advance Milestone' : 'Final 50% Deployment Milestone'} - ${reqRecord.deliverable_summary}`,
+        currency: 'INR',
+        created_at: now,
+        updated_at: now,
+      };
+
+      const { error: invErr } = await supabaseClient.from('invoices').insert(invoiceRow);
+      if (invErr) {
+        console.error('[invoice-prep] Failed to create official invoice record in DB:', invErr.message);
+        return {
+          ok: false,
+          status: 400,
+          message: `Database invoice issuance failed: ${invErr.message}`,
+        };
+      }
+
+      // 3. Update invoice_preparation_requests with issued invoice linkage
+      const { error: updateErr } = await supabaseClient
         .from('invoice_preparation_requests')
         .update({
           status: reqRecord.status,
@@ -628,8 +717,28 @@ export async function approveAndIssueInvoiceFromPreparation(params: {
           updated_at: reqRecord.updated_at,
         })
         .eq('id', reqRecord.id);
-    } catch (e) {
-      console.warn('[invoice-prep] Supabase approval error:', e);
+
+      if (updateErr) {
+        console.warn('[invoice-prep] Preparation request link update warning:', updateErr.message);
+      }
+
+      // 4. Record commercial approval event in audit log
+      await supabaseClient.from('commercial_approval_events').insert({
+        entity_type: 'invoice_issue',
+        entity_id: invoiceId,
+        actor_id: params.actorUserId,
+        action: 'approve_and_issue',
+        previous_state: { status: 'submitted_for_super_admin' },
+        new_state: { status: 'approved_and_issued', invoice_id: invoiceId, invoice_code: invoiceNumber, amount_paise: amountPaise },
+        notes: params.approvalNotes ?? null,
+      });
+    } catch (e: any) {
+      console.error('[invoice-prep] Supabase approval error:', e);
+      return {
+        ok: false,
+        status: 400,
+        message: `Database error during invoice approval: ${e?.message || 'Unknown error'}`,
+      };
     }
   }
 

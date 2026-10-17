@@ -118,10 +118,9 @@ export async function listClientNotifications(
     .order("created_at", { ascending: false })
     .limit(limit);
 
+  query = query.eq("client_email", normalizedEmail);
   if (engagementRef && engagementRef.trim()) {
-    query = query.or(`client_email.eq.${normalizedEmail},engagement_ref.eq.${engagementRef.trim()}`);
-  } else {
-    query = query.eq("client_email", normalizedEmail);
+    query = query.eq("engagement_ref", engagementRef.trim());
   }
 
   const { data: rows, error } = await query;
@@ -162,6 +161,8 @@ export async function listClientNotifications(
   }));
 }
 
+export const getClientNotifications = listClientNotifications;
+
 export async function getUnreadNotificationCount(
   clientEmail: string,
   engagementRef?: string | null
@@ -172,10 +173,9 @@ export async function getUnreadNotificationCount(
     .select("id", { count: "exact", head: true })
     .is("read_at", null);
 
+  query = query.eq("client_email", normalizedEmail);
   if (engagementRef && engagementRef.trim()) {
-    query = query.or(`client_email.eq.${normalizedEmail},engagement_ref.eq.${engagementRef.trim()}`);
-  } else {
-    query = query.eq("client_email", normalizedEmail);
+    query = query.eq("engagement_ref", engagementRef.trim());
   }
 
   const { count, error } = await query;
@@ -322,6 +322,37 @@ export async function listClientChangeRequests(
   }
 
   const { data: rows, error } = await query;
+  if (error || !rows) return [];
+
+  return rows.map((r) => ({
+    id: r.id,
+    rfcRef: r.rfc_ref,
+    engagementRef: r.engagement_ref,
+    clientEmail: r.client_email,
+    title: r.title,
+    category: r.category,
+    description: r.description,
+    justification: r.justification,
+    impactSummary: r.impact_summary,
+    status: r.status,
+    estimatedCostInr: r.estimated_cost_inr ? Number(r.estimated_cost_inr) : null,
+    estimatedTimelineDays: r.estimated_timeline_days,
+    submittedAt: r.submitted_at,
+    reviewedBy: r.reviewed_by,
+    reviewedAt: r.reviewed_at,
+    createdAt: r.created_at,
+  }));
+}
+
+export async function listProjectChangeRequests(
+  engagementRef: string
+): Promise<ClientChangeRequest[]> {
+  const { data: rows, error } = await supabaseAdmin
+    .from("client_change_requests")
+    .select("*")
+    .eq("engagement_ref", engagementRef)
+    .order("created_at", { ascending: false });
+
   if (error || !rows) return [];
 
   return rows.map((r) => ({

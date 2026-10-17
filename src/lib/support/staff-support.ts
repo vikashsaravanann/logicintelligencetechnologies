@@ -21,6 +21,7 @@ export interface StaffClientAssignment {
   can_view_technical_stages: boolean;
   can_prepare_technical_quotation: boolean;
   can_prepare_invoice_request: boolean;
+  can_invite_collaborators?: boolean;
   assigned_by: string;
   assignment_reason: string;
   starts_at: string;
@@ -115,6 +116,25 @@ export interface RedactedStaffSupportClientContext {
     status: 'pending_super_admin' | 'resolved';
     created_at: string;
   }>;
+  support_tickets?: CanonicalSupportTicket[];
+}
+
+export interface CanonicalSupportTicket {
+  id: string;
+  ticket_ref: string;
+  client_id: string | null;
+  engagement_id: string | null;
+  assigned_staff_id: string | null;
+  customer_email: string;
+  subject: string;
+  original_message: string;
+  component: string | null;
+  severity: string;
+  status: string;
+  sla_target_hours: number;
+  resolution_notes?: string | null;
+  resolved_at?: string | null;
+  created_at: string;
 }
 
 export const FORBIDDEN_FINANCIAL_KEYS = [
@@ -189,6 +209,7 @@ const inMemoryActionRequests = new Map<
   string,
   RedactedStaffSupportClientContext['action_requests']
 >();
+const inMemoryCanonicalTickets = new Map<string, CanonicalSupportTicket>();
 
 function getServiceClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -281,6 +302,7 @@ export async function createStaffClientAssignment(input: {
   canViewTechnicalStages?: boolean;
   canPrepareTechnicalQuotation?: boolean;
   canPrepareInvoiceRequest?: boolean;
+  canInviteCollaborators?: boolean;
   assignmentReason: string;
   expiresAt?: string | null;
 }): Promise<StaffClientAssignment> {
@@ -306,6 +328,7 @@ export async function createStaffClientAssignment(input: {
     can_view_technical_stages: input.canViewTechnicalStages ?? true,
     can_prepare_technical_quotation: input.canPrepareTechnicalQuotation ?? false,
     can_prepare_invoice_request: input.canPrepareInvoiceRequest ?? false,
+    can_invite_collaborators: input.canInviteCollaborators ?? false,
     assigned_by: input.actorUserId,
     assignment_reason: input.assignmentReason.trim(),
     starts_at: now,
@@ -316,10 +339,23 @@ export async function createStaffClientAssignment(input: {
     updated_at: now,
   };
 
-  inMemoryAssignments.set(assignment.id, assignment);
-
   const supabase = getServiceClient();
   if (supabase) {
+    // If reassigning to an existing engagement, atomically revoke any previous active assignment
+    if (assignment.engagement_id) {
+      await supabase
+        .from('staff_client_assignments')
+        .update({
+          status: 'revoked',
+          revoked_at: now,
+          revoked_by: input.actorUserId,
+          updated_at: now,
+        })
+        .eq('staff_user_id', assignment.staff_user_id)
+        .eq('engagement_id', assignment.engagement_id)
+        .eq('status', 'active');
+    }
+
     const { data, error } = await supabase
       .from('staff_client_assignments')
       .insert({
@@ -332,6 +368,7 @@ export async function createStaffClientAssignment(input: {
         can_view_technical_stages: assignment.can_view_technical_stages,
         can_prepare_technical_quotation: assignment.can_prepare_technical_quotation,
         can_prepare_invoice_request: assignment.can_prepare_invoice_request,
+        can_invite_collaborators: assignment.can_invite_collaborators,
         assigned_by: assignment.assigned_by,
         assignment_reason: assignment.assignment_reason,
         starts_at: assignment.starts_at,
@@ -340,10 +377,32 @@ export async function createStaffClientAssignment(input: {
       .select('*')
       .maybeSingle();
 
-    if (!error && data) {
-      Object.assign(assignment, data);
-      inMemoryAssignments.set(assignment.id, assignment);
+    if (error) {
+      throw new Error(`Failed to persist staff assignment: ${error.message}`);
     }
+
+    if (data) {
+      Object.assign(assignment, data);
+    }
+    inMemoryAssignments.set(assignment.id, assignment);
+  } else {
+    // Fallback for unconfigured DB runtime (unit tests)
+    if (assignment.engagement_id) {
+      for (const [id, a] of inMemoryAssignments.entries()) {
+        if (
+          a.staff_user_id === assignment.staff_user_id &&
+          a.engagement_id === assignment.engagement_id &&
+          a.status === 'active'
+        ) {
+          a.status = 'revoked';
+          a.revoked_at = now;
+          a.revoked_by = input.actorUserId;
+          a.updated_at = now;
+          inMemoryAssignments.set(id, a);
+        }
+      }
+    }
+    inMemoryAssignments.set(assignment.id, assignment);
   }
 
   await recordAdminAction({
@@ -376,34 +435,15 @@ export async function updateStaffClientAssignment(input: {
   canViewTechnicalStages?: boolean;
   canPrepareTechnicalQuotation?: boolean;
   canPrepareInvoiceRequest?: boolean;
+  canInviteCollaborators?: boolean;
 }): Promise<StaffClientAssignment> {
   if (!hasCapability(input.actorRole, 'support.assignment.manage')) {
     throw new Error('Forbidden: Only Super Admin may modify or revoke staff-client assignments.');
   }
 
   const now = new Date().toISOString();
-  const existing = inMemoryAssignments.get(input.assignmentId);
-  if (existing) {
-    if (input.status) existing.status = input.status;
-    if (input.status === 'revoked') {
-      existing.revoked_at = now;
-      existing.revoked_by = input.actorUserId;
-    }
-    if (input.expiresAt !== undefined) existing.expires_at = input.expiresAt;
-    if (input.canViewTechnicalStages !== undefined) {
-      existing.can_view_technical_stages = input.canViewTechnicalStages;
-    }
-    if (input.canPrepareTechnicalQuotation !== undefined) {
-      existing.can_prepare_technical_quotation = input.canPrepareTechnicalQuotation;
-    }
-    if (input.canPrepareInvoiceRequest !== undefined) {
-      existing.can_prepare_invoice_request = input.canPrepareInvoiceRequest;
-    }
-    existing.updated_at = now;
-    inMemoryAssignments.set(existing.id, existing);
-  }
-
   const supabase = getServiceClient();
+
   if (supabase) {
     const patch: Record<string, unknown> = { updated_at: now };
     if (input.status) patch.status = input.status;
@@ -421,6 +461,9 @@ export async function updateStaffClientAssignment(input: {
     if (input.canPrepareInvoiceRequest !== undefined) {
       patch.can_prepare_invoice_request = input.canPrepareInvoiceRequest;
     }
+    if (input.canInviteCollaborators !== undefined) {
+      patch.can_invite_collaborators = input.canInviteCollaborators;
+    }
 
     const { data, error } = await supabase
       .from('staff_client_assignments')
@@ -429,16 +472,45 @@ export async function updateStaffClientAssignment(input: {
       .select('*')
       .maybeSingle();
 
-    if (!error && data) {
-      const updated = data as StaffClientAssignment;
-      inMemoryAssignments.set(updated.id, updated);
-      return updated;
+    if (error) {
+      throw new Error(`Failed to update staff assignment: ${error.message}`);
     }
+
+    if (!data) {
+      throw new Error(`Assignment ${input.assignmentId} not found in database.`);
+    }
+
+    const updated = data as StaffClientAssignment;
+    inMemoryAssignments.set(updated.id, updated);
+    return updated;
   }
 
+  // Fallback for unconfigured DB runtime (unit tests)
+  const existing = inMemoryAssignments.get(input.assignmentId);
   if (!existing) {
     throw new Error(`Assignment ${input.assignmentId} not found.`);
   }
+
+  if (input.status) existing.status = input.status;
+  if (input.status === 'revoked') {
+    existing.revoked_at = now;
+    existing.revoked_by = input.actorUserId;
+  }
+  if (input.expiresAt !== undefined) existing.expires_at = input.expiresAt;
+  if (input.canViewTechnicalStages !== undefined) {
+    existing.can_view_technical_stages = input.canViewTechnicalStages;
+  }
+  if (input.canPrepareTechnicalQuotation !== undefined) {
+    existing.can_prepare_technical_quotation = input.canPrepareTechnicalQuotation;
+  }
+  if (input.canPrepareInvoiceRequest !== undefined) {
+    existing.can_prepare_invoice_request = input.canPrepareInvoiceRequest;
+  }
+  if (input.canInviteCollaborators !== undefined) {
+    existing.can_invite_collaborators = input.canInviteCollaborators;
+  }
+  existing.updated_at = now;
+  inMemoryAssignments.set(existing.id, existing);
   return existing;
 }
 
@@ -461,7 +533,10 @@ export async function listStaffClientAssignments(filter?: {
     if (filter?.onlyActive) query = query.eq('status', 'active');
 
     const { data, error } = await query;
-    if (!error && Array.isArray(data)) {
+    if (error) {
+      throw new Error(`Failed to list staff assignments: ${error.message}`);
+    }
+    if (Array.isArray(data)) {
       return data as StaffClientAssignment[];
     }
   }
@@ -693,37 +768,61 @@ export async function getRedactedStaffSupportContext(params: {
 
   const supabase = getServiceClient();
   if (supabase) {
-    const { data: engagement } = await supabase
+    const { data: engagement, error: engErr } = await supabase
       .from('client_engagements')
       .select(
-        'id, engagement_ref, client_id, company_name, client_name, client_email, project_title, current_stage, status'
+        'id, engagement_ref, client_id, company_name, contact_name, contact_email, project_title, current_stage, status'
       )
       .or(`client_id.eq.${params.clientId},id.eq.${params.clientId}`)
       .maybeSingle();
+
+    if (engErr) {
+      console.warn('[staff-support] Failed to fetch client engagement:', engErr.message);
+    }
 
     if (engagement) {
       engagementId = engagement.id;
       engagementRef = engagement.engagement_ref;
       companyName = engagement.company_name || companyName;
-      contactName = engagement.client_name || contactName;
-      contactEmail = engagement.client_email || contactEmail;
+      contactName = engagement.contact_name || contactName;
+      contactEmail = engagement.contact_email || contactEmail;
       projectTitle = engagement.project_title || projectTitle;
-      currentStage = engagement.current_stage ?? 1;
+      currentStage = typeof engagement.current_stage === 'number' ? engagement.current_stage : 1;
       engagementStatus = engagement.status ?? 'active';
 
-      const { data: stages } = await supabase
+      // Query client row for authoritative legal_name and contact details (WS05)
+      if (engagement.client_id) {
+        const { data: clientRow } = await supabase
+          .from('clients')
+          .select('id, legal_name, display_name, contact_name, contact_email')
+          .eq('id', engagement.client_id)
+          .maybeSingle();
+
+        if (clientRow) {
+          companyName = clientRow.legal_name || clientRow.display_name || companyName;
+          contactName = clientRow.contact_name || contactName;
+          contactEmail = clientRow.contact_email || contactEmail;
+        }
+      }
+
+      // Query stages using live schema columns: ordinal, title, stage_key, status, snapshot (WS05)
+      const { data: stages, error: stageErr } = await supabase
         .from('engagement_stages')
-        .select('stage_number, stage_key, display_name, status, data, updated_at')
+        .select('ordinal, title, stage_key, status, snapshot, updated_at')
         .eq('engagement_id', engagement.id)
-        .order('stage_number', { ascending: true });
+        .order('ordinal', { ascending: true });
+
+      if (stageErr) {
+        console.warn('[staff-support] Failed to fetch engagement stages:', stageErr.message);
+      }
 
       if (Array.isArray(stages)) {
         for (const s of stages) {
           const isFinancialStage = FINANCIAL_STAGE_KEYS.has(s.stage_key);
           technicalStages.push({
-            stage_number: s.stage_number,
+            stage_number: s.ordinal ?? 1,
             stage_key: s.stage_key,
-            display_name: s.display_name,
+            display_name: s.title || s.stage_key,
             status: s.status,
             is_financial_stage_redacted: isFinancialStage,
             technical_data: isFinancialStage
@@ -733,11 +832,24 @@ export async function getRedactedStaffSupportContext(params: {
                     'Commercial pricing, invoice amounts, GST/PAN, and payment references are redacted in Staff Support View.',
                 }
               : redactFinancialFieldsForStaffSupport(
-                  (s.data as Record<string, unknown>) ?? {}
+                  (s.snapshot as Record<string, unknown>) ?? {}
                 ),
             updated_at: s.updated_at ?? null,
           });
         }
+      }
+    } else {
+      // Direct client-only lookup (null engagement_id / client-only assignment WS04)
+      const { data: clientRow } = await supabase
+        .from('clients')
+        .select('id, legal_name, display_name, contact_name, contact_email')
+        .eq('id', params.clientId)
+        .maybeSingle();
+
+      if (clientRow) {
+        companyName = clientRow.legal_name || clientRow.display_name || companyName;
+        contactName = clientRow.contact_name || contactName;
+        contactEmail = clientRow.contact_email || contactEmail;
       }
     }
   }
@@ -756,8 +868,110 @@ export async function getRedactedStaffSupportContext(params: {
     userAgent: params.userAgent,
   });
 
-  const notes = inMemorySupportNotes.get(params.clientId) ?? [];
-  const requests = inMemoryActionRequests.get(params.clientId) ?? [];
+  const notes: RedactedStaffSupportClientContext['support_notes'] = [
+    ...(inMemorySupportNotes.get(params.clientId) ?? []),
+  ];
+  const requests: RedactedStaffSupportClientContext['action_requests'] = [
+    ...(inMemoryActionRequests.get(params.clientId) ?? []),
+  ];
+  const supportTickets: CanonicalSupportTicket[] = [];
+
+  if (supabase) {
+    // 1. Fetch DB-persisted staff support notes (FORMS05)
+    let noteQuery = supabase
+      .from('staff_support_notes')
+      .select('id, author_user_id, author_email, author_role, stage_key, note, created_at')
+      .order('created_at', { ascending: false });
+
+    if (engagementId) {
+      noteQuery = noteQuery.or(`client_id.eq.${params.clientId},engagement_id.eq.${engagementId}`);
+    } else {
+      noteQuery = noteQuery.eq('client_id', params.clientId);
+    }
+
+    const { data: dbNotes } = await noteQuery;
+    if (Array.isArray(dbNotes) && dbNotes.length > 0) {
+      for (const n of dbNotes) {
+        if (!notes.some((existing) => existing.id === n.id)) {
+          notes.push({
+            id: n.id,
+            author_user_id: n.author_user_id,
+            author_email: n.author_email,
+            author_role: n.author_role as StaffRole,
+            note: n.note,
+            stage_key: n.stage_key,
+            created_at: n.created_at,
+          });
+        }
+      }
+    }
+
+    // 2. Fetch DB-persisted staff escalations (FORMS05)
+    let escQuery = supabase
+      .from('staff_escalations')
+      .select('id, requested_by, requested_by_email, requested_by_role, request_type, stage_key, summary, status, created_at')
+      .order('created_at', { ascending: false });
+
+    if (engagementId) {
+      escQuery = escQuery.or(`client_id.eq.${params.clientId},engagement_id.eq.${engagementId}`);
+    } else {
+      escQuery = escQuery.eq('client_id', params.clientId);
+    }
+
+    const { data: dbEsc } = await escQuery;
+    if (Array.isArray(dbEsc) && dbEsc.length > 0) {
+      for (const e of dbEsc) {
+        if (!requests.some((existing) => existing.id === e.id)) {
+          requests.push({
+            id: e.id,
+            requested_by: e.requested_by,
+            requested_by_email: e.requested_by_email,
+            requested_by_role: e.requested_by_role as StaffRole,
+            request_type: e.request_type as any,
+            stage_key: e.stage_key,
+            summary: e.summary,
+            status: e.status as any,
+            created_at: e.created_at,
+          });
+        }
+      }
+    }
+
+    // 3. Fetch canonical support tickets linked to this client/engagement (FORMS03)
+    let ticketQuery = supabase
+      .from('support_tickets')
+      .select('id, ticket_ref, client_id, engagement_id, assigned_staff_id, customer_email, subject, original_message, component, severity, status, sla_target_hours, resolution_notes, resolved_at, created_at')
+      .order('created_at', { ascending: false });
+
+    if (engagementId) {
+      ticketQuery = ticketQuery.or(`client_id.eq.${params.clientId},engagement_id.eq.${engagementId}`);
+    } else {
+      ticketQuery = ticketQuery.eq('client_id', params.clientId);
+    }
+
+    const { data: dbTickets } = await ticketQuery;
+    if (Array.isArray(dbTickets)) {
+      for (const t of dbTickets) {
+        supportTickets.push({
+          id: t.id,
+          ticket_ref: t.ticket_ref || `TKT-${t.id.slice(0, 8).toUpperCase()}`,
+          client_id: t.client_id,
+          engagement_id: t.engagement_id,
+          assigned_staff_id: t.assigned_staff_id,
+          customer_email: t.customer_email || '',
+          subject: t.subject || 'Support Ticket',
+          original_message: t.original_message || (t as any).message || '',
+          component: t.component || null,
+          severity: t.severity || 'S3',
+          status: t.status || 'open',
+          sla_target_hours: t.sla_target_hours || 24,
+          resolution_notes: t.resolution_notes || null,
+          resolved_at: t.resolved_at || null,
+          created_at: t.created_at || new Date().toISOString(),
+        });
+      }
+    }
+  }
 
   const context: RedactedStaffSupportClientContext = {
     banner: buildStaffSupportBanner(
@@ -801,27 +1015,45 @@ export async function getRedactedStaffSupportContext(params: {
     technical_stages: technicalStages,
     support_notes: notes,
     action_requests: requests,
+    support_tickets: supportTickets,
   };
 
   return { ok: true, data: context };
 }
 
 export async function addStaffSupportNote(params: {
-  staffUserId: string;
-  staffEmail: string | null;
-  staffRole: StaffRole;
+  staffUserId?: string;
+  actorUserId?: string;
+  staffEmail?: string | null;
+  actorEmail?: string | null;
+  staffRole?: StaffRole;
+  actorRole?: StaffRole;
   clientId: string;
+  engagementId?: string | null;
   stageKey?: string | null;
   note: string;
-  route: string;
+  route?: string;
 }): Promise<
   | {
       ok: true;
       note: RedactedStaffSupportClientContext['support_notes'][number];
+      id: string;
+      author_user_id: string;
+      author_email: string | null;
+      author_role: StaffRole;
+      stage_key: string | null;
+      created_at: string;
+      client_id: string;
+      engagement_id: string | null;
     }
-  | { ok: false; status: 400 | 403; message: string }
+  | { ok: false; status: 400 | 403 | 500; message: string }
 > {
-  if (!hasCapability(params.staffRole, 'support.assigned_client.assist')) {
+  const staffUserId = params.staffUserId || params.actorUserId || '';
+  const staffEmail = params.staffEmail ?? params.actorEmail ?? null;
+  const staffRole: StaffRole = (params.staffRole || params.actorRole || 'operations') as StaffRole;
+  const route = params.route || '/admin/support';
+
+  if (!hasCapability(staffRole, 'support.assigned_client.assist')) {
     return {
       ok: false,
       status: 403,
@@ -837,8 +1069,8 @@ export async function addStaffSupportNote(params: {
   }
 
   const check = await verifyStaffClientAssignment({
-    staffUserId: params.staffUserId,
-    staffRole: params.staffRole,
+    staffUserId,
+    staffRole,
     clientId: params.clientId,
   });
   if (!check.allowed) {
@@ -847,38 +1079,78 @@ export async function addStaffSupportNote(params: {
 
   const created = {
     id: crypto.randomUUID(),
-    author_user_id: params.staffUserId,
-    author_email: params.staffEmail,
-    author_role: params.staffRole,
+    author_user_id: staffUserId,
+    author_email: staffEmail,
+    author_role: staffRole,
     note: params.note.trim(),
     stage_key: params.stageKey ?? null,
     created_at: new Date().toISOString(),
   };
+
+  const supabase = getServiceClient();
+  if (supabase) {
+    const { error: dbErr } = await supabase
+      .from('staff_support_notes')
+      .insert({
+        id: created.id,
+        client_id: params.clientId,
+        engagement_id: check.assignment.engagement_id ?? params.engagementId ?? null,
+        assignment_id: check.assignment.id,
+        author_user_id: staffUserId,
+        author_email: staffEmail,
+        author_role: staffRole,
+        stage_key: params.stageKey ?? null,
+        note: created.note,
+      });
+
+    if (dbErr) {
+      return {
+        ok: false,
+        status: 500,
+        message: `Failed to persist staff support note: ${dbErr.message}`,
+      };
+    }
+  }
 
   const list = inMemorySupportNotes.get(params.clientId) ?? [];
   list.unshift(created);
   inMemorySupportNotes.set(params.clientId, list);
 
   await recordStaffSupportAccessEvent({
-    staffUserId: params.staffUserId,
-    staffEmail: params.staffEmail,
-    staffRole: params.staffRole,
+    staffUserId,
+    staffEmail,
+    staffRole,
     clientId: params.clientId,
     assignmentId: check.assignment.id,
     action: 'support_view.add_note',
-    route: params.route,
+    route,
     reason: `Added staff support note (${params.stageKey ?? 'general'})`,
-    metadata: { note_id: created.id, stage_key: created.stage_key },
+    metadata: { note_id: created.id, stage_key: created.stage_key, note: created.note },
   });
 
-  return { ok: true, note: created };
+  return {
+    ok: true as const,
+    note: created,
+    id: created.id,
+    author_user_id: created.author_user_id,
+    author_email: created.author_email,
+    author_role: created.author_role,
+    stage_key: created.stage_key,
+    created_at: created.created_at,
+    client_id: params.clientId,
+    engagement_id: check.assignment.engagement_id ?? params.engagementId ?? null,
+  };
 }
 
 export async function createStaffSupportActionRequest(params: {
-  staffUserId: string;
-  staffEmail: string | null;
-  staffRole: StaffRole;
+  staffUserId?: string;
+  actorUserId?: string;
+  staffEmail?: string | null;
+  actorEmail?: string | null;
+  staffRole?: StaffRole;
+  actorRole?: StaffRole;
   clientId: string;
+  engagementId?: string | null;
   requestType:
     | 'stage_review'
     | 'identity_correction_escalation'
@@ -886,15 +1158,35 @@ export async function createStaffSupportActionRequest(params: {
     | 'commercial_escalation';
   stageKey?: string | null;
   summary: string;
-  route: string;
+  route?: string;
 }): Promise<
   | {
       ok: true;
       request: RedactedStaffSupportClientContext['action_requests'][number];
+      id: string;
+      requested_by: string;
+      requested_by_email: string | null;
+      requested_by_role: StaffRole;
+      request_type:
+        | 'stage_review'
+        | 'identity_correction_escalation'
+        | 'technical_clarification'
+        | 'commercial_escalation';
+      stage_key: string | null;
+      summary: string;
+      status: 'pending_super_admin' | 'resolved';
+      created_at: string;
+      client_id: string;
+      engagement_id: string | null;
     }
-  | { ok: false; status: 400 | 403; message: string }
+  | { ok: false; status: 400 | 403 | 500; message: string }
 > {
-  if (!hasCapability(params.staffRole, 'support.assigned_client.assist')) {
+  const staffUserId = params.staffUserId || params.actorUserId || '';
+  const staffEmail = params.staffEmail ?? params.actorEmail ?? null;
+  const staffRole: StaffRole = (params.staffRole || params.actorRole || 'operations') as StaffRole;
+  const route = params.route || '/admin/support';
+
+  if (!hasCapability(staffRole, 'support.assigned_client.assist')) {
     return {
       ok: false,
       status: 403,
@@ -910,8 +1202,8 @@ export async function createStaffSupportActionRequest(params: {
   }
 
   const check = await verifyStaffClientAssignment({
-    staffUserId: params.staffUserId,
-    staffRole: params.staffRole,
+    staffUserId,
+    staffRole,
     clientId: params.clientId,
   });
   if (!check.allowed) {
@@ -920,9 +1212,9 @@ export async function createStaffSupportActionRequest(params: {
 
   const created = {
     id: crypto.randomUUID(),
-    requested_by: params.staffUserId,
-    requested_by_email: params.staffEmail,
-    requested_by_role: params.staffRole,
+    requested_by: staffUserId,
+    requested_by_email: staffEmail,
+    requested_by_role: staffRole,
     request_type: params.requestType,
     stage_key: params.stageKey ?? null,
     summary: params.summary.trim(),
@@ -930,23 +1222,207 @@ export async function createStaffSupportActionRequest(params: {
     created_at: new Date().toISOString(),
   };
 
+  const supabase = getServiceClient();
+  if (supabase) {
+    const { error: dbErr } = await supabase
+      .from('staff_escalations')
+      .insert({
+        id: created.id,
+        client_id: params.clientId,
+        engagement_id: check.assignment.engagement_id ?? params.engagementId ?? null,
+        assignment_id: check.assignment.id,
+        requested_by: staffUserId,
+        requested_by_email: staffEmail,
+        requested_by_role: staffRole,
+        request_type: params.requestType,
+        stage_key: params.stageKey ?? null,
+        summary: created.summary,
+        status: created.status,
+      });
+
+    if (dbErr) {
+      return {
+        ok: false,
+        status: 500,
+        message: `Failed to persist staff escalation: ${dbErr.message}`,
+      };
+    }
+  }
+
   const list = inMemoryActionRequests.get(params.clientId) ?? [];
   list.unshift(created);
   inMemoryActionRequests.set(params.clientId, list);
 
   await recordStaffSupportAccessEvent({
-    staffUserId: params.staffUserId,
-    staffEmail: params.staffEmail,
-    staffRole: params.staffRole,
+    staffUserId,
+    staffEmail,
+    staffRole,
     clientId: params.clientId,
     assignmentId: check.assignment.id,
     action: 'support_view.request_action',
-    route: params.route,
+    route,
     reason: `Escalated ${params.requestType} to Super Admin`,
-    metadata: { request_id: created.id, request_type: created.request_type },
+    metadata: { request_id: created.id, request_type: created.request_type, summary: created.summary },
   });
 
-  return { ok: true, request: created };
+  return {
+    ok: true as const,
+    request: created,
+    id: created.id,
+    requested_by: created.requested_by,
+    requested_by_email: created.requested_by_email,
+    requested_by_role: created.requested_by_role,
+    request_type: created.request_type,
+    stage_key: created.stage_key,
+    summary: created.summary,
+    status: created.status,
+    created_at: created.created_at,
+    client_id: params.clientId,
+    engagement_id: check.assignment.engagement_id ?? params.engagementId ?? null,
+  };
+}
+
+/**
+ * Creates a canonical support ticket linked to client, project, and staff. (FORMS03)
+ */
+export async function createCanonicalSupportTicket(input: {
+  clientId?: string | null;
+  engagementId?: string | null;
+  assignedStaffId?: string | null;
+  customerEmail: string;
+  subject: string;
+  message: string;
+  component?: string | null;
+  severity?: 'S1' | 'S2' | 'S3' | 'S4' | string;
+  slaTargetHours?: number;
+}): Promise<
+  | { ok: true; ticket: CanonicalSupportTicket }
+  | { ok: false; status: number; message: string }
+> {
+  if (!input.customerEmail || !input.subject || !input.message) {
+    return { ok: false, status: 400, message: 'Customer email, subject, and message are required.' };
+  }
+
+  const severity = input.severity || 'S3';
+  const slaTargetHours =
+    input.slaTargetHours ??
+    (severity === 'S1' || severity.toLowerCase() === 'high'
+      ? 4
+      : severity === 'S2'
+        ? 8
+        : severity === 'S3'
+          ? 12
+          : 24);
+  const year = new Date().getFullYear();
+  const randNum = Math.floor(10000 + Math.random() * 90000);
+  const ticketRef = `TKT-${year}-${randNum}`;
+  const now = new Date().toISOString();
+
+  const ticket: CanonicalSupportTicket = {
+    id: crypto.randomUUID(),
+    ticket_ref: ticketRef,
+    client_id: input.clientId ?? null,
+    engagement_id: input.engagementId ?? null,
+    assigned_staff_id: input.assignedStaffId ?? null,
+    customer_email: input.customerEmail.trim().toLowerCase(),
+    subject: input.subject.trim(),
+    original_message: input.message.trim(),
+    component: input.component ?? 'General',
+    severity,
+    status: 'open',
+    sla_target_hours: slaTargetHours,
+    resolution_notes: null,
+    resolved_at: null,
+    created_at: now,
+  };
+
+  const supabase = getServiceClient();
+  if (supabase) {
+    const { error } = await supabase.from('support_tickets').insert({
+      id: ticket.id,
+      ticket_ref: ticket.ticket_ref,
+      client_id: ticket.client_id,
+      engagement_id: ticket.engagement_id,
+      assigned_staff_id: ticket.assigned_staff_id,
+      customer_email: ticket.customer_email,
+      subject: ticket.subject,
+      original_message: ticket.original_message,
+      component: ticket.component,
+      severity: ticket.severity,
+      status: ticket.status,
+      sla_target_hours: ticket.sla_target_hours,
+      created_at: ticket.created_at,
+    });
+
+    if (error) {
+      return { ok: false, status: 500, message: `Failed to persist support ticket: ${error.message}` };
+    }
+  }
+
+  inMemoryCanonicalTickets.set(ticket.id, ticket);
+  return { ok: true, ticket };
+}
+
+/**
+ * Lists canonical support tickets linked to client or project. (FORMS03)
+ */
+export async function listCanonicalSupportTickets(filter?: {
+  clientId?: string;
+  engagementId?: string;
+  assignedStaffId?: string;
+  customerEmail?: string;
+}): Promise<CanonicalSupportTicket[]> {
+  const supabase = getServiceClient();
+  if (supabase) {
+    let query = supabase
+      .from('support_tickets')
+      .select('id, ticket_ref, client_id, engagement_id, assigned_staff_id, customer_email, subject, original_message, component, severity, status, sla_target_hours, resolution_notes, resolved_at, created_at')
+      .order('created_at', { ascending: false });
+
+    if (filter?.clientId) query = query.eq('client_id', filter.clientId);
+    if (filter?.engagementId) query = query.eq('engagement_id', filter.engagementId);
+    if (filter?.assignedStaffId) query = query.eq('assigned_staff_id', filter.assignedStaffId);
+    if (filter?.customerEmail) query = query.eq('customer_email', filter.customerEmail.trim().toLowerCase());
+
+    const { data, error } = await query;
+    if (error) {
+      throw new Error(`Failed to list support tickets: ${error.message}`);
+    }
+
+    if (Array.isArray(data)) {
+      return data.map((t: any) => ({
+        id: t.id,
+        ticket_ref: t.ticket_ref || `TKT-${t.id.slice(0, 8).toUpperCase()}`,
+        client_id: t.client_id || null,
+        engagement_id: t.engagement_id || null,
+        assigned_staff_id: t.assigned_staff_id || null,
+        customer_email: t.customer_email || '',
+        subject: t.subject || 'Support Ticket',
+        original_message: t.original_message || t.message || '',
+        component: t.component || null,
+        severity: t.severity || 'S3',
+        status: t.status || 'open',
+        sla_target_hours: t.sla_target_hours || 24,
+        resolution_notes: t.resolution_notes || null,
+        resolved_at: t.resolved_at || null,
+        created_at: t.created_at,
+      }));
+    }
+  }
+
+  const allTickets = Array.from(inMemoryCanonicalTickets.values());
+  return allTickets.filter((t) => {
+    if (filter?.clientId && t.client_id !== filter.clientId) return false;
+    if (filter?.engagementId && t.engagement_id !== filter.engagementId) return false;
+    if (filter?.assignedStaffId && t.assigned_staff_id !== filter.assignedStaffId) return false;
+    if (
+      filter?.customerEmail &&
+      t.customer_email.toLowerCase() !== filter.customerEmail.trim().toLowerCase()
+    ) {
+      return false;
+    }
+    return true;
+  });
 }
 
 export function listStaffSupportAccessEvents(): StaffSupportAccessEvent[] {

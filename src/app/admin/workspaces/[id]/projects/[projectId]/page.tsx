@@ -5,13 +5,14 @@ import { getStaffWorkspace } from "@/lib/workspaces/service";
 import {
   getEngagementByRef,
   getEngagementStages,
-  listIdentityChangeRequests,
 } from "@/lib/engagements/db";
 import {
   redactJourneyForStaff,
   redactChangeRequestsForStaff,
 } from "@/lib/engagements/redaction";
 import { getProjectTeamMembers } from "@/lib/collaboration/project-collaboration-service";
+import { listProjectChangeRequests } from "@/lib/client-portal/v4-actions";
+import { listClientMessages } from "@/lib/client-portal/messages";
 import StaffProjectDetailClient from "./StaffProjectDetailClient";
 
 export const metadata: Metadata = {
@@ -65,8 +66,9 @@ export default async function WorkspaceProjectInspectionPage({
   const redactedStages = redactJourneyForStaff(rawStages, isSuperAdmin);
 
   const teamMembers = await getProjectTeamMembers(engagement.id);
-  const rawRfcs = await listIdentityChangeRequests(engagement.id);
-  const redactedRfcs = redactChangeRequestsForStaff(rawRfcs, isSuperAdmin);
+  const rawProjectRfcs = await listProjectChangeRequests(engagement.engagement_ref);
+  const redactedRfcs = redactChangeRequestsForStaff(rawProjectRfcs, isSuperAdmin);
+  const threadResult = await listClientMessages(engagement.contact_email);
 
   // Check if caller can invite collaborators (primary lead or super admin)
   const userAssignment = teamMembers.find((m) => m.userId === session.userId);
@@ -79,6 +81,7 @@ export default async function WorkspaceProjectInspectionPage({
       stages={redactedStages}
       teamMembers={teamMembers}
       changeRequests={redactedRfcs}
+      initialMessages={threadResult.messages}
       canInvite={canInvite}
       callerUserId={session.userId}
     />

@@ -342,7 +342,7 @@ export async function submitBillingDetails(input: SubmitBillingInput): Promise<P
     throw new Error("Payment request not found");
   }
 
-  if (input.secureToken && req.secure_token !== input.secureToken.trim()) {
+  if (!input.secureToken || typeof input.secureToken !== "string" || !input.secureToken.trim() || req.secure_token !== input.secureToken.trim()) {
     throw new Error("Unauthorized: Invalid payment token for this request");
   }
 
@@ -459,8 +459,12 @@ export async function recordPaymentAttempt(input: RecordPaymentAttemptInput): Pr
     throw new Error("Payment request not found");
   }
 
-  if (input.secureToken && req.secure_token !== input.secureToken.trim()) {
+  if (!input.secureToken || typeof input.secureToken !== "string" || !input.secureToken.trim() || req.secure_token !== input.secureToken.trim()) {
     throw new Error("Unauthorized: Invalid payment token for this request");
+  }
+
+  if (req.status === "approved" || req.status === "cancelled") {
+    throw new Error(`Cannot record payment attempt for payment in '${req.status}' status`);
   }
 
   if (new Date(req.expires_at).getTime() < Date.now()) {

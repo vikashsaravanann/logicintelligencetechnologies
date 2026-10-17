@@ -143,12 +143,42 @@ export function navViewForRole(role: StaffRole | null | undefined): AdminNavGrou
 
 /**
  * Active-state rule for a nav href, mirroring the `match` predicates in
- * ADMIN_NAV_GROUPS: the dashboard is active on "/admin" and the command-center
- * path; every other item is active on its href or any sub-path.
+ * ADMIN_NAV_GROUPS:
+ * - Dashboard is active on "/admin" and the command-center path.
+ * - Exact-match routes (/admin/outreach, /admin/automations) match strictly.
+ * - Disambiguates parent prefixes when a more specific sibling route is matched (NAV04).
+ * - Strips URL hashes and query parameters cleanly.
  */
-export function isActiveNav(pathname: string, href: string): boolean {
-  if (href === ADMIN_DASHBOARD_PATH) {
-    return pathname === "/admin" || pathname === ADMIN_DASHBOARD_PATH;
+export function isActiveNav(pathname: string, href: string, allHrefs?: string[]): boolean {
+  const cleanPath = (pathname || "").split("#")[0].split("?")[0];
+  const cleanHref = (href || "").split("#")[0].split("?")[0];
+
+  if (cleanHref === ADMIN_DASHBOARD_PATH) {
+    return cleanPath === "/admin" || cleanPath === ADMIN_DASHBOARD_PATH;
   }
-  return pathname === href || pathname.startsWith(href + "/");
+
+  // Exact match paths with distinct dedicated sub-routes
+  if (cleanHref === "/admin/outreach" || cleanHref === "/admin/automations") {
+    return cleanPath === cleanHref;
+  }
+
+  if (cleanPath === cleanHref) {
+    return true;
+  }
+
+  if (allHrefs && allHrefs.length > 0) {
+    const isPrefixMatch = cleanPath.startsWith(cleanHref + "/");
+    if (!isPrefixMatch) return false;
+
+    // Check if another nav item is a more specific match for cleanPath
+    const hasMoreSpecificMatch = allHrefs.some(
+      (other) =>
+        other !== cleanHref &&
+        other.startsWith(cleanHref + "/") &&
+        (cleanPath === other || cleanPath.startsWith(other + "/"))
+    );
+    return !hasMoreSpecificMatch;
+  }
+
+  return cleanPath.startsWith(cleanHref + "/");
 }

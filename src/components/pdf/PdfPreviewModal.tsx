@@ -20,18 +20,30 @@ export default function PdfPreviewModal({
   versionLabel,
 }: PdfPreviewModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  // Background scroll lock
+  // Reset loading and error state when pdfUrl changes
+  useEffect(() => {
+    setIsLoading(true);
+    setHasError(false);
+  }, [pdfUrl]);
+
+  // Background scroll lock and initial focus
   useEffect(() => {
     if (isOpen) {
       previousActiveElement.current = document.activeElement as HTMLElement;
       const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
 
+      const timer = setTimeout(() => {
+        closeButtonRef.current?.focus();
+      }, 50);
+
       return () => {
+        clearTimeout(timer);
         document.body.style.overflow = originalOverflow;
         if (previousActiveElement.current) {
           previousActiveElement.current.focus();
@@ -40,12 +52,30 @@ export default function PdfPreviewModal({
     }
   }, [isOpen]);
 
-  // Escape key handler
+  // Escape key and Focus Trap handler
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
         onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length > 0) {
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
       }
     },
     [onClose]
@@ -72,13 +102,15 @@ export default function PdfPreviewModal({
         }
       }}
     >
-      {/* 2:3 Width-to-Height Ratio Container */}
+      {/* 2:3 Width-to-Height Ratio Container Constrained by Viewport Width & Height */}
       <div
         ref={modalRef}
-        className="relative flex flex-col w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200"
+        className="relative flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200"
         style={{
-          aspectRatio: '2 / 3',
+          width: '100%',
+          maxWidth: 'min(92vw, calc(92vh * 2 / 3))',
           maxHeight: '92vh',
+          aspectRatio: '2 / 3',
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -115,6 +147,7 @@ export default function PdfPreviewModal({
               <span className="hidden sm:inline">Download</span>
             </a>
             <button
+              ref={closeButtonRef}
               type="button"
               onClick={onClose}
               className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors focus:outline-hidden focus:ring-2 focus:ring-white/40"

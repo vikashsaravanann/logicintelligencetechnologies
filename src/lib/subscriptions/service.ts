@@ -7,6 +7,7 @@ import {
   formatPaiseToInr,
 } from '@/config/maintenance-plans';
 import { buildUpiUri, LIT_PAYEE_CONFIG } from '@/lib/payments/upi';
+import { recordAdminAction } from '@/lib/admin/audit';
 
 export interface CreateOrderParams {
   clientId: string;
@@ -26,7 +27,9 @@ export interface SubmitUtrParams {
 export interface VerifyOrderParams {
   orderId: string;
   adminUserId: string;
-  bankReconciliationRef: string;
+  bankReconciliationRef?: string;
+  bankReference?: string;
+  creditedPaise?: number;
   notes?: string;
 }
 
@@ -60,18 +63,18 @@ export async function createOrGetMaintenanceOrder(params: CreateOrderParams) {
   const planDef = MAINTENANCE_PLANS[planId];
   const isFreeTrial = planDef.planType === 'free_trial' || planId === 'FREE_TRIAL';
 
-  // If selecting Free Trial, verify eligibility: cannot have an existing active trial
+  // If selecting Free Trial, verify eligibility: cannot have an existing active or historical trial (BILL04)
   if (isFreeTrial) {
-    const { data: activeTrials } = await supabaseAdmin
+    const { data: existingTrials } = await supabaseAdmin
       .from('maintenance_subscriptions')
       .select('id, plan_id, status, trial_expires_at')
       .eq('engagement_id', engagementId)
       .eq('plan_id', 'FREE_TRIAL')
-      .in('status', ['active', 'pending_verification'])
+      .in('status', ['active', 'pending_verification', 'grace_period', 'expired', 'completed', 'cancelled'])
       .limit(1);
 
-    if (activeTrials && activeTrials.length > 0) {
-      throw new Error('An active or pending 30-Day Free Trial already exists for this engagement. Duplicate trial orders are prohibited.');
+    if (existingTrials && existingTrials.length > 0) {
+      throw new Error('A 30-Day Free Trial has already been evaluated or is currently active for this engagement. Duplicate trial orders are prohibited.');
     }
   }
 
@@ -146,27 +149,27 @@ export async function createOrGetMaintenanceOrder(params: CreateOrderParams) {
     throw new Error(`Failed to create maintenance order: ${insertError?.message || 'Unknown database error'}`);
   }
 
-  // Queue initial order registration acknowledgment email in outbox
+  // Queue initial order registration acknowledgment email in outbox (MAIL01)
   const emailSubject = isFreeTrial
     ? 'Free Trial Registration Received'
     : `New Maintenance Order Registered: ${orderRef} (${pricing.name})`;
 
-  await supabaseAdmin.from('email_outbox').insert({
-    recipient_email: 'hello@logicintelligencetechnologies.in',
-    template_id: isFreeTrial ? 'trial-registration-received' : 'maintenance-order-registered',
+  const idempotencyKey = `email_order_reg_${orderRef}`;
+  const { error: outboxErr } = await supabaseAdmin.from('email_outbox').insert({
+    event_type: isFreeTrial ? 'trial_registration_received' : 'maintenance_order_registered',
+    template_key: isFreeTrial ? 'trial-registration-received' : 'maintenance-order-registered',
+    category: 'transactional',
+    recipient: 'hello@logicintelligencetechnologies.in',
+    sender: 'no-reply@logicintelligencetechnologies.in',
     subject: emailSubject,
-    status: 'queued',
-    payload: {
-      orderRef,
-      planId,
-      planName: pricing.name,
-      totalFormatted: pricing.formattedTotal,
-      verificationAmount: isFreeTrial ? '₹20.00 (Refundable)' : undefined,
-      clientId,
-      engagementId,
-    },
-    metadata: { orderRef, planId },
+    idempotency_key: idempotencyKey,
+    status: 'pending',
+    text: `Maintenance order ${orderRef} registered for ${pricing.name}. Total payable: ${pricing.formattedTotal}.`,
   });
+
+  if (outboxErr) {
+    console.warn('[email-outbox] Order registration enqueue warning:', outboxErr.message);
+  }
 
   return {
     order: newOrder,
@@ -207,6 +210,19 @@ export async function submitMaintenanceUtr(params: SubmitUtrParams) {
     throw new Error('This order has already been verified and settled by Super Admin.');
   }
 
+  // Prevent duplicate UTR submissions across orders
+  const { data: duplicateUtr } = await supabaseAdmin
+    .from('maintenance_orders')
+    .select('id, order_ref')
+    .eq('declared_utr', cleanUtr)
+    .neq('id', order.id)
+    .in('status', ['verification_pending', 'verified'])
+    .limit(1);
+
+  if (duplicateUtr && duplicateUtr.length > 0) {
+    throw new Error(`UTR ${cleanUtr} has already been submitted for another order (${duplicateUtr[0].order_ref}). Duplicate UTR submissions are prohibited.`);
+  }
+
   const { data: updatedOrder, error: updateError } = await supabaseAdmin
     .from('maintenance_orders')
     .update({
@@ -225,21 +241,23 @@ export async function submitMaintenanceUtr(params: SubmitUtrParams) {
     throw new Error(`Failed to update payment status: ${updateError?.message || 'Database error'}`);
   }
 
-  // Queue Super Admin payment review notification
-  await supabaseAdmin.from('email_outbox').insert({
-    recipient_email: 'support@logicintelligencetechnologies.in',
-    template_id: 'maintenance-payment-reported',
+  // Queue Super Admin payment review notification in outbox (MAIL01)
+  const utrIdempotency = `email_utr_submitted_${order.order_ref}_${cleanUtr}`;
+  const { error: outboxErr } = await supabaseAdmin.from('email_outbox').insert({
+    event_type: 'maintenance_payment_reported',
+    template_key: 'maintenance-payment-reported',
+    category: 'transactional',
+    recipient: 'support@logicintelligencetechnologies.in',
+    sender: 'no-reply@logicintelligencetechnologies.in',
     subject: `[ACTION REQUIRED] Maintenance Payment Reported: ${cleanUtr} (${orderRef})`,
-    status: 'queued',
-    payload: {
-      orderRef,
-      planId: order.plan_id,
-      declaredUtr: cleanUtr,
-      amountPaise: order.total_amount_paise,
-      amountFormatted: formatPaiseToInr(order.total_amount_paise),
-    },
-    metadata: { orderRef, utr: cleanUtr },
+    idempotency_key: utrIdempotency,
+    status: 'pending',
+    text: `Payment reported for order ${orderRef} (${order.plan_id}) with UTR ${cleanUtr}. Amount: ${formatPaiseToInr(order.total_amount_paise)}.`,
   });
+
+  if (outboxErr) {
+    console.warn('[email-outbox] Payment reported enqueue warning:', outboxErr.message);
+  }
 
   return updatedOrder;
 }
@@ -265,7 +283,7 @@ export async function getClientActiveSubscription(engagementId: string) {
   let daysRemaining = 0;
 
   if (sub.status === 'active') {
-    const isTrial = sub.plan_id === 'FREE_TRIAL' || sub.plan_id === 'STANDARD';
+    const isTrial = sub.plan_id === 'FREE_TRIAL';
     const expiryDate = isTrial
       ? new Date(sub.trial_expires_at || sub.current_period_end || now)
       : new Date(sub.current_period_end || now);
@@ -285,7 +303,19 @@ export async function getClientActiveSubscription(engagementId: string) {
  * Super Admin authorizes bank reconciliation and activates trial or subscription
  */
 export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParams) {
-  const { orderId, adminUserId, bankReconciliationRef, notes } = params;
+  const { orderId, adminUserId, notes } = params;
+  const bankReconciliationRef = params.bankReconciliationRef || params.bankReference || '';
+
+  // Verify acting user is a legitimate super_admin
+  const { data: adminProfile } = await supabaseAdmin
+    .from('profiles')
+    .select('role')
+    .eq('id', adminUserId)
+    .single();
+
+  if (!adminProfile || adminProfile.role !== 'super_admin') {
+    throw new Error('Forbidden: Only Super Admin can verify bank reconciliation and activate subscriptions.');
+  }
 
   const { data: order, error: orderError } = await supabaseAdmin
     .from('maintenance_orders')
@@ -297,8 +327,37 @@ export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParam
     throw new Error('Maintenance order not found.');
   }
 
+  // Idempotent handling: if already verified and subscription exists, return it
   if (order.status === 'verified') {
+    if (order.subscription_id) {
+      const { data: existingSub } = await supabaseAdmin
+        .from('maintenance_subscriptions')
+        .select('*')
+        .eq('id', order.subscription_id)
+        .maybeSingle();
+      if (existingSub) {
+        return { order, subscription: existingSub, isExisting: true };
+      }
+    }
     throw new Error('This order has already been verified.');
+  }
+
+  const cleanBankRef = bankReconciliationRef.trim();
+  if (!cleanBankRef || cleanBankRef.length < 6) {
+    throw new Error('A valid bank reconciliation reference (minimum 6 characters) is required.');
+  }
+
+  // Prevent duplicate bank reconciliation reference allocation across orders (BILL02, BILL05)
+  const { data: duplicateBankRef } = await supabaseAdmin
+    .from('maintenance_orders')
+    .select('id, order_ref')
+    .or(`bank_reconciliation_ref.eq.${cleanBankRef},bank_reference.eq.${cleanBankRef}`)
+    .neq('id', order.id)
+    .in('status', ['verified', 'verification_pending'])
+    .limit(1);
+
+  if (duplicateBankRef && duplicateBankRef.length > 0) {
+    throw new Error(`Bank reconciliation reference ${cleanBankRef} has already been allocated to order ${duplicateBankRef[0].order_ref}. Duplicate credit allocation is prohibited.`);
   }
 
   const nowIso = new Date().toISOString();
@@ -309,28 +368,39 @@ export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParam
 
   const isFreeTrialPlan = plan.planType === 'free_trial' || order.plan_id === 'FREE_TRIAL';
 
-  if (isFreeTrialPlan && order.total_amount_paise !== 2000) {
-    throw new Error(`Invalid verification payment amount: expected 2000 paise (₹20.00), found ${order.total_amount_paise} paise.`);
+  // Strict integer paise verification matching authoritative plan pricing (BILL01, BILL03)
+  const expectedPricing = calculatePlanPricing(order.plan_id as PlanIdentifier);
+  if (order.total_amount_paise !== expectedPricing.totalPricePaise) {
+    throw new Error(`Invalid payment amount: expected ${expectedPricing.totalPricePaise} paise for plan ${order.plan_id}, found ${order.total_amount_paise} paise.`);
   }
 
-  // Update order to verified
-  const { error: orderUpdateErr } = await supabaseAdmin
-    .from('maintenance_orders')
-    .update({
-      status: 'verified',
-      verified_by: adminUserId,
-      verified_at: nowIso,
-      bank_reconciliation_ref: bankReconciliationRef.trim(),
-      metadata: {
-        ...order.metadata,
-        admin_notes: notes || null,
-      },
-      updated_at: nowIso,
-    })
-    .eq('id', order.id);
+  // Reconcile actual bank credit amount in integer paise (BILL01)
+  const creditedPaise = params.creditedPaise !== undefined ? Math.round(Number(params.creditedPaise)) : order.total_amount_paise;
+  if (creditedPaise <= 0) {
+    throw new Error('Credited amount in paise must be a positive integer.');
+  }
 
-  if (orderUpdateErr) {
-    throw new Error(`Failed to verify order: ${orderUpdateErr.message}`);
+  let paymentDiscrepancy: 'exact' | 'partial_payment' | 'overpayment' = 'exact';
+  if (creditedPaise < order.total_amount_paise) {
+    paymentDiscrepancy = 'partial_payment';
+    const shortfall = order.total_amount_paise - creditedPaise;
+    await supabaseAdmin
+      .from('maintenance_orders')
+      .update({
+        metadata: {
+          ...order.metadata,
+          payment_discrepancy: 'partial_payment',
+          credited_amount_paise: creditedPaise,
+          shortfall_paise: shortfall,
+          attempted_at: nowIso,
+        },
+        updated_at: nowIso,
+      })
+      .eq('id', order.id);
+
+    throw new Error(`Payment verification failed: Partial payment detected. Credited amount of ${creditedPaise} paise is less than canonical order total of ${order.total_amount_paise} paise (shortfall: ${shortfall} paise). Full payment required for activation.`);
+  } else if (creditedPaise > order.total_amount_paise) {
+    paymentDiscrepancy = 'overpayment';
   }
 
   // Calculate activation dates
@@ -338,7 +408,7 @@ export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParam
   const expiryDate = new Date();
   expiryDate.setDate(startDate.getDate() + plan.durationDays);
 
-  // Upsert subscription
+  // Upsert subscription first to prevent stranding order in verified state if activation fails (BILL02)
   const subscriptionPayload = {
     client_id: order.client_id,
     engagement_id: order.engagement_id,
@@ -370,33 +440,57 @@ export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParam
     throw new Error(`Failed to activate subscription: ${subError?.message || 'Database error'}`);
   }
 
-  // Link subscription ID back to order
-  await supabaseAdmin
+  // Atomically update order to verified status and link subscription (BILL02)
+  const { data: updatedOrder, error: orderUpdateErr } = await supabaseAdmin
     .from('maintenance_orders')
-    .update({ subscription_id: sub.id })
-    .eq('id', order.id);
+    .update({
+      status: 'verified',
+      subscription_id: sub.id,
+      verified_by: adminUserId,
+      verified_at: nowIso,
+      bank_reconciliation_ref: bankReconciliationRef.trim(),
+      bank_reference: cleanBankRef,
+      metadata: {
+        ...order.metadata,
+        payment_discrepancy: paymentDiscrepancy,
+        credited_amount_paise: creditedPaise,
+        excess_paise: paymentDiscrepancy === 'overpayment' ? creditedPaise - order.total_amount_paise : 0,
+        admin_notes: notes || null,
+      },
+      updated_at: nowIso,
+    })
+    .eq('id', order.id)
+    .select('*')
+    .single();
 
-  // Queue activation confirmation email
-  await supabaseAdmin.from('email_outbox').insert({
-    recipient_email: 'hello@logicintelligencetechnologies.in',
-    template_id: isFreeTrialPlan ? 'trial-activated' : 'subscription-activated',
+  if (orderUpdateErr || !updatedOrder) {
+    // Rollback subscription to prevent orphaned record
+    await supabaseAdmin.from('maintenance_subscriptions').delete().eq('id', sub.id);
+    throw new Error(`Failed to update order to verified status: ${orderUpdateErr?.message || 'Database error'}`);
+  }
+
+  // Queue activation confirmation email in outbox (MAIL01)
+  const activationIdempotency = `email_sub_activated_${updatedOrder.id}_${sub.id}`;
+  const { error: outboxErr } = await supabaseAdmin.from('email_outbox').insert({
+    event_type: isFreeTrialPlan ? 'trial_activated' : 'subscription_activated',
+    template_key: isFreeTrialPlan ? 'trial-activated' : 'subscription-activated',
+    category: 'transactional',
+    recipient: 'hello@logicintelligencetechnologies.in',
+    sender: 'no-reply@logicintelligencetechnologies.in',
     subject: isFreeTrialPlan
       ? `Free Trial Activated — 30 Days (Order ${order.order_ref})`
       : `${plan.name} Activated (Order ${order.order_ref})`,
-    status: 'queued',
-    payload: {
-      orderRef: order.order_ref,
-      planName: plan.name,
-      planId: plan.id,
-      activationDate: nowIso,
-      expiryDate: expiryDate.toISOString(),
-      refundable: isFreeTrialPlan ? '₹20.00 (Queued for Refund)' : 'N/A',
-    },
-    metadata: { orderId: order.id, subscriptionId: sub.id },
+    idempotency_key: activationIdempotency,
+    status: 'pending',
+    text: `${isFreeTrialPlan ? 'Free Trial' : plan.name} activated for order ${order.order_ref}. Expiry: ${expiryDate.toISOString()}.`,
   });
 
+  if (outboxErr) {
+    console.warn('[email-outbox] Activation email enqueue warning:', outboxErr.message);
+  }
+
   return {
-    order,
+    order: updatedOrder,
     subscription: sub,
   };
 }
@@ -405,13 +499,46 @@ export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParam
  * Super Admin processes or marks completed the ₹20 trial refund
  */
 export async function processSubscriptionRefund(params: ProcessRefundParams) {
-  const { subscriptionId, refundStatus, refundReference, refundNotes } = params;
+  const { subscriptionId, adminUserId, refundStatus, refundReference, refundNotes } = params;
+
+  // Verify acting user is a legitimate super_admin
+  const { data: adminProfile } = await supabaseAdmin
+    .from('profiles')
+    .select('role, email')
+    .eq('id', adminUserId)
+    .single();
+
+  if (!adminProfile || adminProfile.role !== 'super_admin') {
+    throw new Error('Forbidden: Only Super Admin can process trial refunds.');
+  }
+
+  // Load the current subscription record
+  const { data: currentSub, error: fetchSubErr } = await supabaseAdmin
+    .from('maintenance_subscriptions')
+    .select('*')
+    .eq('id', subscriptionId)
+    .single();
+
+  if (fetchSubErr || !currentSub) {
+    throw new Error('Maintenance subscription not found.');
+  }
+
+  // BILL05: Apply only to eligible verified trial-verification payments
+  if (currentSub.plan_id !== 'FREE_TRIAL') {
+    throw new Error('Only 30-Day Free Trial verification payments (₹20.00) are eligible for trial refunds.');
+  }
+
+  // Prevent completed refunds from moving backward
+  if (currentSub.refund_status === 'completed' && refundStatus !== 'completed') {
+    throw new Error('Terminal state violation: Completed trial refunds cannot be reverted to pending or processing.');
+  }
 
   const nowIso = new Date().toISOString();
 
   const updateData: Record<string, unknown> = {
     refund_status: refundStatus,
     refund_notes: refundNotes || null,
+    refunded_by: adminUserId,
     updated_at: nowIso,
   };
 
@@ -419,8 +546,12 @@ export async function processSubscriptionRefund(params: ProcessRefundParams) {
     updateData.refund_initiated_at = nowIso;
   }
   if (refundStatus === 'completed') {
+    const cleanRef = refundReference?.trim();
+    if (!cleanRef || cleanRef.length < 6 || cleanRef.startsWith('REF-FAKE')) {
+      throw new Error('A valid bank or UPI transaction reference is required to mark a refund as completed. Fabricated or placeholder references are prohibited.');
+    }
     updateData.refund_completed_at = nowIso;
-    updateData.refund_reference = refundReference || `REF-${Date.now().toString(36).toUpperCase()}`;
+    updateData.refund_reference = cleanRef;
   }
 
   const { data: updatedSub, error } = await supabaseAdmin
@@ -434,32 +565,70 @@ export async function processSubscriptionRefund(params: ProcessRefundParams) {
     throw new Error(`Failed to update refund status: ${error?.message || 'Database error'}`);
   }
 
+  if (refundStatus === 'completed' && currentSub.verification_payment_request_id) {
+    await supabaseAdmin
+      .from('maintenance_orders')
+      .update({
+        status: 'refunded',
+        updated_at: nowIso,
+      })
+      .eq('id', currentSub.verification_payment_request_id);
+  }
+
+  // Record immutable administrative audit event
+  await recordAdminAction({
+    actor: {
+      userId: adminUserId,
+      email: adminProfile.email,
+      role: 'super_admin',
+    },
+    action: 'maintenance.process_refund',
+    capability: 'payment.verify',
+    outcome: 'succeeded',
+    target: {
+      type: 'subscription',
+      id: subscriptionId,
+    },
+    metadata: {
+      refund_status: refundStatus,
+      refund_reference: updateData.refund_reference,
+      plan_id: currentSub.plan_id,
+      notes: refundNotes || null,
+    },
+  });
+
   if (refundStatus === 'processing') {
-    await supabaseAdmin.from('email_outbox').insert({
-      recipient_email: 'hello@logicintelligencetechnologies.in',
-      template_id: 'trial-refund-initiated',
+    const processingIdempotency = `email_refund_proc_${updatedSub.id}_${nowIso}`;
+    const { error: outboxErr } = await supabaseAdmin.from('email_outbox').insert({
+      event_type: 'trial_refund_initiated',
+      template_key: 'trial-refund-initiated',
+      category: 'transactional',
+      recipient: 'hello@logicintelligencetechnologies.in',
+      sender: 'no-reply@logicintelligencetechnologies.in',
       subject: `₹20 Verification Refund Initiated (Subscription ${updatedSub.id})`,
-      status: 'queued',
-      payload: {
-        subscriptionId: updatedSub.id,
-        refundReference: updatedSub.refund_reference || 'In Progress',
-        initiatedAt: nowIso,
-      },
-      metadata: { subscriptionId },
+      idempotency_key: processingIdempotency,
+      status: 'pending',
+      text: `₹20 verification refund initiated for subscription ${updatedSub.id}.`,
     });
+    if (outboxErr) {
+      console.warn('[email-outbox] Refund initiated enqueue warning:', outboxErr.message);
+    }
   } else if (refundStatus === 'completed') {
-    await supabaseAdmin.from('email_outbox').insert({
-      recipient_email: 'hello@logicintelligencetechnologies.in',
-      template_id: 'trial-refund-completed',
+    const completedIdempotency = `email_refund_comp_${updatedSub.id}_${updatedSub.refund_reference}`;
+    const { error: outboxErr } = await supabaseAdmin.from('email_outbox').insert({
+      event_type: 'trial_refund_completed',
+      template_key: 'trial-refund-completed',
+      category: 'transactional',
+      recipient: 'hello@logicintelligencetechnologies.in',
+      sender: 'no-reply@logicintelligencetechnologies.in',
       subject: `₹20 Verification Refund Completed (Ref: ${updatedSub.refund_reference})`,
-      status: 'queued',
-      payload: {
-        subscriptionId: updatedSub.id,
-        refundReference: updatedSub.refund_reference,
-        completedAt: nowIso,
-      },
-      metadata: { subscriptionId },
+      idempotency_key: completedIdempotency,
+      status: 'pending',
+      text: `₹20 verification refund completed for subscription ${updatedSub.id}. Bank reference: ${updatedSub.refund_reference}.`,
     });
+    if (outboxErr) {
+      console.warn('[email-outbox] Refund completed enqueue warning:', outboxErr.message);
+    }
   }
 
   return updatedSub;
@@ -468,16 +637,16 @@ export async function processSubscriptionRefund(params: ProcessRefundParams) {
 /**
  * Server-side automatic trial expiration workflow
  * Idempotently checks active trials where trial_expires_at <= NOW() and sets status to 'expired'.
- * Never auto-converts or auto-debits.
+ * Never auto-converts or auto-debits. Paid Standard subscriptions are never expired here.
  */
 export async function checkAndExpireStandardTrials(): Promise<{ expiredCount: number; expiredIds: string[] }> {
   const nowIso = new Date().toISOString();
 
-  // Find active trials that have reached or passed their expiration timestamp
+  // Find active FREE_TRIAL subscriptions that have reached or passed their expiration timestamp
   const { data: expiredSubs, error: fetchErr } = await supabaseAdmin
     .from('maintenance_subscriptions')
     .select('id, client_id, engagement_id, plan_id, trial_expires_at')
-    .in('plan_id', ['FREE_TRIAL', 'STANDARD'])
+    .eq('plan_id', 'FREE_TRIAL')
     .eq('status', 'active')
     .not('trial_expires_at', 'is', null)
     .lte('trial_expires_at', nowIso);
@@ -500,25 +669,22 @@ export async function checkAndExpireStandardTrials(): Promise<{ expiredCount: nu
     if (!updateErr) {
       expiredIds.push(sub.id);
 
-      // Queue trial expiration notification email
-      await supabaseAdmin.from('email_outbox').insert({
-        recipient_email: 'hello@logicintelligencetechnologies.in',
-        template_id: 'trial-ended',
+      // Queue trial expiration notification email in outbox (MAIL01)
+      const expiryIdempotency = `email_trial_expired_${sub.id}_${nowIso}`;
+      const { error: outboxErr } = await supabaseAdmin.from('email_outbox').insert({
+        event_type: 'trial_expired',
+        template_key: 'trial-ended',
+        category: 'transactional',
+        recipient: 'hello@logicintelligencetechnologies.in',
+        sender: 'no-reply@logicintelligencetechnologies.in',
         subject: 'Your 30-Day Free Trial Has Ended',
-        status: 'queued',
-        payload: {
-          subscriptionId: sub.id,
-          engagementId: sub.engagement_id,
-          expiredAt: nowIso,
-          availablePlans: [
-            'Standard Care (₹999/mo)',
-            'Basic Care (₹4,999/mo)',
-            'Pro Care (₹9,999/mo)',
-            'Enterprise Care (₹19,999/mo)',
-          ],
-        },
-        metadata: { subscriptionId: sub.id, event: 'trial_expired' },
+        idempotency_key: expiryIdempotency,
+        status: 'pending',
+        text: `Your 30-Day Free Trial for engagement ${sub.engagement_id} has concluded. Please choose a paid maintenance care plan to continue coverage.`,
       });
+      if (outboxErr) {
+        console.warn('[email-outbox] Trial expired enqueue warning:', outboxErr.message);
+      }
     }
   }
 
@@ -570,20 +736,78 @@ export async function createClientCorrectionRequest(params: CreateCorrectionPara
     throw new Error(`Failed to submit correction request: ${error?.message || 'Database error'}`);
   }
 
-  await supabaseAdmin.from('email_outbox').insert({
-    recipient_email: 'support@logicintelligencetechnologies.in',
-    template_id: 'correction-request-submitted',
+  const corrIdempotency = `email_corr_submitted_${requestRef}`;
+  const { error: outboxErr } = await supabaseAdmin.from('email_outbox').insert({
+    event_type: 'correction_request_submitted',
+    template_key: 'correction-request-submitted',
+    category: 'transactional',
+    recipient: 'support@logicintelligencetechnologies.in',
+    sender: 'no-reply@logicintelligencetechnologies.in',
     subject: `[CHANGE CONTROL] Correction Requested: ${requestRef} (${affectedField})`,
-    status: 'queued',
-    payload: {
-      requestRef,
-      affectedField,
-      requestedValue,
-      engagementId,
-      clientId,
-    },
-    metadata: { requestRef },
+    idempotency_key: corrIdempotency,
+    status: 'pending',
+    text: `Client correction request ${requestRef} submitted for engagement ${engagementId}. Affected field: ${affectedField}.`,
   });
 
+  if (outboxErr) {
+    console.warn('[email-outbox] Correction request enqueue warning:', outboxErr.message);
+  }
+
   return correction;
+}
+
+/**
+ * Canonical Project Interface Contracts (PROJECT.md § 3)
+ */
+export async function createMaintenanceOrder(params: {
+  authUserId: string;
+  engagementId: string;
+  planId: 'FREE_TRIAL' | 'STANDARD' | 'BASIC' | 'PRO' | 'ENTERPRISE';
+  consentTimestamp?: string;
+}): Promise<{ orderId: string; orderRef: string; totalPaise: number; upiUri: string }> {
+  const result = await createOrGetMaintenanceOrder({
+    clientId: params.authUserId,
+    engagementId: params.engagementId,
+    planId: params.planId,
+    consentConfirmed: true,
+  });
+  return {
+    orderId: result.order.id,
+    orderRef: result.order.order_ref,
+    totalPaise: result.pricing.totalPricePaise,
+    upiUri: result.upiUri,
+  };
+}
+
+export async function verifyMaintenancePayment(params: {
+  adminAuthUserId: string;
+  orderId: string;
+  bankReference: string;
+  creditedPaise: number;
+}): Promise<{ subscriptionId: string; status: 'active' }> {
+  const result = await verifyMaintenanceOrderAndActivate({
+    orderId: params.orderId,
+    adminUserId: params.adminAuthUserId,
+    bankReconciliationRef: params.bankReference,
+    bankReference: params.bankReference,
+    creditedPaise: params.creditedPaise,
+  });
+  return {
+    subscriptionId: result.subscription.id,
+    status: 'active',
+  };
+}
+
+export async function processTrialRefund(params: {
+  adminAuthUserId: string;
+  subscriptionId: string;
+  refundReference: string;
+}): Promise<{ status: 'refunded' }> {
+  await processSubscriptionRefund({
+    subscriptionId: params.subscriptionId,
+    adminUserId: params.adminAuthUserId,
+    refundStatus: 'completed',
+    refundReference: params.refundReference,
+  });
+  return { status: 'refunded' };
 }

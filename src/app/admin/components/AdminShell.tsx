@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Shield } from "lucide-react";
 import type { ReactNode } from "react";
 import { navViewForRole } from "@/config/admin-nav";
 import { ROLE_LABELS, type StaffRole } from "@/config/roles";
+import { COMPANY } from "@/config/company";
 import { AdminMobileNav } from "./AdminMobileNav";
 import { AdminNavLinks } from "./AdminNavLinks";
 
@@ -30,17 +32,18 @@ export function AdminShell({
       <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-[var(--lit-border-light,#DFE7EF)] bg-white/95 px-4 sm:px-6 backdrop-blur-md shadow-2xs">
         <AdminMobileNav groups={groups} roleLabel={ROLE_LABELS[role]} email={email} />
         <Link href="/admin/command-center" className="flex min-w-0 items-center gap-2.5 group">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-teal,#1FA9A2)]/10 text-[var(--lit-teal,#1FA9A2)] transition-colors group-hover:border-[var(--lit-teal,#1FA9A2)]/40 shadow-2xs">
-            <Shield className="h-4 w-4" aria-hidden />
-          </div>
-          <div className="flex flex-col">
-            <span className="truncate text-xs font-bold tracking-tight text-[var(--lit-navy,#0B2545)]">
-              Logic Intelligence Technologies
-            </span>
-            <span className="text-[10px] font-medium font-mono text-[var(--lit-teal,#1FA9A2)]">
-              Admin Console
-            </span>
-          </div>
+          <span className="relative block h-8 w-8 rounded-lg overflow-hidden border border-[var(--lit-border-light,#DFE7EF)] bg-white shrink-0 shadow-2xs group-hover:border-[var(--lit-teal,#1FA9A2)] transition-colors">
+            <Image
+              src={COMPANY.logoIconPath}
+              alt={`${COMPANY.displayName} Logo`}
+              width={32}
+              height={32}
+              className="w-full h-full object-cover"
+            />
+          </span>
+          <span className="truncate text-xs font-black tracking-wider text-[var(--lit-navy,#0B2545)] uppercase font-mono">
+            LOGIC INTELLIGENCE TECHNOLOGIES
+          </span>
         </Link>
         <div className="ml-auto hidden items-center gap-3 sm:flex">
           <span className="max-w-[220px] truncate text-xs text-[var(--lit-text-muted,#52677C)] font-mono">{email ?? "Signed in"}</span>

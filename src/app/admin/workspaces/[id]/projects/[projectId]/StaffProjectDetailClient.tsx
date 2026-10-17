@@ -34,6 +34,7 @@ interface Props {
   stages: any[];
   teamMembers: ProjectTeamMember[];
   changeRequests: any[];
+  initialMessages?: any[];
   canInvite: boolean;
   callerUserId: string;
 }
@@ -44,10 +45,40 @@ export default function StaffProjectDetailClient({
   stages,
   teamMembers,
   changeRequests,
+  initialMessages = [],
   canInvite,
   callerUserId,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<"stages" | "team" | "rfcs">("stages");
+  const [activeTab, setActiveTab] = useState<"stages" | "team" | "rfcs" | "messages">("stages");
+  const [messages, setMessages] = useState<any[]>(initialMessages);
+  const [newMessage, setNewMessage] = useState("");
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const [messageError, setMessageError] = useState<string | null>(null);
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+
+    try {
+      setSendingMessage(true);
+      setMessageError(null);
+      const res = await fetch(`/api/admin/projects/${engagement.id}/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newMessage.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || "Failed to send message");
+      }
+      setMessages((prev) => [...prev, data.message]);
+      setNewMessage("");
+    } catch (err: any) {
+      setMessageError(err.message);
+    } finally {
+      setSendingMessage(false);
+    }
+  };
 
   // Invite Modal / Form State
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -210,6 +241,18 @@ export default function StaffProjectDetailClient({
           >
             <GitPullRequest className="w-3.5 h-3.5" />
             <span>Change Requests (RFCs)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("messages")}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-2xs ${
+              activeTab === "messages"
+                ? "bg-[var(--lit-navy,#0B2545)] text-white"
+                : "text-[var(--lit-text-muted,#52677C)] hover:text-[var(--lit-navy,#0B2545)] hover:bg-[var(--lit-cloud,#F7F9FC)] bg-white border border-[var(--lit-border-light,#DFE7EF)]"
+            }`}
+          >
+            <Mail className="w-3.5 h-3.5" />
+            <span>Project Messages ({messages.length})</span>
           </button>
         </div>
       </div>
@@ -461,6 +504,94 @@ export default function StaffProjectDetailClient({
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* TAB 4: PROJECT MESSAGES & COMMUNICATIONS */}
+      {activeTab === "messages" && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-[var(--lit-border-light,#DFE7EF)]">
+            <div>
+              <h3 className="text-sm font-bold text-[var(--lit-navy,#0B2545)] flex items-center gap-2">
+                <Mail className="w-4 h-4 text-[var(--lit-teal,#1FA9A2)]" /> Client Project Communication Stream
+              </h3>
+              <p className="text-xs text-[var(--lit-text-muted,#52677C)] mt-0.5">
+                Two-way communication thread with {engagement.contact_name} ({engagement.contact_email}).
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-2xs overflow-hidden flex flex-col min-h-[400px]">
+            {/* Messages Feed */}
+            <div className="flex-1 p-5 space-y-4 overflow-y-auto max-h-[500px]">
+              {messages.length === 0 ? (
+                <div className="text-center py-12 text-[var(--lit-text-muted,#52677C)] space-y-2">
+                  <Mail className="w-8 h-8 text-slate-300 mx-auto" />
+                  <p className="text-xs">No project messages recorded yet. Start the conversation below.</p>
+                </div>
+              ) : (
+                messages.map((msg: any) => {
+                  const isTeam = msg.sender === "team";
+                  return (
+                    <div
+                      key={msg.id}
+                      className={`flex flex-col ${isTeam ? "items-end" : "items-start"}`}
+                    >
+                      <div
+                        className={`max-w-[80%] rounded-2xl p-4 space-y-1.5 shadow-2xs ${
+                          isTeam
+                            ? "bg-[var(--lit-navy,#0B2545)] text-white rounded-br-xs"
+                            : "bg-[var(--lit-cloud,#F7F9FC)] border border-[var(--lit-border-light,#DFE7EF)] text-[var(--lit-navy,#0B2545)] rounded-bl-xs"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-3 text-[10px]">
+                          <span className={`font-bold ${isTeam ? "text-teal-300" : "text-indigo-700"}`}>
+                            {msg.senderName} {msg.role ? `(${msg.role})` : ""}
+                          </span>
+                          <span className={isTeam ? "text-slate-300" : "text-slate-400"}>
+                            {msg.timestamp}
+                          </span>
+                        </div>
+                        <p className="text-xs whitespace-pre-wrap leading-relaxed">
+                          {msg.content}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Reply Input Form */}
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]/50 space-y-2">
+              {messageError && (
+                <p className="text-xs text-rose-600 font-medium">{messageError}</p>
+              )}
+              <div className="flex items-end gap-2">
+                <textarea
+                  rows={2}
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder={`Reply to ${engagement.contact_name} as ${workspace.fullName || "assigned staff"}...`}
+                  className="flex-1 text-xs rounded-xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-3 text-[var(--lit-ink,#121826)] focus:outline-none focus:border-[var(--lit-teal,#1FA9A2)] resize-none shadow-2xs"
+                />
+                <button
+                  type="submit"
+                  disabled={sendingMessage || !newMessage.trim()}
+                  className="inline-flex items-center gap-1.5 px-5 py-3 rounded-xl bg-[var(--lit-teal,#1FA9A2)] hover:bg-[var(--lit-teal,#1FA9A2)]/90 text-white text-xs font-bold uppercase tracking-wider disabled:opacity-50 transition-all cursor-pointer shadow-2xs shrink-0"
+                >
+                  {sendingMessage ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <span>Send Reply</span>
+                      <Send className="w-3.5 h-3.5" />
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
