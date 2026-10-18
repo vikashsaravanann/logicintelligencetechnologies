@@ -249,27 +249,25 @@ function extractStageDetails(stageKey: StageKey, payload: Record<string, any>, a
  * 1. Email to the Client (receipt of submission)
  * 2. Email to the Admin (alert with direct console review link)
  */
-export async function notifyStageSubmitted(input: NotifyStageSubmissionInput): Promise<{
-  // Staff portal notifications (best-effort)
+export async function notifyStageSubmitted(input: NotifyStageSubmissionInput): Promise<{ clientEmailed: boolean; adminEmailed: boolean }> {
+  const { engagement, stageKey, payload } = input;
+
   try {
-    const engagementId = (input as any).engagement?.id as string | undefined;
-    const stageKey = (input as any).stageKey || (input as any).submittedStageKey;
-    if (engagementId) {
+    if (engagement?.id) {
       const { notifyAssignedStaffForEngagement } = await import('@/lib/staff/notifications');
-      await notifyAssignedStaffForEngagement(engagementId, {
+      await notifyAssignedStaffForEngagement(engagement.id, {
         eventType: 'stage.updated',
         title: 'Client stage activity',
-        summary: String(stageKey || 'stage update'),
-        sourceId: String(stageKey || engagementId),
-        actionUrl: `/staff/projects/${engagementId}/stages`,
-        idempotencyKey: `stage:submit:${engagementId}:${stageKey}:${Date.now() // 60000}`,
+        summary: String(stageKey),
+        sourceId: String(stageKey),
+        actionUrl: `/staff/projects/${engagement.id}/stages`,
+        idempotencyKey: `stage:submit:${engagement.id}:${stageKey}:${Math.floor(Date.now() / 60000)}`,
       });
     }
   } catch (e) {
     console.warn('[stage-notifications] staff notify failed', e);
   }
- clientEmailed: boolean; adminEmailed: boolean }> {
-  const { engagement, stageKey, payload } = input;
+
   const stageDef = CANONICAL_13_STAGES[stageKey];
   if (!stageDef) return { clientEmailed: false, adminEmailed: false };
 
@@ -360,26 +358,24 @@ export async function notifyStageSubmitted(input: NotifyStageSubmissionInput): P
  * informing them that Stage X was approved and Stage X+1 has unlocked!
  * Never invents Stage 14 (MAIL03).
  */
-export async function notifyStageApproved(input: NotifyStageApprovalInput): Promise<{
+export async function notifyStageApproved(input: NotifyStageApprovalInput): Promise<{ ok: boolean }> {
+  const { engagement, approvedStageKey, nextStageKey, adminNotes } = input;
+
   try {
-    const engagementId = (input as any).engagement?.id as string | undefined;
-    const stageKey = (input as any).approvedStageKey;
-    if (engagementId) {
+    if (engagement?.id) {
       const { notifyAssignedStaffForEngagement } = await import('@/lib/staff/notifications');
-      await notifyAssignedStaffForEngagement(engagementId, {
+      await notifyAssignedStaffForEngagement(engagement.id, {
         eventType: 'stage.updated',
         title: 'Stage approved',
-        summary: String(stageKey || 'stage approved'),
-        sourceId: String(stageKey || engagementId),
-        actionUrl: `/staff/projects/${engagementId}/stages`,
-        idempotencyKey: `stage:approve:${engagementId}:${stageKey}`,
+        summary: String(approvedStageKey),
+        sourceId: String(approvedStageKey),
+        actionUrl: `/staff/projects/${engagement.id}/stages`,
+        idempotencyKey: `stage:approve:${engagement.id}:${approvedStageKey}`,
       });
     }
   } catch (e) {
     console.warn('[stage-notifications] staff approve notify failed', e);
   }
- ok: boolean }> {
-  const { engagement, approvedStageKey, nextStageKey, adminNotes } = input;
   const approvedDef = CANONICAL_13_STAGES[approvedStageKey];
   if (!approvedDef || !engagement.contact_email) return { ok: false };
 
