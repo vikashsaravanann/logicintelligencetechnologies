@@ -101,9 +101,10 @@ export default function AssignProjectsModal({
       if (!initialEngagements || initialEngagements.length === 0) {
         const engRes = await fetch("/api/engagements");
         const engData = await engRes.json();
-        if (engData.success && Array.isArray(engData.engagements)) {
-          setEngagements(engData.engagements);
+        if (!engRes.ok || !engData.success || !Array.isArray(engData.engagements)) {
+          throw new Error(engData.error || "Unable to load verified client engagements.");
         }
+        setEngagements(engData.engagements);
       }
 
       // 2. Fetch staff assignments
@@ -589,7 +590,11 @@ export default function AssignProjectsModal({
                 </div>
               ) : filteredEngagements.length === 0 ? (
                 <div className="py-12 text-center text-slate-400 border border-dashed border-[var(--lit-border-light,#DFE7EF)] rounded-xl">
-                  <p className="text-xs">No client engagements match your search.</p>
+                  <p className="text-xs">
+                    {engagements.length === 0
+                      ? "No saved client engagements are available for assignment. Create or verify a real engagement first."
+                      : "No client engagements match your search."}
+                  </p>
                 </div>
               ) : (
                 filteredEngagements.map((eng) => {
