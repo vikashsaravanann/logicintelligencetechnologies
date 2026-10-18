@@ -70,6 +70,7 @@ test("Staff Workspace Validation: rejects invalid inputs", () => {
 test("Staff Workspace Validation: accepts strong, valid founder input", () => {
   const validInput = {
     fullName: "Arun Kumar",
+    employeeCode: "LIT-EMP-001",
     email: "arun.kumar@logicintelligencetechnologies.in",
     phone: "+919876543210",
     department: "Engineering",

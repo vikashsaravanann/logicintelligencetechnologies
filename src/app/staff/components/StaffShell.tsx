@@ -56,6 +56,40 @@ function resolveIcon(key: StaffIconKey | string | undefined) {
 
 export type StaffShellNavItem = StaffNavItemSerializable;
 
+function StaffNavList({
+  navItems,
+  pathname,
+  onNavigate,
+}: {
+  navItems: StaffNavItemSerializable[];
+  pathname: string;
+  onNavigate?: () => void;
+}) {
+  return (
+    <nav className="flex flex-col gap-0.5 px-2" aria-label="Staff portal">
+      {navItems.map((item) => {
+        const active = pathname === item.href || pathname.startsWith(item.href + "/");
+        const Icon = resolveIcon(item.iconKey);
+        return (
+          <Link
+            key={item.id || item.href + item.label}
+            href={item.href}
+            onClick={onNavigate}
+            className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+              active
+                ? "bg-[var(--lit-teal,#1FA9A2)]/10 text-[var(--lit-teal,#0D7377)]"
+                : "text-[var(--lit-ink,#121826)]/80 hover:bg-slate-100"
+            }`}
+          >
+            <Icon className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
+            <span className="truncate">{item.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
 export function StaffShell({
   fullName,
   jobTitle,
@@ -79,30 +113,6 @@ export function StaffShell({
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
-
-  const NavList = ({ onNavigate }: { onNavigate?: () => void }) => (
-    <nav className="flex flex-col gap-0.5 px-2" aria-label="Staff portal">
-      {navItems.map((item) => {
-        const active = pathname === item.href || pathname.startsWith(item.href + "/");
-        const Icon = resolveIcon(item.iconKey);
-        return (
-          <Link
-            key={item.id || item.href + item.label}
-            href={item.href}
-            onClick={onNavigate}
-            className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-              active
-                ? "bg-[var(--lit-teal,#1FA9A2)]/10 text-[var(--lit-teal,#0D7377)]"
-                : "text-[var(--lit-ink,#121826)]/80 hover:bg-slate-100"
-            }`}
-          >
-            <Icon className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
-            <span className="truncate">{item.label}</span>
-          </Link>
-        );
-      })}
-    </nav>
-  );
 
   return (
     <div className="min-h-screen bg-[#F7F8FA] font-sans text-[var(--lit-ink,#121826)] antialiased">
@@ -172,7 +182,7 @@ export function StaffShell({
               Authorized modules
             </p>
           </div>
-          <NavList />
+          <StaffNavList navItems={navItems} pathname={pathname} />
           <div className="mt-6 border-t border-slate-100 px-4 pt-4">
             <p className="truncate text-[11px] text-slate-400">{email}</p>
           </div>
@@ -194,7 +204,11 @@ export function StaffShell({
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto py-3">
-                <NavList onNavigate={() => setMobileOpen(false)} />
+                <StaffNavList
+                  navItems={navItems}
+                  pathname={pathname}
+                  onNavigate={() => setMobileOpen(false)}
+                />
               </div>
             </div>
           </div>

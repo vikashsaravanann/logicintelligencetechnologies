@@ -20,7 +20,7 @@ function staticPageUrls(dir = APP_DIR, segments: string[] = []): string[] {
 
 /** Signed-in areas, one-off flow pages and duplicate URLs that are not menu destinations. */
 const NOT_IN_MENU = [
-  /^\/(admin|client|dashboard|profile)(\/|$)/,
+  /^\/(admin|client|staff|dashboard|profile)(\/|$)/,
   /^\/(login|reset-password|unsubscribe|offline)$/,
   /^\/booking\//,
   /^\/onboard$/, // token-gated client onboarding flow, not a menu page

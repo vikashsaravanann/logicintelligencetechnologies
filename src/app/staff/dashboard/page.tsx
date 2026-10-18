@@ -52,7 +52,7 @@ export default async function StaffDashboardPage({
       );
       // Resolve titles separately to avoid nested join failures
       const engIds = rows.map((r) => r.engagement_id).filter(Boolean) as string[];
-      let titleMap = new Map<string, string>();
+      const titleMap = new Map<string, string>();
       if (engIds.length) {
         const { data: engs } = await supabaseAdmin
           .from("client_engagements")

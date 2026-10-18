@@ -43,7 +43,7 @@ export async function requireStaffPortal(
     redirect("/login?reason=employment-inactive");
   }
 
-  let self = await getSelfStaffWorkspace(session.userId);
+  const self = await getSelfStaffWorkspace(session.userId);
 
   if (!self?.hasActiveWorkspace || !self.workspaceId) {
     if (isSuperAdmin) {

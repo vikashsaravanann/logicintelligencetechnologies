@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useId, useCallback, useRef } from "react";
+import Link from "next/link";
 import {
   Briefcase,
   Search,
@@ -598,12 +599,12 @@ export default function AssignProjectsModal({
                       : "No client engagements match your search."}
                   </p>
                   {engagements.length === 0 ? (
-                    <a
+                    <Link
                       href="/admin/engagements"
                       className="inline-flex mt-2 text-xs font-semibold text-[var(--lit-teal,#1FA9A2)] hover:underline"
                     >
                       Open engagement management →
-                    </a>
+                    </Link>
                   ) : null}
                 </div>
               ) : (
