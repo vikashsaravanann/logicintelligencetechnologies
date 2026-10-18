@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { requireStaffPortal } from "@/lib/auth/staff-portal";
-import { buildStaffNavigation } from "@/config/staff-nav";
+import { buildStaffNavigation, toSerializableStaffNav } from "@/config/staff-nav";
 import { StaffShell } from "./components/StaffShell";
 import { getStaffSession } from "@/lib/auth/session";
 import { getSelfStaffWorkspace } from "@/lib/workspaces/service";
@@ -29,11 +29,8 @@ export default async function StaffLayout({ children }: { children: ReactNode })
   }
 
   const ctx = await requireStaffPortal("/staff/dashboard");
-  const nav = buildStaffNavigation(ctx.capabilities).map((e) => ({
-    label: e.label,
-    href: e.href,
-    icon: e.icon,
-  }));
+  // CRITICAL: only plain serializable data crosses Server → Client boundary
+  const nav = toSerializableStaffNav(buildStaffNavigation(ctx.capabilities));
 
   return (
     <StaffShell

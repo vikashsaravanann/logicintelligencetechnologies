@@ -4,14 +4,57 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, type ReactNode, type ComponentType } from "react";
-import { Menu, X, LogOut, Shield } from "lucide-react";
+import {
+  Menu,
+  X,
+  LogOut,
+  Shield,
+  LayoutDashboard,
+  ListTodo,
+  FolderKanban,
+  MessageSquare,
+  FileText,
+  User,
+  Activity,
+  Inbox,
+  LifeBuoy,
+  FilePen,
+  Receipt,
+  Upload,
+  Workflow,
+  LineChart,
+  Circle,
+} from "lucide-react";
 import { COMPANY } from "@/config/company";
+import type { StaffIconKey, StaffNavItemSerializable } from "@/config/staff-nav";
 
-export type StaffShellNavItem = {
-  label: string;
-  href: string;
-  icon?: ComponentType<{ className?: string }>;
+/** Client-only icon registry — never import this mapping from a Server Component. */
+const ICON_REGISTRY: Record<StaffIconKey, ComponentType<{ className?: string }>> = {
+  "layout-dashboard": LayoutDashboard,
+  "list-todo": ListTodo,
+  "folder-kanban": FolderKanban,
+  "message-square": MessageSquare,
+  "file-text": FileText,
+  user: User,
+  shield: Shield,
+  activity: Activity,
+  inbox: Inbox,
+  "life-buoy": LifeBuoy,
+  "file-pen": FilePen,
+  receipt: Receipt,
+  upload: Upload,
+  workflow: Workflow,
+  "line-chart": LineChart,
 };
+
+function resolveIcon(key: StaffIconKey | string | undefined) {
+  if (key && key in ICON_REGISTRY) {
+    return ICON_REGISTRY[key as StaffIconKey];
+  }
+  return Circle;
+}
+
+export type StaffShellNavItem = StaffNavItemSerializable;
 
 export function StaffShell({
   fullName,
@@ -27,7 +70,7 @@ export function StaffShell({
   department: string;
   employeeCode: string | null;
   email: string | null;
-  navItems: StaffShellNavItem[];
+  navItems: StaffNavItemSerializable[];
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -41,10 +84,10 @@ export function StaffShell({
     <nav className="flex flex-col gap-0.5 px-2" aria-label="Staff portal">
       {navItems.map((item) => {
         const active = pathname === item.href || pathname.startsWith(item.href + "/");
-        const Icon = item.icon;
+        const Icon = resolveIcon(item.iconKey);
         return (
           <Link
-            key={item.href + item.label}
+            key={item.id || item.href + item.label}
             href={item.href}
             onClick={onNavigate}
             className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
@@ -53,7 +96,7 @@ export function StaffShell({
                 : "text-[var(--lit-ink,#121826)]/80 hover:bg-slate-100"
             }`}
           >
-            {Icon ? <Icon className="h-4 w-4 shrink-0 opacity-80" /> : null}
+            <Icon className="h-4 w-4 shrink-0 opacity-80" aria-hidden />
             <span className="truncate">{item.label}</span>
           </Link>
         );
@@ -63,7 +106,6 @@ export function StaffShell({
 
   return (
     <div className="min-h-screen bg-[#F7F8FA] font-sans text-[var(--lit-ink,#121826)] antialiased">
-      {/* Top header */}
       <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-slate-200 bg-white px-4 sm:px-6">
         <button
           type="button"
@@ -74,22 +116,35 @@ export function StaffShell({
           {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </button>
 
-        <Link href="/staff/dashboard" className="flex min-w-0 items-center gap-2.5">
-          <span className="relative block h-8 w-8 overflow-hidden rounded-lg border border-slate-200 bg-white shrink-0">
-            <Image src={COMPANY.logoIconPath} alt="" fill className="object-contain p-0.5" />
+        <Link href="/staff/dashboard" className="flex items-center gap-2 min-w-0">
+          <span className="relative block h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-white">
+            <Image
+              src={COMPANY.logoIconPath}
+              alt=""
+              width={32}
+              height={32}
+              className="h-full w-full object-cover"
+            />
           </span>
-          <div className="min-w-0">
-            <p className="truncate text-[11px] font-semibold tracking-[0.14em] text-slate-500 uppercase">
-              LIT Staff Portal
-            </p>
-            <p className="truncate text-sm font-semibold text-slate-900">{fullName}</p>
-          </div>
+          <span className="truncate text-sm font-semibold tracking-tight">
+            {COMPANY.displayName}
+            <span className="ml-1.5 hidden text-[11px] font-medium text-slate-500 sm:inline">
+              Staff Portal
+            </span>
+          </span>
         </Link>
 
-        <div className="ml-auto flex items-center gap-3">
-          <div className="hidden text-right sm:block">
-            <p className="text-xs font-medium text-slate-800">{jobTitle}</p>
-            <p className="text-[11px] text-slate-500">
+        <div className="ml-auto flex items-center gap-3 min-w-0">
+          <div className="hidden text-right sm:block min-w-0">
+            <p className="truncate text-xs font-semibold text-slate-900">{fullName}</p>
+            <p className="truncate text-[11px] text-slate-500">
+              {jobTitle}
+              {employeeCode ? ` · ${employeeCode}` : ""}
+            </p>
+          </div>
+          <div className="sm:hidden min-w-0 text-right">
+            <p className="truncate text-xs font-medium text-slate-800">{jobTitle}</p>
+            <p className="truncate text-[11px] text-slate-500">
               {department}
               {employeeCode ? ` · ${employeeCode}` : ""}
             </p>
@@ -107,7 +162,6 @@ export function StaffShell({
       </header>
 
       <div className="mx-auto flex w-full max-w-[1440px]">
-        {/* Desktop sidebar */}
         <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-60 shrink-0 overflow-y-auto border-r border-slate-200 bg-white py-4 lg:block">
           <div className="mb-3 px-4">
             <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
@@ -121,7 +175,6 @@ export function StaffShell({
           </div>
         </aside>
 
-        {/* Mobile drawer */}
         {mobileOpen ? (
           <div className="fixed inset-0 z-50 lg:hidden">
             <button
@@ -144,7 +197,6 @@ export function StaffShell({
           </div>
         ) : null}
 
-        {/* Main content */}
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
       </div>
     </div>

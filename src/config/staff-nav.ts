@@ -1,21 +1,24 @@
-import type { ComponentType } from "react";
-import {
-  LayoutDashboard,
-  ListTodo,
-  FolderKanban,
-  FileText,
-  User,
-  Shield,
-  Activity,
-  Inbox,
-  LifeBuoy,
-  MessageSquare,
-  FilePen,
-  Receipt,
-  Workflow,
-  LineChart,
-  Upload,
-} from "lucide-react";
+/**
+ * Staff navigation registry — serializable for Server → Client boundary.
+ * Icons are resolved only inside client components via iconKey → registry.
+ */
+
+export type StaffIconKey =
+  | "layout-dashboard"
+  | "list-todo"
+  | "folder-kanban"
+  | "message-square"
+  | "file-text"
+  | "user"
+  | "shield"
+  | "activity"
+  | "inbox"
+  | "life-buoy"
+  | "file-pen"
+  | "receipt"
+  | "upload"
+  | "workflow"
+  | "line-chart";
 
 export interface StaffNavEntry {
   id: string;
@@ -24,9 +27,19 @@ export interface StaffNavEntry {
   description: string;
   /** Module capability required; null = always available for active staff */
   capability: string | null;
-  icon: ComponentType<{ className?: string }>;
+  /** Serializable icon identifier — never a React component */
+  iconKey: StaffIconKey;
   order: number;
 }
+
+/** Plain serializable nav item for client shells */
+export type StaffNavItemSerializable = {
+  id: string;
+  label: string;
+  href: string;
+  iconKey: StaffIconKey;
+  order: number;
+};
 
 /** Essential utilities always available to active staff (not part of the nine optional modules). */
 export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
@@ -36,7 +49,7 @@ export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
     href: "/staff/dashboard",
     description: "Your workspace overview",
     capability: null,
-    icon: LayoutDashboard,
+    iconKey: "layout-dashboard",
     order: 10,
   },
   {
@@ -45,7 +58,7 @@ export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
     href: "/staff/tasks",
     description: "Assigned tasks",
     capability: null,
-    icon: ListTodo,
+    iconKey: "list-todo",
     order: 20,
   },
   {
@@ -54,7 +67,7 @@ export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
     href: "/staff/projects",
     description: "Assigned projects",
     capability: null,
-    icon: FolderKanban,
+    iconKey: "folder-kanban",
     order: 30,
   },
   {
@@ -63,7 +76,7 @@ export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
     href: "/staff/messages",
     description: "Client project conversations",
     capability: null,
-    icon: MessageSquare,
+    iconKey: "message-square",
     order: 35,
   },
   {
@@ -72,7 +85,7 @@ export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
     href: "/staff/documents",
     description: "Document wallet",
     capability: "documents.read",
-    icon: FileText,
+    iconKey: "file-text",
     order: 40,
   },
   {
@@ -81,7 +94,7 @@ export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
     href: "/staff/profile",
     description: "Official profile",
     capability: null,
-    icon: User,
+    iconKey: "user",
     order: 90,
   },
   {
@@ -90,7 +103,7 @@ export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
     href: "/staff/settings/security",
     description: "Password and account protection",
     capability: null,
-    icon: Shield,
+    iconKey: "shield",
     order: 95,
   },
   {
@@ -99,7 +112,7 @@ export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
     href: "/staff/activity",
     description: "Your activity history",
     capability: null,
-    icon: Activity,
+    iconKey: "activity",
     order: 100,
   },
 ];
@@ -112,7 +125,7 @@ export const STAFF_MODULE_NAV: StaffNavEntry[] = [
     href: "/staff/leads",
     description: "Website and intake inquiries",
     capability: "leads.read",
-    icon: Inbox,
+    iconKey: "inbox",
     order: 50,
   },
   {
@@ -121,7 +134,7 @@ export const STAFF_MODULE_NAV: StaffNavEntry[] = [
     href: "/staff/support",
     description: "Assigned support tickets",
     capability: "support.read",
-    icon: LifeBuoy,
+    iconKey: "life-buoy",
     order: 55,
   },
   {
@@ -130,7 +143,7 @@ export const STAFF_MODULE_NAV: StaffNavEntry[] = [
     href: "/staff/support",
     description: "Reply to support tickets",
     capability: "support.reply",
-    icon: MessageSquare,
+    iconKey: "message-square",
     order: 56,
   },
   {
@@ -139,7 +152,7 @@ export const STAFF_MODULE_NAV: StaffNavEntry[] = [
     href: "/staff/quotations",
     description: "Technical draft preparation",
     capability: "quotation.technical_draft.create",
-    icon: FilePen,
+    iconKey: "file-pen",
     order: 60,
   },
   {
@@ -148,7 +161,7 @@ export const STAFF_MODULE_NAV: StaffNavEntry[] = [
     href: "/staff/invoices",
     description: "Invoice preparation requests",
     capability: "invoice.preparation.create",
-    icon: Receipt,
+    iconKey: "receipt",
     order: 65,
   },
   {
@@ -157,7 +170,7 @@ export const STAFF_MODULE_NAV: StaffNavEntry[] = [
     href: "/staff/documents",
     description: "Upload technical documents",
     capability: "documents.upload",
-    icon: Upload,
+    iconKey: "upload",
     order: 41,
   },
   {
@@ -166,7 +179,7 @@ export const STAFF_MODULE_NAV: StaffNavEntry[] = [
     href: "/staff/automations",
     description: "Workflow health monitoring",
     capability: "automations.read",
-    icon: Workflow,
+    iconKey: "workflow",
     order: 70,
   },
   {
@@ -175,7 +188,7 @@ export const STAFF_MODULE_NAV: StaffNavEntry[] = [
     href: "/staff/seo",
     description: "SEO and analytics",
     capability: "seo.read",
-    icon: LineChart,
+    iconKey: "line-chart",
     order: 75,
   },
 ];
@@ -188,20 +201,28 @@ export function buildStaffNavigation(grantedCapabilities: string[]): StaffNavEnt
   const granted = new Set(grantedCapabilities);
   const all = [...STAFF_ESSENTIAL_NAV, ...STAFF_MODULE_NAV];
   const filtered = all.filter((entry) => {
-    // Essential utilities (capability null) always visible to active staff
     if (entry.capability === null) return true;
-    // Optional and operational modules require an explicit grant — never fail open on empty grants
     return granted.has(entry.capability);
   });
 
-  // De-dupe by href keeping lowest order
   const byHref = new Map<string, StaffNavEntry>();
   for (const e of filtered.sort((a, b) => a.order - b.order)) {
-    if (!byHref.has(e.href) || (byHref.get(e.href)!.order > e.order)) {
+    if (!byHref.has(e.href) || byHref.get(e.href)!.order > e.order) {
       byHref.set(e.href, e);
     }
   }
   return Array.from(byHref.values()).sort((a, b) => a.order - b.order);
+}
+
+/** Serialize for client components — only plain data crosses the boundary. */
+export function toSerializableStaffNav(entries: StaffNavEntry[]): StaffNavItemSerializable[] {
+  return entries.map((e) => ({
+    id: e.id,
+    label: e.label,
+    href: e.href,
+    iconKey: e.iconKey,
+    order: e.order,
+  }));
 }
 
 export function staffHasCapability(granted: string[], capability: string): boolean {
