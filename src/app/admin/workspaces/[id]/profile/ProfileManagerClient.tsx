@@ -67,6 +67,9 @@ export default function ProfileManagerClient({ workspace }: Props) {
   const [notifEmail, setNotifEmail] = useState(true);
   const [notifInApp, setNotifInApp] = useState(true);
   const [notifDigest, setNotifDigest] = useState<"realtime" | "daily" | "weekly">("realtime");
+  const [codeDraft, setCodeDraft] = useState("");
+  const [codeReason, setCodeReason] = useState("Assigned by Super Admin");
+  const [codeBusy, setCodeBusy] = useState(false);
 
   const loadProfile = async () => {
     try {
@@ -180,7 +183,37 @@ export default function ProfileManagerClient({ workspace }: Props) {
   };
 
   if (loading) {
-    return (
+  
+  async function assignEmployeeCode() {
+    if (!profile?.userId || codeDraft.trim().length < 3) {
+      setError("Employee code must be at least 3 characters.");
+      return;
+    }
+    setCodeBusy(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      const res = await fetch(`/api/admin/staff-employees/${profile.userId}/employee-code`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          employee_code: codeDraft.trim().toUpperCase(),
+          reason: codeReason.trim() || "Assigned by Super Admin",
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Failed to assign employee code");
+      setProfile((prev) => (prev ? { ...prev, employeeCode: data.employee_code } : prev));
+      setCodeDraft(data.employee_code || "");
+      setSuccess(`Employee code set to ${data.employee_code}`);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setCodeBusy(false);
+    }
+  }
+
+  return (
       <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-12 text-center text-[var(--lit-text-muted,#52677C)] shadow-2xs">
         <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-[var(--lit-teal,#1FA9A2)]" />
         <span className="text-xs">Loading staff profile...</span>
@@ -290,12 +323,33 @@ export default function ProfileManagerClient({ workspace }: Props) {
                   <p className="font-mono text-[var(--lit-navy,#0B2545)] font-semibold">{profile?.email}</p>
                 </div>
 
-                <div>
+                <div className="sm:col-span-2">
                   <span className="text-[10px] font-bold text-[var(--lit-text-muted,#52677C)] uppercase">
                     Employee Code
                   </span>
                   <p className="font-semibold text-[var(--lit-blue,#1565C0)] font-mono">
-                    {profile?.employeeCode || "LIT-STAFF-PROV"}
+                    {profile?.employeeCode || "Not Assigned"}
+                  </p>
+                  <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
+                    <input
+                      type="text"
+                      value={codeDraft}
+                      onChange={(e) => setCodeDraft(e.target.value.toUpperCase())}
+                      placeholder="e.g. LIT-ENG-003"
+                      maxLength={32}
+                      className="min-w-0 flex-1 rounded-lg border border-slate-200 px-2 py-1.5 font-mono text-xs"
+                    />
+                    <button
+                      type="button"
+                      disabled={codeBusy}
+                      onClick={assignEmployeeCode}
+                      className="rounded-lg bg-[var(--lit-teal,#1FA9A2)] px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
+                    >
+                      {codeBusy ? "Saving…" : profile?.employeeCode ? "Update Code" : "Assign Code"}
+                    </button>
+                  </div>
+                  <p className="mt-1 text-[10px] text-slate-500">
+                    Super Admin only. Codes are unique and shown on the employee&apos;s Staff Profile.
                   </p>
                 </div>
 

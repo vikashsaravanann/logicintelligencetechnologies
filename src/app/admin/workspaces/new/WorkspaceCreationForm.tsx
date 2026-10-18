@@ -168,7 +168,7 @@ export default function WorkspaceCreationForm({ engagements }: WorkspaceCreation
           department: department.trim(),
           jobTitle: jobTitle.trim(),
           employmentType,
-          employeeCode: employeeCode.trim() || undefined,
+          employeeCode: employeeCode.trim().toUpperCase(),
           temporaryPassword,
           confirmPassword,
           systemRole,
@@ -498,18 +498,24 @@ export default function WorkspaceCreationForm({ engagements }: WorkspaceCreation
               <p className="text-[11px] text-[var(--lit-text-muted,#52677C)] mt-1">Must start with country code, e.g. +91 for India</p>
             </div>
 
-            {/* Employee Code */}
+            {/* Employee Code — required, persisted on staff_employees */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-[var(--lit-navy,#0B2545)] mb-1.5">
-                Employee Code / Internal ID (Optional)
+                Employee Code <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
-                placeholder="e.g. LIT-ENG-042"
+                required
+                minLength={3}
+                maxLength={32}
+                placeholder="e.g. LIT-ENG-001"
                 value={employeeCode}
-                onChange={(e) => setEmployeeCode(e.target.value)}
-                className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] rounded-xl px-4 py-2.5 text-sm text-[var(--lit-ink,#121826)] placeholder:text-slate-400 focus:outline-none focus:border-[var(--lit-teal,#1FA9A2)] focus:ring-1 focus:ring-[var(--lit-teal,#1FA9A2)] transition-colors font-mono text-xs shadow-2xs"
+                onChange={(e) => setEmployeeCode(e.target.value.toUpperCase())}
+                className="w-full bg-white border border-[var(--lit-border-light,#DFE7EF)] rounded-xl px-4 py-2.5 text-sm text-[var(--lit-ink,#121826)] placeholder:text-slate-400 focus:outline-none focus:border-[var(--lit-teal,#1FA9A2)] focus:ring-1 focus:ring-[var(--lit-teal,#1FA9A2)] transition-colors font-mono shadow-2xs tracking-wide"
               />
+              <p className="mt-1 text-[11px] text-slate-500">
+                Official internal ID saved on the employee record (unique). Example: LIT-FND-001, LIT-DEV-002.
+              </p>
             </div>
 
             {/* Department */}

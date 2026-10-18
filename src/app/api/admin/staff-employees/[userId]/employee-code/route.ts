@@ -16,7 +16,7 @@ export async function PATCH(
 
   const { userId } = await ctx.params;
   const body = await req.json().catch(() => ({}));
-  const code = typeof body.employee_code === "string" ? body.employee_code.trim() : "";
+  const code = typeof body.employee_code === "string" ? body.employee_code.trim().toUpperCase() : "";
   const reason = typeof body.reason === "string" ? body.reason.trim() : "";
 
   if (!code || code.length < 3) {

@@ -166,9 +166,9 @@ export const createStaffWorkspaceSchema = z
     employeeCode: z
       .string()
       .trim()
+      .min(3, "Employee code is required (e.g. LIT-ENG-001)")
       .max(32, "Employee code cannot exceed 32 characters")
-      .regex(/^$|^[A-Za-z0-9._\-\/]+$/, "Employee code contains invalid characters")
-      .optional(),
+      .regex(/^[A-Za-z0-9._\-\/]+$/, "Employee code contains invalid characters"),
     systemRole: z.enum(STAFF_SYSTEM_ROLES),
     temporaryPassword: z
       .string()
