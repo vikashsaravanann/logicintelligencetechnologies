@@ -20,6 +20,7 @@ const requiredNames = [
   "E2E_STAFF_EMAIL",
   "E2E_STAFF_PASSWORD",
   "E2E_PROJECT_LABEL",
+  "E2E_ENGAGEMENT_REF",
 ] as const;
 
 const fixture = Object.fromEntries(
@@ -92,6 +93,21 @@ test.describe("synthetic client ↔ assigned staff project handoff", () => {
       await expect(
         client.getByText(replyText).first(),
         "A staff reply must persist and become visible to the correct client"
+      ).toBeVisible();
+
+      // Real client form submission evidence: RFC is saved and survives reload.
+      await client.goto("/client/change-requests");
+      await client.getByRole("button", { name: /submit new rfc/i }).click();
+      const rfcTitle = `E2E change request ${Date.now()}`;
+      await client.getByPlaceholder("e.g. LIT-2026-ENG-01").fill(fixture.E2E_ENGAGEMENT_REF);
+      await client.getByPlaceholder(/add razorpay payment gateway integration/i).fill(rfcTitle);
+      await client.getByPlaceholder(/specify the required behavior/i)
+        .fill("Synthetic test request validating authenticated RFC form persistence.");
+      await client.getByRole("button", { name: /submit for technical review/i }).click();
+      await client.reload();
+      await expect(
+        client.getByText(rfcTitle).first(),
+        "Client RFC submission must persist and appear after a page reload"
       ).toBeVisible();
     } finally {
       await Promise.allSettled([clientContext.close(), staffContext.close()]);
