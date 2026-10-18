@@ -158,6 +158,26 @@ export async function postClientMessage(
     console.warn("[conversations] staff notify failed:", notifyErr?.message);
   }
 
+  try {
+    const { data: eng } = await supabaseAdmin
+      .from("client_engagements")
+      .select("id")
+      .ilike("contact_email", normalizedEmail)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const { routeClientRequest } = await import("@/lib/routing/client-request-router");
+    await routeClientRequest({
+      engagementId: eng?.id || null,
+      requestType: "message",
+      sourceId: messageId,
+      clientEmail: normalizedEmail,
+      summary: content.trim().slice(0, 200),
+    });
+  } catch (routeErr: any) {
+    console.warn("[conversations] routeClientRequest failed:", routeErr?.message);
+  }
+
   // Touch thread
   await supabaseAdmin
     .from("conversation_threads")

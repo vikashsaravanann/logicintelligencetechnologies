@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireStaffPortal } from "@/lib/auth/staff-portal";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
@@ -12,9 +13,7 @@ export default async function StaffProjectsPage() {
     .eq("staff_user_id", ctx.userId)
     .eq("status", "active");
 
-  if (error) {
-    console.error("[staff/projects]", error.message);
-  }
+  if (error) console.error("[staff/projects]", error.message);
 
   const rows = (assignments || []).filter(
     (a) => !a.expires_at || new Date(a.expires_at).getTime() > Date.now()
@@ -43,11 +42,23 @@ export default async function StaffProjectsPage() {
             const meta = a.engagement_id ? titleMap.get(a.engagement_id) : null;
             return (
               <li key={a.id} className="px-4 py-3">
-                <p className="font-medium text-slate-900">{meta?.title || "Engagement"}</p>
-                <p className="text-xs text-slate-500">
-                  {a.assignment_role}
-                  {meta?.ref ? ` · ${meta.ref}` : ""}
-                </p>
+                {a.engagement_id ? (
+                  <Link
+                    href={`/staff/projects/${a.engagement_id}`}
+                    className="block hover:bg-slate-50 -mx-4 -my-3 px-4 py-3 rounded-lg"
+                  >
+                    <p className="font-medium text-slate-900">{meta?.title || "Engagement"}</p>
+                    <p className="text-xs text-slate-500">
+                      {a.assignment_role}
+                      {meta?.ref ? ` · ${meta.ref}` : ""}
+                    </p>
+                  </Link>
+                ) : (
+                  <>
+                    <p className="font-medium text-slate-900">{meta?.title || "Engagement"}</p>
+                    <p className="text-xs text-slate-500">{a.assignment_role}</p>
+                  </>
+                )}
               </li>
             );
           })}
