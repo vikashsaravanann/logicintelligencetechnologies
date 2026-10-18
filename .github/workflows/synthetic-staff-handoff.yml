@@ -28,6 +28,7 @@ jobs:
       E2E_STAFF_EMAIL: ${{ secrets.E2E_STAFF_EMAIL }}
       E2E_STAFF_PASSWORD: ${{ secrets.E2E_STAFF_PASSWORD }}
       E2E_PROJECT_LABEL: ${{ vars.E2E_PROJECT_LABEL }}
+      E2E_ENGAGEMENT_REF: ${{ vars.E2E_ENGAGEMENT_REF }}
     steps:
       - uses: actions/checkout@v4
 
@@ -41,7 +42,8 @@ jobs:
           node - <<'NODE'
           const names = [
             'PLAYWRIGHT_BASE_URL','E2E_CLIENT_EMAIL','E2E_CLIENT_PASSWORD',
-            'E2E_STAFF_EMAIL','E2E_STAFF_PASSWORD','E2E_PROJECT_LABEL'
+            'E2E_STAFF_EMAIL','E2E_STAFF_PASSWORD','E2E_PROJECT_LABEL',
+            'E2E_ENGAGEMENT_REF'
           ];
           const missing = names.filter(name => !process.env[name]);
           if (missing.length) {
