@@ -5,7 +5,6 @@ import { EMAIL_MAX_ATTEMPTS, isExhausted, nextAttemptAt } from "./retry";
 import { emailLog, maskEmail } from "./logger";
 import type { AttachmentRef, EmailCategory, EmailDeliveryStatus, EmailErrorCategory } from "./types";
 import { renderOperationalNoticeEmail } from "./render-operational-notice";
-import { escapeHtml } from "./validation";
 
 export type OutboxInsert = {
   eventType: string;
@@ -69,12 +68,12 @@ export async function enqueueEmail(
     : await renderOperationalNoticeEmail({
         title: params.subject,
         text: params.text || (params.metadata
-          ? `${params.subject}\n\n${escapeHtml(JSON.stringify(params.metadata, null, 2))}`
+          ? `${params.subject}\n\n${JSON.stringify(params.metadata, null, 2)}`
           : params.subject),
         design: "notification",
       });
 
-  return await claimOutbox({
+  return await queueOutbox({
     eventType: params.templateId || "general_notification",
     templateKey: params.templateId,
     category,
@@ -88,8 +87,9 @@ export async function enqueueEmail(
   });
 }
 
-export async function claimOutbox(
-  input: OutboxInsert
+async function insertOutbox(
+  input: OutboxInsert,
+  initialStatus: "processing" | "queued"
 ): Promise<{ id: string; duplicate: boolean; alreadySent: boolean } | null> {
   if (!isSupabaseLive()) return null;
   try {
@@ -105,8 +105,8 @@ export async function claimOutbox(
       text: input.text || null,
       idempotency_key: input.idempotencyKey,
       correlation_id: input.correlationId || null,
-      status: "processing",
-      attempt_count: 1,
+      status: initialStatus,
+      attempt_count: initialStatus === "processing" ? 1 : 0,
       next_attempt_at: new Date().toISOString(),
     };
     if (input.attachmentRefs && input.attachmentRefs.length > 0) {
@@ -152,6 +152,14 @@ export async function claimOutbox(
     });
     return null;
   }
+}
+
+export async function claimOutbox(input: OutboxInsert) {
+  return insertOutbox(input, "processing");
+}
+
+export async function queueOutbox(input: OutboxInsert) {
+  return insertOutbox(input, "queued");
 }
 
 export async function markOutboxSent(
@@ -294,7 +302,7 @@ export async function enqueueTransactionalEmail(params: {
     const rendered = await renderOperationalNoticeEmail({
       title: params.subject,
       text: params.text || (params.templateData
-        ? `${params.subject}\n\n${escapeHtml(JSON.stringify(params.templateData, null, 2))}`
+        ? `${params.subject}\n\n${JSON.stringify(params.templateData, null, 2)}`
         : params.subject),
       design: "notification",
     });
@@ -302,7 +310,7 @@ export async function enqueueTransactionalEmail(params: {
     text = text || rendered.text;
   }
 
-  const res = await claimOutbox({
+  const res = await queueOutbox({
     eventType: params.eventType,
     templateKey: params.templateKey,
     category,
@@ -326,4 +334,3 @@ export async function enqueueTransactionalEmail(params: {
 }
 
 export { EMAIL_MAX_ATTEMPTS };
-

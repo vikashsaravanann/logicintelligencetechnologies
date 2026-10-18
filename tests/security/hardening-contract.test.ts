@@ -52,7 +52,9 @@ test("unsafe automated review execution removed; rollback reason uses env", () =
 test("HTML fallback escapes malicious names, subjects and metadata", () => {
   assert.equal(escapeHtml('<img src=x onerror="attack()"> & \'name\''),
     "&lt;img src=x onerror=&quot;attack()&quot;&gt; &amp; &#39;name&#39;");
-  assert.ok(source("src/lib/email/outbox.ts").includes("escapeHtml(JSON.stringify(params.metadata"));
+  const outbox = source("src/lib/email/outbox.ts");
+  assert.ok(outbox.includes("JSON.stringify(params.metadata, null, 2)"));
+  assert.ok(!outbox.includes("escapeHtml(JSON.stringify"));
 });
 
 test("support replies resolve the recipient on the server", () => {

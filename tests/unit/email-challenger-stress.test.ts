@@ -515,7 +515,7 @@ test("CHALLENGE 2: Adversarial stress test of attachment validation and failure 
 // CHALLENGE 3: Outbox Attachment Preservation Across Retries & Zero Dropped Attachments
 // =============================================================================
 test("CHALLENGE 3: Outbox attachment preservation across retries (zero dropped attachments)", async (t) => {
-  const { claimOutbox } = require("../../src/lib/email/outbox");
+  const { claimOutbox, queueOutbox } = require("../../src/lib/email/outbox");
 
   const validInvoicePdf = Buffer.from("%PDF-1.4\nInvoice binary content mock\n%%EOF\n");
   const validReceiptPdf = Buffer.from("%PDF-1.4\nReceipt binary content mock\n%%EOF\n");
@@ -579,6 +579,21 @@ test("CHALLENGE 3: Outbox attachment preservation across retries (zero dropped a
       assert.ok(result !== null);
       assert.equal(result.id, "outbox-test-uuid");
       assert.ok(capturedInsert !== null);
+      assert.deepEqual(capturedInsert.attachment_refs, attachmentRefs);
+      assert.equal(capturedInsert.status, "processing");
+      assert.equal(capturedInsert.attempt_count, 1);
+
+      await queueOutbox({
+        eventType: "stage_approved",
+        category: "transactional",
+        recipient: "client@example.com",
+        sender: "hello@logicintelligencetechnologies.in",
+        subject: "Queued stage approval",
+        idempotencyKey: `test_queue_${Date.now()}`,
+        attachmentRefs,
+      });
+      assert.equal(capturedInsert.status, "queued");
+      assert.equal(capturedInsert.attempt_count, 0);
       assert.deepEqual(capturedInsert.attachment_refs, attachmentRefs);
     } finally {
       supabaseAdmin.from = originalFrom;
