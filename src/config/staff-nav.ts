@@ -58,6 +58,15 @@ export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
     order: 30,
   },
   {
+    id: "messages",
+    label: "Messages",
+    href: "/staff/messages",
+    description: "Client project conversations",
+    capability: null,
+    icon: MessageSquare,
+    order: 35,
+  },
+  {
     id: "documents",
     label: "Documents",
     href: "/staff/documents",

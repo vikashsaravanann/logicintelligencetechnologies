@@ -150,6 +150,20 @@ export async function postClientMessage(
     throw new Error(`Failed to store message: ${error.message}`);
   }
 
+  // Best-effort: notify assigned staff workspaces
+  try {
+    const { notifyStaffOfClientMessage } = await import("@/lib/staff/messages");
+    await notifyStaffOfClientMessage(normalizedEmail, content.trim());
+  } catch (notifyErr: any) {
+    console.warn("[conversations] staff notify failed:", notifyErr?.message);
+  }
+
+  // Touch thread
+  await supabaseAdmin
+    .from("conversation_threads")
+    .update({ updated_at: now.toISOString() })
+    .eq("thread_id", threadId);
+
   return {
     id: messageId,
     sender: "client",
