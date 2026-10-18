@@ -135,27 +135,30 @@ export function StaffShell({
         </Link>
 
         <div className="ml-auto flex items-center gap-3 min-w-0">
-          <div className="hidden text-right sm:block min-w-0">
+          <div className="hidden min-w-0 text-right md:block">
             <p className="truncate text-xs font-semibold text-slate-900">{fullName}</p>
             <p className="truncate text-[11px] text-slate-500">
               {jobTitle}
               {employeeCode ? ` · ${employeeCode}` : ""}
             </p>
           </div>
-          <div className="sm:hidden min-w-0 text-right">
-            <p className="truncate text-xs font-medium text-slate-800">{jobTitle}</p>
-            <p className="truncate text-[11px] text-slate-500">
-              {department}
-              {employeeCode ? ` · ${employeeCode}` : ""}
-            </p>
+          <div className="min-w-0 max-w-[40vw] text-right md:hidden">
+            <p className="truncate text-xs font-semibold text-slate-900">{fullName.split(" ")[0]}</p>
           </div>
+          <Link
+            href="/staff/notifications"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+            aria-label="Notifications"
+          >
+            <Activity className="h-4 w-4" />
+          </Link>
           <form action="/auth/signout" method="post">
             <button
               type="submit"
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 sm:px-3"
             >
               <LogOut className="h-3.5 w-3.5" />
-              Sign out
+              <span className="hidden sm:inline">Sign out</span>
             </button>
           </form>
         </div>

@@ -107,6 +107,17 @@ export default async function StaffProjectDetailPage({
       </div>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5">
+        <h2 className="text-sm font-semibold text-slate-900">13-Stage inspector</h2>
+        <p className="mt-1 text-sm text-slate-600">Review canonical lifecycle status for this engagement.</p>
+        <Link
+          href={`/staff/projects/${engagementId}/stages`}
+          className="mt-3 inline-flex text-sm font-medium text-teal-700 hover:underline"
+        >
+          Open stage inspector →
+        </Link>
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5">
         <h2 className="text-sm font-semibold text-slate-900">Messages</h2>
         <p className="mt-1 text-sm text-slate-600">
           Open the staff messages inbox for client conversations linked to your assignments.

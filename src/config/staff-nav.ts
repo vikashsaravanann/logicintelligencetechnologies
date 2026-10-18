@@ -98,6 +98,15 @@ export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
     order: 90,
   },
   {
+    id: "notifications",
+    label: "Notifications",
+    href: "/staff/notifications",
+    description: "Workspace alerts",
+    capability: null,
+    iconKey: "activity",
+    order: 92,
+  },
+  {
     id: "security",
     label: "Account Security",
     href: "/staff/settings/security",
