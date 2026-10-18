@@ -390,22 +390,41 @@ export async function createStaffClientAssignment(input: {
   };
 
   const supabase = getServiceClient();
-  if (supabase) {
-    // If reassigning to an existing engagement, atomically revoke any previous active assignment
-    if (assignment.engagement_id) {
-      await supabase
-        .from('staff_client_assignments')
-        .update({
-          status: 'revoked',
-          revoked_at: now,
-          revoked_by: input.actorUserId,
-          updated_at: now,
-        })
-        .eq('staff_user_id', assignment.staff_user_id)
-        .eq('engagement_id', assignment.engagement_id)
-        .eq('status', 'active');
+  if (supabase && assignment.engagement_id) {
+    // Atomic upsert: respects unique (staff_user_id, engagement_id); reactivates revoked rows
+    const { data: rpcRows, error: rpcError } = await supabase.rpc('staff_upsert_project_assignment', {
+      p_staff_user_id: assignment.staff_user_id,
+      p_engagement_id: assignment.engagement_id,
+      p_client_id: assignment.client_id,
+      p_assignment_role: assignment.assignment_role,
+      p_can_view_technical_stages: assignment.can_view_technical_stages,
+      p_can_prepare_technical_quotation: assignment.can_prepare_technical_quotation,
+      p_can_prepare_invoice_request: assignment.can_prepare_invoice_request,
+      p_can_invite_collaborators: assignment.can_invite_collaborators ?? false,
+      p_assignment_reason: assignment.assignment_reason,
+      p_expires_at: assignment.expires_at,
+      p_actor_user_id: input.actorUserId,
+    });
+
+    if (rpcError) {
+      const msg = rpcError.message || '';
+      if (/does not exist|demonstration|Engagement does not exist/i.test(msg)) {
+        throw new Error(
+          msg.includes('demonstration')
+            ? 'Demonstration engagement cannot be assigned. Create a real client engagement first.'
+            : 'The selected project is not a valid client engagement. Create a real engagement before assigning staff.'
+        );
+      }
+      throw new Error(`Failed to persist staff assignment: ${msg}`);
     }
 
+    const data = Array.isArray(rpcRows) ? rpcRows[0] : rpcRows;
+    if (data) {
+      Object.assign(assignment, data);
+    }
+    inMemoryAssignments.set(assignment.id, assignment);
+  } else if (supabase) {
+    // clientId-only assignment path (no engagement) — insert without unique engagement pair
     const { data, error } = await supabase
       .from('staff_client_assignments')
       .insert({
@@ -426,14 +445,10 @@ export async function createStaffClientAssignment(input: {
       })
       .select('*')
       .maybeSingle();
-
     if (error) {
       throw new Error(`Failed to persist staff assignment: ${error.message}`);
     }
-
-    if (data) {
-      Object.assign(assignment, data);
-    }
+    if (data) Object.assign(assignment, data);
     inMemoryAssignments.set(assignment.id, assignment);
   } else {
     // Fallback for unconfigured DB runtime (unit tests)
