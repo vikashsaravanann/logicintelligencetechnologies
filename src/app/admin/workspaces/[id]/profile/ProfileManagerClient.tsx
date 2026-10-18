@@ -182,8 +182,6 @@ export default function ProfileManagerClient({ workspace }: Props) {
     }
   };
 
-  if (loading) {
-  
   async function assignEmployeeCode() {
     if (!profile?.userId || codeDraft.trim().length < 3) {
       setError("Employee code must be at least 3 characters.");
@@ -213,7 +211,8 @@ export default function ProfileManagerClient({ workspace }: Props) {
     }
   }
 
-  return (
+  if (loading) {
+    return (
       <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-12 text-center text-[var(--lit-text-muted,#52677C)] shadow-2xs">
         <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-[var(--lit-teal,#1FA9A2)]" />
         <span className="text-xs">Loading staff profile...</span>
