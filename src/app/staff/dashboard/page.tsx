@@ -1,8 +1,6 @@
-import type { ReactNode } from "react";
 import Link from "next/link";
 import { requireStaffPortal } from "@/lib/auth/staff-portal";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { staffHasCapability } from "@/config/staff-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -14,27 +12,65 @@ export default async function StaffDashboardPage({
   const params = await searchParams;
   const ctx = await requireStaffPortal("/staff/dashboard");
 
-  const { data: tasks } = await supabaseAdmin
-    .from("staff_tasks")
-    .select("id, title, state, priority, due_at")
-    .eq("workspace_id", ctx.workspaceId)
-    .order("created_at", { ascending: false })
-    .limit(5);
+  let tasks: Array<{
+    id: string;
+    title: string;
+    state: string;
+    priority: string;
+    due_at: string | null;
+  }> = [];
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("staff_tasks")
+      .select("id, title, state, priority, due_at")
+      .eq("workspace_id", ctx.workspaceId)
+      .order("created_at", { ascending: false })
+      .limit(5);
+    if (error) console.error("[staff/dashboard] tasks:", error.message);
+    else tasks = data || [];
+  } catch (e: any) {
+    console.error("[staff/dashboard] tasks exception:", e?.message);
+  }
 
-  const { data: assignments } = await supabaseAdmin
-    .from("staff_client_assignments")
-    .select("id, engagement_id, assignment_role, status, expires_at, client_engagements(project_title, company_name)")
-    .eq("staff_user_id", ctx.userId)
-    .eq("status", "active")
-    .limit(8);
-
-  const activeAssignments = (assignments || []).filter(
-    (a) => !a.expires_at || new Date(a.expires_at).getTime() > Date.now()
-  );
-
-  const canTasks = staffHasCapability(ctx.capabilities, "tasks.manage") || ctx.capabilities.length === 0;
-  const canProjects =
-    staffHasCapability(ctx.capabilities, "projects.assigned.read") || ctx.capabilities.length === 0;
+  let activeAssignments: Array<{
+    id: string;
+    assignment_role: string;
+    title: string;
+  }> = [];
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("staff_client_assignments")
+      .select("id, assignment_role, status, expires_at, engagement_id")
+      .eq("staff_user_id", ctx.userId)
+      .eq("status", "active")
+      .limit(8);
+    if (error) {
+      console.error("[staff/dashboard] assignments:", error.message);
+    } else {
+      const rows = (data || []).filter(
+        (a) => !a.expires_at || new Date(a.expires_at).getTime() > Date.now()
+      );
+      // Resolve titles separately to avoid nested join failures
+      const engIds = rows.map((r) => r.engagement_id).filter(Boolean) as string[];
+      let titleMap = new Map<string, string>();
+      if (engIds.length) {
+        const { data: engs } = await supabaseAdmin
+          .from("client_engagements")
+          .select("id, project_title, company_name")
+          .in("id", engIds);
+        (engs || []).forEach((e) => {
+          titleMap.set(e.id, e.project_title || e.company_name || "Engagement");
+        });
+      }
+      activeAssignments = rows.map((a) => ({
+        id: a.id,
+        assignment_role: a.assignment_role,
+        title: (a.engagement_id && titleMap.get(a.engagement_id)) || "Assigned engagement",
+      }));
+    }
+  } catch (e: any) {
+    console.error("[staff/dashboard] assignments exception:", e?.message);
+  }
 
   return (
     <div className="space-y-6">
@@ -53,56 +89,49 @@ export default async function StaffDashboardPage({
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {canTasks ? (
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-slate-900">My Assigned Tasks</h2>
-              <Link href="/staff/tasks" className="text-xs font-medium text-teal-700 hover:underline">
-                View all
-              </Link>
-            </div>
-            {tasks && tasks.length > 0 ? (
-              <ul className="space-y-2">
-                {tasks.map((t) => (
-                  <li key={t.id} className="rounded-lg border border-slate-100 px-3 py-2 text-sm">
-                    <p className="font-medium text-slate-800">{t.title}</p>
-                    <p className="text-xs text-slate-500">
-                      {t.state} · {t.priority}
-                      {t.due_at ? ` · due ${new Date(t.due_at).toLocaleDateString()}` : ""}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-slate-500">No tasks assigned yet.</p>
-            )}
-          </section>
-        ) : null}
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-slate-900">My Assigned Tasks</h2>
+            <Link href="/staff/tasks" className="text-xs font-medium text-teal-700 hover:underline">
+              View all
+            </Link>
+          </div>
+          {tasks.length > 0 ? (
+            <ul className="space-y-2">
+              {tasks.map((t) => (
+                <li key={t.id} className="rounded-lg border border-slate-100 px-3 py-2 text-sm">
+                  <p className="font-medium text-slate-800">{t.title}</p>
+                  <p className="text-xs text-slate-500">
+                    {t.state} · {t.priority}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-slate-500">No tasks currently assigned.</p>
+          )}
+        </section>
 
-        {canProjects ? (
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-slate-900">Assigned Projects</h2>
-              <Link href="/staff/projects" className="text-xs font-medium text-teal-700 hover:underline">
-                View all
-              </Link>
-            </div>
-            {activeAssignments.length > 0 ? (
-              <ul className="space-y-2">
-                {activeAssignments.map((a: any) => (
-                  <li key={a.id} className="rounded-lg border border-slate-100 px-3 py-2 text-sm">
-                    <p className="font-medium text-slate-800">
-                      {a.client_engagements?.project_title || a.client_engagements?.company_name || "Assigned engagement"}
-                    </p>
-                    <p className="text-xs text-slate-500">{a.assignment_role}</p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-slate-500">No projects have been assigned to your workspace.</p>
-            )}
-          </section>
-        ) : null}
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-slate-900">Assigned Projects</h2>
+            <Link href="/staff/projects" className="text-xs font-medium text-teal-700 hover:underline">
+              View all
+            </Link>
+          </div>
+          {activeAssignments.length > 0 ? (
+            <ul className="space-y-2">
+              {activeAssignments.map((a) => (
+                <li key={a.id} className="rounded-lg border border-slate-100 px-3 py-2 text-sm">
+                  <p className="font-medium text-slate-800">{a.title}</p>
+                  <p className="text-xs text-slate-500">{a.assignment_role}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-slate-500">No projects currently assigned.</p>
+          )}
+        </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="mb-3 text-sm font-semibold text-slate-900">Workspace</h2>

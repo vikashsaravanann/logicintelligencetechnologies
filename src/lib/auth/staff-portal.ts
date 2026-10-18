@@ -20,8 +20,7 @@ export type StaffPortalContext = {
 
 /**
  * Resolve authenticated staff workspace context.
- * Enforces: session, employment active, workspace exists.
- * Forces /staff/setup-password when status requires first-login password change.
+ * Reconciles pending_email_verification → initial_password_change_required when Auth email is confirmed.
  */
 export async function requireStaffPortal(
   currentPath = "/staff/dashboard",
@@ -44,7 +43,7 @@ export async function requireStaffPortal(
     redirect("/login?reason=employment-inactive");
   }
 
-  const self = await getSelfStaffWorkspace(session.userId);
+  let self = await getSelfStaffWorkspace(session.userId);
 
   if (!self?.hasActiveWorkspace || !self.workspaceId) {
     if (isSuperAdmin) {
@@ -53,23 +52,12 @@ export async function requireStaffPortal(
     redirect(`/admin/forbidden?need=staff.workspace`);
   }
 
-  const status = self.status || "active";
-  const isSetupPath = currentPath.startsWith("/staff/setup-password");
+  let status = self.status || "active";
 
-  // Mandatory first-login password rotation
-  if (
-    (status === "pending_email_verification" || status === "initial_password_change_required") &&
-    !isSetupPath &&
-    !options?.allowSetupPath
-  ) {
-    // If email not confirmed, session.ts may already block; still send to setup after confirm
-    redirect("/staff/setup-password");
-  }
-
-  // Transition pending_email_verification → initial_password_change_required once email is confirmed
-  // (session only exists when confirmed via getStaffSession)
-  if (status === "pending_email_verification" && isSetupPath) {
-    await supabaseAdmin
+  // Reconcile: Auth session exists only when email is confirmed (session gate).
+  // If workspace is still pending_email_verification, advance to password setup.
+  if (status === "pending_email_verification" && self.workspaceId) {
+    const { error: recErr } = await supabaseAdmin
       .from("staff_workspaces")
       .update({
         status: "initial_password_change_required",
@@ -78,6 +66,26 @@ export async function requireStaffPortal(
       .eq("id", self.workspaceId)
       .eq("owner_user_id", session.userId)
       .eq("status", "pending_email_verification");
+    if (!recErr) {
+      status = "initial_password_change_required";
+      await supabaseAdmin.from("staff_workspace_events").insert({
+        workspace_id: self.workspaceId,
+        actor_auth_id: session.userId,
+        target_user_id: session.userId,
+        event_key: "workspace.email_verified_reconciled",
+        details: { previous_status: "pending_email_verification" },
+      });
+    }
+  }
+
+  const isSetupPath =
+    currentPath.startsWith("/staff/setup-password") || options?.allowSetupPath === true;
+
+  if (
+    (status === "pending_email_verification" || status === "initial_password_change_required") &&
+    !isSetupPath
+  ) {
+    redirect("/staff/setup-password");
   }
 
   const { data: perms } = await supabaseAdmin
@@ -108,11 +116,8 @@ export async function requireStaffCapability(
   currentPath: string
 ): Promise<StaffPortalContext> {
   const ctx = await requireStaffPortal(currentPath);
-  if (
-    ctx.capabilities.length > 0 &&
-    !ctx.capabilities.includes(capability) &&
-    !ctx.isSuperAdmin
-  ) {
+  // Deny-by-default: missing grants never unlock optional modules
+  if (!ctx.capabilities.includes(capability) && !ctx.isSuperAdmin) {
     redirect(`/staff/dashboard?denied=${encodeURIComponent(capability)}`);
   }
   return ctx;

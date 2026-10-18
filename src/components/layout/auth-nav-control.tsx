@@ -52,7 +52,7 @@ function initialsFrom(name: string): string {
 
 /**
  * Global header auth control.
- * Logged out → LOGIN. Logged in → avatar + name + menu (Profile, AI, Admin Workspace, Sign out).
+ * Logged out → LOGIN. Logged in → avatar + name + menu (Profile, AI, My Staff Workspace, Sign out).
  * Avoids LOGIN ↔ name flicker with a stable loading skeleton.
  */
 export default function AuthNavControl({ mobile = false }: { mobile?: boolean }) {
@@ -258,10 +258,10 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
           </Link>
           {entitlement?.hasActiveWorkspace && entitlement?.workspaceId && (
             <Link
-              href={`/admin/workspaces/${entitlement.workspaceId}`}
+              href="/staff/dashboard"
               className="flex items-center gap-2 py-2.5 px-2 rounded-lg text-xs font-bold uppercase tracking-[0.12em] text-[var(--lit-blue)] hover:bg-white min-h-[44px]"
             >
-              <Briefcase className="w-4 h-4 text-[var(--lit-blue)]" /> Admin Workspace
+              <Briefcase className="w-4 h-4 text-[var(--lit-blue)]" /> My Staff Workspace
             </Link>
           )}
           {entitlement?.isSuperAdmin && (
@@ -342,11 +342,11 @@ export default function AuthNavControl({ mobile = false }: { mobile?: boolean })
           {entitlement?.hasActiveWorkspace && entitlement?.workspaceId && (
             <Link
               role="menuitem"
-              href={`/admin/workspaces/${entitlement.workspaceId}`}
+              href="/staff/dashboard"
               onClick={() => setOpen(false)}
               className="flex items-center gap-2 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--lit-blue)] hover:bg-[var(--lit-cloud)]"
             >
-              <Briefcase className="w-3.5 h-3.5 text-[var(--lit-blue)]" /> Admin Workspace
+              <Briefcase className="w-3.5 h-3.5 text-[var(--lit-blue)]" /> My Staff Workspace
             </Link>
           )}
           {entitlement?.isSuperAdmin && (

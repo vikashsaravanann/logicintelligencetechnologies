@@ -69,9 +69,10 @@ export default function WorkspacesDirectoryClient({ initialWorkspaces }: Props) 
   ).length;
   const suspendedCount = workspaces.filter((w) => w.status === "suspended").length;
 
-  const copyUrl = async (id: string) => {
+  const copyUrl = async (_id: string) => {
     const origin = window?.location?.origin || "https://www.logicintelligencetechnologies.in";
-    const url = `${origin}/admin/workspaces/${id}`;
+    // Employee-facing portal login (workspace resolved after auth)
+    const url = `${origin}/login?next=${encodeURIComponent("/staff/dashboard")}`;
     try {
       await navigator.clipboard.writeText(url);
       setCopiedId(id);
@@ -378,7 +379,7 @@ export default function WorkspacesDirectoryClient({ initialWorkspaces }: Props) 
                         <div className="inline-flex items-center gap-1.5">
                           <button
                             onClick={() => copyUrl(ws.id)}
-                            title="Copy Direct URL"
+                            title="Copy Staff Portal Login Link"
                             className="p-2 rounded-lg bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] transition-colors border border-[var(--lit-border-light,#DFE7EF)] shadow-2xs cursor-pointer"
                           >
                             {copiedId === ws.id ? (
@@ -418,7 +419,7 @@ export default function WorkspacesDirectoryClient({ initialWorkspaces }: Props) 
                             href={`/admin/workspaces/${ws.id}`}
                             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-[var(--lit-blue,#1565C0)] font-bold text-xs uppercase tracking-wider border border-blue-200 transition-colors shadow-2xs"
                           >
-                            <span>Open</span>
+                            <span>Manage</span>
                             <ExternalLink className="w-3 h-3" />
                           </Link>
                         </div>

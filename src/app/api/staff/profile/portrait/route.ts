@@ -43,7 +43,6 @@ export async function POST(req: NextRequest) {
     }
 
     const bytes = Buffer.from(await file.arrayBuffer());
-    // Basic magic-byte validation
     const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8;
     const isPng = bytes[0] === 0x89 && bytes[1] === 0x50;
     const isWebp = bytes.slice(0, 4).toString() === "RIFF";
@@ -51,8 +50,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "INVALID_CONTENT" }, { status: 400 });
     }
 
-    // Optional: enforce approximate 4:5 via client crop; server stores bytes as-is after validation.
-    // Full sharp crop pipeline can be enabled when sharp is available in the runtime.
     const ext = isJpeg ? "jpg" : isPng ? "png" : "webp";
     const path = `${user.id}/portrait-${Date.now()}.${ext}`;
 
@@ -67,17 +64,20 @@ export async function POST(req: NextRequest) {
     const { data: pub } = supabaseAdmin.storage.from("staff-avatars").getPublicUrl(path);
     const portraitUrl = pub?.publicUrl || path;
 
-    await supabaseAdmin
-      .from("staff_profile_details")
-      .upsert(
-        {
-          auth_user_id: user.id,
-          portrait_url: portraitUrl,
-          portrait_path: path,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "auth_user_id" }
-      );
+    // Schema: staff_profile_details.user_id (PK), portrait_url
+    const { error: upsertErr } = await supabaseAdmin.from("staff_profile_details").upsert(
+      {
+        user_id: user.id,
+        portrait_url: portraitUrl,
+        avatar_url: portraitUrl,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" }
+    );
+
+    if (upsertErr) {
+      return NextResponse.json({ success: false, error: upsertErr.message }, { status: 500 });
+    }
 
     return NextResponse.json({
       success: true,
