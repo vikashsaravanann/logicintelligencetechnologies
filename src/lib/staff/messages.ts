@@ -206,7 +206,7 @@ export async function notifyStaffOfClientMessage(clientEmail: string, content: s
       summary: content.slice(0, 160),
       sourceId: email,
       actionUrl: "/staff/messages",
-      idempotencyKey: `msg:${a.staff_user_id}:${email}:${Date.now() // 60000}`,
+      idempotencyKey: `msg:${a.staff_user_id}:${email}:${Math.floor(Date.now() / 60000)}`,
     });
   }
 }
