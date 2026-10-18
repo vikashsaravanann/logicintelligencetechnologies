@@ -547,6 +547,38 @@ export async function updateStaffClientAssignment(input: {
 
     const updated = data as StaffClientAssignment;
     inMemoryAssignments.set(updated.id, updated);
+
+    try {
+      const { notifyStaff } = await import('@/lib/staff/notifications');
+      if (updated.status === 'revoked') {
+        await notifyStaff({
+          recipientUserId: updated.staff_user_id,
+          engagementId: updated.engagement_id,
+          eventType: 'project.revoked',
+          title: 'Project assignment revoked',
+          summary: updated.assignment_reason || 'Assignment revoked',
+          sourceId: updated.id,
+          actionUrl: '/staff/projects',
+          idempotencyKey: `assignment:revoke:${updated.id}:${updated.updated_at}`,
+        });
+      } else if (input.status === 'active' || input.assignmentRole || input.canPrepareTechnicalQuotation !== undefined) {
+        await notifyStaff({
+          recipientUserId: updated.staff_user_id,
+          engagementId: updated.engagement_id,
+          eventType: 'project.reassigned',
+          title: 'Project assignment updated',
+          summary: updated.assignment_role,
+          sourceId: updated.id,
+          actionUrl: updated.engagement_id
+            ? `/staff/projects/${updated.engagement_id}`
+            : '/staff/projects',
+          idempotencyKey: `assignment:update:${updated.id}:${updated.updated_at}`,
+        });
+      }
+    } catch (e) {
+      console.warn('[assignment] staff notification failed', e);
+    }
+
     return updated;
   }
 

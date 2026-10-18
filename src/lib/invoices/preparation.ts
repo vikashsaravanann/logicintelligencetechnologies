@@ -237,6 +237,22 @@ export async function createInvoicePreparationRequest(params: {
     },
   });
 
+  try {
+    const { notifyStaff } = await import('@/lib/staff/notifications');
+    await notifyStaff({
+      recipientUserId: params.actorUserId,
+      engagementId: reqRecord.engagement_id,
+      eventType: 'invoice.prep_saved',
+      title: 'Invoice preparation saved',
+      summary: reqRecord.request_number || reqRecord.id,
+      sourceId: reqRecord.id,
+      actionUrl: '/staff/invoices',
+      idempotencyKey: `invoice:create:${reqRecord.id}`,
+    });
+  } catch (e) {
+    console.warn('[invoice-prep] staff notification failed', e);
+  }
+
   return { ok: true, request: reqRecord };
 }
 
@@ -517,7 +533,24 @@ export async function submitInvoicePreparationRequest(params: {
     }
   }
 
-  return {
+  
+  try {
+    const { notifyStaff } = await import('@/lib/staff/notifications');
+    await notifyStaff({
+      recipientUserId: params.actorUserId,
+      engagementId: reqRecord.engagement_id,
+      eventType: 'invoice.prep_submitted',
+      title: 'Invoice preparation submitted for review',
+      summary: reqRecord.request_number || reqRecord.id,
+      sourceId: reqRecord.id,
+      actionUrl: '/staff/invoices',
+      idempotencyKey: `invoice:submit:${reqRecord.id}`,
+    });
+  } catch (e) {
+    console.warn('[invoice-prep] submit notification failed', e);
+  }
+
+return {
     ok: true,
     request:
       params.actorRole === 'super_admin'

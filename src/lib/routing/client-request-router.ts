@@ -83,6 +83,32 @@ export async function routeClientRequest(payload: RoutingPayload): Promise<Routi
   // 2. If assigned staff found, dispatch notification and return
   if (assignedStaff) {
     try {
+      const { notifyStaff } = await import("@/lib/staff/notifications");
+      const typeMap: Record<string, "client.message" | "client.support_ticket" | "client.change_request" | "client.meeting" | "document.review"> = {
+        message: "client.message",
+        support_ticket: "client.support_ticket",
+        change_request: "client.change_request",
+        meeting: "client.meeting",
+        document_review: "document.review",
+      };
+      await notifyStaff({
+        recipientUserId: assignedStaff.userId,
+        engagementId: engagementId || null,
+        eventType: typeMap[requestType] || "client.message",
+        title: `Client ${requestType.replace(/_/g, " ")}`,
+        summary: summary.slice(0, 200),
+        sourceId: sourceId,
+        actionUrl:
+          requestType === "support_ticket"
+            ? "/staff/support"
+            : requestType === "change_request"
+              ? "/staff/change-requests"
+              : engagementId
+                ? `/staff/projects/${engagementId}`
+                : "/staff/messages",
+        idempotencyKey: `route:${requestType}:${sourceId}:${assignedStaff.userId}`,
+      });
+
       await sendEmail({
         to: assignedStaff.email,
         subject: `[Client Request] New ${requestType.replace("_", " ")}: ${summary.slice(0, 50)} | LIT`,

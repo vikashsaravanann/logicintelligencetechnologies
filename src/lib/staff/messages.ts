@@ -177,23 +177,36 @@ export async function notifyStaffOfClientMessage(clientEmail: string, content: s
     .in("engagement_id", engIds)
     .eq("status", "active");
 
+  const { notifyStaff } = await import("@/lib/staff/notifications");
   for (const a of assigns || []) {
+    if (!a.staff_user_id) continue;
     const { data: ws } = await supabaseAdmin
       .from("staff_workspaces")
       .select("id")
       .eq("owner_user_id", a.staff_user_id)
       .maybeSingle();
-    if (!ws) continue;
-    await supabaseAdmin.from("staff_workspace_events").insert({
-      workspace_id: ws.id,
-      actor_auth_id: a.staff_user_id,
-      target_user_id: a.staff_user_id,
-      event_key: "client.message.received",
-      details: {
-        client_email: email,
-        engagement_id: a.engagement_id,
-        preview: content.slice(0, 160),
-      },
+    if (ws) {
+      await supabaseAdmin.from("staff_workspace_events").insert({
+        workspace_id: ws.id,
+        actor_auth_id: a.staff_user_id,
+        target_user_id: a.staff_user_id,
+        event_key: "client.message.received",
+        details: {
+          client_email: email,
+          engagement_id: a.engagement_id,
+          preview: content.slice(0, 160),
+        },
+      });
+    }
+    await notifyStaff({
+      recipientUserId: a.staff_user_id,
+      engagementId: a.engagement_id || null,
+      eventType: "client.message",
+      title: "New client message",
+      summary: content.slice(0, 160),
+      sourceId: email,
+      actionUrl: "/staff/messages",
+      idempotencyKey: `msg:${a.staff_user_id}:${email}:${Date.now() // 60000}`,
     });
   }
 }

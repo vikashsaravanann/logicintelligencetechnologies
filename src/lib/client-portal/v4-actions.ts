@@ -415,6 +415,47 @@ export async function createChangeRequest(payload: {
     actionLabel: "View RFC",
   });
 
+  try {
+    const { notifyAssignedStaffForEngagement, resolveStaffUserIdsForClientEmail, notifyStaff } =
+      await import("@/lib/staff/notifications");
+    // Prefer engagement_ref → id lookup
+    let engagementId: string | null = null;
+    if (payload.engagementRef && payload.engagementRef !== "GENERAL") {
+      const { data: eng } = await supabaseAdmin
+        .from("client_engagements")
+        .select("id")
+        .eq("engagement_ref", payload.engagementRef)
+        .maybeSingle();
+      engagementId = eng?.id || null;
+    }
+    if (engagementId) {
+      await notifyAssignedStaffForEngagement(engagementId, {
+        eventType: "client.change_request",
+        title: `Change request ${rfcRef}`,
+        summary: payload.title,
+        sourceId: rfcRef,
+        actionUrl: "/staff/change-requests",
+        idempotencyKey: `rfc:${rfcRef}`,
+      });
+    } else {
+      const staff = await resolveStaffUserIdsForClientEmail(payload.clientEmail);
+      for (const s of staff) {
+        await notifyStaff({
+          recipientUserId: s.userId,
+          engagementId: s.engagementId,
+          eventType: "client.change_request",
+          title: `Change request ${rfcRef}`,
+          summary: payload.title,
+          sourceId: rfcRef,
+          actionUrl: "/staff/change-requests",
+          idempotencyKey: `rfc:${rfcRef}:${s.userId}`,
+        });
+      }
+    }
+  } catch (e) {
+    console.warn("[rfc] staff notification failed", e);
+  }
+
   return { ok: true, rfcRef };
 }
 

@@ -373,6 +373,22 @@ export async function createQuotationTechnicalDraft(params: {
     },
   });
 
+  try {
+    const { notifyStaff } = await import('@/lib/staff/notifications');
+    await notifyStaff({
+      recipientUserId: params.actorUserId,
+      engagementId: draft.engagement_id,
+      eventType: 'quotation.draft_saved',
+      title: 'Technical quotation draft saved',
+      summary: draft.draft_number || draft.id,
+      sourceId: draft.id,
+      actionUrl: `/staff/quotations/${draft.id}`,
+      idempotencyKey: `quotation:create:${draft.id}`,
+    });
+  } catch (e) {
+    console.warn('[quotation] staff notification failed', e);
+  }
+
   return { ok: true, draft };
 }
 
@@ -711,7 +727,23 @@ export async function submitQuotationTechnicalDraftForApproval(params: {
   }
 
   inMemoryTechnicalDrafts.set(draft.id, draft);
-  return { ok: true, draft };
+    try {
+    const { notifyStaff } = await import('@/lib/staff/notifications');
+    await notifyStaff({
+      recipientUserId: params.actorUserId,
+      engagementId: draft.engagement_id,
+      eventType: 'quotation.submitted',
+      title: 'Technical draft submitted for review',
+      summary: draft.draft_number || draft.id,
+      sourceId: draft.id,
+      actionUrl: `/staff/quotations/${draft.id}`,
+      idempotencyKey: `quotation:submit:${draft.id}`,
+    });
+  } catch (e) {
+    console.warn('[quotation] submit notification failed', e);
+  }
+
+return { ok: true, draft };
 }
 
 export async function approveAndPriceQuotationBySuperAdmin(params: {
