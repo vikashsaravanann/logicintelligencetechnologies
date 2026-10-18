@@ -149,8 +149,8 @@ export async function POST(req: NextRequest) {
       eventReference,
       emailQueued,
       message: emailQueued
-        ? "Password updated. A security confirmation email has been sent."
-        : "Password updated. Confirmation email could not be queued; contact support if you did not request this change.",
+        ? "Password updated successfully. Your security notification has been queued."
+        : "Password updated successfully. Confirmation email could not be queued; contact support if you did not request this change.",
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "CHANGE_PASSWORD_FAILED";

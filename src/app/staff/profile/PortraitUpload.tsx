@@ -1,22 +1,68 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function PortraitUpload({ currentUrl }: { currentUrl: string | null }) {
   const [url, setUrl] = useState(currentUrl);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const [src, setSrc] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [offsetX, setOffsetX] = useState(0);
+  const [offsetY, setOffsetY] = useState(0);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const dragRef = useRef<{ x: number; y: number; ox: number; oy: number } | null>(null);
 
-  async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+  useEffect(() => {
+    return () => {
+      if (src) URL.revokeObjectURL(src);
+    };
+  }, [src]);
+
+  function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setError("Use JPEG, PNG, or WebP.");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Max 10 MB.");
+      return;
+    }
     setError(null);
-    // Client-side 4:5 crop via canvas center-crop
+    if (src) URL.revokeObjectURL(src);
+    const objectUrl = URL.createObjectURL(file);
+    setSrc(objectUrl);
+    setZoom(1);
+    setOffsetX(0);
+    setOffsetY(0);
+    setOpen(true);
+  }
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    dragRef.current = { x: e.clientX, y: e.clientY, ox: offsetX, oy: offsetY };
+  }, [offsetX, offsetY]);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragRef.current) return;
+    setOffsetX(dragRef.current.ox + (e.clientX - dragRef.current.x));
+    setOffsetY(dragRef.current.oy + (e.clientY - dragRef.current.y));
+  }, []);
+
+  const onPointerUp = useCallback(() => {
+    dragRef.current = null;
+  }, []);
+
+  async function confirmUpload() {
+    if (!src || !imgRef.current) return;
+    setBusy(true);
+    setError(null);
     try {
-      setBusy(true);
-      const blob = await centerCropTo45(file);
+      const blob = await renderCrop(imgRef.current, zoom, offsetX, offsetY, 240, 300);
       const fd = new FormData();
       fd.append("file", blob, "portrait.jpg");
       const res = await fetch("/api/staff/profile/portrait", { method: "POST", body: fd });
@@ -26,61 +72,137 @@ export function PortraitUpload({ currentUrl }: { currentUrl: string | null }) {
         return;
       }
       setUrl(data.portraitUrl);
-      setPreview(data.portraitUrl);
+      setOpen(false);
+      if (src) URL.revokeObjectURL(src);
+      setSrc(null);
     } catch (err: any) {
-      setError(err?.message || "Crop/upload failed");
+      setError(err?.message || "Crop failed");
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-      <div className="h-24 w-[76.8px] overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-        {url || preview ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview || url || ""} alt="Portrait" className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex h-full items-center justify-center text-[10px] text-slate-400">4:5</div>
-        )}
+    <div className="space-y-3">
+      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+        <div className="h-[100px] w-20 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+          {url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={url} alt="Portrait" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full items-center justify-center text-[10px] text-slate-400">4:5</div>
+          )}
+        </div>
+        <div>
+          <label className="inline-flex cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50">
+            <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={onPick} />
+            Choose image
+          </label>
+          <p className="mt-1 text-[11px] text-slate-500">Interactive 4:5 crop · JPEG/PNG/WebP · max 10 MB</p>
+        </div>
       </div>
-      <div>
-        <label className="inline-flex cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50">
-          <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={onFile} disabled={busy} />
-          {busy ? "Uploading…" : "Upload 4:5 portrait"}
-        </label>
-        <p className="mt-1 text-[11px] text-slate-500">JPEG/PNG/WebP · auto center-crop to 4:5 · max 10 MB</p>
-        {error ? <p className="mt-1 text-xs text-red-700">{error}</p> : null}
-      </div>
+      {error ? <p className="text-xs text-red-700">{error}</p> : null}
+
+      {open && src ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-label="Crop portrait">
+          <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
+            <h3 className="text-sm font-semibold text-slate-900">Position your 4:5 portrait</h3>
+            <p className="mt-1 text-xs text-slate-500">Drag to reposition · use zoom · confirm when ready</p>
+            <div
+              className="relative mx-auto mt-4 h-[300px] w-[240px] cursor-grab overflow-hidden rounded-xl border-2 border-teal-600 bg-slate-100 active:cursor-grabbing"
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerCancel={onPointerUp}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                ref={imgRef}
+                src={src}
+                alt=""
+                draggable={false}
+                className="pointer-events-none absolute left-1/2 top-1/2 max-w-none select-none"
+                style={{
+                  transform: `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) scale(${zoom})`,
+                  transformOrigin: "center center",
+                }}
+              />
+            </div>
+            <label className="mt-4 block text-xs font-medium text-slate-700">
+              Zoom
+              <input
+                type="range"
+                min={1}
+                max={3}
+                step={0.01}
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.target.value))}
+                className="mt-1 w-full"
+              />
+            </label>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={confirmUpload}
+                className="rounded-lg bg-[var(--lit-teal,#1FA9A2)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+              >
+                {busy ? "Uploading…" : "Confirm & Upload"}
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  setOpen(false);
+                  if (src) URL.revokeObjectURL(src);
+                  setSrc(null);
+                }}
+                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
 
-async function centerCropTo45(file: File): Promise<Blob> {
-  const bitmap = await createImageBitmap(file);
-  const srcW = bitmap.width;
-  const srcH = bitmap.height;
-  const targetRatio = 4 / 5;
-  let cropW = srcW;
-  let cropH = srcH;
-  let sx = 0;
-  let sy = 0;
-  if (srcW / srcH > targetRatio) {
-    cropW = Math.round(srcH * targetRatio);
-    sx = Math.round((srcW - cropW) / 2);
-  } else {
-    cropH = Math.round(srcW / targetRatio);
-    sy = Math.round((srcH - cropH) / 2);
-  }
-  const outW = Math.min(800, cropW);
-  const outH = Math.round(outW / targetRatio);
+async function renderCrop(
+  img: HTMLImageElement,
+  zoom: number,
+  offsetX: number,
+  offsetY: number,
+  frameW: number,
+  frameH: number
+): Promise<Blob> {
+  await img.decode().catch(() => undefined);
+  const nw = img.naturalWidth;
+  const nh = img.naturalHeight;
+  // Display size inside frame before zoom (object-fit cover baseline)
+  const baseScale = Math.max(frameW / nw, frameH / nh);
+  const scale = baseScale * zoom;
+  const dispW = nw * scale;
+  const dispH = nh * scale;
+  const left = frameW / 2 - dispW / 2 + offsetX;
+  const top = frameH / 2 - dispH / 2 + offsetY;
+  // Map frame (0,0)-(frameW,frameH) to source pixels
+  const sx = (0 - left) / scale;
+  const sy = (0 - top) / scale;
+  const sw = frameW / scale;
+  const sh = frameH / scale;
+  const outW = 800;
+  const outH = 1000;
   const canvas = document.createElement("canvas");
   canvas.width = outW;
   canvas.height = outH;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas unavailable");
-  ctx.drawImage(bitmap, sx, sy, cropW, cropH, 0, 0, outW, outH);
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, outW, outH);
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
   return new Promise((resolve, reject) => {
-    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Encode failed"))), "image/jpeg", 0.9);
+    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Encode failed"))), "image/jpeg", 0.92);
   });
 }
