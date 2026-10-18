@@ -19,6 +19,7 @@ export interface StaffWorkspaceInvitationEmailProps {
   department?: string;
   systemRole?: string;
   workspaceUrl?: string;
+  verificationUrl?: string;
   workspaceUuid?: string;
 }
 
@@ -28,18 +29,20 @@ export default function StaffWorkspaceInvitationEmail({
   jobTitle = "Software Engineer",
   department = "Engineering",
   systemRole = "developer",
-  workspaceUrl = "https://www.logicintelligencetechnologies.in/login?next=/admin/workspaces/sample-uuid",
+  workspaceUrl = "https://www.logicintelligencetechnologies.in/login?next=/staff/setup-password",
+  verificationUrl,
   workspaceUuid = "e0000000-0000-0000-0000-000000000001",
 }: StaffWorkspaceInvitationEmailProps) {
+  const primaryActionUrl = verificationUrl || workspaceUrl;
   return (
-    <EmailLayout design="workspace" preview={`Your private LIT Staff Admin Workspace (${jobTitle}) is ready.`}>
+    <EmailLayout design="workspace" preview={`Your private LIT Staff Workspace (${jobTitle}) is ready.`}>
       <EmailHeader subBrand="Staff Identity & Workspace Provisioning" />
       <EmailContent>
-        <EmailTitle>Your Staff Admin Workspace Is Ready</EmailTitle>
+        <EmailTitle>Your Staff Workspace Is Ready</EmailTitle>
         <EmailGreeting name={recipientName} />
 
         <EmailBody>
-          A private, person-specific <strong>Logic Intelligence Technologies Admin Workspace</strong> has been provisioned for your official account.
+          A private, person-specific <strong>Logic Intelligence Technologies Staff Portal</strong> has been provisioned for your official account.
         </EmailBody>
 
         <div
@@ -78,13 +81,22 @@ export default function StaffWorkspaceInvitationEmail({
         </div>
 
         <EmailBody>
-          To access your workspace, click the button below to sign in at the official LIT portal. Please use your registered email and the <strong>temporary initial password communicated separately by company leadership</strong>.
+          First, verify your official email using the secure link below. After verification, sign in with your registered email and the <strong>temporary initial password communicated separately by company leadership</strong> (never sent by email). You will then set a personal password and enter your Staff Portal.
         </EmailBody>
 
         <div style={{ textAlign: "center", margin: "28px 0" }}>
-          <EmailButton href={workspaceUrl}>
-            Open My Admin Workspace
+          <EmailButton href={primaryActionUrl}>
+            Verify Account &amp; Access Staff Workspace
           </EmailButton>
+        </div>
+
+        <EmailBody>
+          After verification, you can also sign in directly:
+        </EmailBody>
+        <div style={{ textAlign: "center", margin: "16px 0 28px" }}>
+          <a href={workspaceUrl} style={{ color: EMAIL.colors.primary, fontSize: "13px", fontWeight: 600 }}>
+            Open Staff Sign-In
+          </a>
         </div>
 
         <div

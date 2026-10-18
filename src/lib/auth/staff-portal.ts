@@ -19,11 +19,14 @@ export type StaffPortalContext = {
 };
 
 /**
- * Resolve the authenticated staff member's own workspace.
- * Super admins without a personal workspace → Command Center.
- * Ordinary staff without workspace → forbidden.
+ * Resolve authenticated staff workspace context.
+ * Enforces: session, employment active, workspace exists.
+ * Forces /staff/setup-password when status requires first-login password change.
  */
-export async function requireStaffPortal(currentPath = "/staff/dashboard"): Promise<StaffPortalContext> {
+export async function requireStaffPortal(
+  currentPath = "/staff/dashboard",
+  options?: { allowSetupPath?: boolean }
+): Promise<StaffPortalContext> {
   const session = await getStaffSession();
   if (!session) {
     redirect(`/login?next=${encodeURIComponent(currentPath)}`);
@@ -50,6 +53,33 @@ export async function requireStaffPortal(currentPath = "/staff/dashboard"): Prom
     redirect(`/admin/forbidden?need=staff.workspace`);
   }
 
+  const status = self.status || "active";
+  const isSetupPath = currentPath.startsWith("/staff/setup-password");
+
+  // Mandatory first-login password rotation
+  if (
+    (status === "pending_email_verification" || status === "initial_password_change_required") &&
+    !isSetupPath &&
+    !options?.allowSetupPath
+  ) {
+    // If email not confirmed, session.ts may already block; still send to setup after confirm
+    redirect("/staff/setup-password");
+  }
+
+  // Transition pending_email_verification → initial_password_change_required once email is confirmed
+  // (session only exists when confirmed via getStaffSession)
+  if (status === "pending_email_verification" && isSetupPath) {
+    await supabaseAdmin
+      .from("staff_workspaces")
+      .update({
+        status: "initial_password_change_required",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", self.workspaceId)
+      .eq("owner_user_id", session.userId)
+      .eq("status", "pending_email_verification");
+  }
+
   const { data: perms } = await supabaseAdmin
     .from("staff_workspace_permissions")
     .select("capability_id")
@@ -64,7 +94,7 @@ export async function requireStaffPortal(currentPath = "/staff/dashboard"): Prom
     isSuperAdmin,
     workspaceId: self.workspaceId,
     workspaceName: self.displayName || "Staff Workspace",
-    workspaceStatus: self.status || "active",
+    workspaceStatus: status,
     fullName: emp?.full_name || self.displayName || session.email || "Staff Member",
     jobTitle: emp?.job_title || self.safeRoleLabel || session.role,
     department: emp?.department || "General",

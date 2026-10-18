@@ -117,10 +117,15 @@ export async function createStaffWorkspace(
     authUserId = existingProfile.id;
 
     // Update password safely via admin API without emailing it
-    await supabaseAdmin.auth.admin.updateUserById(authUserId, {
+    const { error: pwdUpdateErr } = await supabaseAdmin.auth.admin.updateUserById(authUserId, {
       password: parsed.temporaryPassword,
       user_metadata: { full_name: parsed.fullName },
+      email_confirm: false,
     });
+    if (pwdUpdateErr) {
+      console.error("[staff-workspace] Password update failed for existing user:", pwdUpdateErr.message);
+      throw new Error(`AUTH_PASSWORD_UPDATE_FAILED: ${pwdUpdateErr.message}`);
+    }
   } else {
     // 4. Create fresh Supabase Auth user with founder-supplied temporary password
     // email_confirm: false enforces mandatory email verification
@@ -332,8 +337,45 @@ export async function createStaffWorkspace(
     "https://www.logicintelligencetechnologies.in"
   ).replace(/\/$/, "");
 
-  const workspaceDirectUrl = `${baseUrl}/admin/workspaces/${workspaceId}`;
-  const loginRedirectUrl = `${baseUrl}/login?next=${encodeURIComponent(`/admin/workspaces/${workspaceId}`)}`;
+  // Staff portal destinations (never Admin Command Center for employees)
+  const staffDashboardUrl = `${baseUrl}/staff/dashboard`;
+  const staffSetupUrl = `${baseUrl}/staff/setup-password`;
+  const loginRedirectUrl = `${baseUrl}/login?next=${encodeURIComponent("/staff/setup-password")}`;
+
+  // Generate a real Supabase email-verification / invite action link (no password in email)
+  let verificationUrl = loginRedirectUrl;
+  try {
+    const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
+      type: "invite",
+      email: normalizedEmail,
+      options: {
+        redirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent("/staff/setup-password")}`,
+        data: {
+          full_name: parsed.fullName,
+          staff_workspace_id: workspaceId,
+        },
+      },
+    });
+    if (linkErr) {
+      console.warn("[staff-workspace] generateLink(invite) failed, trying magiclink:", linkErr.message);
+      const { data: magicData, error: magicErr } = await supabaseAdmin.auth.admin.generateLink({
+        type: "magiclink",
+        email: normalizedEmail,
+        options: {
+          redirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent("/staff/setup-password")}`,
+        },
+      });
+      if (magicErr) {
+        console.warn("[staff-workspace] generateLink(magiclink) failed:", magicErr.message);
+      } else if (magicData?.properties?.action_link) {
+        verificationUrl = magicData.properties.action_link;
+      }
+    } else if (linkData?.properties?.action_link) {
+      verificationUrl = linkData.properties.action_link;
+    }
+  } catch (linkEx: any) {
+    console.warn("[staff-workspace] Verification link generation exception:", linkEx?.message);
+  }
 
   let invitationStatus: "queued" | "sending" | "provider_accepted" | "delivered" | "failed" = "queued";
   let emailOutboxId: string | undefined;
@@ -341,7 +383,7 @@ export async function createStaffWorkspace(
   try {
     const emailResult = await sendEmail({
       to: normalizedEmail,
-      subject: "Your LIT Staff Admin Workspace Has Been Provisioned",
+      subject: "Your Logic Intelligence Technologies Staff Workspace Is Ready",
       from: "operations",
       category: "operational",
       templateKey: "staff-workspace-invitation",
@@ -353,6 +395,7 @@ export async function createStaffWorkspace(
         department: parsed.department,
         systemRole: parsed.systemRole,
         workspaceUrl: loginRedirectUrl,
+        verificationUrl,
         workspaceUuid: workspaceId,
       }),
     });
@@ -381,8 +424,9 @@ export async function createStaffWorkspace(
   return {
     success: true,
     workspaceId,
-    workspaceUrl: workspaceDirectUrl,
+    workspaceUrl: staffDashboardUrl,
     loginRedirectUrl,
+    verificationUrl,
     invitationStatus,
     employee: {
       id: authUserId,
@@ -800,12 +844,27 @@ export async function resendStaffWorkspaceInvitation(
     "https://www.logicintelligencetechnologies.in"
   ).replace(/\/$/, "");
 
-  const loginRedirectUrl = `${baseUrl}/login?next=${encodeURIComponent(`/admin/workspaces/${workspaceId}`)}`;
+  const loginRedirectUrl = `${baseUrl}/login?next=${encodeURIComponent("/staff/setup-password")}`;
+  let verificationUrl = loginRedirectUrl;
+  try {
+    const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
+      type: "magiclink",
+      email: emp.email_normalized,
+      options: {
+        redirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent("/staff/setup-password")}`,
+      },
+    });
+    if (!linkErr && linkData?.properties?.action_link) {
+      verificationUrl = linkData.properties.action_link;
+    }
+  } catch {
+    /* keep login fallback */
+  }
   const idempotencyKey = `staff-ws-invite-${workspaceId}-${Date.now()}`;
 
   const emailResult = await sendEmail({
     to: emp.email_normalized,
-    subject: "Reminder: Your LIT Staff Admin Workspace Has Been Provisioned",
+    subject: "Reminder: Your Logic Intelligence Technologies Staff Workspace Is Ready",
     from: "operations",
     category: "operational",
     templateKey: "staff-workspace-invitation",
@@ -817,6 +876,7 @@ export async function resendStaffWorkspaceInvitation(
       department: emp.department,
       systemRole: "staff",
       workspaceUrl: loginRedirectUrl,
+      verificationUrl,
       workspaceUuid: workspaceId,
     }),
   });
