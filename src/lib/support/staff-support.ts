@@ -561,7 +561,7 @@ export async function updateStaffClientAssignment(input: {
           actionUrl: '/staff/projects',
           idempotencyKey: `assignment:revoke:${updated.id}:${updated.updated_at}`,
         });
-      } else if (input.status === 'active' || input.assignmentRole || input.canPrepareTechnicalQuotation !== undefined) {
+      } else if (input.status === 'active' || input.canPrepareTechnicalQuotation !== undefined || input.canPrepareInvoiceRequest !== undefined || input.canViewTechnicalStages !== undefined) {
         await notifyStaff({
           recipientUserId: updated.staff_user_id,
           engagementId: updated.engagement_id,
