@@ -280,7 +280,11 @@ export async function runOperationalReset(options: {
 }
 
 // CLI Entrypoint
-if (require.main === module) {
+const isMain = typeof require !== 'undefined' 
+  ? require.main === module 
+  : process.argv[1]?.includes('operational-reset');
+
+if (isMain) {
   const args = process.argv.slice(2);
   const isExecute = args.includes('--execute');
 
