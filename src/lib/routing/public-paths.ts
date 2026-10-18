@@ -99,6 +99,7 @@ export function isPublicPath(path: string): boolean {
 export const PROTECTED_PREFIXES: readonly string[] = [
   // Administrative and internal areas
   "/admin",
+  "/staff",
   "/client",
   "/dashboard",
   "/engagement",

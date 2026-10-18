@@ -35,7 +35,35 @@ export async function middleware(req: NextRequest) {
           if (!dest && refParam && /^[a-zA-Z0-9_-]+$/.test(refParam)) {
             dest = `/client/dashboard?ref=${encodeURIComponent(refParam)}`;
           }
-          if (!dest) dest = "/";
+          if (!dest) {
+            // Prefer staff portal when the user has a staff workspace; else home
+            try {
+              const { data: profile } = await supabase
+                .from("profiles")
+                .select("role")
+                .eq("id", user.id)
+                .maybeSingle();
+              const { data: ws } = await supabase
+                .from("staff_workspaces")
+                .select("id, status")
+                .eq("owner_user_id", user.id)
+                .maybeSingle();
+              if (
+                ws &&
+                (ws.status === "active" ||
+                  ws.status === "initial_password_change_required" ||
+                  ws.status === "pending_email_verification")
+              ) {
+                dest = "/staff/dashboard";
+              } else if (profile?.role === "super_admin") {
+                dest = "/admin/command-center";
+              } else {
+                dest = "/";
+              }
+            } catch {
+              dest = "/";
+            }
+          }
           return NextResponse.redirect(new URL(dest, req.url));
         }
       } catch {

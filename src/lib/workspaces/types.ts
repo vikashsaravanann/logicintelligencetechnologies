@@ -97,6 +97,43 @@ export const MODULE_CAPABILITIES: { id: string; label: string; description: stri
     description: "Monitor health and execution of system workflows without commercial privileges",
     defaultRoles: ["admin", "operations"],
   },
+  {
+    id: "leads.read",
+    label: "Leads & Intake Inquiries",
+    description: "View website and intake inquiries within assigned scope",
+    defaultRoles: ["admin", "operations", "support"],
+  },
+  {
+    id: "support.read",
+    label: "Support Tickets",
+    description: "View support tickets for assigned clients",
+    defaultRoles: ["admin", "operations", "support"],
+  },
+  {
+    id: "support.reply",
+    label: "Support Responses",
+    description: "Reply to support tickets for assigned clients",
+    defaultRoles: ["admin", "operations", "support"],
+  },
+  {
+    id: "documents.read",
+    label: "Technical Documents",
+    description: "Read authorized technical documents",
+    defaultRoles: ["admin", "operations", "developer", "support"],
+  },
+  {
+    id: "documents.upload",
+    label: "Document Upload",
+    description: "Upload technical documents for assigned projects",
+    defaultRoles: ["admin", "operations", "developer"],
+  },
+  {
+    id: "seo.read",
+    label: "SEO & Analytics",
+    description: "View SEO and analytics monitoring data",
+    defaultRoles: ["admin", "operations"],
+  },
+
 ];
 
 export const createStaffWorkspaceSchema = z
@@ -126,6 +163,12 @@ export const createStaffWorkspaceSchema = z
       .min(2, "Working job title is required")
       .max(80, "Job title cannot exceed 80 characters"),
     employmentType: z.enum(EMPLOYMENT_TYPES).default("full_time"),
+    employeeCode: z
+      .string()
+      .trim()
+      .max(32, "Employee code cannot exceed 32 characters")
+      .regex(/^$|^[A-Za-z0-9._\-\/]+$/, "Employee code contains invalid characters")
+      .optional(),
     systemRole: z.enum(STAFF_SYSTEM_ROLES),
     temporaryPassword: z
       .string()

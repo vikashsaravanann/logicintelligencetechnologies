@@ -166,11 +166,26 @@ export async function createStaffWorkspace(
     }
 
     // 6. Insert staff_employees
+    // Normalize and enforce unique employee code when provided
+    let employeeCode: string | null = null;
+    if (parsed.employeeCode && String(parsed.employeeCode).trim()) {
+      employeeCode = String(parsed.employeeCode).trim().toUpperCase();
+      const { data: codeClash } = await supabaseAdmin
+        .from("staff_employees")
+        .select("id")
+        .eq("employee_code", employeeCode)
+        .maybeSingle();
+      if (codeClash) {
+        throw new Error("CONFLICT_EMPLOYEE_CODE: This employee code is already assigned.");
+      }
+    }
+
     const { error: employeeError } = await supabaseAdmin
       .from("staff_employees")
       .insert({
         auth_user_id: authUserId,
         full_name: parsed.fullName,
+        employee_code: employeeCode,
         email_normalized: normalizedEmail,
         phone_e164: normalizedPhone,
         department: parsed.department,
@@ -217,7 +232,8 @@ export async function createStaffWorkspace(
         .insert(permInserts);
 
       if (permError) {
-        console.warn("[staff-workspace] Permissions insert warning:", permError.message);
+        console.error("[staff-workspace] Permissions insert failed:", permError.message);
+        throw new Error(`STAFF_PERMISSIONS_INSERT_FAILED: ${permError.message}`);
       }
     }
 
@@ -243,7 +259,8 @@ export async function createStaffWorkspace(
         .insert(assignmentInserts);
 
       if (assignError) {
-        console.warn("[staff-workspace] Client assignments insert warning:", assignError.message);
+        console.error("[staff-workspace] Client assignments insert failed:", assignError.message);
+        throw new Error(`STAFF_ASSIGNMENTS_INSERT_FAILED: ${assignError.message}`);
       }
     }
 

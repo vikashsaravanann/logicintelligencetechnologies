@@ -38,6 +38,18 @@ export default async function WorkspaceOverviewPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  // Ordinary staff who own this workspace must use the independent /staff portal
+  // rather than the Admin Command Center chrome.
+  const { getStaffSession } = await import("@/lib/auth/session");
+  const { getSelfStaffWorkspace } = await import("@/lib/workspaces/service");
+  const softSession = await getStaffSession();
+  if (softSession && softSession.role !== "super_admin") {
+    const self = await getSelfStaffWorkspace(softSession.userId);
+    if (self.hasActiveWorkspace && self.workspaceId === id) {
+      redirect("/staff/dashboard");
+    }
+  }
+
   const session = await requireCapabilityPage("dashboard.view", `/admin/workspaces/${id}`);
 
   let workspace;
