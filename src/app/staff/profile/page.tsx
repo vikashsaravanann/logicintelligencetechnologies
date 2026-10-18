@@ -3,6 +3,7 @@ import { requireStaffPortal } from "@/lib/auth/staff-portal";
 import { getStaffProfileBundle } from "@/lib/staff/profile";
 import { PortraitUpload } from "./PortraitUpload";
 import { ProfileEditor } from "./ProfileEditor";
+import { ResumeBuilder } from "./ResumeBuilder";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +49,8 @@ export default async function StaffProfilePage() {
           </div>
         </section>
 
+        <div className="space-y-6">
+        <ResumeBuilder />
         <ProfileEditor
           fullName={ctx.fullName}
           employeeCode={ctx.employeeCode}
@@ -66,6 +69,7 @@ export default async function StaffProfilePage() {
             include_in_resume: e.include_in_resume !== false,
           }))}
         />
+        </div>
       </div>
     </div>
   );
