@@ -96,7 +96,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, assignment }, { status: 201 });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Failed to create staff assignment.';
+    let message = err instanceof Error ? err.message : 'Failed to create staff assignment.';
+    if (/engagement_id_fkey|foreign key/i.test(message)) {
+      message =
+        'The selected project is not a valid client engagement. Create a real engagement before assigning staff.';
+    }
     return NextResponse.json({ ok: false, error: message }, { status: 400 });
   }
 }

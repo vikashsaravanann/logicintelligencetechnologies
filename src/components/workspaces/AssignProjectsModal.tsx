@@ -588,8 +588,23 @@ export default function AssignProjectsModal({
                   <p className="text-xs">Loading client engagements...</p>
                 </div>
               ) : filteredEngagements.length === 0 ? (
-                <div className="py-12 text-center text-slate-400 border border-dashed border-[var(--lit-border-light,#DFE7EF)] rounded-xl">
-                  <p className="text-xs">No client engagements match your search.</p>
+                <div className="py-10 px-4 text-center border border-dashed border-[var(--lit-border-light,#DFE7EF)] rounded-xl space-y-2">
+                  <p className="text-sm font-semibold text-[var(--lit-navy,#0B2545)]">
+                    No client engagements available for assignment.
+                  </p>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    {engagements.length === 0
+                      ? "Create or verify a real client engagement before assigning staff to a project. Demonstration projects cannot be assigned."
+                      : "No client engagements match your search."}
+                  </p>
+                  {engagements.length === 0 ? (
+                    <a
+                      href="/admin/engagements"
+                      className="inline-flex mt-2 text-xs font-semibold text-[var(--lit-teal,#1FA9A2)] hover:underline"
+                    >
+                      Open engagement management →
+                    </a>
+                  ) : null}
                 </div>
               ) : (
                 filteredEngagements.map((eng) => {

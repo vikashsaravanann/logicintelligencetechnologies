@@ -316,6 +316,56 @@ export async function createStaffClientAssignment(input: {
     throw new Error('A clear assignment reason (minimum 5 characters) is required.');
   }
 
+  // Reject known demo / non-persistent engagement IDs
+  const DEMO_ENGAGEMENT_ID = '8acad856-9840-4646-b42d-f8bf12ea47f8';
+  if (input.engagementId === DEMO_ENGAGEMENT_ID) {
+    throw new Error(
+      'This engagement is a demonstration record and cannot be assigned. Create a real client engagement first.'
+    );
+  }
+
+  const admin = getServiceClient();
+  if (input.engagementId && admin) {
+    const { data: eng, error: engErr } = await admin
+      .from('client_engagements')
+      .select('id, client_id, company_name, project_title, status')
+      .eq('id', input.engagementId)
+      .maybeSingle();
+    if (engErr) {
+      throw new Error('Unable to verify the selected engagement. Please try again.');
+    }
+    if (!eng) {
+      throw new Error(
+        'The selected project does not exist in client engagements. Create or select a real engagement before assigning staff.'
+      );
+    }
+    if (!input.clientId && eng.client_id) {
+      input.clientId = eng.client_id;
+    }
+  }
+
+  if (admin) {
+    const { data: staffEmp } = await admin
+      .from('staff_employees')
+      .select('auth_user_id, employment_status')
+      .eq('auth_user_id', input.staffUserId)
+      .maybeSingle();
+    if (
+      staffEmp &&
+      (staffEmp.employment_status === 'suspended' || staffEmp.employment_status === 'offboarded')
+    ) {
+      throw new Error('This staff member is not eligible for project assignment (employment inactive).');
+    }
+    const { data: ws } = await admin
+      .from('staff_workspaces')
+      .select('id, status')
+      .eq('owner_user_id', input.staffUserId)
+      .maybeSingle();
+    if (ws && (ws.status === 'suspended' || ws.status === 'revoked' || ws.status === 'archived')) {
+      throw new Error('Staff workspace is not active. Reactivate the workspace before assigning projects.');
+    }
+  }
+
   const now = new Date().toISOString();
   const assignment: StaffClientAssignment = {
     id: crypto.randomUUID(),

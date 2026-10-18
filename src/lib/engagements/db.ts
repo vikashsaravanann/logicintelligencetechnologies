@@ -925,7 +925,12 @@ export async function submitIdentityChangeRequest(input: {
 /**
  * Fetch all client engagements for the Admin Console.
  */
-export async function listAllEngagements(): Promise<ClientEngagement[]> {
+export async function listAllEngagements(options?: {
+  /** When true (default for operational admin lists), never inject demo engagements. */
+  allowDemoFallback?: boolean;
+}): Promise<ClientEngagement[]> {
+  const allowDemoFallback = options?.allowDemoFallback === true;
+
   if (isAdminClientConfigured()) {
     try {
       const { data, error } = await supabaseAdmin
@@ -933,15 +938,23 @@ export async function listAllEngagements(): Promise<ClientEngagement[]> {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!error && data && data.length > 0) {
+      if (error) {
+        console.warn('[listAllEngagements] DB query error:', error.message);
+        // Operational lists must not surface fake assignable projects
+        if (!allowDemoFallback) return [];
+      } else if (data && data.length > 0) {
         return data as ClientEngagement[];
+      } else if (!allowDemoFallback) {
+        return [];
       }
     } catch (err) {
-      console.warn('[listAllEngagements] DB query failed, using fallback:', err);
+      console.warn('[listAllEngagements] DB query failed:', err);
+      if (!allowDemoFallback) return [];
     }
   }
 
-  return [FALLBACK_SAMPLE_ENGAGEMENT];
+  // Demo fallback is opt-in only (marketing/demo rendering) — never for assignment.
+  return allowDemoFallback ? [FALLBACK_SAMPLE_ENGAGEMENT] : [];
 }
 
 /**
