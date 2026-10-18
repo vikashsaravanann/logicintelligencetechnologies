@@ -24,17 +24,50 @@ type Props = {
   entries: Entry[];
 };
 
-function LockedField({ label, value }: { label: string; value: string }) {
+function LockIcon({ className = "h-3.5 w-3.5" }: { className?: string }) {
   return (
-    <div className="min-w-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-        <span className="mr-1" aria-hidden>
-          🔒
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <rect x="5" y="11" width="14" height="10" rx="2" />
+      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+    </svg>
+  );
+}
+
+function LockedField({
+  label,
+  value,
+  mono = false,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
+  return (
+    <div className="flex min-h-[4.75rem] min-w-0 flex-col justify-center rounded-2xl border border-slate-200/90 bg-gradient-to-b from-slate-50 to-slate-50/40 px-3.5 py-3 shadow-[0_1px_0_rgba(15,23,42,0.03)] sm:px-4">
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+        <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 shadow-sm">
+          <LockIcon className="h-3 w-3" />
         </span>
-        {label}
+        <span>{label}</span>
         <span className="sr-only"> (company-managed, not editable)</span>
+      </div>
+      <p
+        className={
+          "mt-1.5 break-words text-sm font-semibold leading-snug text-slate-900 " +
+          (mono ? "font-mono tracking-wide" : "")
+        }
+      >
+        {value || "—"}
       </p>
-      <p className="mt-0.5 break-words text-sm font-medium text-slate-900">{value || "—"}</p>
     </div>
   );
 }
@@ -51,7 +84,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+    <section id={id} className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-5">
       <h2 className="text-sm font-semibold text-slate-900 sm:text-base">{title}</h2>
       {description ? <p className="mt-1 text-xs text-slate-500 sm:text-sm">{description}</p> : null}
       <div className="mt-3 space-y-3">{children}</div>
@@ -244,15 +277,18 @@ export function ProfileEditor({
         title="Company-Controlled Employment"
         description="These details are maintained by Logic Intelligence Technologies and cannot be changed directly by employees."
       >
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3">
           <LockedField
             label="Employee code"
             value={employeeCode || "Not Assigned"}
+            mono
           />
-          <LockedField label="Official company email" value={email || "—"} />
+          <LockedField label="Official company email" value={email || "—"} mono />
           <LockedField label="Department" value={department || "—"} />
           <LockedField label="Job title" value={jobTitle || "—"} />
-          <LockedField label="System role" value={role || "—"} />
+          <div className="sm:col-span-2">
+            <LockedField label="System role" value={role || "—"} />
+          </div>
         </div>
         {!employeeCode ? (
           <p className="text-xs text-amber-800">
