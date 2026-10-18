@@ -5,6 +5,7 @@ import {
   FolderKanban,
   FileText,
   User,
+  Shield,
   Activity,
   Inbox,
   LifeBuoy,
@@ -43,7 +44,7 @@ export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
     label: "My Tasks",
     href: "/staff/tasks",
     description: "Assigned tasks",
-    capability: "tasks.manage",
+    capability: null,
     icon: ListTodo,
     order: 20,
   },
@@ -52,7 +53,7 @@ export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
     label: "Projects",
     href: "/staff/projects",
     description: "Assigned projects",
-    capability: "projects.assigned.read",
+    capability: null,
     icon: FolderKanban,
     order: 30,
   },
@@ -73,6 +74,15 @@ export const STAFF_ESSENTIAL_NAV: StaffNavEntry[] = [
     capability: null,
     icon: User,
     order: 90,
+  },
+  {
+    id: "security",
+    label: "Account Security",
+    href: "/staff/settings/security",
+    description: "Password and account protection",
+    capability: null,
+    icon: Shield,
+    order: 95,
   },
   {
     id: "activity",
@@ -169,12 +179,9 @@ export function buildStaffNavigation(grantedCapabilities: string[]): StaffNavEnt
   const granted = new Set(grantedCapabilities);
   const all = [...STAFF_ESSENTIAL_NAV, ...STAFF_MODULE_NAV];
   const filtered = all.filter((entry) => {
+    // Essential utilities (capability null) always visible to active staff
     if (entry.capability === null) return true;
-    // Core operational utilities: show when explicitly granted, or when grants empty (legacy workspaces)
-    if (entry.capability === "tasks.manage" || entry.capability === "projects.assigned.read" || entry.capability === "documents.read") {
-      if (granted.size === 0) return true;
-      return granted.has(entry.capability);
-    }
+    // Optional and operational modules require an explicit grant — never fail open on empty grants
     return granted.has(entry.capability);
   });
 

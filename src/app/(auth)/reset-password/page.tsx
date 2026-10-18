@@ -20,8 +20,8 @@ export default function ResetPasswordPage() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.length < 8) {
-      setError("Password must contain at least 8 characters.");
+    if (password.length < 12) {
+      setError("Password must contain at least 12 characters.");
       return;
     }
     if (password !== confirm) {
@@ -36,7 +36,19 @@ export default function ResetPasswordPage() {
         setError(updErr.message);
         return;
       }
-      router.push("/profile");
+      // Staff with workspace → staff portal; otherwise general profile
+      let dest = "/profile";
+      try {
+        const res = await fetch("/api/me/staff-workspace");
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.hasActiveWorkspace) dest = "/staff/dashboard";
+          else if (data?.isSuperAdmin) dest = "/admin/command-center";
+        }
+      } catch {
+        /* keep /profile */
+      }
+      router.push(dest);
       router.refresh();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to update password.");
@@ -45,7 +57,7 @@ export default function ResetPasswordPage() {
     }
   };
 
-  const isMinLength = password.length >= 8;
+  const isMinLength = password.length >= 12;
   const isMatch = Boolean(confirm && password === confirm);
 
   return (

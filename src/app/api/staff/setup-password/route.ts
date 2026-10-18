@@ -74,6 +74,40 @@ export async function POST(req: NextRequest) {
       details: { previous_status: ws.status },
     });
 
+
+    // Confirmation email (failure does not roll back password setup)
+    try {
+      const { data: emp } = await supabaseAdmin
+        .from("staff_employees")
+        .select("full_name, employee_code, email_normalized")
+        .eq("auth_user_id", user.id)
+        .maybeSingle();
+      if (emp?.email_normalized || user.email) {
+        const { sendEmail } = await import("@/lib/email/send-email");
+        const React = (await import("react")).default;
+        const StaffPasswordChangedEmail = (await import("@/emails/staff-password-changed-email")).default;
+        const eventId = crypto.randomUUID();
+        await sendEmail({
+          to: emp?.email_normalized || user.email!,
+          subject: "Security Alert — Your LIT Staff Account Password Was Changed",
+          from: "operations",
+          category: "operational",
+          templateKey: "staff-password-changed",
+          eventType: "staff.password.changed",
+          idempotencyKey: `staff-password-setup-${ws.id}-${eventId}`,
+          react: React.createElement(StaffPasswordChangedEmail, {
+            recipientName: emp?.full_name || user.email,
+            recipientEmail: emp?.email_normalized || user.email!,
+            employeeCode: emp?.employee_code,
+            changedAt: new Date().toISOString(),
+            eventReference: `SEC-SETUP-${eventId.slice(0, 8).toUpperCase()}`,
+          }),
+        });
+      }
+    } catch (emailErr: any) {
+      console.error("[setup-password] confirmation email failed:", emailErr?.message);
+    }
+
     return NextResponse.json({ success: true, redirectTo: "/staff/dashboard" });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "SETUP_FAILED";
