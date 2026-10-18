@@ -518,13 +518,20 @@ $$;
 -- -----------------------------------------------------------------------------
 
 DROP POLICY IF EXISTS ce_auth_staff_all ON public.client_engagements;
+DROP POLICY IF EXISTS ce_auth_staff_scoped ON public.client_engagements;
 DROP POLICY IF EXISTS es_auth_staff_all ON public.engagement_stages;
+DROP POLICY IF EXISTS es_auth_staff_scoped ON public.engagement_stages;
 DROP POLICY IF EXISTS ese_auth_staff_all ON public.engagement_stage_events;
+DROP POLICY IF EXISTS ese_auth_staff_scoped ON public.engagement_stage_events;
 DROP POLICY IF EXISTS edl_auth_staff_all ON public.engagement_document_links;
+DROP POLICY IF EXISTS edl_auth_staff_scoped ON public.engagement_document_links;
 DROP POLICY IF EXISTS cicr_auth_staff_all ON public.client_identity_change_requests;
+DROP POLICY IF EXISTS cicr_auth_staff_scoped ON public.client_identity_change_requests;
 DROP POLICY IF EXISTS ei_auth_staff_all ON public.engagement_invites;
+DROP POLICY IF EXISTS ei_auth_staff_scoped ON public.engagement_invites;
 
 -- Recreate scoped staff policies adhering strictly to staff_client_assignments & super_admin
+DROP POLICY IF EXISTS ce_auth_staff_scoped ON public.client_engagements;
 CREATE POLICY ce_auth_staff_scoped ON public.client_engagements
   FOR SELECT TO authenticated
   USING (
@@ -538,6 +545,7 @@ CREATE POLICY ce_auth_staff_scoped ON public.client_engagements
     )
   );
 
+DROP POLICY IF EXISTS es_auth_staff_scoped ON public.engagement_stages;
 CREATE POLICY es_auth_staff_scoped ON public.engagement_stages
   FOR SELECT TO authenticated
   USING (
@@ -552,6 +560,7 @@ CREATE POLICY es_auth_staff_scoped ON public.engagement_stages
     )
   );
 
+DROP POLICY IF EXISTS ese_auth_staff_scoped ON public.engagement_stage_events;
 CREATE POLICY ese_auth_staff_scoped ON public.engagement_stage_events
   FOR SELECT TO authenticated
   USING (
@@ -565,6 +574,7 @@ CREATE POLICY ese_auth_staff_scoped ON public.engagement_stage_events
     )
   );
 
+DROP POLICY IF EXISTS edl_auth_staff_scoped ON public.engagement_document_links;
 CREATE POLICY edl_auth_staff_scoped ON public.engagement_document_links
   FOR SELECT TO authenticated
   USING (
@@ -578,6 +588,7 @@ CREATE POLICY edl_auth_staff_scoped ON public.engagement_document_links
     )
   );
 
+DROP POLICY IF EXISTS cicr_auth_staff_scoped ON public.client_identity_change_requests;
 CREATE POLICY cicr_auth_staff_scoped ON public.client_identity_change_requests
   FOR SELECT TO authenticated
   USING (
@@ -591,6 +602,7 @@ CREATE POLICY cicr_auth_staff_scoped ON public.client_identity_change_requests
     )
   );
 
+DROP POLICY IF EXISTS ei_auth_staff_scoped ON public.engagement_invites;
 CREATE POLICY ei_auth_staff_scoped ON public.engagement_invites
   FOR ALL TO authenticated
   USING (public.is_super_admin())
@@ -604,6 +616,7 @@ CREATE POLICY ei_auth_staff_scoped ON public.engagement_invites
 -- AUTH10: Split maintenance_subscriptions SELECT from mutations (prevent assigned staff DELETE)
 DROP POLICY IF EXISTS "staff_super_admin_manage_subscriptions" ON public.maintenance_subscriptions;
 
+DROP POLICY IF EXISTS "staff_select_assigned_subscriptions" ON public.maintenance_subscriptions;
 CREATE POLICY "staff_select_assigned_subscriptions"
   ON public.maintenance_subscriptions FOR SELECT TO authenticated
   USING (
@@ -617,15 +630,18 @@ CREATE POLICY "staff_select_assigned_subscriptions"
     )
   );
 
+DROP POLICY IF EXISTS "super_admin_mutate_subscriptions" ON public.maintenance_subscriptions;
 CREATE POLICY "super_admin_mutate_subscriptions"
   ON public.maintenance_subscriptions FOR INSERT TO authenticated
   WITH CHECK (public.is_super_admin());
 
+DROP POLICY IF EXISTS "super_admin_update_subscriptions" ON public.maintenance_subscriptions;
 CREATE POLICY "super_admin_update_subscriptions"
   ON public.maintenance_subscriptions FOR UPDATE TO authenticated
   USING (public.is_super_admin())
   WITH CHECK (public.is_super_admin());
 
+DROP POLICY IF EXISTS "super_admin_delete_subscriptions" ON public.maintenance_subscriptions;
 CREATE POLICY "super_admin_delete_subscriptions"
   ON public.maintenance_subscriptions FOR DELETE TO authenticated
   USING (public.is_super_admin());

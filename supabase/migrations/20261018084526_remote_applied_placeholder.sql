@@ -1,0 +1,1 @@
+-- Placeholder: migration 20261018084526 already applied on remote; retained for history alignment
