@@ -13,6 +13,11 @@ export function PortraitUpload({ currentUrl }: { currentUrl: string | null }) {
   const [offsetY, setOffsetY] = useState(0);
   const imgRef = useRef<HTMLImageElement | null>(null);
   const dragRef = useRef<{ x: number; y: number; ox: number; oy: number } | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    setUrl(currentUrl);
+  }, [currentUrl]);
 
   useEffect(() => {
     return () => {
@@ -42,10 +47,13 @@ export function PortraitUpload({ currentUrl }: { currentUrl: string | null }) {
     setOpen(true);
   }
 
-  const onPointerDown = useCallback((e: React.PointerEvent) => {
-    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
-    dragRef.current = { x: e.clientX, y: e.clientY, ox: offsetX, oy: offsetY };
-  }, [offsetX, offsetY]);
+  const onPointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+      dragRef.current = { x: e.clientX, y: e.clientY, ox: offsetX, oy: offsetY };
+    },
+    [offsetX, offsetY]
+  );
 
   const onPointerMove = useCallback((e: React.PointerEvent) => {
     if (!dragRef.current) return;
@@ -62,7 +70,8 @@ export function PortraitUpload({ currentUrl }: { currentUrl: string | null }) {
     setBusy(true);
     setError(null);
     try {
-      const blob = await renderCrop(imgRef.current, zoom, offsetX, offsetY, 240, 300);
+      // Crop frame size for mapping; output remains 800×1000 (4:5)
+      const blob = await renderCrop(imgRef.current, zoom, offsetX, offsetY, 280, 350);
       const fd = new FormData();
       fd.append("file", blob, "portrait.jpg");
       const res = await fetch("/api/staff/profile/portrait", { method: "POST", body: fd });
@@ -75,41 +84,89 @@ export function PortraitUpload({ currentUrl }: { currentUrl: string | null }) {
       setOpen(false);
       if (src) URL.revokeObjectURL(src);
       setSrc(null);
-    } catch (err: any) {
-      setError(err?.message || "Crop failed");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Crop failed");
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-        <div className="h-[100px] w-20 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-          {url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={url} alt="Portrait" className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full items-center justify-center text-[10px] text-slate-400">4:5</div>
-          )}
-        </div>
-        <div>
-          <label className="inline-flex cursor-pointer rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50">
-            <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={onPick} />
-            Choose image
-          </label>
-          <p className="mt-1 text-[11px] text-slate-500">Interactive 4:5 crop · JPEG/PNG/WebP · max 10 MB</p>
-        </div>
+    <div className="mx-auto w-full max-w-full text-center">
+      <div
+        className="
+          relative mx-auto
+          w-[180px]
+          max-w-full
+          aspect-[4/5]
+          overflow-hidden
+          rounded-2xl
+          border border-slate-200
+          bg-slate-100
+          shadow-sm
+          sm:w-[200px]
+          md:w-[240px]
+          lg:w-[280px]
+        "
+      >
+        {url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={url}
+            alt="Employee portrait"
+            className="h-full w-full object-cover object-center"
+          />
+        ) : (
+          <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-slate-400">
+            <svg
+              className="h-16 w-16 sm:h-20 sm:w-20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.25"
+              aria-hidden
+            >
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-4 3.5-7 8-7s8 3 8 7" />
+            </svg>
+            <span className="text-xs font-medium">No photo</span>
+          </div>
+        )}
       </div>
-      {error ? <p className="text-xs text-red-700">{error}</p> : null}
+
+      <div className="mt-3 space-y-1">
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="sr-only"
+          onChange={onPick}
+        />
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className="inline-flex rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+        >
+          {url ? "Change Profile Photo" : "Upload Photo"}
+        </button>
+        <p className="mx-auto max-w-sm text-[11px] leading-relaxed text-slate-500">
+          Upload a JPEG, PNG or WebP image. Adjust your portrait using the interactive 4:5 crop.
+        </p>
+        {error ? <p className="text-xs font-medium text-red-700">{error}</p> : null}
+      </div>
 
       {open && src ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-label="Crop portrait">
-          <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
-            <h3 className="text-sm font-semibold text-slate-900">Position your 4:5 portrait</h3>
-            <p className="mt-1 text-xs text-slate-500">Drag to reposition · use zoom · confirm when ready</p>
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-3 sm:items-center"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Crop portrait"
+        >
+          <div className="max-h-[95vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-4 shadow-xl">
+            <h3 className="text-sm font-semibold text-slate-900">Adjust 4:5 crop</h3>
+            <p className="mt-1 text-xs text-slate-500">Drag to reposition. Use zoom for framing.</p>
             <div
-              className="relative mx-auto mt-4 h-[300px] w-[240px] cursor-grab overflow-hidden rounded-xl border-2 border-teal-600 bg-slate-100 active:cursor-grabbing"
+              className="relative mx-auto mt-3 aspect-[4/5] w-full max-w-[280px] touch-none overflow-hidden rounded-xl border border-slate-200 bg-slate-900"
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
@@ -123,12 +180,14 @@ export function PortraitUpload({ currentUrl }: { currentUrl: string | null }) {
                 draggable={false}
                 className="pointer-events-none absolute left-1/2 top-1/2 max-w-none select-none"
                 style={{
-                  transform: `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) scale(${zoom})`,
-                  transformOrigin: "center center",
+                  transform: `translate(-50%, -50%) translate(${offsetX}px, ${offsetY}px) scale(${zoom})`,
+                  minWidth: "100%",
+                  minHeight: "100%",
+                  objectFit: "cover",
                 }}
               />
             </div>
-            <label className="mt-4 block text-xs font-medium text-slate-700">
+            <label className="mt-3 block text-xs font-medium text-slate-700">
               Zoom
               <input
                 type="range"
@@ -180,14 +239,12 @@ async function renderCrop(
   await img.decode().catch(() => undefined);
   const nw = img.naturalWidth;
   const nh = img.naturalHeight;
-  // Display size inside frame before zoom (object-fit cover baseline)
   const baseScale = Math.max(frameW / nw, frameH / nh);
   const scale = baseScale * zoom;
   const dispW = nw * scale;
   const dispH = nh * scale;
   const left = frameW / 2 - dispW / 2 + offsetX;
   const top = frameH / 2 - dispH / 2 + offsetY;
-  // Map frame (0,0)-(frameW,frameH) to source pixels
   const sx = (0 - left) / scale;
   const sy = (0 - top) / scale;
   const sw = frameW / scale;
