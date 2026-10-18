@@ -5,3 +5,26 @@
 @import "./styles/mobile.css";
 @import "./styles/ambient.css";
 @import "./styles/brand-components.css";
+
+/* ── LIT smooth navigation ───────────────────────────────────────── */
+@keyframes lit-loader-bar-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.lit-loader-bar {
+  animation: lit-loader-bar-slide 1s ease-in-out infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lit-loader-bar { animation: none; opacity: 0.5; }
+}
+@keyframes lit-page-enter {
+  from { opacity: 0.92; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.lit-page-enter {
+  animation: lit-page-enter 0.22s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lit-page-enter { animation: none; }
+}
