@@ -42,7 +42,57 @@ const nextConfig: NextConfig = {
   },
 
   async headers() {
+    // Security headers applied to every route (OPS02).
+    // Content-Security-Policy is enforced via Content-Security-Policy-Report-Only
+    // until rollout verification is complete; tighten to enforced CSP in a
+    // follow-up migration once all frame/script sources are confirmed.
+    const securityHeaders = [
+      // Prevent MIME-type sniffing attacks.
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      // Block clickjacking - SAMEORIGIN allows our own portal iframes.
+      { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+      // Limit referrer to origin for cross-origin requests.
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+      // Restrict browser feature APIs not required by this application.
+      {
+        key: 'Permissions-Policy',
+        value: 'camera=(), microphone=(), geolocation=(), payment=()',
+      },
+      // HSTS: 1 year for production; includeSubDomains guards sub-portals.
+      {
+        key: 'Strict-Transport-Security',
+        value: 'max-age=31536000; includeSubDomains',
+      },
+      // Report-Only CSP: covers Next.js, Supabase, Vercel Analytics,
+      // Google Fonts, company CDN, and PDF/iframe preview.
+      {
+        key: 'Content-Security-Policy-Report-Only',
+        value: [
+          "default-src 'self'",
+          // Next.js requires 'unsafe-inline' for style injection; nonce-based
+          // hardening is the next step after CSP report analysis.
+          "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
+          "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+          "font-src 'self' https://fonts.gstatic.com data:",
+          "img-src 'self' data: blob: https:",
+          // Supabase storage for document previews and avatars.
+          "frame-src 'self' blob:",
+          // Supabase + Vercel API calls.
+          "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://va.vercel-scripts.com",
+          "object-src 'none'",
+          "base-uri 'self'",
+          "form-action 'self'",
+          "upgrade-insecure-requests",
+        ].join('; '),
+      },
+    ];
+
     return [
+      // Apply security headers to all routes.
+      {
+        source: '/:path*',
+        headers: securityHeaders,
+      },
       {
         source: '/assets/:path*',
         headers: [
@@ -81,6 +131,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
 
   serverExternalPackages: ['pdf-parse'],
 

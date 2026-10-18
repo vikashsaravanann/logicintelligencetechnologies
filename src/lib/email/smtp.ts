@@ -1,5 +1,5 @@
 import "server-only";
-import nodemailer from "nodemailer";
+import nodemailer, { type Transporter } from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
 import { COMPANY } from "@/config/company";
 
@@ -125,11 +125,11 @@ function buildTransportOptions(config: SmtpConfig): SMTPTransport.Options {
   return options;
 }
 
-const transporterCache = new Map<string, nodemailer.Transporter>();
+const transporterCache = new Map<string, Transporter>();
 
 export function getSmtpTransporter(
   sender: SenderKey = "noReply"
-): nodemailer.Transporter {
+): Transporter {
   const config = getSmtpConfig(sender);
   // Cache by auth identity (not From:), so hello-pool senders share one transport.
   const cacheKey = `${config.host}:${config.port}:${config.user}:${config.secure}`;

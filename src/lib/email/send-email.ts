@@ -320,10 +320,10 @@ export async function sendEmail({
     };
   }
 
-  const attempt = async (sender: SenderKey) => {
+  const attempt = async (sender: SenderKey): Promise<{ messageId: string }> => {
     const transporter = getSmtpTransporter(sender);
     const fromAddress = getSmtpFromAddress(sender);
-    return withTimeout(
+    const info = await withTimeout(
       transporter.sendMail({
         from: fromAddress,
         to: recipients,
@@ -347,7 +347,9 @@ export async function sendEmail({
       SEND_MAIL_TIMEOUT_MS,
       "smtp.sendMail"
     );
+    return { messageId: (info as { messageId?: string }).messageId ?? "" };
   };
+
 
   try {
     try {
