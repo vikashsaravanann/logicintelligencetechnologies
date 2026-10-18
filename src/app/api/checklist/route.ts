@@ -6,7 +6,6 @@ import ChecklistDownloadEmail from "@/emails/checklist-download-email";
 import NewLeadNotificationEmail from "@/emails/new-lead-notification-email";
 import { z } from "zod";
 import * as React from "react";
-import path from "path";
 import fs from "fs";
 import { clientIp, rateLimit } from "@/lib/ai/rate-limit";
 import { getLeadNotificationRecipients } from "@/lib/email/recipients";
@@ -82,11 +81,9 @@ export async function POST(req: Request) {
 
         if (isLeadMagnet) {
           const { resolveResourcePdfPath } = await import("@/lib/resources/pdf-resolver");
-          const resolvedPath =
-            resolveResourcePdfPath("website-development-checklist.pdf") ||
-            path.join(process.cwd(), "private", "resources", "website-development-checklist.pdf");
+          const resolvedPath = resolveResourcePdfPath("website-development-checklist.pdf");
 
-          if (fs.existsSync(resolvedPath)) {
+          if (resolvedPath && fs.existsSync(resolvedPath)) {
             attachments.push({
               filename: "LIT-50-Point-Enterprise-Deployment-Checklist.pdf",
               path: resolvedPath,

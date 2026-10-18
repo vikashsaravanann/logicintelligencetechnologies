@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next';
-import path from 'path';
 
 const nextConfig: NextConfig = {
   async redirects() {
@@ -161,11 +160,9 @@ const nextConfig: NextConfig = {
 
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion', 'recharts'],
-    webpackBuildWorker: true,
-    webpackMemoryOptimizations: true,
   },
   outputFileTracingIncludes: {
-    '/api/**/*': ['./public/fonts/**/*', './src/lib/pdf/fonts/**/*'],
+    '/api/**/*': ['./public/fonts/**/*', './src/lib/pdf/fonts/**/*', './src/lib/pdf/assets/**/*'],
   },
 };
 

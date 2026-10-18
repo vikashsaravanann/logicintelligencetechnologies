@@ -200,12 +200,9 @@ function resolveAssetPath(relativePath: string): string | null {
   const candidates = [
     path.join(__dirname, relativePath),
     path.join(__dirname, "../pdf", relativePath),
-    path.join(process.cwd(), "public/fonts", baseName),
-    path.join(process.cwd(), "public", relativePath),
-    path.join(process.cwd(), "src/lib/pdf", relativePath),
-    path.join(process.cwd(), relativePath),
-    path.join(process.cwd(), "logicintelligencetechnologies/src/lib/pdf", relativePath),
-    "/Users/vikash/lit-infrastructure/logicintelligencetechnologies/src/lib/pdf/" + relativePath,
+    path.join(/*turbopackIgnore: true*/ process.cwd(), "public/fonts", baseName),
+    path.join(/*turbopackIgnore: true*/ process.cwd(), "public", relativePath),
+    path.join(/*turbopackIgnore: true*/ process.cwd(), "src/lib/pdf", relativePath),
   ];
   for (const c of candidates) {
     if (fs.existsSync(c)) return c;
