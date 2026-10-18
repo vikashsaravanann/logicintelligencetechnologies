@@ -69,7 +69,7 @@ export default function WorkspacesDirectoryClient({ initialWorkspaces }: Props) 
   ).length;
   const suspendedCount = workspaces.filter((w) => w.status === "suspended").length;
 
-  const copyUrl = async (_id: string) => {
+  const copyUrl = async (id: string) => {
     const origin = window?.location?.origin || "https://www.logicintelligencetechnologies.in";
     // Employee-facing portal login (workspace resolved after auth)
     const url = `${origin}/login?next=${encodeURIComponent("/staff/dashboard")}`;
