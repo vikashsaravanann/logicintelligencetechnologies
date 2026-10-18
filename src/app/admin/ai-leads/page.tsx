@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "AI Intent Leads Console | Logic Intelligence Technologies",
+  title: "AI Assistant Enquiries | Logic Intelligence Technologies",
   description: "Real-time inbound lead captures from AI conversational assistants and discovery widgets.",
   robots: {
     index: false,
@@ -54,7 +54,7 @@ export default async function AdminAiLeadsPage() {
             </span>
           </div>
           <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--lit-navy,#0B2545)]">
-            AI Intent Leads Console
+            AI Assistant Enquiries
           </h1>
           <p className="mt-1 text-sm text-[var(--lit-text-muted,#52677C)]">
             Inbound opportunities captured directly from conversational AI assistants (/ai) and site-wide interactive inquiry widgets.

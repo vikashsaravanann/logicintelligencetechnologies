@@ -205,7 +205,135 @@ export default function PricingPage() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-poppins text-[var(--lit-navy,#0B2545)] mb-3">Compare All Plans</h2>
             <p className="text-slate-600 text-sm sm:text-base">A clear breakdown of included usage and commercial tiers.</p>
           </div>
-          <div className="overflow-x-auto rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-sm">
+          {/* Mobile Stacked Plan Comparison Cards (< 768px) */}
+          <div className="block md:hidden space-y-4">
+            {[
+              {
+                name: 'Free',
+                tag: 'Evaluation',
+                price: '$0',
+                setup: 'None',
+                usage: '100 interactions',
+                overage: '—',
+                rag: 'Basic',
+                crm: '—',
+                handoff: '—',
+                analytics: 'Basic',
+                support: 'Email',
+                highlight: false,
+              },
+              {
+                name: 'Pro (Web)',
+                tag: 'Popular',
+                price: '$39 / mo',
+                setup: '$199',
+                usage: '5,000 interactions',
+                overage: '$0.01 / interaction',
+                rag: 'Approved content RAG',
+                crm: 'Where supported',
+                handoff: '✓ Included',
+                analytics: 'Usage analytics',
+                support: 'Standard',
+                highlight: true,
+              },
+              {
+                name: 'Pro (Voice)',
+                tag: 'Voice AI',
+                price: '$149 / mo',
+                setup: '$599',
+                usage: '1,000 voice minutes',
+                overage: '$0.12 / minute',
+                rag: 'Workflow config',
+                crm: 'Where supported',
+                handoff: '✓ Included',
+                analytics: 'Call analytics',
+                support: 'Standard',
+                highlight: true,
+              },
+              {
+                name: 'Enterprise',
+                tag: 'Custom',
+                price: 'Custom',
+                setup: 'Custom',
+                usage: 'Custom limits',
+                overage: 'Volume-tiered',
+                rag: 'Custom integrations',
+                crm: 'Enterprise SLA',
+                handoff: 'Configurable',
+                analytics: 'Enterprise suite',
+                support: 'Dedicated SLA',
+                highlight: false,
+              },
+            ].map((plan) => (
+              <div
+                key={plan.name}
+                className={`rounded-2xl border p-5 shadow-sm space-y-3.5 ${
+                  plan.highlight
+                    ? 'border-[#1565C0]/40 bg-blue-50/20'
+                    : 'border-[var(--lit-border-light,#DFE7EF)] bg-white'
+                }`}
+              >
+                <div className="flex items-center justify-between border-b border-[var(--lit-border-light,#DFE7EF)] pb-3">
+                  <div>
+                    <h3 className="text-base font-bold text-[var(--lit-navy,#0B2545)] font-poppins">
+                      {plan.name}
+                    </h3>
+                    <p className="text-xs font-mono font-bold text-[#1565C0] mt-0.5">
+                      {plan.price}
+                    </p>
+                  </div>
+                  <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                    plan.highlight
+                      ? 'border-blue-200 bg-blue-50 text-[#1565C0]'
+                      : 'border-slate-200 bg-slate-100 text-slate-700'
+                  }`}>
+                    {plan.tag}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <span className="text-[10px] text-slate-500 uppercase font-mono block">Setup</span>
+                    <span className="font-semibold text-slate-900 mt-0.5 block">{plan.setup}</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <span className="text-[10px] text-slate-500 uppercase font-mono block">Usage</span>
+                    <span className="font-semibold text-slate-900 mt-0.5 block">{plan.usage}</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <span className="text-[10px] text-slate-500 uppercase font-mono block">Overage</span>
+                    <span className="font-semibold text-slate-900 mt-0.5 block">{plan.overage}</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                    <span className="text-[10px] text-slate-500 uppercase font-mono block">Support</span>
+                    <span className="font-semibold text-slate-900 mt-0.5 block">{plan.support}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5 pt-1 text-xs text-slate-700">
+                  <div className="flex items-center justify-between py-1 border-b border-slate-100">
+                    <span className="text-slate-500">Knowledge / RAG</span>
+                    <span className="font-medium text-right text-slate-900">{plan.rag}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-slate-100">
+                    <span className="text-slate-500">CRM Integration</span>
+                    <span className="font-medium text-right text-slate-900">{plan.crm}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1 border-b border-slate-100">
+                    <span className="text-slate-500">Human Handoff</span>
+                    <span className="font-medium text-right text-slate-900">{plan.handoff}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-1">
+                    <span className="text-slate-500">Analytics</span>
+                    <span className="font-medium text-right text-slate-900">{plan.analytics}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: Side-by-side Matrix Table (hidden md:block) */}
+          <div className="hidden md:block overflow-x-auto rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white shadow-sm">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)]">

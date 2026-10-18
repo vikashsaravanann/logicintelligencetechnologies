@@ -36,6 +36,7 @@ import { listAllEngagements } from "@/lib/engagements/db";
 import { IssueEngagementModal } from "@/app/admin/engagements/components/IssueEngagementModal";
 import { CANONICAL_13_STAGES, type StageKey } from "@/lib/engagements/types";
 import { MasterModuleDirectory } from "./components/MasterModuleDirectory";
+import { filterModuleCategoriesForRole } from "@/config/module-directory";
 
 export const metadata: Metadata = {
   title: "Executive Command Center | Logic Intelligence Technologies",
@@ -546,8 +547,11 @@ export default async function AdminCommandCenterPage() {
         </div>
       </div>
 
-      {/* Master Operations & Module Directory (All 175 Platform Modules, Pages, Tools & Portals) */}
-      <MasterModuleDirectory />
+      {/* Master Operations & Module Directory (Filtered server-side to staff session capabilities) */}
+      <MasterModuleDirectory
+        role={session.role}
+        categories={filterModuleCategoriesForRole(session.role)}
+      />
 
       {/* Recent Inbound Leads Section */}
       <div className="rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-white p-6 shadow-2xs space-y-4">

@@ -1,22 +1,35 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 
 export interface BrandLoadingScreenProps {
   isFixed?: boolean;
   className?: string;
+  portalToBody?: boolean;
 }
 
 /**
  * BrandLoadingScreen
  *
  * Universal, high-performance branded loading screen matching the opening page animation.
- * Can be used as a Server Component in Next.js `loading.tsx` or as a Client Component.
+ * Can be used in Next.js `loading.tsx` or as an inline component.
+ * Mounts directly to document.body via createPortal on the client to avoid clipping
+ * by parent transform/perspective/filter styles.
  */
 export default function BrandLoadingScreen({
   isFixed = true,
   className = "",
+  portalToBody = true,
 }: BrandLoadingScreenProps) {
-  return (
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const content = (
     <div
       className={`fixed inset-0 z-[999999] w-screen h-screen h-[100dvh] min-h-[100dvh] flex flex-col items-center justify-center bg-[#050608] text-white select-none ${className}`}
       role="status"
@@ -52,4 +65,10 @@ export default function BrandLoadingScreen({
       <span className="sr-only">Loading Logic Intelligence Technologies…</span>
     </div>
   );
+
+  if (mounted && portalToBody && typeof document !== "undefined") {
+    return createPortal(content, document.body);
+  }
+
+  return content;
 }

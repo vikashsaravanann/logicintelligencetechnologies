@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -17,10 +18,11 @@ import {
   FileEdit,
   Calendar,
 } from "lucide-react";
+import { isActiveNav } from "@/config/admin-nav";
 
 export const NAV_ITEMS = [
   { label: "Dashboard", href: "/client/dashboard", icon: LayoutDashboard },
-  { label: "Milestone Journey", href: "/client/dashboard#journey", icon: GitBranch },
+  { label: "Milestone Journey", href: "/client/dashboard#milestones", icon: GitBranch },
   { label: "Approvals & Tasks", href: "/client/actions", icon: CheckSquare },
   { label: "Notifications", href: "/client/notifications", icon: Bell },
   { label: "Change Requests (RFC)", href: "/client/change-requests", icon: FileEdit },
@@ -35,15 +37,26 @@ export const NAV_ITEMS = [
 
 export function ClientNav() {
   const pathname = usePathname();
+  const [currentHash, setCurrentHash] = useState<string>("");
+
+  useEffect(() => {
+    const updateHash = () => {
+      if (typeof window !== "undefined") {
+        setCurrentHash(window.location.hash.replace(/^#/, ""));
+      }
+    };
+    updateHash();
+    window.addEventListener("hashchange", updateHash);
+    return () => window.removeEventListener("hashchange", updateHash);
+  }, []);
+
+  const allHrefs = NAV_ITEMS.map((i) => i.href);
 
   return (
     <nav className="grid grid-cols-2 gap-2 md:block md:space-y-1" aria-label="Client Portal Navigation">
       {NAV_ITEMS.map((item) => {
         const Icon = item.icon;
-        const isActive =
-          item.href === "/client/dashboard"
-            ? pathname === "/client/dashboard"
-            : pathname.startsWith(item.href);
+        const isActive = isActiveNav(pathname, item.href, allHrefs, currentHash);
 
         return (
           <Link

@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Client Activation & Onboarding | Admin | Logic Intelligence Technologies",
+  title: "Onboarding Invitations | Admin | Logic Intelligence Technologies",
   description: "Cryptographic onboarding sessions, single-use token issuance, and intake lifecycle telemetry.",
   robots: {
     index: false,
@@ -108,7 +108,7 @@ export default async function OnboardingPage() {
             </span>
           </div>
           <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--lit-navy,#0B2545)]">
-            Client Activation & Onboarding
+            Onboarding Invitations
           </h1>
           <p className="text-sm text-[var(--lit-text-muted,#52677C)] mt-1">
             Issue single-use cryptographic onboarding tokens and audit intake completion.

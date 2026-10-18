@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Universal Four-Site Intake Inbox | Admin | Logic Intelligence Technologies",
+  title: "All Form Submissions | Admin | Logic Intelligence Technologies",
   description: "Unified cross-site form submissions, commercial inquiries, consultation bookings, and delivery telemetry.",
   robots: {
     index: false,
@@ -202,17 +202,24 @@ export default async function AdminIntakePage({
   // Sort unified items descending by submission time
   allItems.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
 
+  const isContact = (i: typeof allItems[0]) => i.type.includes("Contact") || i.type.includes("Lead") || i.type === "Inquiry";
+  const isDemo = (i: typeof allItems[0]) => i.type.includes("Demo");
+  const isDiscovery = (i: typeof allItems[0]) => i.type === "Discovery Questionnaire" || i.type.includes("Discovery");
+  const isChecklist = (i: typeof allItems[0]) => i.type.includes("Checklist") && !i.type.includes("Discovery");
+  const isBooking = (i: typeof allItems[0]) => i.type.includes("Consultation") || i.type.includes("Booking");
+
   // Filter by Tab
   const filteredByTab = allItems.filter((item) => {
     if (currentTab === "all") return true;
+    if (currentTab === "contact" || currentTab === "leads") return isContact(item);
+    if (currentTab === "demo") return isDemo(item);
+    if (currentTab === "discovery") return isDiscovery(item);
+    if (currentTab === "checklist") return isChecklist(item);
+    if (currentTab === "bookings") return isBooking(item);
     if (currentTab === "corporate") return item.entity === "corporate";
     if (currentTab === "healthcare") return item.entity === "healthcare";
     if (currentTab === "logicvoice") return item.entity === "logicvoice";
     if (currentTab === "voiceshield") return item.entity === "voiceshield";
-    if (currentTab === "bookings") return item.type.includes("Consultation");
-    if (currentTab === "leads") return item.type.includes("Lead") || item.type.includes("Contact");
-    if (currentTab === "checklist") return item.type.includes("Checklist") || item.type.includes("Discovery");
-    if (currentTab === "demo") return item.type.includes("Demo");
     return true;
   });
 
@@ -252,7 +259,7 @@ export default async function AdminIntakePage({
             </span>
           </div>
           <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--lit-navy,#0B2545)]">
-            Universal Form Intake & Inquiries
+            All Form Submissions
           </h1>
           <p className="text-sm text-[var(--lit-text-muted,#52677C)] mt-1">
             Real-time multi-site lead ledger, commercial consultations, support tickets, and email telemetry across LIT ecosystem.
@@ -271,41 +278,68 @@ export default async function AdminIntakePage({
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--lit-border-light,#DFE7EF)] pb-3">
-        {[
-          { id: "all", label: "All Records", count: totalCount },
-          { id: "corporate", label: "Corporate LIT", count: corporateCount },
-          { id: "healthcare", label: "LIT Healthcare", count: healthcareCount },
-          { id: "logicvoice", label: "Logic Voice", count: logicVoiceCount },
-          { id: "voiceshield", label: "VoiceShield", count: voiceShieldCount },
-          { id: "bookings", label: "Consultation Bookings", count: allItems.filter((i) => i.type.includes("Consultation")).length },
-          { id: "leads", label: "Contact Inquiries", count: allItems.filter((i) => i.type.includes("Lead") || i.type.includes("Contact")).length },
-          { id: "checklist", label: "Checklists & Discovery", count: allItems.filter((i) => i.type.includes("Checklist") || i.type.includes("Discovery")).length },
-          { id: "demo", label: "Free Demos", count: allItems.filter((i) => i.type.includes("Demo")).length },
-        ].map((tab) => {
-          const active = currentTab === tab.id;
-          return (
-            <Link
-              key={tab.id}
-              href={`/admin/intake?tab=${tab.id}`}
-              className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                active
-                  ? "bg-[var(--lit-navy,#0B2545)] text-white shadow-xs"
-                  : "bg-white text-[var(--lit-text-muted,#52677C)] border border-[var(--lit-border-light,#DFE7EF)] hover:bg-[var(--lit-cloud,#F7F9FC)]"
-              }`}
-            >
-              <span>{tab.label}</span>
-              <span
-                className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
-                  active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700"
+      {/* Navigation Tabs: 5 Form-Specific Tabs + All Submissions + Site Breakdown */}
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center gap-2 border-b border-[var(--lit-border-light,#DFE7EF)] pb-3">
+          {[
+            { id: "all", label: "All Submissions", count: totalCount },
+            { id: "contact", label: "Contact Form", count: allItems.filter(isContact).length },
+            { id: "demo", label: "Free Demo", count: allItems.filter(isDemo).length },
+            { id: "discovery", label: "Discovery Questionnaire", count: allItems.filter(isDiscovery).length },
+            { id: "checklist", label: "Checklist Submissions", count: allItems.filter(isChecklist).length },
+            { id: "bookings", label: "Consultation Bookings", count: allItems.filter(isBooking).length },
+          ].map((tab) => {
+            const active = currentTab === tab.id || (tab.id === "contact" && currentTab === "leads");
+            return (
+              <Link
+                key={tab.id}
+                href={`/admin/intake?tab=${tab.id}`}
+                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  active
+                    ? "bg-[var(--lit-navy,#0B2545)] text-white shadow-xs"
+                    : "bg-white text-[var(--lit-text-muted,#52677C)] border border-[var(--lit-border-light,#DFE7EF)] hover:bg-[var(--lit-cloud,#F7F9FC)]"
                 }`}
               >
-                {tab.count}
-              </span>
-            </Link>
-          );
-        })}
+                <span>{tab.label}</span>
+                <span
+                  className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
+                    active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700"
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Secondary Site Source Filters */}
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 mr-1">
+            Filter by Site:
+          </span>
+          {[
+            { id: "corporate", label: "Corporate LIT", count: corporateCount },
+            { id: "healthcare", label: "LIT Healthcare", count: healthcareCount },
+            { id: "logicvoice", label: "Logic Voice", count: logicVoiceCount },
+            { id: "voiceshield", label: "VoiceShield", count: voiceShieldCount },
+          ].map((site) => {
+            const active = currentTab === site.id;
+            return (
+              <Link
+                key={site.id}
+                href={`/admin/intake?tab=${site.id}`}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors ${
+                  active
+                    ? "border-[var(--lit-teal,#1FA9A2)] bg-teal-50 text-[var(--lit-teal,#1FA9A2)] font-bold"
+                    : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                }`}
+              >
+                {site.label} ({site.count})
+              </Link>
+            );
+          })}
+        </div>
       </div>
 
       {/* Submissions Feed Table */}

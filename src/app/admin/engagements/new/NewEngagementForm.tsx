@@ -205,7 +205,7 @@ export default function NewEngagementForm() {
           </span>
         </div>
         <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--lit-navy,#0B2545)]">
-          Create Client Lifecycle Portal &amp; Engagement
+          Create Client Engagement
         </h1>
         <p className="mt-1 text-sm text-[var(--lit-text-muted,#52677C)]">
           Initialize a complete 13-stage engagement portal, seed milestone prerequisite gates, link standard master templates, and dispatch the invitation access email.

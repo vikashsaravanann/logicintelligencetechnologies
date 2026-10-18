@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { ADMIN_NAV_GROUPS, allNavHrefs, navForRole } from "../../src/config/admin-nav.ts";
 import { CAPABILITIES, STAFF_ROLES } from "../../src/config/roles.ts";
+import { filterModuleCategoriesForRole, MODULE_CATEGORIES } from "../../src/config/module-directory.ts";
 
 const ADMIN_DIR = path.join(process.cwd(), "src/app/admin");
 
@@ -90,3 +91,36 @@ test("no nav href is listed twice", () => {
   const hrefs = allNavHrefs();
   assert.deepEqual(hrefs.filter((h, i) => hrefs.indexOf(h) !== i), []);
 });
+
+test("NAV02: ADMIN_NAV_GROUPS contains renamed destinations and consolidated Outreach group", () => {
+  const allLabels = ADMIN_NAV_GROUPS.flatMap((g) => g.items.map((i) => i.label));
+  assert.ok(allLabels.includes("All Form Submissions"), "Intake Stream renamed to All Form Submissions");
+  assert.ok(allLabels.includes("Website Enquiries"), "Leads renamed to Website Enquiries");
+  assert.ok(allLabels.includes("AI Assistant Enquiries"), "AI Leads renamed to AI Assistant Enquiries");
+  assert.ok(allLabels.includes("Onboarding Invitations"), "Onboarding renamed to Onboarding Invitations");
+
+  const outreachGroup = ADMIN_NAV_GROUPS.find((g) => g.label === "Outreach");
+  assert.ok(outreachGroup, "Outreach group must exist in admin navigation");
+  assert.equal(outreachGroup.items.length, 7, "Outreach group must contain 7 items");
+  assert.ok(outreachGroup.items.some((i) => i.label === "Draft Outreach Message"));
+  assert.ok(outreachGroup.items.some((i) => i.label === "Message Review & Queue"));
+  assert.ok(outreachGroup.items.some((i) => i.label === "Do-Not-Contact List"));
+});
+
+test("NAV02: filterModuleCategoriesForRole applies strict capability gating and prunes empty groups", () => {
+  const viewerCats = filterModuleCategoriesForRole("viewer");
+  const viewerHrefs = viewerCats.flatMap((c) => c.items.map((i) => i.href));
+  assert.ok(!viewerHrefs.includes("/admin/payments"), "viewer must not see /admin/payments");
+  assert.ok(!viewerHrefs.includes("/admin/workspaces/new"), "viewer must not see /admin/workspaces/new");
+  assert.ok(!viewerHrefs.includes("/admin/invoices/new"), "viewer must not see /admin/invoices/new");
+  assert.ok(!viewerHrefs.includes("/admin/proposals/new"), "viewer must not see /admin/proposals/new");
+  assert.ok(!viewerHrefs.includes("/admin/quotations/coupons"), "viewer must not see /admin/quotations/coupons");
+  assert.ok(!viewerCats.some((c) => c.id === "outreach"), "viewer must not see outreach category");
+
+  const superAdminCats = filterModuleCategoriesForRole("super_admin");
+  assert.equal(superAdminCats.length, MODULE_CATEGORIES.length, "super_admin must see all operational categories");
+  const saHrefs = superAdminCats.flatMap((c) => c.items.map((i) => i.href));
+  assert.ok(saHrefs.includes("/admin/payments"));
+  assert.ok(saHrefs.includes("/admin/workspaces/new"));
+});
+

@@ -14,6 +14,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { getPortalContext, listOwnRows } from "@/lib/client-portal/data";
+import { getEngagementsByEmail } from "@/lib/engagements/db";
 import { formatIST } from "@/lib/format/datetime";
 
 export const metadata: Metadata = {
@@ -25,7 +26,22 @@ export const revalidate = 0;
 
 export default async function ClientSupportPage() {
   const portal = await getPortalContext("/client/support");
-  const tickets = await listOwnRows(portal, "support_tickets");
+  const [tickets, userEngagements] = await Promise.all([
+    listOwnRows(portal, "support_tickets"),
+    portal.user.email ? getEngagementsByEmail(portal.user.email) : Promise.resolve([]),
+  ]);
+
+  const primaryEngagement = userEngagements[0];
+  const metadataTier =
+    (typeof primaryEngagement?.metadata?.tier === "string" && primaryEngagement.metadata.tier) ||
+    (typeof primaryEngagement?.metadata?.package_tier === "string" && primaryEngagement.metadata.package_tier) ||
+    (typeof primaryEngagement?.metadata?.subscription_tier === "string" && primaryEngagement.metadata.subscription_tier) ||
+    (typeof portal.user.user_metadata?.subscription_tier === "string" && (portal.user.user_metadata.subscription_tier as string)) ||
+    null;
+
+  const hasEnterpriseSupport = metadataTier ? metadataTier.toLowerCase().includes("enterprise") : false;
+  const targetResponse = hasEnterpriseSupport ? "< 2 Hours" : "< 24 Hours";
+  const slaLabel = hasEnterpriseSupport ? "Enterprise Tier SLA" : "Standard Warranty / Routine Queue";
 
   const totalTickets = tickets?.length || 0;
   const openTickets = tickets?.filter((t) => t.status === "Open" || t.status === "In Progress") || [];
@@ -43,7 +59,7 @@ export default async function ClientSupportPage() {
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-teal-50 text-[var(--lit-teal,#1FA9A2)] border border-teal-200 font-mono">
-              Enterprise Support Desk
+              {hasEnterpriseSupport ? "Enterprise Support Desk" : "Standard Support Desk"}
             </span>
             <span className="text-xs text-[var(--lit-text-muted,#52677C)]">
               {portal.user.email}
@@ -119,10 +135,10 @@ export default async function ClientSupportPage() {
             <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
           </div>
           <div className="text-lg sm:text-xl font-bold text-[var(--lit-navy,#0B2545)] font-mono mt-0.5">
-            &lt; 2 Hours
+            {targetResponse}
           </div>
           <p className="text-[10px] text-[var(--lit-text-muted,#52677C)] mt-0.5">
-            Enterprise Tier SLA
+            {slaLabel}
           </p>
         </div>
       </div>

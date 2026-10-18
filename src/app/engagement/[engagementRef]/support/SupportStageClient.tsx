@@ -70,24 +70,7 @@ export default function SupportStageClient({
     if (Array.isArray(initialData?.tickets) && initialData.tickets.length > 0) {
       return initialData.tickets;
     }
-    return [
-      {
-        id: 'TKT-LIT-2026-001',
-        subject: 'Post-Delivery Verification: Initial Health Check & Baseline Validation',
-        severity: 'S4',
-        component: 'Production Cloud Accounts & Monitoring',
-        systemUrl: 'https://www.logicintelligencetechnologies.in/',
-        description: 'Automated post-handover smoke verification confirming Edge runtime, SSL certificate validity, and PostgreSQL connectivity.',
-        expectedBehavior: 'All edge healthchecks respond with HTTP 200 within 100ms.',
-        observedBehavior: 'Verified clean p95 latency of 64ms across all endpoints.',
-        affectedScope: 'Automated Baseline Verification',
-        contactEmail: contactEmail || 'hello@logicintelligencetechnologies.in',
-        submittedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-        status: 'RESOLVED',
-        slaTarget: '24 Hours',
-        auditHash: '9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b',
-      },
-    ];
+    return [];
   });
 
   // Client-side secrets detection
@@ -261,7 +244,60 @@ export default function SupportStageClient({
       content: (
         <div className="space-y-3 text-xs text-slate-700">
           <p>The following production infrastructure assets delivered under the Statement of Work are covered under active maintenance:</p>
-          <div className="border border-slate-200 rounded-xl overflow-hidden">
+          {/* Mobile Stacked Cards (<768px) */}
+          <div className="block md:hidden space-y-3">
+            {[
+              {
+                component: 'Frontend Web Application',
+                platform: 'Next.js Edge / Vercel Edge Network',
+                tenant: 'Client Vercel Team',
+                scope: 'Edge routing, runtime stability, hydration bugfixes',
+              },
+              {
+                component: 'PostgreSQL Relational Database',
+                platform: 'Supabase Enterprise Managed PostgreSQL',
+                tenant: 'Client Supabase Organization',
+                scope: 'Schema integrity, RLS policy enforcement, PITR verification',
+              },
+              {
+                component: 'Authentication & Identity Engine',
+                platform: 'Supabase Auth (JWT & PKCE)',
+                tenant: 'Client Supabase Tenant',
+                scope: 'Session management, role validation, MFA routing',
+              },
+              {
+                component: 'Edge DNS, TLS & WAF',
+                platform: 'Cloudflare DNS & Edge Network',
+                tenant: 'Client Cloudflare Account',
+                scope: 'Automated TLS 1.3 renewals, DDoS shield, DNS records',
+              },
+              {
+                component: 'Transactional Communications',
+                platform: 'Resend Transactional Email API',
+                tenant: 'Client Resend Account',
+                scope: 'DKIM/SPF deliverability, template updates',
+              },
+            ].map((item) => (
+              <div key={item.component} className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
+                <div className="font-bold text-slate-900">{item.component}</div>
+                <div className="text-[11px] text-slate-600 flex justify-between">
+                  <span className="text-slate-500">Platform:</span>
+                  <span className="font-medium text-slate-800">{item.platform}</span>
+                </div>
+                <div className="text-[11px] text-slate-600 flex justify-between">
+                  <span className="text-slate-500">Tenant:</span>
+                  <span className="font-medium text-slate-800">{item.tenant}</span>
+                </div>
+                <div className="text-[11px] text-slate-600 pt-1 border-t border-slate-200">
+                  <span className="text-slate-500 block mb-0.5">Scope:</span>
+                  <span className="text-slate-700">{item.scope}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table (>=768px) */}
+          <div className="hidden md:block border border-slate-200 rounded-xl overflow-x-auto w-full max-w-full">
             <table className="w-full text-left text-[11px]">
               <thead className="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold">
                 <tr>
@@ -412,43 +448,106 @@ export default function SupportStageClient({
       number: 8,
       title: '08. Guaranteed Response & Remediation Targets',
       content: (
-        <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
-          <table className="w-full text-left text-[11px]">
-            <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-              <tr>
-                <th className="p-2.5">Severity Level</th>
-                <th className="p-2.5">First Response Target</th>
-                <th className="p-2.5">Target Workaround / Resolution</th>
-                <th className="p-2.5">Escalation Pathway</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-800">
-              <tr>
-                <td className="p-2.5 font-bold text-red-700">S1 · Critical Outage</td>
-                <td className="p-2.5 font-mono font-bold">&lt; 1 Hour</td>
-                <td className="p-2.5 font-mono">&lt; 4 Hours</td>
-                <td className="p-2.5">Immediate founder & lead architect pager escalation</td>
-              </tr>
-              <tr>
-                <td className="p-2.5 font-bold text-amber-700">S2 · Major Degradation</td>
-                <td className="p-2.5 font-mono font-bold">&lt; 4 Hours</td>
-                <td className="p-2.5 font-mono">&lt; 12 Hours</td>
-                <td className="p-2.5">Senior engineer dispatch with interim mitigation</td>
-              </tr>
-              <tr>
-                <td className="p-2.5 font-bold text-blue-700">S3 · Minor Flaw</td>
-                <td className="p-2.5 font-mono font-bold">&lt; 12 Hours</td>
-                <td className="p-2.5 font-mono">&lt; 48 Hours</td>
-                <td className="p-2.5">Scheduled sprint cycle patch</td>
-              </tr>
-              <tr>
-                <td className="p-2.5 font-bold text-slate-700">S4 · Cosmetic / Inquiry</td>
-                <td className="p-2.5 font-mono font-bold">&lt; 24 Hours</td>
-                <td className="p-2.5 font-mono">Next Release</td>
-                <td className="p-2.5">Regular bi-weekly deployment cycle</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="space-y-3 text-xs">
+          {/* Mobile Stacked Cards (<768px) */}
+          <div className="block md:hidden space-y-3">
+            {[
+              {
+                severity: 'S1 · Critical Outage',
+                color: 'border-red-200 bg-red-50 text-red-900',
+                badgeColor: 'bg-red-700 text-white',
+                response: '< 1 Hour',
+                resolution: '< 4 Hours',
+                escalation: 'Immediate founder & lead architect pager escalation',
+              },
+              {
+                severity: 'S2 · Major Degradation',
+                color: 'border-amber-200 bg-amber-50 text-amber-900',
+                badgeColor: 'bg-amber-700 text-white',
+                response: '< 4 Hours',
+                resolution: '< 12 Hours',
+                escalation: 'Senior engineer dispatch with interim mitigation',
+              },
+              {
+                severity: 'S3 · Minor Flaw',
+                color: 'border-blue-200 bg-blue-50 text-blue-900',
+                badgeColor: 'bg-blue-700 text-white',
+                response: '< 12 Hours',
+                resolution: '< 48 Hours',
+                escalation: 'Scheduled sprint cycle patch',
+              },
+              {
+                severity: 'S4 · Cosmetic / Inquiry',
+                color: 'border-slate-200 bg-slate-50 text-slate-800',
+                badgeColor: 'bg-slate-700 text-white',
+                response: '< 24 Hours',
+                resolution: 'Next Release',
+                escalation: 'Regular bi-weekly deployment cycle',
+              },
+            ].map((item) => (
+              <div key={item.severity} className={`p-3.5 border rounded-xl space-y-2 ${item.color}`}>
+                <div className="flex items-center justify-between">
+                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded ${item.badgeColor}`}>
+                    {item.severity}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
+                  <div>
+                    <span className="text-slate-500 block">First Response:</span>
+                    <span className="font-mono font-bold">{item.response}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block">Target Resolution:</span>
+                    <span className="font-mono font-bold">{item.resolution}</span>
+                  </div>
+                </div>
+                <div className="text-[11px] pt-1 border-t border-slate-200/60">
+                  <span className="text-slate-500 block mb-0.5">Escalation:</span>
+                  <span>{item.escalation}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table (>=768px) */}
+          <div className="hidden md:block border border-slate-200 rounded-xl overflow-x-auto w-full max-w-full">
+            <table className="w-full text-left text-[11px]">
+              <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                <tr>
+                  <th className="p-2.5">Severity Level</th>
+                  <th className="p-2.5">First Response Target</th>
+                  <th className="p-2.5">Target Workaround / Resolution</th>
+                  <th className="p-2.5">Escalation Pathway</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800">
+                <tr>
+                  <td className="p-2.5 font-bold text-red-700">S1 · Critical Outage</td>
+                  <td className="p-2.5 font-mono font-bold">&lt; 1 Hour</td>
+                  <td className="p-2.5 font-mono">&lt; 4 Hours</td>
+                  <td className="p-2.5">Immediate founder & lead architect pager escalation</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-bold text-amber-700">S2 · Major Degradation</td>
+                  <td className="p-2.5 font-mono font-bold">&lt; 4 Hours</td>
+                  <td className="p-2.5 font-mono">&lt; 12 Hours</td>
+                  <td className="p-2.5">Senior engineer dispatch with interim mitigation</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-bold text-blue-700">S3 · Minor Flaw</td>
+                  <td className="p-2.5 font-mono font-bold">&lt; 12 Hours</td>
+                  <td className="p-2.5 font-mono">&lt; 48 Hours</td>
+                  <td className="p-2.5">Scheduled sprint cycle patch</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-bold text-slate-700">S4 · Cosmetic / Inquiry</td>
+                  <td className="p-2.5 font-mono font-bold">&lt; 24 Hours</td>
+                  <td className="p-2.5 font-mono">Next Release</td>
+                  <td className="p-2.5">Regular bi-weekly deployment cycle</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       ),
     },
@@ -487,38 +586,79 @@ export default function SupportStageClient({
       number: 11,
       title: '11. Infrastructure Responsibilities Matrix',
       content: (
-        <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
-          <table className="w-full text-left text-[11px]">
-            <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-              <tr>
-                <th className="p-2.5">Domain / Asset</th>
-                <th className="p-2.5">LIT Responsibility</th>
-                <th className="p-2.5">Client Responsibility</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-800">
-              <tr>
-                <td className="p-2.5 font-medium">Domain & DNS Registration</td>
-                <td className="p-2.5">DNS record configuration & SSL health</td>
-                <td className="p-2.5">Annual domain registration fees & registrar custody</td>
-              </tr>
-              <tr>
-                <td className="p-2.5 font-medium">Vercel & Supabase Cloud</td>
-                <td className="p-2.5">CI/CD deployment, runtime tuning, migrations</td>
-                <td className="p-2.5">Direct monthly cloud invoice settlement</td>
-              </tr>
-              <tr>
-                <td className="p-2.5 font-medium">Application Code</td>
-                <td className="p-2.5">Bug fixing, patch release, Git maintenance</td>
-                <td className="p-2.5">GitHub organization owner custody</td>
-              </tr>
-              <tr>
-                <td className="p-2.5 font-medium">Internal User Administration</td>
-                <td className="p-2.5">RBAC schema enforcement</td>
-                <td className="p-2.5">Assigning/revoking internal staff credentials</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="space-y-3 text-xs">
+          {/* Mobile Stacked Cards (<768px) */}
+          <div className="block md:hidden space-y-3">
+            {[
+              {
+                domain: 'Domain & DNS Registration',
+                lit: 'DNS record configuration & SSL health',
+                client: 'Annual domain registration fees & registrar custody',
+              },
+              {
+                domain: 'Vercel & Supabase Cloud',
+                lit: 'CI/CD deployment, runtime tuning, migrations',
+                client: 'Direct monthly cloud invoice settlement',
+              },
+              {
+                domain: 'Application Code',
+                lit: 'Bug fixing, patch release, Git maintenance',
+                client: 'GitHub organization owner custody',
+              },
+              {
+                domain: 'Internal User Administration',
+                lit: 'RBAC schema enforcement',
+                client: 'Assigning/revoking internal staff credentials',
+              },
+            ].map((item) => (
+              <div key={item.domain} className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
+                <div className="font-bold text-slate-900">{item.domain}</div>
+                <div className="text-[11px] text-slate-700 bg-white p-2 rounded border border-slate-100">
+                  <span className="font-semibold text-teal-700 block mb-0.5">LIT Responsibility:</span>
+                  <span>{item.lit}</span>
+                </div>
+                <div className="text-[11px] text-slate-700 bg-white p-2 rounded border border-slate-100">
+                  <span className="font-semibold text-slate-700 block mb-0.5">Client Responsibility:</span>
+                  <span>{item.client}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table (>=768px) */}
+          <div className="hidden md:block border border-slate-200 rounded-xl overflow-x-auto w-full max-w-full">
+            <table className="w-full text-left text-[11px]">
+              <thead className="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                <tr>
+                  <th className="p-2.5">Domain / Asset</th>
+                  <th className="p-2.5">LIT Responsibility</th>
+                  <th className="p-2.5">Client Responsibility</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-800">
+                <tr>
+                  <td className="p-2.5 font-medium">Domain & DNS Registration</td>
+                  <td className="p-2.5">DNS record configuration & SSL health</td>
+                  <td className="p-2.5">Annual domain registration fees & registrar custody</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-medium">Vercel & Supabase Cloud</td>
+                  <td className="p-2.5">CI/CD deployment, runtime tuning, migrations</td>
+                  <td className="p-2.5">Direct monthly cloud invoice settlement</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-medium">Application Code</td>
+                  <td className="p-2.5">Bug fixing, patch release, Git maintenance</td>
+                  <td className="p-2.5">GitHub organization owner custody</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-medium">Internal User Administration</td>
+                  <td className="p-2.5">RBAC schema enforcement</td>
+                  <td className="p-2.5">Assigning/revoking internal staff credentials</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       ),
     },
@@ -883,7 +1023,11 @@ export default function SupportStageClient({
 
           {/* Submission Success Banner */}
           {submissionSuccess && (
-            <div className="bg-emerald-50 border border-emerald-300 rounded-2xl p-6 shadow-xs space-y-3">
+            <div
+              role="status"
+              aria-live="polite"
+              className="bg-emerald-50 border border-emerald-300 rounded-2xl p-6 shadow-xs space-y-3"
+            >
               <div className="flex items-start gap-3">
                 <div className="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

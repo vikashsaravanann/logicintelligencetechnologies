@@ -415,7 +415,7 @@ export default function WorkspaceCreationForm({ engagements }: WorkspaceCreation
           </span>
         </div>
         <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--lit-navy,#0B2545)]">
-          Provision Individual Staff Admin Workspace
+          Create Staff Workspace
         </h1>
         <p className="text-sm text-[var(--lit-text-muted,#52677C)] mt-1 max-w-3xl leading-relaxed">
           Create a private, person-specific employee admin workspace. Provisions a unique Supabase Auth identity, assigns role capabilities, records an immutable audit trail, and delivers the workspace link without transmitting the password.

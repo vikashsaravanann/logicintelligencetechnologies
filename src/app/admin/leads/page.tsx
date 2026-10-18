@@ -18,8 +18,8 @@ import { formatIST } from "@/lib/format/datetime";
 import { leadScoreLabel } from "@/lib/admin/kpis";
 
 export const metadata: Metadata = {
-  title: "CRM Leads Ledger | Logic Intelligence Technologies",
-  description: "Centralized enterprise registry of inbound contact inquiries, discovery requests, and intent scores.",
+  title: "Website Enquiries | Logic Intelligence Technologies",
+  description: "Centralized enterprise registry of inbound website contact inquiries, discovery requests, and intent scores.",
   robots: {
     index: false,
     follow: false,
@@ -51,14 +51,14 @@ export default async function AdminLeadsPage() {
           <div className="mt-3 flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-teal-200 bg-teal-50 text-[var(--lit-teal,#1FA9A2)] text-[10px] font-bold uppercase tracking-wider font-mono">
               <Users className="w-3 h-3" />
-              CRM Pipeline Registry
+              Website Enquiries Registry
             </span>
           </div>
           <h1 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--lit-navy,#0B2545)]">
-            CRM Inbound Leads Ledger
+            Website Enquiries
           </h1>
           <p className="mt-1 text-sm text-[var(--lit-text-muted,#52677C)]">
-            Centralized registry of contact inquiries, enterprise demo requests, and calculated intent scores.
+            Centralized registry of website inquiries, enterprise demo requests, and calculated intent scores.
           </p>
         </div>
 

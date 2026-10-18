@@ -78,7 +78,86 @@ export default function PlansFeatures() {
           </motion.p>
         </div>
 
-        <div className="overflow-x-auto rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] p-3 sm:p-6 shadow-xs">
+        {/* Mobile View (<768px): Vertically Stacked Plan Cards */}
+        <div className="block md:hidden space-y-6">
+          {[
+            { name: 'Essential', index: 0, badge: 'Starter' },
+            { name: 'Professional', index: 1, badge: 'Most Popular', popular: true },
+            { name: 'Standard', index: 2, badge: 'Growing Practice' },
+            { name: 'Advanced', index: 3, badge: 'Enterprise Scale' },
+          ].map((tier) => (
+            <div
+              key={tier.name}
+              className={`rounded-2xl border p-5 ${
+                tier.popular
+                  ? 'border-[#1565C0] bg-[#F4F9FF] shadow-sm'
+                  : 'border-[var(--lit-border-light,#DFE7EF)] bg-white'
+              }`}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                <h3 className="text-lg font-bold text-[var(--lit-navy,#0B2545)]">
+                  {tier.name}
+                </h3>
+                <span
+                  className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${
+                    tier.popular
+                      ? 'bg-[#1565C0] text-white'
+                      : 'bg-slate-100 text-slate-700'
+                  }`}
+                >
+                  {tier.badge}
+                </span>
+              </div>
+
+              <div className="space-y-4">
+                {categories.map((cat) => (
+                  <div key={cat.name} className="space-y-2">
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-[var(--lit-text-muted,#52677C)] bg-[#E7F3FF]/40 px-2 py-1 rounded">
+                      {cat.name}
+                    </h4>
+                    <div className="divide-y divide-slate-100">
+                      {cat.features.map((feat) => {
+                        const val = feat.tiers[tier.index];
+                        return (
+                          <div
+                            key={feat.name}
+                            className="flex items-center justify-between py-1.5 text-xs"
+                          >
+                            <span
+                              className={
+                                typeof val === 'boolean' && !val
+                                  ? 'text-slate-400'
+                                  : 'text-slate-700 font-medium'
+                              }
+                            >
+                              {feat.name}
+                            </span>
+                            {typeof val === 'boolean' ? (
+                              val ? (
+                                <div className="w-5 h-5 rounded-full bg-[#ECFDF5] border border-[#059669]/30 flex items-center justify-center text-[#059669] shrink-0">
+                                  <Check className="w-3.5 h-3.5" />
+                                </div>
+                              ) : (
+                                <Minus className="w-4 h-4 text-slate-300 shrink-0" />
+                              )
+                            ) : (
+                              <span className="font-mono font-bold text-xs text-[var(--lit-navy,#0B2545)] shrink-0">
+                                {val}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop View (>=768px): Side-by-side Matrix Table */}
+        <div className="hidden md:block w-full max-w-full overflow-x-auto rounded-2xl border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] p-3 sm:p-6 shadow-xs">
           <table className="w-full text-left border-collapse min-w-[720px]">
             <thead>
               <tr className="border-b border-[var(--lit-border-light,#DFE7EF)]">

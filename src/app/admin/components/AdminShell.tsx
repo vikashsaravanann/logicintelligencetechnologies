@@ -27,9 +27,9 @@ export function AdminShell({
   const groups = navViewForRole(role);
 
   return (
-    <div className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] font-sans text-[var(--lit-ink,#121826)] selection:bg-[var(--lit-teal,#1FA9A2)]/20 antialiased">
+    <div className="min-h-screen bg-white font-sans text-[var(--lit-ink,#121826)] selection:bg-[var(--lit-teal,#1FA9A2)]/20 antialiased">
       {/* Top bar */}
-      <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-[var(--lit-border-light,#DFE7EF)] bg-white/95 px-4 sm:px-6 backdrop-blur-md shadow-2xs">
+      <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-[var(--lit-border-light,#DFE7EF)] bg-white px-4 sm:px-6 shadow-2xs">
         <AdminMobileNav groups={groups} roleLabel={ROLE_LABELS[role]} email={email} />
         <Link href="/admin/command-center" className="flex min-w-0 items-center gap-2.5 group">
           <span className="relative block h-8 w-8 rounded-lg overflow-hidden border border-[var(--lit-border-light,#DFE7EF)] bg-white shrink-0 shadow-2xs group-hover:border-[var(--lit-teal,#1FA9A2)] transition-colors">
@@ -41,7 +41,7 @@ export function AdminShell({
               className="w-full h-full object-cover"
             />
           </span>
-          <span className="truncate text-xs font-black tracking-wider text-[var(--lit-navy,#0B2545)] uppercase font-mono">
+          <span className="truncate text-xs font-black tracking-wider text-[var(--lit-navy,#0B2545)] uppercase font-mono whitespace-nowrap">
             LOGIC INTELLIGENCE TECHNOLOGIES
           </span>
         </Link>

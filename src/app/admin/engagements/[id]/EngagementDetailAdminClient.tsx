@@ -950,7 +950,7 @@ export default function EngagementDetailAdminClient({
                   Production Domain
                 </span>
                 <span className="text-xs font-mono font-bold text-[#1565C0] mt-1 block">
-                  {snap.productionDomain || 'https://www.logicintelligencetechnologies.in'}
+                  {snap.productionDomain || 'Pending Deployment'}
                 </span>
               </div>
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
@@ -958,7 +958,7 @@ export default function EngagementDetailAdminClient({
                   DNS &amp; SSL Records
                 </span>
                 <span className="text-xs font-bold text-emerald-700 mt-1 block">
-                  {snap.dnsRecordsConfigured || 'A, CNAME, SPF, DKIM Configured'}
+                  {snap.dnsRecordsConfigured || 'Pending Configuration'}
                 </span>
               </div>
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
@@ -966,7 +966,7 @@ export default function EngagementDetailAdminClient({
                   Credentials Handover
                 </span>
                 <span className="text-xs font-bold text-slate-800 mt-1 block">
-                  {snap.adminCredentialsTransferred ? 'Vault Transfer Complete' : 'Vault Credentials Handed Over'}
+                  {snap.adminCredentialsTransferred ? 'Vault Transfer Complete' : 'Pending Handover'}
                 </span>
               </div>
             </div>
@@ -983,7 +983,7 @@ export default function EngagementDetailAdminClient({
                   SLA Tier
                 </span>
                 <span className="text-xs font-bold text-[#0B2545] mt-1 block">
-                  {snap.slaTier || 'Enterprise 24x7 Dedicated SLA'}
+                  {snap.slaTier || 'Unassigned / Pending'}
                 </span>
               </div>
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
@@ -991,7 +991,7 @@ export default function EngagementDetailAdminClient({
                   Warranty Coverage
                 </span>
                 <span className="text-xs font-bold text-emerald-700 mt-1 block">
-                  {snap.warrantyPeriod || '90-Day Post-Launch Warranty Active'}
+                  {snap.warrantyPeriod || 'Pending Acceptance'}
                 </span>
               </div>
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">

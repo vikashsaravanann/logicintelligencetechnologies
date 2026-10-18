@@ -243,7 +243,7 @@ export function SupportQueueTable({ tickets }: SupportQueueTableProps) {
   const resolvedCount = tickets.filter((t) =>
     ["resolved", "closed"].includes((t.status || "").toLowerCase())
   ).length;
-  const resolvedRate = totalCount > 0 ? Math.round((resolvedCount / totalCount) * 100) : 100;
+  const resolvedRate = totalCount > 0 ? Math.round((resolvedCount / totalCount) * 100) : 0;
 
   const isFiltered = activeTab !== "all" || priorityFilter !== "all" || searchQuery.trim().length > 0;
 
@@ -319,7 +319,7 @@ export function SupportQueueTable({ tickets }: SupportQueueTableProps) {
           </div>
           <div className="mt-4 flex items-baseline gap-2">
             <span className="text-3xl font-extrabold font-mono tracking-tight text-[var(--lit-navy,#0B2545)]">
-              {resolvedRate}%
+              {totalCount > 0 ? `${resolvedRate}%` : "—"}
             </span>
             <span className="text-xs font-semibold text-[var(--lit-text-muted,#52677C)]">
               ({resolvedCount} closed)

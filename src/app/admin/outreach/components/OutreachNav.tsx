@@ -24,12 +24,12 @@ interface OutreachNavProps {
 
 const TABS = [
   { key: "overview" as const, label: "Outreach Overview", href: "/admin/outreach", icon: Send },
-  { key: "studio" as const, label: "Studio", href: "/admin/outreach/studio", icon: Sparkles },
-  { key: "queue" as const, label: "Queue", href: "/admin/outreach/queue", icon: Inbox },
-  { key: "playbook" as const, label: "Playbook", href: "/admin/outreach/playbook", icon: BookOpen },
-  { key: "suppression" as const, label: "Suppression", href: "/admin/outreach/suppression", icon: ShieldAlert },
-  { key: "analytics" as const, label: "Analytics", href: "/admin/outreach/analytics", icon: BarChart3 },
-  { key: "compliance" as const, label: "Compliance & Jurisdictions", href: "/admin/outreach/compliance", icon: ShieldCheck },
+  { key: "studio" as const, label: "Draft Outreach Message", href: "/admin/outreach/studio", icon: Sparkles },
+  { key: "queue" as const, label: "Message Review & Queue", href: "/admin/outreach/queue", icon: Inbox },
+  { key: "playbook" as const, label: "Outreach Writing Guide", href: "/admin/outreach/playbook", icon: BookOpen },
+  { key: "suppression" as const, label: "Do-Not-Contact List", href: "/admin/outreach/suppression", icon: ShieldAlert },
+  { key: "analytics" as const, label: "Outreach Metrics", href: "/admin/outreach/analytics", icon: BarChart3 },
+  { key: "compliance" as const, label: "Outreach Policy & Legal Reviews", href: "/admin/outreach/compliance", icon: ShieldCheck },
 ];
 
 export function OutreachNav({ active }: OutreachNavProps) {

@@ -35,22 +35,22 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
   {
     label: "Pipeline",
     items: [
-      { label: "Intake Stream", href: "/admin/intake", capability: "leads.read", match: startsWith("/admin/intake") },
-      { label: "Leads", href: "/admin/leads", capability: "leads.read", match: startsWith("/admin/leads") },
-      { label: "AI Leads", href: "/admin/ai-leads", capability: "leads.read", match: startsWith("/admin/ai-leads") },
+      { label: "All Form Submissions", href: "/admin/intake", capability: "leads.read", match: startsWith("/admin/intake") },
+      { label: "Website Enquiries", href: "/admin/leads", capability: "leads.read", match: startsWith("/admin/leads") },
+      { label: "AI Assistant Enquiries", href: "/admin/ai-leads", capability: "leads.read", match: startsWith("/admin/ai-leads") },
       { label: "Bookings", href: "/admin/bookings", capability: "bookings.read", match: startsWith("/admin/bookings") },
-      { label: "Outreach", href: "/admin/outreach", capability: "outreach.read", match: (p) => p === "/admin/outreach" },
     ],
   },
   {
-    label: "Lead Operations",
+    label: "Outreach",
     items: [
-      { label: "Outreach Studio", href: "/admin/outreach/studio", capability: "outreach.manage", match: startsWith("/admin/outreach/studio") },
-      { label: "Outreach Queue", href: "/admin/outreach/queue", capability: "outreach.manage", match: startsWith("/admin/outreach/queue") },
-      { label: "Suppression", href: "/admin/outreach/suppression", capability: "outreach.manage", match: startsWith("/admin/outreach/suppression") },
-      { label: "Outreach Analytics", href: "/admin/outreach/analytics", capability: "outreach.read", match: startsWith("/admin/outreach/analytics") },
-      { label: "Message Playbook", href: "/admin/outreach/playbook", capability: "outreach.read", match: startsWith("/admin/outreach/playbook") },
-      { label: "Compliance & Jurisdictions", href: "/admin/outreach/compliance", capability: "outreach.read", match: startsWith("/admin/outreach/compliance") },
+      { label: "Outreach Overview", href: "/admin/outreach", capability: "outreach.read", match: (p) => p === "/admin/outreach" },
+      { label: "Draft Outreach Message", href: "/admin/outreach/studio", capability: "outreach.manage", match: startsWith("/admin/outreach/studio") },
+      { label: "Message Review & Queue", href: "/admin/outreach/queue", capability: "outreach.manage", match: startsWith("/admin/outreach/queue") },
+      { label: "Do-Not-Contact List", href: "/admin/outreach/suppression", capability: "outreach.manage", match: startsWith("/admin/outreach/suppression") },
+      { label: "Outreach Metrics", href: "/admin/outreach/analytics", capability: "outreach.read", match: startsWith("/admin/outreach/analytics") },
+      { label: "Outreach Writing Guide", href: "/admin/outreach/playbook", capability: "outreach.read", match: startsWith("/admin/outreach/playbook") },
+      { label: "Outreach Policy & Legal Reviews", href: "/admin/outreach/compliance", capability: "outreach.read", match: startsWith("/admin/outreach/compliance") },
     ],
   },
   {
@@ -60,7 +60,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { label: "Engagements", href: "/admin/engagements", capability: "clients.read", match: startsWith("/admin/engagements") },
       { label: "Checklists", href: "/admin/checklist-invitations", capability: "checklists.read", match: startsWith("/admin/checklist-invitations") },
       { label: "Documents", href: "/admin/documents", capability: "documents.read", match: startsWith("/admin/documents") },
-      { label: "Onboarding", href: "/admin/onboarding", capability: "onboarding.manage", match: startsWith("/admin/onboarding") },
+      { label: "Onboarding Invitations", href: "/admin/onboarding", capability: "onboarding.manage", match: startsWith("/admin/onboarding") },
       { label: "Proposals", href: "/admin/proposals", capability: "proposals.read", match: startsWith("/admin/proposals") },
       { label: "Quotations", href: "/admin/quotations", capability: "proposals.read", match: startsWith("/admin/quotations") },
       { label: "Invoices", href: "/admin/invoices", capability: "invoices.read", match: startsWith("/admin/invoices") },
@@ -147,11 +147,43 @@ export function navViewForRole(role: StaffRole | null | undefined): AdminNavGrou
  * - Dashboard is active on "/admin" and the command-center path.
  * - Exact-match routes (/admin/outreach, /admin/automations) match strictly.
  * - Disambiguates parent prefixes when a more specific sibling route is matched (NAV04).
- * - Strips URL hashes and query parameters cleanly.
+ * - Explicitly supports URL hash fragments (e.g. #milestones / #journey) without selecting multiple items.
+ * - Strips URL hashes and query parameters cleanly when hash is absent.
  */
-export function isActiveNav(pathname: string, href: string, allHrefs?: string[]): boolean {
-  const cleanPath = (pathname || "").split("#")[0].split("?")[0];
-  const cleanHref = (href || "").split("#")[0].split("?")[0];
+export function isActiveNav(
+  pathname: string,
+  href: string,
+  allHrefs?: string[],
+  currentHash?: string
+): boolean {
+  const [cleanPath, pathHash] = (pathname || "").split("#");
+  const [cleanHref, hrefHash] = (href || "").split("#");
+  const effectiveHash = (currentHash !== undefined ? currentHash : pathHash || "").replace(/^#/, "");
+
+  // If item explicitly targets a hash (e.g. /client/dashboard#milestones or /client/dashboard#journey)
+  if (hrefHash) {
+    const isHashMatch =
+      effectiveHash === hrefHash ||
+      (hrefHash === "milestones" && (effectiveHash === "journey" || effectiveHash === "milestones")) ||
+      (hrefHash === "journey" && (effectiveHash === "journey" || effectiveHash === "milestones"));
+    return cleanPath === cleanHref && Boolean(isHashMatch);
+  }
+
+  // If URL has an active hash and a sibling nav item specifically targets that hash,
+  // suppress parent base route match so only the hash item is active.
+  if (effectiveHash && allHrefs && allHrefs.length > 0) {
+    const hasSiblingHashMatch = allHrefs.some((other) => {
+      const [otherPath, otherHash] = other.split("#");
+      return (
+        otherPath === cleanHref &&
+        otherHash &&
+        (otherHash === effectiveHash ||
+          (otherHash === "milestones" && (effectiveHash === "journey" || effectiveHash === "milestones")) ||
+          (otherHash === "journey" && (effectiveHash === "journey" || effectiveHash === "milestones")))
+      );
+    });
+    if (hasSiblingHashMatch) return false;
+  }
 
   if (cleanHref === ADMIN_DASHBOARD_PATH) {
     return cleanPath === "/admin" || cleanPath === ADMIN_DASHBOARD_PATH;
@@ -173,9 +205,9 @@ export function isActiveNav(pathname: string, href: string, allHrefs?: string[])
     // Check if another nav item is a more specific match for cleanPath
     const hasMoreSpecificMatch = allHrefs.some(
       (other) =>
-        other !== cleanHref &&
-        other.startsWith(cleanHref + "/") &&
-        (cleanPath === other || cleanPath.startsWith(other + "/"))
+        other.split("#")[0] !== cleanHref &&
+        other.split("#")[0].startsWith(cleanHref + "/") &&
+        (cleanPath === other.split("#")[0] || cleanPath.startsWith(other.split("#")[0] + "/"))
     );
     return !hasMoreSpecificMatch;
   }

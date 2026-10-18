@@ -168,7 +168,8 @@ export default async function ClientDashboardPage({ searchParams }: Props) {
 
       {/* UPGRADE 01: Next Best Action Card & 13-Stage Journey Header */}
       {primaryEngagement && (
-        <div id="journey" className="rounded-3xl border border-[var(--lit-border-light,#DFE7EF)] bg-gradient-to-br from-white via-white to-[var(--lit-cloud,#F7F9FC)] p-6 sm:p-8 shadow-sm space-y-6">
+        <div id="milestones" data-anchor="journey" className="rounded-3xl border border-[var(--lit-border-light,#DFE7EF)] bg-gradient-to-br from-white via-white to-[var(--lit-cloud,#F7F9FC)] p-6 sm:p-8 shadow-sm space-y-6">
+          <span id="journey" className="sr-only" aria-hidden="true" />
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--lit-border-light,#DFE7EF)] pb-5">
             <div>
               <div className="flex items-center gap-2 mb-1">

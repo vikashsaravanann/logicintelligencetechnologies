@@ -14,7 +14,7 @@ export default async function ClientPortalLayout({
 }) {
   const isSuperAdmin = await isCurrentUserSuperAdmin();
   return (
-    <div className="min-h-screen bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-ink,#121826)] flex flex-col md:flex-row antialiased">
+    <div className="min-h-screen bg-white text-[var(--lit-ink,#121826)] flex flex-col md:flex-row antialiased">
       {/* Sidebar Navigation */}
       <aside className="w-full md:w-64 border-r border-[var(--lit-border-light,#DFE7EF)] bg-white p-4 sm:p-6 flex flex-col justify-between shrink-0 shadow-2xs">
         <div>
@@ -29,11 +29,11 @@ export default async function ClientPortalLayout({
                 className="w-full h-full object-cover"
               />
             </span>
-            <div>
-              <span className="text-xs font-black tracking-wider text-[var(--lit-navy,#0B2545)] block uppercase font-mono truncate">
+            <div className="min-w-0">
+              <span className="text-xs font-black tracking-wider text-[var(--lit-navy,#0B2545)] block uppercase font-mono truncate whitespace-nowrap">
                 LOGIC INTELLIGENCE TECHNOLOGIES
               </span>
-              <span className="text-[10px] text-[var(--lit-teal,#1FA9A2)] font-bold tracking-wider uppercase block">
+              <span className="text-[10px] text-[var(--lit-teal,#1FA9A2)] font-bold tracking-wider uppercase block font-mono">
                 Client Portal
               </span>
             </div>
@@ -70,7 +70,7 @@ export default async function ClientPortalLayout({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
         {/* Workspace Top Header Bar */}
-        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-xs border-b border-[var(--lit-border-light,#DFE7EF)] px-6 py-3 flex items-center justify-between gap-4">
+        <header className="sticky top-0 z-30 bg-white border-b border-[var(--lit-border-light,#DFE7EF)] px-6 py-3 flex items-center justify-between gap-4 shadow-2xs">
           <div className="flex items-center gap-4 flex-1 max-w-md">
             <div className="hidden lg:flex items-center gap-2 shrink-0">
               <span className="text-xs font-bold text-[var(--lit-navy,#0B2545)] font-mono uppercase tracking-wider">
@@ -90,14 +90,14 @@ export default async function ClientPortalLayout({
 
             <Link
               href="/client/meetings"
-              className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-[var(--lit-navy,#0B2545)] text-xs font-semibold transition-colors"
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-slate-50 text-[var(--lit-navy,#0B2545)] text-xs font-semibold transition-colors shadow-2xs"
               title="Meetings & Scoping"
             >
               <span>Meetings</span>
             </Link>
             <Link
-              href="/client/dashboard#journey"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-[var(--lit-navy,#0B2545)] text-xs font-semibold transition-colors"
+              href="/client/dashboard#milestones"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-slate-50 text-[var(--lit-navy,#0B2545)] text-xs font-semibold transition-colors shadow-2xs"
               title="Milestone Progression & Next Actions"
             >
               <span>Milestones</span>
@@ -105,7 +105,7 @@ export default async function ClientPortalLayout({
 
             <Link
               href="/client/actions"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-[var(--lit-cloud,#F7F9FC)] hover:bg-slate-100 text-[var(--lit-navy,#0B2545)] text-xs font-semibold transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-slate-50 text-[var(--lit-navy,#0B2545)] text-xs font-semibold transition-colors shadow-2xs"
               title="Approvals & Tasks"
             >
               <span>Approvals</span>
@@ -113,7 +113,7 @@ export default async function ClientPortalLayout({
 
             <Link
               href="/client/notifications"
-              className="relative p-2 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-[var(--lit-cloud,#F7F9FC)] text-[var(--lit-navy,#0B2545)] transition-colors"
+              className="relative p-2 rounded-lg border border-[var(--lit-border-light,#DFE7EF)] bg-white hover:bg-slate-50 text-[var(--lit-navy,#0B2545)] transition-colors shadow-2xs"
               title="Notifications"
             >
               <span className="sr-only">Notifications</span>
@@ -134,7 +134,7 @@ export default async function ClientPortalLayout({
           </div>
         </header>
 
-        <main className="p-6 sm:p-10 bg-[var(--lit-cloud,#F7F9FC)] flex-1">
+        <main className="p-6 sm:p-10 bg-white flex-1">
           {children}
         </main>
       </div>

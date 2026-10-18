@@ -4,7 +4,7 @@ import { listAllEngagements } from '@/lib/engagements/db';
 import WorkspaceCreationForm from './WorkspaceCreationForm';
 
 export const metadata: Metadata = {
-  title: 'Create Staff Admin Workspace | Admin | Logic Intelligence Technologies',
+  title: 'Create Staff Workspace | Admin | Logic Intelligence Technologies',
   description: 'Founder-provisioned individual private workspace and credentials for Logic Intelligence Technologies employees.',
   robots: {
     index: false,

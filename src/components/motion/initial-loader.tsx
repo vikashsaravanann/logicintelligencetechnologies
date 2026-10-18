@@ -16,18 +16,21 @@ import Image from "next/image";
 export default function InitialLoader() {
   const [visible, setVisible] = useState(true);
 
-  // Trigger once on initial site mount / browser refresh
+  // Dismiss loader upon client hydration and document readiness without artificial delays
   useEffect(() => {
     if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setVisible(false);
       return;
     }
 
-    const timer = setTimeout(() => {
-      setVisible(false);
-    }, 550);
+    if (typeof document !== "undefined" && document.readyState === "complete") {
+      const raf = requestAnimationFrame(() => setVisible(false));
+      return () => cancelAnimationFrame(raf);
+    }
 
-    return () => clearTimeout(timer);
+    const onReady = () => setVisible(false);
+    window.addEventListener("load", onReady, { once: true });
+    return () => window.removeEventListener("load", onReady);
   }, []);
 
   return (
