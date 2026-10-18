@@ -227,7 +227,13 @@ DROP POLICY IF EXISTS cqa_auth_select ON public.client_qa_criteria;
 CREATE POLICY cqa_auth_select ON public.client_qa_criteria
   FOR SELECT TO authenticated
   USING (
-    client_email = (SELECT email FROM auth.users WHERE id = (SELECT auth.uid()))
+    EXISTS (
+      SELECT 1
+      FROM public.client_engagements ce
+      JOIN public.clients c ON c.id = ce.client_id
+      WHERE ce.engagement_ref = client_qa_criteria.engagement_ref
+        AND c.user_id = (SELECT auth.uid())
+    )
     OR public.is_staff_or_admin()
   );
 
