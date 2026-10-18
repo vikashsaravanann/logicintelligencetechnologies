@@ -161,7 +161,8 @@ const nextConfig: NextConfig = {
 
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion', 'recharts'],
-    webpackBuildWorker: false,
+    webpackBuildWorker: true,
+    webpackMemoryOptimizations: true,
   },
   outputFileTracingIncludes: {
     '/api/**/*': ['./public/fonts/**/*', './src/lib/pdf/fonts/**/*'],
