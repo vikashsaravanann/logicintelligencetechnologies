@@ -926,22 +926,24 @@ export async function submitIdentityChangeRequest(input: {
  * Fetch all client engagements for the Admin Console.
  */
 export async function listAllEngagements(): Promise<ClientEngagement[]> {
-  if (isAdminClientConfigured()) {
-    try {
-      const { data, error } = await supabaseAdmin
-        .from('client_engagements')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (!error && data && data.length > 0) {
-        return data as ClientEngagement[];
-      }
-    } catch (err) {
-      console.warn('[listAllEngagements] DB query failed, using fallback:', err);
-    }
+  // Administrative and assignment menus must NEVER show demonstration IDs.
+  // Missing DB configuration and database failures are errors, not an empty list
+  // and not an opportunity to substitute a synthetic engagement.
+  if (!isAdminClientConfigured()) {
+    throw new Error('ENGAGEMENT_DATABASE_UNAVAILABLE: Supabase admin connection is not configured.');
   }
 
-  return [FALLBACK_SAMPLE_ENGAGEMENT];
+  const { data, error } = await supabaseAdmin
+    .from('client_engagements')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('[listAllEngagements] Authoritative engagement query failed:', error.code);
+    throw new Error('ENGAGEMENT_QUERY_FAILED: Unable to load verified client engagements.');
+  }
+
+  return (data ?? []) as ClientEngagement[];
 }
 
 /**
