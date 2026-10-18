@@ -341,7 +341,30 @@ export async function createStaffClientAssignment(input: {
 
   const supabase = getServiceClient();
   if (supabase) {
-    // If reassigning to an existing engagement, atomically revoke any previous active assignment
+    // Verify the real engagement BEFORE mutating any existing assignment.
+    // A demo project UUID or a projects.id must never be inserted as an
+    // engagement_id foreign key. Missing rows are actionable errors.
+    if (assignment.engagement_id) {
+      const { data: verifiedEngagement, error: lookupError } = await supabase
+        .from('client_engagements')
+        .select('id, client_id')
+        .eq('id', assignment.engagement_id)
+        .maybeSingle();
+
+      if (lookupError) {
+        throw new Error('Unable to verify the selected client engagement. Please retry.');
+      }
+      if (!verifiedEngagement) {
+        throw new Error('Selected project is not a saved client engagement. Create or link the real engagement before assigning staff.');
+      }
+      if (assignment.client_id && assignment.client_id !== verifiedEngagement.client_id) {
+        throw new Error('Selected client does not match the saved engagement. Verify the project and try again.');
+      }
+    }
+
+    // Existing project assignments must be replaced only after validation.
+    // TODO: replace this revoke + insert pair with a single transactional RPC
+    // to prevent partial state if the insert fails after the revoke.
     if (assignment.engagement_id) {
       await supabase
         .from('staff_client_assignments')
