@@ -55,6 +55,118 @@ export interface CreateCorrectionParams {
 }
 
 /**
+ * Resolves the verified client's contact email from client_engagements, clients, or profiles (MAIL01).
+ * Never hardcodes internal company address for client-facing communications.
+ */
+async function resolveClientContactEmail(params: {
+  clientId?: string | null;
+  engagementId?: string | null;
+}): Promise<string> {
+  const { clientId, engagementId } = params;
+
+  // 1. Check client_engagements by engagementId
+  if (engagementId) {
+    try {
+      const { data: eng } = await supabaseAdmin
+        .from('client_engagements')
+        .select('contact_email, client_id')
+        .eq('id', engagementId)
+        .maybeSingle();
+
+      if (eng?.contact_email && eng.contact_email.trim()) {
+        return eng.contact_email.trim().toLowerCase();
+      }
+      if (!clientId && eng?.client_id) {
+        const { data: c } = await supabaseAdmin
+          .from('clients')
+          .select('contact_email, user_id')
+          .eq('id', eng.client_id)
+          .maybeSingle();
+        if (c?.contact_email && c.contact_email.trim()) {
+          return c.contact_email.trim().toLowerCase();
+        }
+        if (c?.user_id) {
+          const { data: p } = await supabaseAdmin
+            .from('profiles')
+            .select('email')
+            .eq('id', c.user_id)
+            .maybeSingle();
+          if (p?.email && p.email.trim()) {
+            return p.email.trim().toLowerCase();
+          }
+        }
+      }
+    } catch {
+      // Fall through to other resolution paths
+    }
+  }
+
+  // 2. Check clients table by clientId
+  if (clientId) {
+    try {
+      const { data: clientRow } = await supabaseAdmin
+        .from('clients')
+        .select('contact_email, user_id')
+        .eq('id', clientId)
+        .maybeSingle();
+
+      if (clientRow?.contact_email && clientRow.contact_email.trim()) {
+        return clientRow.contact_email.trim().toLowerCase();
+      }
+      if (clientRow?.user_id) {
+        const { data: profile } = await supabaseAdmin
+          .from('profiles')
+          .select('email')
+          .eq('id', clientRow.user_id)
+          .maybeSingle();
+        if (profile?.email && profile.email.trim()) {
+          return profile.email.trim().toLowerCase();
+        }
+      }
+    } catch {
+      // Fall through
+    }
+  }
+
+  // 3. Fallback: check client_engagements where client_id = clientId
+  if (clientId) {
+    try {
+      const { data: eng } = await supabaseAdmin
+        .from('client_engagements')
+        .select('contact_email')
+        .eq('client_id', clientId)
+        .maybeSingle();
+
+      if (eng?.contact_email && eng.contact_email.trim()) {
+        return eng.contact_email.trim().toLowerCase();
+      }
+    } catch {
+      // Fall through
+    }
+  }
+
+  // 4. Fallback: check profiles where id = clientId
+  if (clientId) {
+    try {
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('email')
+        .eq('id', clientId)
+        .maybeSingle();
+
+      if (profile?.email && profile.email.trim()) {
+        return profile.email.trim().toLowerCase();
+      }
+    } catch {
+      // Fall through
+    }
+  }
+
+  // Default fallback if no verified client email can be resolved
+  return 'hello@logicintelligencetechnologies.in';
+}
+
+/**
  * Create or reuse an unfulfilled maintenance order
  */
 export async function createOrGetMaintenanceOrder(params: CreateOrderParams) {
@@ -151,6 +263,7 @@ export async function createOrGetMaintenanceOrder(params: CreateOrderParams) {
   }
 
   // Queue initial order registration acknowledgment email in outbox (MAIL01)
+  const clientEmail = await resolveClientContactEmail({ clientId, engagementId });
   const emailSubject = isFreeTrial
     ? 'Free Trial Registration Received'
     : `New Maintenance Order Registered: ${orderRef} (${pricing.name})`;
@@ -160,7 +273,7 @@ export async function createOrGetMaintenanceOrder(params: CreateOrderParams) {
     event_type: isFreeTrial ? 'trial_registration_received' : 'maintenance_order_registered',
     template_key: isFreeTrial ? 'trial-registration-received' : 'maintenance-order-registered',
     category: 'transactional',
-    recipient: 'hello@logicintelligencetechnologies.in',
+    recipient: clientEmail,
     sender: 'no-reply@logicintelligencetechnologies.in',
     subject: emailSubject,
     idempotency_key: idempotencyKey,
@@ -173,7 +286,8 @@ export async function createOrGetMaintenanceOrder(params: CreateOrderParams) {
   });
 
   if (outboxErr) {
-    console.warn('[email-outbox] Order registration enqueue warning:', outboxErr.message);
+    console.error('[email-outbox] Order registration enqueue error:', outboxErr.message);
+    throw new Error(`Failed to enqueue order registration notification: ${outboxErr.message}`);
   }
 
   return {
@@ -479,12 +593,16 @@ export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParam
   }
 
   // Queue activation confirmation email in outbox (MAIL01)
+  const clientEmail = await resolveClientContactEmail({
+    clientId: order.client_id,
+    engagementId: order.engagement_id,
+  });
   const activationIdempotency = `email_sub_activated_${updatedOrder.id}_${sub.id}`;
   const { error: outboxErr } = await supabaseAdmin.from('email_outbox').insert({
     event_type: isFreeTrialPlan ? 'trial_activated' : 'subscription_activated',
     template_key: isFreeTrialPlan ? 'trial-activated' : 'subscription-activated',
     category: 'transactional',
-    recipient: 'hello@logicintelligencetechnologies.in',
+    recipient: clientEmail,
     sender: 'no-reply@logicintelligencetechnologies.in',
     subject: isFreeTrialPlan
       ? `Free Trial Activated — 30 Days (Order ${order.order_ref})`
@@ -501,7 +619,8 @@ export async function verifyMaintenanceOrderAndActivate(params: VerifyOrderParam
   });
 
   if (outboxErr) {
-    console.warn('[email-outbox] Activation email enqueue warning:', outboxErr.message);
+    console.error('[email-outbox] Activation email enqueue error:', outboxErr.message);
+    throw new Error(`Failed to enqueue subscription activation email: ${outboxErr.message}`);
   }
 
   return {
@@ -612,13 +731,18 @@ export async function processSubscriptionRefund(params: ProcessRefundParams) {
     },
   });
 
+  const clientEmail = await resolveClientContactEmail({
+    clientId: currentSub.client_id,
+    engagementId: currentSub.engagement_id,
+  });
+
   if (refundStatus === 'processing') {
     const processingIdempotency = `email_refund_proc_${updatedSub.id}_${nowIso}`;
     const { error: outboxErr } = await supabaseAdmin.from('email_outbox').insert({
       event_type: 'trial_refund_initiated',
       template_key: 'trial-refund-initiated',
       category: 'transactional',
-      recipient: 'hello@logicintelligencetechnologies.in',
+      recipient: clientEmail,
       sender: 'no-reply@logicintelligencetechnologies.in',
       subject: `₹20 Verification Refund Initiated (Subscription ${updatedSub.id})`,
       idempotency_key: processingIdempotency,
@@ -630,7 +754,8 @@ export async function processSubscriptionRefund(params: ProcessRefundParams) {
       })),
     });
     if (outboxErr) {
-      console.warn('[email-outbox] Refund initiated enqueue warning:', outboxErr.message);
+      console.error('[email-outbox] Refund initiated enqueue error:', outboxErr.message);
+      throw new Error(`Failed to enqueue refund initiated notification: ${outboxErr.message}`);
     }
   } else if (refundStatus === 'completed') {
     const completedIdempotency = `email_refund_comp_${updatedSub.id}_${updatedSub.refund_reference}`;
@@ -638,7 +763,7 @@ export async function processSubscriptionRefund(params: ProcessRefundParams) {
       event_type: 'trial_refund_completed',
       template_key: 'trial-refund-completed',
       category: 'transactional',
-      recipient: 'hello@logicintelligencetechnologies.in',
+      recipient: clientEmail,
       sender: 'no-reply@logicintelligencetechnologies.in',
       subject: `₹20 Verification Refund Completed (Ref: ${updatedSub.refund_reference})`,
       idempotency_key: completedIdempotency,
@@ -650,7 +775,8 @@ export async function processSubscriptionRefund(params: ProcessRefundParams) {
       })),
     });
     if (outboxErr) {
-      console.warn('[email-outbox] Refund completed enqueue warning:', outboxErr.message);
+      console.error('[email-outbox] Refund completed enqueue error:', outboxErr.message);
+      throw new Error(`Failed to enqueue refund completed notification: ${outboxErr.message}`);
     }
   }
 
@@ -693,12 +819,16 @@ export async function checkAndExpireStandardTrials(): Promise<{ expiredCount: nu
       expiredIds.push(sub.id);
 
       // Queue trial expiration notification email in outbox (MAIL01)
+      const clientEmail = await resolveClientContactEmail({
+        clientId: sub.client_id,
+        engagementId: sub.engagement_id,
+      });
       const expiryIdempotency = `email_trial_expired_${sub.id}_${nowIso}`;
       const { error: outboxErr } = await supabaseAdmin.from('email_outbox').insert({
         event_type: 'trial_expired',
         template_key: 'trial-ended',
         category: 'transactional',
-        recipient: 'hello@logicintelligencetechnologies.in',
+        recipient: clientEmail,
         sender: 'no-reply@logicintelligencetechnologies.in',
         subject: 'Your 30-Day Free Trial Has Ended',
         idempotency_key: expiryIdempotency,
@@ -710,7 +840,7 @@ export async function checkAndExpireStandardTrials(): Promise<{ expiredCount: nu
         })),
       });
       if (outboxErr) {
-        console.warn('[email-outbox] Trial expired enqueue warning:', outboxErr.message);
+        console.error('[email-outbox] Trial expired enqueue error:', outboxErr.message);
       }
     }
   }

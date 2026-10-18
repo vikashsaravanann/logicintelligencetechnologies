@@ -20,8 +20,8 @@ export const EmailHeader = ({ subBrand, design: designKey = "transactional" }: E
       <Img
         src={EMAIL.logoUrl}
         alt={EMAIL.company}
-        width="78"
-        height="78"
+        width="60"
+        height="60"
         style={logo}
       />
       <Text className="ref-wordmark" style={brand}>{EMAIL.companyFull}</Text>

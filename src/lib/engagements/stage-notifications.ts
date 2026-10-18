@@ -1,4 +1,4 @@
-import { sendEmail, EmailAttachment } from '@/lib/email/send-email';
+import { sendEmail, EmailAttachment, AttachmentRef } from '@/lib/email/send-email';
 import { COMPANY } from '@/config/company';
 import { CANONICAL_13_STAGES, ClientEngagement, StageKey, ORDERED_STAGE_KEYS } from './types';
 import { ENTERPRISE_CHECKPOINTS } from '@/data/enterpriseDeploymentChecklist';
@@ -21,6 +21,7 @@ interface NotifyStageApprovalInput {
   nextStageKey?: StageKey | null;
   adminNotes?: string;
   attachments?: EmailAttachment[];
+  attachmentRefs?: AttachmentRef[];
 }
 
 /**
@@ -393,6 +394,7 @@ export async function notifyStageApproved(input: NotifyStageApprovalInput): Prom
         adminNotes,
       }),
       attachments: input.attachments,
+      attachmentRefs: input.attachmentRefs,
     });
     return { ok: res.success };
   } catch (err) {

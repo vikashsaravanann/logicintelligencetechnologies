@@ -83,6 +83,22 @@ test("MAIL02: Attachment resolution validates PDF integrity and SHA-256", async 
     cronRoute.includes("attachments: attachments"),
     "cron outbox worker must attach verified buffers to sendMail"
   );
+
+  // sendEmail accepts attachmentRefs and forwards to claimOutbox
+  const sendEmailCode = source("src/lib/email/send-email.ts");
+  assert.ok(
+    sendEmailCode.includes("attachmentRefs?: AttachmentRef[]") &&
+      (sendEmailCode.includes("attachmentRefs,") || sendEmailCode.includes("attachmentRefs:")),
+    "sendEmail must accept and forward attachmentRefs to claimOutbox"
+  );
+
+  // db.ts builds durable attachmentRefs for payment verification email
+  const dbCode = source("src/lib/engagements/db.ts");
+  assert.ok(
+    dbCode.includes("emailAttachmentRefs.push({") &&
+      dbCode.includes("storageBucket: DOCUMENTS_BUCKET"),
+    "db.ts must construct durable attachmentRefs with DOCUMENTS_BUCKET"
+  );
 });
 
 // =============================================================================
@@ -136,6 +152,13 @@ test("MAIL04: Stage notification triggers in db.ts are awaited in try/catch bloc
   assert.ok(
     dbCode.includes("await notifyStageApproved("),
     "notifyStageApproved must be awaited"
+  );
+  // Ensure no unawaited floating promise calls remain
+  const unawaitedCalls = dbCode.match(/(?<!await\s+)notifyStageApproved\(/g);
+  assert.equal(
+    unawaitedCalls,
+    null,
+    "No unawaited floating calls to notifyStageApproved are allowed in db.ts"
   );
 });
 

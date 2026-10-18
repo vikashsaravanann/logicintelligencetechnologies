@@ -29,7 +29,7 @@ export function ReferenceFrame({ preview, tone = "light", unsubscribeUrl, childr
   </Head><Preview>{preview}</Preview><Body className="ref-canvas" style={{ margin: 0, padding: "32px 12px", backgroundColor: R.colors.canvas, fontFamily: R.font, color: R.colors.ink }}>
     <Container style={{ width: "100%", maxWidth: 600, margin: "0 auto", backgroundColor: dark ? R.colors.navy : R.colors.white }}>
       <Section className="ref-brand" style={{ padding: "36px 24px 28px", textAlign: "center", backgroundColor: headerBg }}>
-        <Img src={R.logoUrl} alt="Logic Intelligence Technologies company logo" width="78" height="78" style={{ display: "block", margin: "0 auto 14px", borderRadius: "50%", border: "0", width: 78, height: 78 }} />
+        <Img src={R.logoUrl} alt="Logic Intelligence Technologies company logo" width="60" height="60" style={{ display: "block", margin: "0 auto 14px", borderRadius: "50%", border: "0", width: 60, height: 60 }} />
         <Text className="ref-wordmark" style={{ margin: 0, fontFamily: R.font, fontSize: 14, lineHeight: "20px", fontWeight: 800, letterSpacing: ".045em", whiteSpace: "nowrap", textAlign: "center", color: dark || tone === "orange" ? "#FFFFFF" : R.colors.ink }}>{R.wordmark}</Text>
       </Section>
       {children}

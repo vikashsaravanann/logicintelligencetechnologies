@@ -17,6 +17,7 @@ import { notifyStageSubmitted, notifyStageApproved } from './stage-notifications
 import { calculateEngagementFinancials } from './financials';
 import { generateTaxInvoicePdf, generatePaymentReceiptPdf } from '@/lib/pdf/invoice-receipt-generator';
 import { DOCUMENTS_BUCKET } from '@/lib/documents/storage';
+import type { EmailAttachment, AttachmentRef } from '@/lib/email/send-email';
 
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -1708,7 +1709,10 @@ export async function reconcileEngagementStagePayment(input: {
   const cleanRef = (engagement.engagement_ref || 'ENG').replace(/[^A-Z0-9]/gi, '');
   const invoiceDocNumber = stageKey === 'initial-invoice' ? `LIT-INV-${cleanRef}-01` : `LIT-INV-${cleanRef}-02`;
   const receiptDocNumber = stageKey === 'initial-invoice' ? `LIT-REC-${cleanRef}-01` : `LIT-REC-${cleanRef}-02`;
-  const emailAttachments = [];
+  const invoiceStoragePath = `financial/invoices/${invoiceDocNumber}.pdf`;
+  const receiptStoragePath = `financial/receipts/${receiptDocNumber}.pdf`;
+  const emailAttachments: EmailAttachment[] = [];
+  const emailAttachmentRefs: AttachmentRef[] = [];
 
   if (invoicePdfResult && (invoicePdfResult as any).bytes) {
     emailAttachments.push({
@@ -1716,6 +1720,14 @@ export async function reconcileEngagementStagePayment(input: {
       content: Buffer.from((invoicePdfResult as any).bytes),
       contentType: 'application/pdf',
     });
+    if ((invoicePdfResult as any).sha256) {
+      emailAttachmentRefs.push({
+        storageBucket: DOCUMENTS_BUCKET,
+        storagePath: invoiceStoragePath,
+        expectedSha256: (invoicePdfResult as any).sha256,
+        filename: `${invoiceDocNumber}.pdf`,
+      });
+    }
   }
   if (receiptPdfResult && (receiptPdfResult as any).bytes) {
     emailAttachments.push({
@@ -1723,18 +1735,29 @@ export async function reconcileEngagementStagePayment(input: {
       content: Buffer.from((receiptPdfResult as any).bytes),
       contentType: 'application/pdf',
     });
+    if ((receiptPdfResult as any).sha256) {
+      emailAttachmentRefs.push({
+        storageBucket: DOCUMENTS_BUCKET,
+        storagePath: receiptStoragePath,
+        expectedSha256: (receiptPdfResult as any).sha256,
+        filename: `${receiptDocNumber}.pdf`,
+      });
+    }
   }
 
   // Trigger client unlock email for bank credit verification with attached invoice & receipt
-  notifyStageApproved({
-    engagement,
-    approvedStageKey: stageKey,
-    nextStageKey,
-    adminNotes: reconciliationNotes || `Manual bank credit verified in receiving account. Ref: ${reconciliationData.transaction_ref}`,
-    attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
-  }).catch((notifErr) => {
+  try {
+    await notifyStageApproved({
+      engagement,
+      approvedStageKey: stageKey,
+      nextStageKey,
+      adminNotes: reconciliationNotes || `Manual bank credit verified in receiving account. Ref: ${reconciliationData.transaction_ref}`,
+      attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
+      attachmentRefs: emailAttachmentRefs.length > 0 ? emailAttachmentRefs : undefined,
+    });
+  } catch (notifErr) {
     console.warn('[reconcileEngagementStagePayment] Bank approval notification error:', notifErr);
-  });
+  }
 
   return {
     success: true,

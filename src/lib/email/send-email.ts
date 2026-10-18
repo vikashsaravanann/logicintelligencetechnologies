@@ -34,6 +34,7 @@ import {
 import { buildOneClickUnsubscribeUrl } from "./unsubscribe";
 import { emailLog, maskEmail } from "./logger";
 import type {
+  AttachmentRef,
   EmailAttachment,
   EmailCategory,
   EmailDeliveryStatus,
@@ -41,7 +42,7 @@ import type {
   SenderKey,
 } from "./types";
 
-export type { EmailResponse, EmailAttachment };
+export type { EmailResponse, EmailAttachment, AttachmentRef };
 
 interface SendEmailOptions {
   to: string | string[];
@@ -50,6 +51,7 @@ interface SendEmailOptions {
   replyTo?: string;
   from: keyof typeof COMPANY.emails | string;
   attachments?: EmailAttachment[];
+  attachmentRefs?: AttachmentRef[];
   category?: EmailCategory;
   idempotencyKey?: string;
   eventType?: string;
@@ -136,6 +138,7 @@ export async function sendEmail({
   replyTo,
   from,
   attachments,
+  attachmentRefs,
   category = "transactional",
   idempotencyKey,
   eventType = "transactional",
@@ -278,6 +281,7 @@ export async function sendEmail({
       idempotencyKey ||
       `send_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
     correlationId,
+    attachmentRefs,
   });
 
   if (outbox?.duplicate && outbox.alreadySent) {
