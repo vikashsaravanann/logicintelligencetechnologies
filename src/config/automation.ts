@@ -33,6 +33,13 @@ export const WORKFLOWS: WorkflowDef[] = [
     eventType: "onboarding.submitted",
     file: "onboarding-submitted.json",
   },
+  {
+    key: "outreach_dispatch",
+    name: "LIT — Outreach Dispatch",
+    webhookPath: "/webhook/lit-outreach-dispatch",
+    eventType: "outreach.message_approved",
+    file: "outreach-dispatch.json",
+  },
 ];
 
 export function workflowForEvent(eventType: string): WorkflowDef | null {

@@ -6,6 +6,7 @@ import { recordAdminAction } from "@/lib/admin/audit";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getStudioLead, saveMessageVersion } from "@/lib/outreach/intelligence/store";
 import { generateOutreachMessage, type GenerateResult } from "@/lib/outreach/intelligence/generate";
+import { dispatchApprovedMessage } from "@/lib/outreach/dispatch";
 import { OPPORTUNITY_TYPES, OUTREACH_CHANNELS, OUTREACH_TONES } from "@/lib/outreach/intelligence/message-schema";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -145,4 +146,29 @@ export async function approveDraft(messageId: string): Promise<{ ok: boolean; me
   if (error) return { ok: false, message: "Could not approve the message." };
   revalidatePath("/admin/outreach/studio");
   return { ok: true, message: "Message approved. It will not send automatically — dispatch stays a separate, controlled step." };
+}
+
+/**
+ * Dispatch an approved message to the controlled n8n sending workflow. This is
+ * the only path by which a draft leaves the system, and it is never automatic —
+ * a human triggers it after approval. A 2xx means accepted for processing, not
+ * confirmed sent.
+ */
+export async function dispatchMessage(messageId: string): Promise<{ ok: boolean; message: string }> {
+  const session = await requireCapabilityAction("outreach.manage", "outreach.dispatch");
+  const actor = { userId: session.userId, email: session.email, role: session.role };
+  if (!UUID.test(messageId)) return { ok: false, message: "Invalid message." };
+
+  const r = await dispatchApprovedMessage(messageId, session.email ?? session.userId);
+  const ok = r.state === "dispatched";
+  await recordAdminAction({
+    actor,
+    action: "outreach.dispatch",
+    capability: "outreach.manage",
+    target: { type: "outreach_message", id: messageId },
+    outcome: ok ? "succeeded" : "failed",
+    metadata: { state: r.state },
+  });
+  revalidatePath("/admin/outreach/queue");
+  return { ok, message: r.message };
 }

@@ -4,6 +4,7 @@ import { requireCapabilityPage } from "@/lib/auth/session";
 import { listMessagesByStatus } from "@/lib/outreach/intelligence/queues";
 import { formatIST } from "@/lib/format/datetime";
 import { ApproveButton } from "./approve-button";
+import { DispatchButton } from "./dispatch-button";
 
 export const metadata: Metadata = { title: "Outreach Queue" };
 export const dynamic = "force-dynamic";
@@ -83,6 +84,17 @@ export default async function OutreachQueuePage({ searchParams }: { searchParams
               {tab.key === "review" ? (
                 <div className="mt-3">
                   <ApproveButton messageId={m.id} disabled={!m.blockers_pass} />
+                </div>
+              ) : tab.key === "approved" ? (
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  {m.status === "approved" ? (
+                    <DispatchButton messageId={m.id} />
+                  ) : (
+                    <span className="rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10px] font-bold uppercase text-indigo-300">queued to send</span>
+                  )}
+                  {m.approved_by ? (
+                    <span className="text-[11px] text-emerald-300">Approved by {m.approved_by} · {formatIST(m.approved_at, "datetime")}</span>
+                  ) : null}
                 </div>
               ) : m.approved_by ? (
                 <p className="mt-2 text-[11px] text-emerald-300">Approved by {m.approved_by} · {formatIST(m.approved_at, "datetime")}</p>
