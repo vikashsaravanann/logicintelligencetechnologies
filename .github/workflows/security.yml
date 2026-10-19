@@ -26,11 +26,27 @@ jobs:
       - name: Install dependencies
         run: npm ci --prefer-offline
 
-      - name: NPM Audit (report high/critical; do not block on transitive noise)
+      - name: Production dependency audit (high/critical fail closed)
+        id: production_audit
         run: |
-          npm audit --audit-level=critical || true
-          npm audit --json > npm-audit.json || true
-        continue-on-error: false
+          set +e
+          npm audit --omit=dev --audit-level=high --json \
+            --fetch-retries=3 --fetch-retry-mintimeout=1000 \
+            --fetch-retry-maxtimeout=10000 --fetch-timeout=60000 \
+            > npm-audit-production.json
+          code=$?
+          echo "npm_audit_exit_code=$code" >> "$GITHUB_OUTPUT"
+          # An unavailable npm registry is NOT a clean security result.
+          # Both vulnerabilities and audit transport failures fail this gate.
+          exit "$code"
+
+      - name: Upload production audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-dependency-audit
+          path: npm-audit-production.json
+          if-no-files-found: warn
 
       - name: Secret scanning (literal secrets only)
         run: |
