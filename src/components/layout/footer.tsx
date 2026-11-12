@@ -62,6 +62,19 @@ const socialLinks = [
   { icon: GithubIcon, label: "GITHUB", href: COMPANY.githubUrl, hoverColor: "group-hover:text-white" },
 ];
 
+const footerlessRouteRoots = [
+  "/admin",
+  "/staff",
+  "/client",
+  "/quotation",
+  "/proposal",
+  "/engagement",
+  "/payment",
+  "/handover",
+  "/onboard",
+  "/onboarding",
+];
+
 export default function Footer() {
   const pathname = usePathname();
   const [email, setEmail] = useState("");
@@ -71,7 +84,10 @@ export default function Footer() {
   const [showSubscribeForm, setShowSubscribeForm] = useState(false);
 
   const normalizedPath = pathname?.toLowerCase() ?? "";
-  if (normalizedPath === "/admin" || normalizedPath.startsWith("/admin/")) {
+  const isFooterlessRoute = footerlessRouteRoots.some(
+    (routeRoot) => normalizedPath === routeRoot || normalizedPath.startsWith(`${routeRoot}/`)
+  );
+  if (isFooterlessRoute) {
     return null;
   }
 
