@@ -1,6 +1,7 @@
 "use client";
 import { Mail, Phone, Send, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { COMPANY } from "@/config/company";
 import { useState } from "react";
 
@@ -62,10 +63,16 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const normalizedPath = pathname?.toLowerCase() ?? "";
+  if (normalizedPath === "/admin" || normalizedPath.startsWith("/admin/")) {
+    return null;
+  }
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
