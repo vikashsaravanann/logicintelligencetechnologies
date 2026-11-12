@@ -10,6 +10,20 @@ export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
   const requested = `${path}${req.nextUrl.search}`;
 
+  // Staged mandatory staff MFA. Keep OFF until tested with enrolled synthetic staff.
+  // APIs are normally excluded by isPublicPath, so explicitly include staff APIs.
+  const enforceStaffMfa = process.env.STAFF_MFA_REQUIRED === "true";
+  const isStaffApiPath = enforceStaffMfa && path.startsWith("/api/staff/");
+  const isMfaExempt =
+    path === "/staff/setup-password" ||
+    path.startsWith("/staff/setup-password/") ||
+    path === "/staff/mfa/challenge" ||
+    path.startsWith("/staff/mfa/challenge/") ||
+    path === "/staff/settings/security/mfa" ||
+    path.startsWith("/staff/settings/security/mfa/") ||
+    path === "/api/staff/setup-password";
+  const isStaffPortalPath = path === "/staff" || path.startsWith("/staff/");
+
   if (
     path.startsWith("/resources/") &&
     path.toLowerCase().endsWith(".pdf") &&
@@ -21,7 +35,7 @@ export async function middleware(req: NextRequest) {
     return new NextResponse("Not Found", { status: 404 });
   }
 
-  if (isPublicPath(path)) {
+  if (isPublicPath(path) && !isStaffApiPath) {
     if (path === "/login" || path === "/reset-password") {
       try {
         const supabase = createMiddlewareClient({ req, res });
@@ -87,7 +101,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Not a signed-in area: unknown paths fall through to the 404 page.
-  if (!isProtectedPath(path)) return res;
+  if (!isProtectedPath(path) && !isStaffApiPath) return res;
 
   try {
     const supabase = createMiddlewareClient({ req, res });
@@ -101,7 +115,31 @@ export async function middleware(req: NextRequest) {
       // Signed in but unconfirmed: say so, otherwise /login (which sees the
       // session) sends the browser straight back here in a loop.
       if (user && !user.is_anonymous) loginUrl.searchParams.set("reason", "confirm-email");
+      if (isStaffApiPath) {
+        return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+      }
       return NextResponse.redirect(loginUrl);
+    }
+
+    if (enforceStaffMfa && (isStaffPortalPath || isStaffApiPath) && !isMfaExempt) {
+      const { data: assurance, error: assuranceErr } =
+        await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (assuranceErr || !assurance) {
+        return isStaffApiPath
+          ? NextResponse.json({ error: "MFA_CHECK_UNAVAILABLE" }, { status: 503 })
+          : new NextResponse("Staff authentication verification unavailable", { status: 503 });
+      }
+      if (assurance.currentLevel !== "aal2") {
+        if (isStaffApiPath) {
+          return NextResponse.json({ error: "MFA_REQUIRED" }, { status: 403 });
+        }
+        const destination = assurance.nextLevel === "aal2"
+          ? "/staff/mfa/challenge"
+          : "/staff/settings/security/mfa";
+        const mfaUrl = new URL(destination, req.url);
+        mfaUrl.searchParams.set("next", requested);
+        return NextResponse.redirect(mfaUrl);
+      }
     }
 
     if (isCompanyOnlyPath(path)) {
