@@ -1,0 +1,5 @@
+:global(body:has(.aboutPage) a[aria-label="Chat with us on WhatsApp"]),
+:global(body:has(.aboutPage) button[aria-label="Open LOGIC AI Assistant"]),
+:global(body:has(.aboutPage) button[aria-label="Back to top"]) {
+  display: none !important;
+}

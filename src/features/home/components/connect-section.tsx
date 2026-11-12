@@ -93,7 +93,7 @@ export default function ConnectSection() {
               </div>
               <div>
                 <h3 className="text-[var(--lit-ink)] font-display font-bold text-base mb-1">{item.label}</h3>
-                <p className="text-xs font-mono text-[var(--lit-blue)] truncate max-w-[220px] mb-1 font-semibold">
+                <p className="mb-1 max-w-full break-all font-mono text-xs font-semibold leading-relaxed text-[var(--lit-blue)]">
                   {item.val}
                 </p>
                 <p className="text-[11px] text-[var(--lit-text-muted)]">{item.desc}</p>

@@ -6,6 +6,22 @@
 @import "./styles/ambient.css";
 @import "./styles/brand-components.css";
 
+/* Shared lavender treatment for branded closing CTA panels. */
+.lavender-cta-panel {
+  background: linear-gradient(135deg, #f1eafb 0%, #efedf8 52%, #e8f3fc 100%) !important;
+  border-color: #ddd7ed !important;
+  color: #171827 !important;
+}
+.lavender-cta-panel > [aria-hidden="true"] { display: none !important; }
+.lavender-cta-panel :is(h2, h3, p, span, div, svg) { color: #171827 !important; }
+.lavender-cta-panel :is(a, button) {
+  background-color: #9bd8f5 !important;
+  background-image: none !important;
+  border-color: #84c8e9 !important;
+  color: #12324a !important;
+}
+.lavender-cta-panel :is(a, button):hover { background-color: #83caee !important; }
+
 /* ── LIT smooth navigation ───────────────────────────────────────── */
 @keyframes lit-loader-bar-slide {
   0% { transform: translateX(-100%); }

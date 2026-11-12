@@ -1,5 +1,4 @@
 import Navbar from '@/components/layout/navbar';
-import Footer from '@/components/layout/footer';
 import ClientWidgets from '@/components/shared/client-widgets';
 
 export default function MarketingLayout({
@@ -19,7 +18,6 @@ export default function MarketingLayout({
           {children}
         </div>
       </main>
-      <Footer />
       <ClientWidgets />
     </>
   );

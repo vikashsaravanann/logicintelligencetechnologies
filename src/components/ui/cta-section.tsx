@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 interface CTASectionProps {
   title?: string;
@@ -17,11 +17,11 @@ interface CTASectionProps {
 }
 
 export default function CTASection({
-  title = "Ready to Build Your Digital Advantage?",
-  subtitle = "Schedule a technical architecture review with our engineering leads or request a working prototype before payment.",
+  title = "Ready to Build Your System?",
+  subtitle = "Explore our transparent pricing tiers or request a zero-obligation working prototype.",
   primaryCta = {
-    label: "Schedule Strategy Call",
-    href: "/book-consultation",
+    label: "View Packages",
+    href: "/packages",
   },
   secondaryCta = {
     label: "Request Free Demo",
@@ -30,32 +30,25 @@ export default function CTASection({
   className = "",
 }: CTASectionProps) {
   return (
-    <section className={`relative py-16 md:py-24 overflow-hidden ${className}`}>
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-        <div className="relative rounded-3xl border border-[#0B2545] bg-[var(--lit-navy)] p-8 sm:p-12 md:p-16 text-center overflow-hidden shadow-xl">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(31,169,162,0.18),transparent_55%)] pointer-events-none" />
-
-          <div className="relative z-10 max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#45D9D2]/30 bg-[#45D9D2]/10 text-[#45D9D2] text-xs font-mono font-semibold tracking-widest uppercase mb-6 shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Direct Engineering Engagement</span>
-            </div>
-
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white tracking-tight leading-tight mb-6">
+    <section className={`relative bg-white px-3 py-6 sm:px-5 sm:py-8 md:px-7 md:py-10 ${className}`}>
+      <div className="relative z-10 w-full">
+        <div className="relative mx-auto w-full overflow-hidden rounded-[2rem] border border-[#ddd7ed] bg-gradient-to-br from-[#f1eafb] via-[#efedf8] to-[#e8f3fc] px-6 py-14 text-center sm:px-10 sm:py-16 md:px-16 md:py-20">
+          <div className="relative z-10 mx-auto max-w-6xl">
+            <h2 className="mb-6 break-words text-[clamp(2.1rem,5.4vw,4.75rem)] font-bold leading-[1.04] tracking-[-.045em] text-[#171827]">
               {title}
             </h2>
 
-            <p className="text-base sm:text-lg text-slate-300 leading-relaxed mb-10">
+            <p className="mx-auto mb-8 max-w-4xl text-base leading-relaxed text-[#39445a] sm:text-lg md:text-xl">
               {subtitle}
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center sm:gap-4">
               <Link
                 href={primaryCta.href}
-                className="lit-btn lit-btn-primary lit-btn-lg w-full sm:w-auto justify-center"
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#111827] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#263247] sm:w-auto"
               >
                 <span>{primaryCta.label}</span>
-                <ArrowRight className="w-4 h-4 ml-1.5 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="h-4 w-4" />
               </Link>
               {secondaryCta && (
                 secondaryCta.isExternal ? (
@@ -63,14 +56,14 @@ export default function CTASection({
                     href={secondaryCta.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="lit-btn bg-white/10 hover:bg-white/20 text-white border border-white/20 lit-btn-lg w-full sm:w-auto justify-center"
+                    className="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-[#222b3a]/25 bg-white/50 px-6 py-3 text-sm font-semibold text-[#1b2435] transition hover:bg-white/80 sm:w-auto"
                   >
                     {secondaryCta.label}
                   </a>
                 ) : (
                   <Link
                     href={secondaryCta.href}
-                    className="lit-btn bg-white/10 hover:bg-white/20 text-white border border-white/20 lit-btn-lg w-full sm:w-auto justify-center"
+                    className="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-[#222b3a]/25 bg-white/50 px-6 py-3 text-sm font-semibold text-[#1b2435] transition hover:bg-white/80 sm:w-auto"
                   >
                     {secondaryCta.label}
                   </Link>

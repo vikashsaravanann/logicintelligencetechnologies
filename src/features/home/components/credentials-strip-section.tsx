@@ -50,18 +50,18 @@ export default function CredentialsStripSection() {
             return (
               <div
                 key={i}
-                className="flex items-center gap-3.5 px-4 py-3 rounded-xl border border-[#E2E8F0] bg-white shadow-sm transition-all duration-300 hover:shadow-md hover:border-[#CBD5E1] group"
+                className="flex min-w-0 items-start gap-3.5 rounded-xl border border-[#E2E8F0] bg-white px-3 py-3 shadow-sm transition-all duration-300 hover:shadow-md hover:border-[#CBD5E1] group sm:px-4"
               >
                 <div
-                  className={`h-9 w-9 rounded-lg ${item.bg} border ${item.border} flex items-center justify-center shrink-0 ${item.accent} group-hover:scale-105 transition-transform`}
+                    className={`mt-0.5 h-9 w-9 rounded-lg ${item.bg} border ${item.border} flex items-center justify-center shrink-0 ${item.accent} group-hover:scale-105 transition-transform`}
                 >
                   <Icon className="w-4 h-4" aria-hidden="true" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs sm:text-[13px] font-bold text-[var(--lit-ink)] group-hover:text-[var(--lit-blue)] transition-colors leading-tight truncate">
+                  <p className="break-words text-[11px] font-bold leading-snug text-[var(--lit-ink)] transition-colors group-hover:text-[var(--lit-blue)] sm:text-[13px]">
                     {item.title}
                   </p>
-                  <p className="text-[11px] text-[var(--lit-text-muted)] font-mono leading-tight truncate mt-0.5">
+                  <p className="mt-1 break-words font-mono text-[9px] leading-snug text-[var(--lit-text-muted)] sm:text-[11px]">
                     {item.subtitle}
                   </p>
                 </div>

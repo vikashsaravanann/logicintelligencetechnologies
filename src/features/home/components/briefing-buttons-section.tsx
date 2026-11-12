@@ -44,12 +44,12 @@ export default function BriefingButtonsSection() {
       aria-label="Briefings and strategic entry points"
       className="relative bg-[var(--lit-cloud)] py-12 md:py-16 border-b border-[#E2E8F0]"
     >
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-5 px-5 sm:px-6 sm:grid-cols-3 lg:px-8">
+      <div className="mx-auto grid max-w-[1700px] grid-cols-1 gap-5 px-5 sm:px-6 sm:grid-cols-3 lg:gap-8 lg:px-8">
         {ITEMS.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className="group relative isolate block h-56 sm:h-60 overflow-hidden rounded-2xl border border-slate-800 bg-[#071328] shadow-md transition-all duration-300 hover:shadow-2xl hover:border-slate-700 hover:-translate-y-1"
+            className="group relative isolate block w-full min-w-0 aspect-auto min-h-[300px] overflow-hidden rounded-[1.65rem] border border-slate-800 bg-[#071328] shadow-md transition-all duration-300 hover:shadow-2xl hover:border-slate-700 hover:-translate-y-1 sm:aspect-[1.12/1] sm:min-h-0"
           >
             {/* Animated Schematic Visual */}
             <item.visual />
@@ -57,7 +57,7 @@ export default function BriefingButtonsSection() {
             <div className="absolute inset-0 flex flex-col justify-between p-6 z-10">
               <div className="flex justify-between items-start">
                 <span
-                  className={`text-[10px] font-mono uppercase tracking-[0.16em] font-semibold px-2.5 py-1 rounded-full border backdrop-blur-md ${item.badgeColor}`}
+                  className={`max-w-[calc(100%-3rem)] rounded-full border px-3 py-2 font-mono text-[9px] font-semibold uppercase leading-relaxed tracking-[0.14em] backdrop-blur-md sm:text-[10px] ${item.badgeColor}`}
                 >
                   {item.subtitle}
                 </span>
@@ -67,11 +67,11 @@ export default function BriefingButtonsSection() {
               </div>
 
               <div>
-                <p className="flex items-center justify-between text-lg font-bold font-display uppercase tracking-wider text-white mb-1">
+                <p className="mb-2 flex items-center justify-between gap-3 font-display text-2xl font-bold uppercase tracking-wider text-white sm:text-3xl">
                   <span>{item.title}</span>
                   <ArrowUpRight className="h-4 w-4 text-[var(--lit-cyan)] opacity-90 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </p>
-                <p className="text-xs text-slate-300 font-mono truncate">
+                <p className="max-w-[34rem] whitespace-normal break-words font-mono text-sm leading-relaxed text-slate-300 sm:text-base">
                   {item.desc}
                 </p>
               </div>

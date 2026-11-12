@@ -1,0 +1,91 @@
+:global(.reference-home) {
+  --lit-cloud: #ffffff;
+  --lit-navy: #181815;
+  --lit-ink: #181815;
+  --lit-light-blue: #f4f6f7;
+  --lit-teal: #3b7ea5;
+  --lit-blue: #34352f;
+  --lit-border-light: #e6e8eb;
+  --lit-text-muted: #77766f;
+  --lit-text-secondary: #55564f;
+  background: #ffffff;
+}
+:global(.reference-home > section:not(:first-child)) {
+  background: #ffffff !important;
+  color: #181815;
+}
+:global(.reference-home h2) {
+  font-family: var(--font-lora-var), Georgia, serif !important;
+  font-weight: 500 !important;
+  letter-spacing: -.045em !important;
+}
+:global(body:has(.reference-home) #header nav) {
+  background: rgba(255, 255, 255, .96) !important;
+  border-bottom-color: rgba(32, 31, 27, .09) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(12px);
+}
+.hero {
+  --cream: #ffffff;
+  --ink: #11110f;
+  --muted: #77766f;
+  --serif: var(--font-lora-var), Georgia, serif;
+  position: relative;
+  min-height: 730px;
+  padding: 89px clamp(24px, 7vw, 104px) 18px;
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--ink);
+  background: var(--cream);
+}
+.rule { position: absolute; z-index: 4; top: 0; left: 0; right: 0; height: 1px; background: rgba(20,20,18,.1); }
+.heading { position: relative; z-index: 3; max-width: 720px; margin: 0 auto; text-align: center; }
+.kicker { margin: 0 0 11px; color: #77766f; font-family: var(--serif); font-size: 13px; font-style: italic; letter-spacing: .01em; }
+.heading h1 { margin: 0; font-family: var(--serif); font-size: clamp(53px,7.05vw,84px); font-weight: 500; letter-spacing: -.067em; line-height: .94; }
+.heading h1 em { font-weight: 400; }
+.lede { max-width: 470px; margin: 17px auto 0; color: #85847e; font-size: 12px; line-height: 1.65; }
+.actions { display: flex; align-items: center; justify-content: center; gap: 11px; margin-top: 18px; }
+.primary, .secondary { display: inline-flex; min-height: 38px; align-items: center; justify-content: center; gap: 13px; padding: 0 17px; border-radius: 999px; text-decoration: none; font-size: 10px; transition: transform .2s ease, background .2s ease; }
+.primary { background: #111111; color: #ffffff; }
+.secondary { gap: 8px; border: 1px solid rgba(24,24,21,.11); color: #292925; background: rgba(255,255,255,.45); }
+.secondary span { display: grid; width: 16px; height: 16px; place-items: center; border-radius: 50%; background: #191917; color: white; }
+.primary:hover { background: #282828; }
+.primary:hover, .secondary:hover { transform: translateY(-2px); }
+.stage { position: relative; z-index: 1; width: min(1020px, 100%); height: 384px; margin: 7px auto 0; }
+.halo { position: absolute; z-index: -1; left: 50%; bottom: 13px; width: min(740px, 90vw); height: 235px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(ellipse,rgba(223,221,208,.8),rgba(238,235,225,.33) 50%,transparent 73%); }
+.portrait { position: absolute; z-index: 0; left: 50%; bottom: -50px; width: min(840px, 91vw); height: 495px; transform: translateX(-50%); object-fit: cover; object-position: center 42%; mix-blend-mode: multiply; mask-image: linear-gradient(to bottom, #000 0%, #000 76%, transparent 100%); }
+.note { position: absolute; z-index: 3; display: grid; grid-template-columns: 30px 1fr 12px; grid-template-rows: auto auto; align-items: center; column-gap: 8px; width: 190px; min-height: 80px; padding: 13px 12px; border: 1px solid rgba(35,35,31,.07); border-radius: 15px; background: rgba(255,255,255,.83); color: var(--ink); text-decoration: none; box-shadow: 0 10px 24px rgba(33,32,27,.055); backdrop-filter: blur(10px); }
+.leftNote { top: 59px; left: 1.5%; transform: rotate(-5deg); }
+.rightNote { top: 54px; right: 1%; transform: rotate(4deg); }
+.noteIcon { grid-row: 1 / 3; display: grid; width: 26px; height: 26px; place-items: center; border-radius: 8px; background: #f0f0ea; color: #5f6652; }
+.note strong { align-self: end; font-size: 10px; font-weight: 500; line-height: 1.25; }
+.note small { grid-column: 2 / 4; align-self: start; margin-top: 4px; color: #88877f; font-size: 8px; line-height: 1.4; }
+.noteArrow { grid-column: 3; grid-row: 1; color: #99988e; }
+.companyLogo { grid-row: 1 / 3; box-sizing: border-box; width: 30px; height: 30px; padding: 4px; border: 1px solid rgba(25,43,67,.12); border-radius: 50%; background: #fff; object-fit: contain; }
+.featureCards { position: absolute; z-index: 2; inset: 0; pointer-events: none; }
+.featureCard { position: absolute; display: flex; align-items: center; gap: 9px; width: 185px; min-height: 61px; padding: 10px; border: 1px solid rgba(44,44,40,.07); border-radius: 13px; background: rgba(255,255,255,.86); color: #1b1b18; text-decoration: none; box-shadow: 0 10px 26px rgba(28,28,25,.07); backdrop-filter: blur(8px); pointer-events: auto; transition: transform .2s ease, box-shadow .2s ease; }
+.featureCard:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(28,28,25,.1); }
+.health { left: 20%; top: 127px; transform: rotate(-3deg); }.health:hover { transform: rotate(-3deg) translateY(-3px); }
+.voice { left: 34%; bottom: 78px; transform: rotate(-2deg); }.voice:hover { transform: rotate(-2deg) translateY(-3px); }
+.shield { right: 20%; top: 170px; transform: rotate(4deg); }.shield:hover { transform: rotate(4deg) translateY(-3px); }
+.productLogo { display: block; flex: 0 0 38px; width: 38px; height: 38px; border: 1px solid rgba(24,37,54,.1); border-radius: 50%; background: #fff; object-fit: contain; }
+.featureText { display: grid; gap: 2px; min-width: 0; }.featureText small { color: #89887e; font-size: 7px; letter-spacing: .08em; text-transform: uppercase; }.featureText strong { font-size: 9px; font-weight: 500; }.featureText span { color: #87867e; font-size: 7px; line-height: 1.25; white-space: normal; }
+.featureArrow { margin-left: auto; color: #99988e; }
+.seal { position: absolute; z-index: 3; top: 95px; right: clamp(23px,8vw,116px); display: grid; width: 88px; height: 88px; place-items: center; color: #33332d; }
+.sealMark { width: 100%; height: 100%; overflow: visible; fill: none; stroke: currentColor; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.heroBottom { position: absolute; z-index: 3; bottom: 17px; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 11px; color: #aaa99f; font-size: 8px; letter-spacing: .1em; text-transform: uppercase; }
+.bottomLine { width: 34px; height: 1px; background: #cfcec4; }
+@media (max-width: 760px) {
+  .hero { min-height: 1060px; padding: 77px 16px 42px; }
+  .kicker { font-size: 12px; margin-bottom: 12px; }.heading h1 { font-size: clamp(38px,10.8vw,66px); }.lede { max-width: 350px; font-size: 11px; margin-top: 15px; }.actions { gap: 8px; margin-top: 17px; }.primary,.secondary { min-height: 40px; padding: 0 13px; font-size: 9px; }
+  .stage { height: 610px; width: 100%; margin-top: 10px; }.portrait { top: 77px; bottom: auto; width: min(540px,120vw); max-width: 120vw; height: 410px; object-position: center 40%; }.halo { width: 100vw; height: 210px; bottom: 164px; }
+  .note { grid-template-columns: 28px minmax(0,1fr) 10px; width: calc(50% - 6px); min-height: 82px; padding: 9px; column-gap: 6px; border-radius: 12px; transform: none; }.leftNote { top: 0; left: 0; }.rightNote { top: 0; right: 0; }.noteIcon { width: 23px; height: 23px; }.companyLogo { width: 28px; height: 28px; padding: 4px; }.note strong { font-size: 8px; }.note small { font-size: 7px; }
+  .featureCards { top: auto; right: 0; bottom: 0; left: 0; display: flex; height: 165px; flex-direction: column; gap: 7px; }
+  .featureCard { position: relative; top: auto; right: auto; bottom: auto; left: auto; width: 100%; min-height: 50px; flex: 1 1 0; gap: 9px; padding: 8px 10px; border-radius: 10px; transform: none; }.health:hover,.voice:hover,.shield:hover { transform: translateY(-2px); }.productLogo { flex-basis: 38px; width: 38px; height: 38px; }.featureText small { font-size: 7px; }.featureText strong { font-size: 9px; }.featureText span { font-size: 7px; }.featureArrow { flex: 0 0 13px; }
+  .seal { width: 48px; height: 48px; top: 58px; right: 15px; }
+  .heroBottom { font-size: 6px; bottom: 13px; }
+}
+@media (max-width: 380px) {
+  .hero { min-height: 950px; }.heading h1 { font-size: clamp(36px,10.8vw,41px); }.stage { height: 570px; }.portrait { height: 370px; top: 85px; }.featureCards { height: 165px; }.note { min-height: 88px; padding: 8px; }.note strong { font-size: 7px; }.note small { font-size: 6.5px; }
+}
+@media (prefers-reduced-motion: reduce) { .primary,.secondary,.featureCard { transition: none; } }

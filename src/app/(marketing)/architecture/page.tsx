@@ -318,7 +318,7 @@ export default function ArchitecturePage() {
           </div>
 
           {/* Security & Zero-Persistence Guarantee Banner */}
-          <div className="rounded-3xl border border-[#0B2545] bg-[var(--lit-navy,#0B2545)] text-white p-8 sm:p-12 shadow-xl relative overflow-hidden">
+          <div className="lavender-cta-panel rounded-3xl border border-[#0B2545] bg-[var(--lit-navy,#0B2545)] text-white p-8 sm:p-12 shadow-xl relative overflow-hidden">
             <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
               <div className="space-y-4 max-w-2xl">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#45D9D2]/30 bg-[#45D9D2]/10 text-[#45D9D2] text-xs font-mono font-semibold uppercase">

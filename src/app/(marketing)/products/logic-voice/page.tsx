@@ -309,15 +309,15 @@ export default function LogicVoiceProductPage() {
         </section>
 
         {/* CTA Card */}
-        <section className="relative rounded-3xl overflow-hidden bg-[var(--lit-navy,#0B2545)] text-white p-8 sm:p-14 text-center shadow-md">
+        <section className="lavender-cta-panel relative rounded-3xl overflow-hidden border border-[#ddd7ed] bg-gradient-to-br from-[#f1eafb] via-[#efedf8] to-[#e8f3fc] text-[#171827] p-8 sm:p-14 text-center shadow-md">
           <div className="relative z-10 space-y-6 max-w-3xl mx-auto">
-            <span className="inline-block px-3.5 py-1 rounded-full border border-white/20 bg-white/10 text-xs font-mono font-semibold uppercase tracking-wider text-[#45D9D2]">
+            <span className="inline-block px-3.5 py-1 rounded-full border border-[#84c8e9] bg-white/55 text-xs font-mono font-semibold uppercase tracking-wider text-[#2875a0]">
               Interactive Voice AI Experience
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
               Experience Logic Voice
             </h2>
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-light">
+            <p className="text-[#43596b] text-sm sm:text-base leading-relaxed font-light">
               Explore the official Logic Voice application or review the open codebase on GitHub.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
@@ -325,7 +325,7 @@ export default function LogicVoiceProductPage() {
                 href="https://logicvoice.logicintelligencetechnologies.in/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-[#1FA9A2] text-slate-950 font-bold text-xs tracking-widest uppercase hover:bg-[#45D9D2] transition-colors duration-200 min-h-[48px] shadow-sm"
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-[#9bd8f5] text-[#12324a] font-bold text-xs tracking-widest uppercase hover:bg-[#83caee] transition-colors duration-200 min-h-[48px] shadow-sm"
               >
                 <span>Open Application</span>
                 <ExternalLink className="w-4 h-4" />
@@ -334,13 +334,13 @@ export default function LogicVoiceProductPage() {
                 href="https://github.com/vikashsaravanann/logic-voice"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-white/20 bg-white/10 text-white font-mono text-xs tracking-widest uppercase hover:bg-white/20 transition-colors duration-200 min-h-[48px]"
+                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-[#84c8e9] bg-white/55 text-[#173d59] font-mono text-xs tracking-widest uppercase hover:bg-white/85 transition-colors duration-200 min-h-[48px]"
               >
                 <span>GitHub Source</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
             </div>
-            <div className="flex flex-wrap justify-center items-center gap-3 pt-6 border-t border-white/10 text-[11px] font-mono text-slate-400 uppercase">
+            <div className="flex flex-wrap justify-center items-center gap-3 pt-6 border-t border-[#8ecce9]/70 text-[11px] font-mono text-[#526d80] uppercase">
               <span>Logic Intelligence Technologies</span>
               <span>·</span>
               <span>Personal AI Assistant</span>

@@ -103,7 +103,7 @@ export default function TestimonialsSection() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   href="/free-demo"
-                  className="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-gradient-to-r from-[var(--lit-blue)] to-[var(--lit-teal)] px-6 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-white shadow-md hover:shadow-lg transition-all"
+                  className="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-[#9bd8f5] px-6 py-3 text-xs font-mono font-bold uppercase tracking-[0.14em] text-[#12324a] shadow-md hover:bg-[#83caee] hover:shadow-lg transition-all"
                 >
                   Request Free Prototype Demo
                   <ArrowRight className="ml-2 h-4 w-4" />

@@ -1,5 +1,5 @@
 "use client";
-import { Mail, Phone, Send, ArrowRight } from "lucide-react";
+import { ArrowUpRight, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { COMPANY } from "@/config/company";
@@ -68,6 +68,7 @@ export default function Footer() {
   const [subscribed, setSubscribed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showSubscribeForm, setShowSubscribeForm] = useState(false);
 
   const normalizedPath = pathname?.toLowerCase() ?? "";
   if (normalizedPath === "/admin" || normalizedPath.startsWith("/admin/")) {
@@ -100,211 +101,129 @@ export default function Footer() {
     }
   };
 
+  const menuLinks = [
+    { label: "Products", href: "/products" },
+    { label: "Services", href: "/services" },
+    { label: "Our work", href: "/work" },
+    { label: "About us", href: "/about" },
+    { label: "Careers", href: "/careers" },
+    { label: "Investors", href: "/investors" },
+  ];
+  const supportLinks = [
+    { label: "Contact", href: "/contact" },
+    { label: "Book a consultation", href: "/book-consultation" },
+    { label: "Help center", href: "/help-center" },
+    { label: "Resources", href: "/resources" },
+    { label: "System status", href: "/status" },
+    { label: "Privacy & terms", href: "/privacy" },
+  ];
+
   return (
-    <footer className="bg-[var(--lit-navy)] text-white pt-20 pb-12 border-t border-[var(--lit-border-light)]/20 relative overflow-hidden">
-      <div aria-hidden className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[var(--lit-teal)]/40 to-transparent" />
-
-      <div className="mx-auto max-w-[1400px] px-6 lg:px-8 relative z-10">
-
-        {/* Main Grid: Custom column widths for better proportion */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-8 gap-y-12 mb-14">
-
-          {/* Column 1: Brand */}
-          <div className="flex flex-col gap-7 overflow-hidden lg:col-span-3">
-            <Link href="/" className="flex items-center gap-3 group w-full">
-              <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-full flex items-center justify-center overflow-hidden ring-1 ring-white/15 group-hover:ring-[var(--corp-cyan)]/50 transition-all shrink-0 bg-[#10131A] p-0.5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={COMPANY.logoIconPath}
-                  alt={`${COMPANY.displayName} logo`}
-                  className="w-full h-full object-cover rounded-full"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                    e.currentTarget.parentElement!.innerHTML = '<span class="font-bold text-white text-xs">LIT</span>';
-                  }}
-                />
-              </div>
-              <div className="flex items-center min-w-0">
-                <span className="text-[11px] xl:text-xs font-bold text-white tracking-[0.14em] leading-tight uppercase group-hover:text-[var(--corp-cyan)] transition-colors">
-                  LOGIC INTELLIGENCE TECHNOLOGIES
-                </span>
-              </div>
-            </Link>
-
-            <ul className="flex flex-col gap-3 mt-1">
-              {[
-                "LIT HEALTHCARE PLATFORM",
-                "INTELLIGENT AI PRODUCTS",
-                "AUTOMATION SOLUTIONS",
-                "VOICE-FIRST AI & ASSISTANTS",
-                "ENTERPRISE AI ARCHITECTURE",
-              ].map((point, idx) => (
-                <li key={idx} className="flex items-center gap-2.5 text-xs text-[#B5BECC] leading-relaxed font-medium uppercase tracking-wider">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--corp-cyan)] shrink-0" />
-                  <span>{point}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 2: Products */}
-          <div className="flex flex-col gap-5 lg:col-span-2">
-            <h3 className="text-[var(--corp-cyan)] font-semibold text-[11px] uppercase tracking-[0.2em] flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-[var(--corp-cyan)]" />
-              PRODUCTS
-            </h3>
-            <ul className="flex flex-col gap-2.5">
-              {[
-                { label: 'LIT HEALTHCARE', href: '/healthcare' },
-                { label: 'HEALTHCARE PLANS', href: '/healthcare/plans' },
-                { label: 'LOGIC VOICE', href: '/products/logic-voice' },
-                { label: 'VOICE SHIELD', href: '/voice-shield' },
-                { label: 'ALL PRODUCTS', href: '/products' },
-                { label: 'PRICING', href: '/pricing' },
-              ].map((item) => (
-                <li key={item.label}>
-                  <Link href={item.href} className="text-[#B5BECC] hover:text-white text-xs xl:text-[13px] uppercase tracking-[0.08em] font-medium flex items-center gap-2.5 group transition-colors truncate">
-                    <ArrowRight className="w-3.5 h-3.5 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 text-[var(--corp-cyan)] shrink-0" />
-                    <span className="group-hover:translate-x-0.5 transition-transform duration-200 truncate">{item.label}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3: Solutions */}
-          <div className="flex flex-col gap-5 lg:col-span-2">
-            <h3 className="text-[var(--corp-cyan)] font-semibold text-[11px] uppercase tracking-[0.2em] flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-[var(--corp-cyan)]" />
-              SOLUTIONS
-            </h3>
-            <ul className="flex flex-col gap-2.5">
-              {['AI INTEGRATION', 'WEB DEVELOPMENT', 'MOBILE APPS', 'UI/UX DESIGN', 'CUSTOM SOFTWARE'].map((item) => (
-                <li key={item}>
-                  <Link href="/services" className="text-[#B5BECC] hover:text-white text-xs xl:text-[13px] uppercase tracking-[0.08em] font-medium flex items-center gap-2.5 group transition-colors truncate">
-                    <ArrowRight className="w-3.5 h-3.5 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 text-[var(--corp-cyan)] shrink-0" />
-                    <span className="group-hover:translate-x-0.5 transition-transform duration-200 truncate">{item}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 4: Company */}
-          <div className="flex flex-col gap-5 lg:col-span-2">
-            <h3 className="text-[var(--corp-cyan)] font-semibold text-[11px] uppercase tracking-[0.2em] flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-[var(--corp-cyan)]" />
-              COMPANY
-            </h3>
-            <ul className="flex flex-col gap-2.5">
-              {[
-                { label: 'ABOUT US', href: '/about' },
-                { label: 'FOUNDER', href: '/about/founder' },
-                { label: 'OUR WORK', href: '/work' },
-                { label: 'CAREERS', href: '/careers' },
-                { label: 'CONTACT', href: '/contact' },
-                { label: 'TERMS OF SERVICE', href: '/terms' },
-                { label: 'PRIVACY POLICY', href: '/privacy' },
-              ].map((item) => (
-                <li key={item.label}>
-                  <Link href={item.href} className="text-[#B5BECC] hover:text-white text-xs xl:text-[13px] uppercase tracking-[0.08em] font-medium flex items-center gap-2.5 group transition-colors truncate">
-                    <ArrowRight className="w-3.5 h-3.5 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200 text-[var(--corp-cyan)] shrink-0" />
-                    <span className="group-hover:translate-x-0.5 transition-transform duration-200 truncate">{item.label}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 5: Stay Connected & Newsletter */}
-          <div className="flex flex-col gap-7 overflow-hidden lg:col-span-3">
-            <h3 className="text-[var(--corp-cyan)] font-semibold text-[11px] uppercase tracking-[0.2em] flex items-center gap-1.5">
-              <span className="w-1 h-1 rounded-full bg-[var(--corp-cyan)]" />
-              STAY CONNECTED
-            </h3>
-            <p className="text-xs text-[#B5BECC] leading-relaxed uppercase tracking-wider">
-              SUBSCRIBE TO OUR NEWSLETTER FOR THE LATEST UPDATES ON AI, AUTOMATION, AND DEVELOPMENT.
-            </p>
-
-            <form onSubmit={handleSubscribe} className="relative mt-0.5 w-full" noValidate={false}>
+    <footer className="relative overflow-hidden bg-white px-4 pt-8 sm:px-6 sm:pt-12">
+      <section aria-labelledby="footer-newsletter-title" className="relative mx-auto mb-6 flex min-h-[360px] w-full max-w-[1400px] items-center justify-center overflow-hidden rounded-[28px] border border-[#d9ceff] bg-[linear-gradient(118deg,#bca2f6_0%,#6f37f7_50%,#3c08ef_100%)] px-5 py-14 text-center shadow-[0_20px_60px_rgba(73,43,175,.16)] sm:min-h-[400px] sm:rounded-[32px] sm:px-10">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <svg className="absolute -bottom-8 -left-12 h-44 w-64 rotate-[-12deg] opacity-85 sm:h-56 sm:w-80" viewBox="0 0 400 260" fill="none">
+            <path d="M18 69 185 11c15-5 31 0 41 11l151 153c14 14 8 38-12 44L198 274c-15 5-32 0-43-12L7 110c-12-12-7-35 11-41Z" fill="#fff"/>
+            <path d="m11 93 135 83 49-65 180 97M13 97l-3 14 145 151 43-86" stroke="#eee9ff" strokeWidth="7"/>
+          </svg>
+          <svg className="absolute -bottom-8 -right-12 h-44 w-64 rotate-[12deg] opacity-85 sm:h-56 sm:w-80" viewBox="0 0 400 260" fill="none">
+            <path d="M18 69 185 11c15-5 31 0 41 11l151 153c14 14 8 38-12 44L198 274c-15 5-32 0-43-12L7 110c-12-12-7-35 11-41Z" fill="#fff"/>
+            <path d="m11 93 135 83 49-65 180 97M13 97l-3 14 145 151 43-86" stroke="#eee9ff" strokeWidth="7"/>
+          </svg>
+        </div>
+        <div className="relative z-10 mx-auto w-full max-w-3xl">
+          <h2 id="footer-newsletter-title" className="text-[clamp(2rem,5vw,3.5rem)] font-semibold leading-[1.02] tracking-[-.045em] text-white">
+            Join Our Newsletter<br />and <span className="font-serif font-normal italic">Stay Updated</span>
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-white/90 sm:text-base">
+            Get the latest insights, updates, and strategies delivered to your inbox.
+          </p>
+          {!showSubscribeForm ? (
+            <button type="button" onClick={() => setShowSubscribeForm(true)} className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#111111] px-7 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-[#282828] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#5830dd]">
+              Join Newsletter <ArrowUpRight className="h-4 w-4" />
+            </button>
+          ) : (
+            <form onSubmit={handleSubscribe} className="mx-auto mt-7 flex w-full max-w-xl flex-col gap-2 rounded-2xl border border-white/50 bg-white/95 p-2 sm:flex-row" noValidate={false}>
               <input
                 type="email"
-                aria-label="Email address"
+                aria-label="Email address for newsletter"
                 autoComplete="email"
-                placeholder="ENTER YOUR EMAIL ADDRESS"
+                placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-[#10131A] border border-white/15 rounded-xl px-4 min-h-[44px] text-xs text-white placeholder:text-zinc-500 placeholder:uppercase placeholder:tracking-widest focus-visible:outline-2 focus-visible:outline-[var(--corp-cyan)] focus:border-[var(--corp-cyan)]/60 transition-colors pr-14"
+                autoFocus
+                className="min-h-11 min-w-0 flex-1 rounded-xl bg-transparent px-4 text-sm text-[#25231f] outline-none placeholder:text-[#8b8981] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#9bd8f5]"
               />
-              <button
-                type="submit"
-                disabled={loading}
-                className="absolute right-1 top-1 bottom-1 w-11 bg-gradient-to-r from-[var(--corp-teal)] to-[var(--corp-cyan)] rounded-lg flex items-center justify-center text-[#07090D] hover:opacity-95 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_10px_rgba(69,217,210,0.3)]"
-                title="Subscribe"
-                aria-label="Subscribe to newsletter"
-              >
-                <Send className="w-4 h-4 ml-0.5" />
+              <button type="submit" disabled={loading} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#111111] px-5 text-sm font-semibold text-white transition hover:bg-[#282828] disabled:opacity-50">
+                {loading ? "Joining…" : "Join Newsletter"} <ArrowUpRight className="h-4 w-4" />
               </button>
             </form>
-            {subscribed && (
-              <p role="status" className="text-xs text-[var(--corp-cyan)] font-bold uppercase tracking-widest">THANK YOU FOR SUBSCRIBING!</p>
-            )}
-            {error && (
-              <p role="alert" className="text-xs text-rose-400 font-bold uppercase tracking-widest">{error}</p>
-            )}
+          )}
+          {subscribed && <p role="status" className="mt-3 text-sm font-medium text-white">You’re on the list. Thank you for subscribing.</p>}
+          {error && <p role="alert" className="mt-3 text-sm font-medium text-white">{error}</p>}
+        </div>
+      </section>
 
-            <div className="flex items-center gap-2 mt-1 flex-wrap">
-              {socialLinks.map(({ icon: Icon, label, href, hoverColor }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-[#B5BECC] transition-all hover:bg-white/10 hover:border-[var(--corp-cyan)]/40 hover:text-white group shrink-0"
-                  title={label}
-                >
-                  <Icon className={`w-4 h-4 transition-colors ${hoverColor}`} aria-hidden />
-                </a>
-              ))}
-            </div>
+      <div className="relative z-10 mx-auto max-w-[1400px] overflow-hidden rounded-[22px] border border-black/10 bg-[#fffefa] shadow-[0_18px_55px_rgba(33,24,20,.08)]">
+        <div className="grid grid-cols-2 gap-x-5 gap-y-9 px-5 py-8 sm:gap-8 sm:px-10 sm:py-12 lg:grid-cols-[1.25fr_.7fr_.7fr] lg:gap-16 lg:px-14 lg:py-14">
+          <div className="col-span-full max-w-lg lg:col-span-1">
+            <Link href="/" className="inline-flex items-center gap-3 text-[#171714]" aria-label={`${COMPANY.displayName} home`}>
+              <span className="grid h-10 w-10 place-items-center rounded-full border border-black/10 bg-white p-1.5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={COMPANY.logoIconPath} alt="" className="h-full w-full rounded-full object-cover" />
+              </span>
+              <span className="whitespace-nowrap text-[clamp(8px,2.7vw,11px)] font-semibold uppercase tracking-[.1em] sm:text-[11px]">Logic Intelligence Technologies</span>
+            </Link>
+            <p className="mt-8 max-w-sm text-sm leading-relaxed text-[#77756e]">Thoughtful technology, built around the people and systems that matter.</p>
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#5e5c55]">
+              Logic Intelligence Technologies is a Coimbatore-based software engineering company building practical AI products, healthcare systems, and secure voice technology.
+            </p>
           </div>
 
+          <nav aria-label="Footer menu" className="min-w-0">
+            <h3 className="mb-5 text-[11px] font-semibold uppercase tracking-[.18em] text-[#77756e]">Menu</h3>
+            <ul className="space-y-3">
+              {menuLinks.map((item) => <li key={item.label}><Link href={item.href} className="text-sm text-[#25231f] transition-colors hover:text-[#315f9c]">{item.label}</Link></li>)}
+            </ul>
+          </nav>
+
+          <nav aria-label="Footer support" className="min-w-0">
+            <h3 className="mb-5 text-[11px] font-semibold uppercase tracking-[.18em] text-[#77756e]">Support</h3>
+            <ul className="space-y-3">
+              {supportLinks.map((item) => <li key={item.label}><Link href={item.href} className="text-sm text-[#25231f] transition-colors hover:text-[#315f9c]">{item.label}</Link></li>)}
+            </ul>
+          </nav>
         </div>
 
-        {/* Contact Info Row */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 mb-10 pt-8 border-t border-white/[0.07] w-full">
-          <a href={`mailto:${COMPANY.email}`} className="flex items-center gap-3 text-xs sm:text-sm text-[#B5BECC] hover:text-white transition-colors group tracking-wide">
-            <div className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center group-hover:bg-[var(--corp-cyan)]/15 group-hover:text-[var(--corp-cyan)] transition-colors shrink-0">
-              <Mail className="w-4 h-4" />
-            </div>
-            <span className="lowercase">{COMPANY.email}</span>
-          </a>
-          <a href={`tel:${COMPANY.phone}`} className="flex items-center gap-3 text-xs sm:text-sm text-[#B5BECC] hover:text-white transition-colors group tracking-wide">
-            <div className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center group-hover:bg-[var(--corp-cyan)]/15 group-hover:text-[var(--corp-cyan)] transition-colors shrink-0">
-              <Phone className="w-4 h-4" />
-            </div>
-            <span>{COMPANY.phone}</span>
-          </a>
-        </div>
-
-        {/* Bottom Banner */}
-        <div className="pt-6 pb-4 border-t border-white/[0.07] flex flex-col md:flex-row items-center justify-between gap-4">
-          <Link href="/status" className="flex items-center gap-2.5 min-h-[44px] text-xs font-bold text-[#B5BECC] uppercase tracking-widest hover:text-white transition-colors">
-             <span aria-hidden className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-             System status: Operational
-          </Link>
-
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-[10px] sm:text-xs text-[#B5BECC]/70 text-center md:text-right uppercase tracking-widest leading-relaxed">
-            {COMPANY.registration?.msmeUdyamNumber ? (
-              <span>MSME: {COMPANY.registration.msmeUdyamNumber}</span>
-            ) : null}
-            <span className="hidden sm:inline">•</span>
-            <span>© {new Date().getFullYear()} {COMPANY.legalName}. ALL RIGHTS RESERVED.</span>
+        <div className="flex flex-col gap-5 border-t border-black/10 px-6 py-5 sm:px-10 md:flex-row md:items-center md:justify-between lg:px-14">
+          <div className="grid w-full grid-cols-1 gap-2 text-xs text-[#5e5c55] sm:grid-cols-2 sm:gap-x-5 md:max-w-2xl">
+            <a href={`mailto:${COMPANY.email}`} className="inline-flex items-center gap-2 transition-colors hover:text-[#315f9c]"><Mail className="h-3.5 w-3.5" />{COMPANY.email}</a>
+            <a href={`tel:${COMPANY.phone}`} className="inline-flex items-center gap-2 transition-colors hover:text-[#315f9c]"><Phone className="h-3.5 w-3.5" />{COMPANY.phone}</a>
+          </div>
+          <div className="flex flex-wrap items-center gap-2" aria-label="Social media">
+            {socialLinks.map(({ icon: Icon, label, href }) => (
+              <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} title={label} className="grid h-9 w-9 place-items-center rounded-full border border-black/10 text-[#25231f] transition hover:border-black/30 hover:bg-black/5">
+                <Icon className="h-4 w-4" aria-hidden />
+              </a>
+            ))}
           </div>
         </div>
+      </div>
 
+      <Link href="/" aria-label={`${COMPANY.displayName} home`} className="mx-auto mt-5 flex max-w-[1400px] items-center justify-between gap-2 overflow-hidden rounded-[18px] border border-[#e6e8eb] bg-[#f4f5f6] px-3 py-4 text-[#151411] sm:gap-4 sm:py-7 sm:pl-9 sm:pr-8">
+        <span className="block min-w-0 whitespace-nowrap font-serif text-[clamp(3.75rem,20.5vw,18rem)] font-semibold uppercase leading-[.72] tracking-[-.09em]">Logic</span>
+        {/* Render the supplied circular artwork in full; contain preserves its original framing. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/logos/circular/lit-company-footer.png" alt="Logic Intelligence Technologies" className="h-28 w-28 shrink-0 object-contain sm:h-36 sm:w-36" />
+      </Link>
+
+      <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-3 px-2 py-6 text-center text-[10px] font-medium uppercase tracking-[.12em] text-[#25231f] sm:flex-row sm:text-left">
+        <Link href="/status" className="inline-flex items-center gap-2 transition hover:text-black"><span aria-hidden className="h-2 w-2 rounded-full bg-emerald-700" />System status: Operational</Link>
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 sm:justify-end">
+          <span>© {new Date().getFullYear()} {COMPANY.legalName}. All rights reserved.</span>
+          <span>Designed &amp; engineered in Coimbatore, India</span>
+        </div>
       </div>
     </footer>
   );

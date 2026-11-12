@@ -347,7 +347,7 @@ export default function AiAssistantPage() {
           </section>
 
           {/* Send Us Ten Real Questions Banner */}
-          <section className="rounded-3xl border border-[#0B2545] bg-[var(--lit-navy,#0B2545)] text-white p-8 sm:p-12 text-center shadow-xl space-y-6">
+          <section className="lavender-cta-panel rounded-3xl border border-[#0B2545] bg-[var(--lit-navy,#0B2545)] text-white p-8 sm:p-12 text-center shadow-xl space-y-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#45D9D2]/30 bg-[#45D9D2]/10 text-[#45D9D2] text-xs font-mono font-semibold tracking-widest uppercase">
               <Lock className="w-3.5 h-3.5" />
               <span>Zero-Hallucination Evaluation Protocol</span>

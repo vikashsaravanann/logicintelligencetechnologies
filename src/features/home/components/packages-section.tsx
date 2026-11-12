@@ -95,7 +95,7 @@ export default function PackagesSection() {
                     href={`/packages/${pkg.slug}`}
                     className={`flex items-center justify-center w-full py-3.5 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all duration-300 ${
                       isPopular
-                        ? "bg-gradient-to-r from-[var(--lit-blue)] to-[var(--lit-teal)] text-white hover:brightness-105 shadow-md"
+                        ? "bg-[#9bd8f5] text-[#12324a] hover:bg-[#83caee] shadow-md"
                         : "bg-white border border-[#CBD5E1] text-[var(--lit-ink)] hover:bg-[#F8FAFC]"
                     }`}
                   >

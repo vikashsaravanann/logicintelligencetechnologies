@@ -4,6 +4,7 @@ import FloatingElements from "@/components/motion/floating-elements";
 import BackToHome from "@/components/ui/back-to-home";
 import { COMPANY } from "@/config/company";
 import { FOUNDER } from "@/config/founder";
+import styles from "./about-page.module.css";
 import JsonLd from "@/components/seo/json-ld";
 import { breadcrumb } from "@/lib/seo/schema";
 import {
@@ -93,17 +94,18 @@ const focusAreas = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-white text-[var(--lit-ink)] selection:bg-[#E7F3FF] selection:text-[#1565C0]">
+    <div className={`aboutPage ${styles.aboutPage} min-h-screen bg-white text-[var(--lit-ink)] selection:bg-[#E7F3FF] selection:text-[#1565C0]`}>
       <JsonLd
         data={breadcrumb([
           { name: "Home", path: "/" },
           { name: "About Us", path: "/about" },
         ])}
       />
-      <BackToHome />
-
       {/* Hero Section */}
       <section className="relative pt-32 pb-16 sm:pt-40 sm:pb-24 px-6 lg:px-8 overflow-hidden bg-gradient-to-b from-[#F0F7FF] via-[#FAFBFF] to-[#FFFFFF] border-b border-[#E2E8F0]">
+        <div className="max-w-7xl mx-auto">
+          <BackToHome inline className="mb-7" />
+        </div>
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono font-semibold uppercase tracking-[0.16em] bg-[#E7F3FF] text-[#1565C0] border border-[#BFDBFE] mb-6 shadow-2xs">
             <Rocket className="w-3.5 h-3.5 text-[#1FA9A2]" />
@@ -153,11 +155,11 @@ export default function AboutPage() {
       </section>
 
       {/* Founder Spotlight Card */}
-      <section className="py-12 sm:py-16 px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="rounded-3xl border border-[#DFE7EF] bg-[#F7F9FC] p-6 sm:p-10 md:p-12 shadow-sm">
-          <div className="grid lg:grid-cols-[minmax(240px,340px)_1fr] gap-10 lg:gap-14 items-center">
+      <section className="w-full max-w-7xl mx-auto overflow-hidden py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+        <div className="w-full min-w-0 overflow-hidden rounded-3xl border border-[#DFE7EF] bg-[#F7F9FC] p-4 sm:p-10 md:p-12 shadow-sm">
+          <div className="grid w-full min-w-0 grid-cols-1 items-center gap-8 sm:gap-10 lg:grid-cols-[minmax(240px,340px)_minmax(0,1fr)] lg:gap-14">
             {/* Founder Visual & Vitals */}
-            <div className="flex flex-col items-center lg:items-stretch gap-5">
+            <div className="flex min-w-0 w-full flex-col items-center gap-5 lg:items-stretch">
               <div className="w-full max-w-[340px] aspect-[3/4] rounded-2xl overflow-hidden border border-[#DFE7EF] bg-white shadow-md relative group">
                 <img
                   src="/images/founder/founder-about-card.jpg"
@@ -173,9 +175,9 @@ export default function AboutPage() {
                 <p className="text-[var(--lit-blue)] font-mono font-bold text-xs uppercase tracking-widest mt-1">
                   {FOUNDER.title}
                 </p>
-                <p className="text-[var(--lit-text-muted)] text-xs mt-2 flex items-center justify-center lg:justify-start gap-1.5 font-medium">
-                  <MapPin className="w-3.5 h-3.5 text-[#1FA9A2]" />
-                  {COMPANY.address}
+                <p className="mx-auto mt-2 flex min-w-0 max-w-full items-start justify-center gap-1.5 break-words text-[11px] font-medium text-[var(--lit-text-muted)] sm:text-xs lg:mx-0 lg:justify-start">
+                  <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#1FA9A2]" />
+                  <span className="min-w-0 [overflow-wrap:anywhere]">{COMPANY.address}</span>
                 </p>
               </div>
 
@@ -198,7 +200,7 @@ export default function AboutPage() {
             </div>
 
             {/* Founder Bio & Credentials */}
-            <div className="space-y-6">
+            <div className="min-w-0 w-full space-y-6 [overflow-wrap:anywhere]">
               <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[11px] font-mono font-semibold uppercase tracking-widest text-[#7C3AED] bg-[#F1ECFF] border border-[#DDD6FE]">
                 <Sparkles className="w-3 h-3 text-[#7C3AED]" /> Founder Profile &amp; Leadership
               </span>
@@ -210,19 +212,19 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-white border border-[#DFE7EF]">
+              <div className="grid min-w-0 grid-cols-1 gap-3 pt-2 sm:grid-cols-2">
+                <div className="flex min-w-0 items-start gap-2.5 rounded-xl border border-[#DFE7EF] bg-white p-3.5">
                   <CheckCircle2 className="w-4 h-4 text-[#1FA9A2] shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="text-xs font-bold text-[var(--lit-ink)] uppercase font-mono">B.Tech AI &amp; Data Science</h4>
-                    <p className="text-xs text-[var(--lit-text-muted)]">Rathinam Technical Campus, Coimbatore</p>
+                  <div className="min-w-0 [overflow-wrap:anywhere]">
+                    <h4 className="break-words text-[11px] font-bold uppercase text-[var(--lit-ink)] font-mono sm:text-xs">B.Tech AI &amp; Data Science</h4>
+                    <p className="break-words text-xs text-[var(--lit-text-muted)]">Rathinam Technical Campus, Coimbatore</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-white border border-[#DFE7EF]">
+                <div className="flex min-w-0 items-start gap-2.5 rounded-xl border border-[#DFE7EF] bg-white p-3.5">
                   <CheckCircle2 className="w-4 h-4 text-[#1FA9A2] shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="text-xs font-bold text-[var(--lit-ink)] uppercase font-mono">Product Architect</h4>
-                    <p className="text-xs text-[var(--lit-text-muted)]">Creator of Logic Voice &amp; LIT Healthcare</p>
+                  <div className="min-w-0 [overflow-wrap:anywhere]">
+                    <h4 className="break-words text-[11px] font-bold uppercase text-[var(--lit-ink)] font-mono sm:text-xs">Product Architect</h4>
+                    <p className="break-words text-xs text-[var(--lit-text-muted)]">Creator of Logic Voice &amp; LIT Healthcare</p>
                   </div>
                 </div>
               </div>
@@ -230,7 +232,7 @@ export default function AboutPage() {
               <div className="pt-2">
                 <Link
                   href="/about/founder"
-                  className="lit-btn lit-btn-primary lit-btn-md inline-flex items-center gap-2"
+                  className="lit-btn lit-btn-primary lit-btn-md inline-flex min-h-11 w-full items-center justify-center gap-2 whitespace-normal px-3 text-center leading-snug sm:w-auto sm:px-5"
                 >
                   <span>View Full Executive Biography &amp; Credentials</span>
                   <ArrowRight className="w-4 h-4" />

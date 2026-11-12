@@ -12,6 +12,7 @@ import { LitAnalytics } from '@/components/analytics/lit-analytics';
 import { AutoBreadcrumbsJsonLd } from '@/components/seo/AutoBreadcrumbsJsonLd';
 import InitialLoader from '@/components/motion/initial-loader';
 import RouteTransitionHost from '@/components/motion/route-transition-host';
+import Footer from '@/components/layout/footer';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -158,7 +159,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${poppins.className} m-0 p-0 w-full max-w-[100vw] overflow-x-hidden`}>
+      <body className={`${poppins.className} m-0 p-0 w-full max-w-[100vw] overflow-x-hidden bg-white`}>
         <a href="#main-content" className="lit-skip">Skip to main content</a>
         <AutoBreadcrumbsJsonLd />
         <InitialLoader />
@@ -167,6 +168,7 @@ export default function RootLayout({
           <GlobalBackground />
           <Toaster position="top-right" toastOptions={{ style: { background: '#0B2545', color: '#FFFFFF', border: '1px solid #DFE7EF' } }} />
           {children}
+          <Footer />
           <SpeedInsights />
           <LitAnalytics />
           {process.env.NODE_ENV === 'development' && (

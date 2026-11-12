@@ -434,7 +434,7 @@ export default function VoiceShieldPage() {
         {/* SECTION 5: CALL TO ACTION & CONSULTATION */}
         {/* ========================================================= */}
         <section className="pt-10 border-t border-[#DFE7EF]">
-          <div className="rounded-3xl bg-[var(--lit-navy,#0B2545)] text-white p-8 sm:p-14 text-center space-y-6 relative overflow-hidden shadow-md">
+          <div className="lavender-cta-panel rounded-3xl bg-[var(--lit-navy,#0B2545)] text-white p-8 sm:p-14 text-center space-y-6 relative overflow-hidden shadow-md">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/20 bg-white/10 text-[#45D9D2] text-xs font-mono font-semibold tracking-wider uppercase">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Get Ahead of Voice Cloning Threats</span>

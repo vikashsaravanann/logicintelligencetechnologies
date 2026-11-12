@@ -17,6 +17,12 @@ input, textarea, select, option, optgroup {
   caret-color: #000000 !important;
 }
 
+/* Keep the dark support-chat composer readable on white marketing surfaces. */
+textarea.chat-widget-input,
+[data-chat-widget] textarea {
+  background-color: transparent !important;
+}
+
 /* Light surface inputs, selects, dropdowns and options */
 .bg-white input,
 .bg-white textarea,

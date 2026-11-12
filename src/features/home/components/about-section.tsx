@@ -71,7 +71,7 @@ export default function AboutSection() {
             <div className="pt-4 flex flex-wrap gap-4 items-center">
               <Link
                 href="/contact"
-                className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-gradient-to-r from-[var(--lit-blue)] to-[var(--lit-teal)] px-6 py-2.5 text-xs font-mono font-bold uppercase tracking-[0.14em] text-white shadow-sm transition-all hover:brightness-105"
+                className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#9bd8f5] px-6 py-2.5 text-xs font-mono font-bold uppercase tracking-[0.14em] text-[#12324a] shadow-sm transition-all hover:bg-[#83caee]"
               >
                 <span>Partner With Us</span>
                 <ArrowRight className="w-4 h-4 ml-2" />

@@ -118,7 +118,7 @@ export default function IndustriesPage() {
         </div>
 
         {/* Closing Canonical CTA */}
-        <section className="relative rounded-3xl overflow-hidden bg-[var(--lit-navy,#0B2545)] text-white p-8 sm:p-14 text-center shadow-xl border border-white/10">
+        <section className="lavender-cta-panel relative rounded-3xl overflow-hidden bg-[var(--lit-navy,#0B2545)] text-white p-8 sm:p-14 text-center shadow-xl border border-white/10">
           <div aria-hidden className="absolute inset-0 pointer-events-none">
             <div
               className="absolute inset-0"
