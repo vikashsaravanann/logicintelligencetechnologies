@@ -195,6 +195,14 @@ export default function Footer() {
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#5e5c55]">
               Logic Intelligence Technologies is a Coimbatore-based software engineering company building practical AI products, healthcare systems, and secure voice technology.
             </p>
+            <Link
+              href="https://csc.logicintelligencetechnologies.in/"
+              aria-label="Community Partner: Coimbatore Startup Community"
+              title="Visit the Coimbatore Startup Community"
+              className="mt-4 inline-flex text-sm text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2"
+            >
+              Community Partner: Coimbatore Startup Community
+            </Link>
           </div>
 
           <nav aria-label="Footer menu" className="min-w-0">
